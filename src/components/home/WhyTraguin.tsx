@@ -75,7 +75,6 @@ export function WhyTraguin() {
 
       <div className="relative mx-auto max-w-7xl">
         <div className="text-center">
-          <p className="mb-4 text-xs tracking-[0.3em] text-gold uppercase">Our Legacy</p>
           <h2 className="font-display text-4xl text-foreground md:text-6xl">
             Why Traguin
           </h2>
