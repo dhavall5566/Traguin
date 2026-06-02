@@ -1,36 +1,61 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Traguin Luxury Travel Platform
+
+A world-class luxury travel experience platform built with Next.js, Three.js, GSAP, and Framer Motion.
+
+## Features
+
+- **Cinematic homepage** with 12 immersive sections
+- **3D interactive globe** with travel routes and mouse-reactive camera
+- **Premium loading experience** with rotating Earth and progress animation
+- **Smooth scrolling** via Lenis integrated with GSAP ScrollTrigger
+- **Luxury design system** — dark editorial aesthetic with gold accents
+- **Full business pages** — Hotels, Domestic/International Packages, Concierge, Contact, Login
+
+## Tech Stack
+
+- Next.js 16 (App Router)
+- React 19 + TypeScript
+- Tailwind CSS v4
+- GSAP + ScrollTrigger
+- Framer Motion
+- Three.js + React Three Fiber + Drei
+- Lenis smooth scroll
 
 ## Getting Started
 
-First, run the development server:
-
 ```bash
+npm install
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3000](http://localhost:3000).
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Project Structure
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+See [docs/ARCHITECTURE.md](./docs/ARCHITECTURE.md) for component architecture, animation patterns, and Three.js setup.
 
-## Learn More
+See [docs/SITEMAP.md](./docs/SITEMAP.md) for route map.
 
-To learn more about Next.js, take a look at the following resources:
+See [docs/DESIGN_SYSTEM.md](./docs/DESIGN_SYSTEM.md) for colors, typography, and motion principles.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Pages
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+| Route | Description |
+|-------|-------------|
+| `/` | Homepage with all 12 sections |
+| `/hotels` | Luxury hotel discovery |
+| `/packages/domestic` | India packages |
+| `/packages/international` | World packages |
+| `/always-on-demand` | Luxury concierge |
+| `/contact` | Contact form |
+| `/login` | Client portal |
 
-## Deploy on Vercel
+## Performance
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+- Three.js components are dynamically imported (no SSR)
+- Images lazy-loaded where appropriate
+- Code splitting per route via App Router
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## License
+
+Private — Traguin Luxury Travel
