@@ -11,7 +11,7 @@ export const images = {
   travel: pexels(2387866, 1920),
 
   // Domestic — distinct verified photos
-  kashmir: unsplash("1578662996442-48f60103fc96"),
+  kashmir: pexels(6738359),
   kerala: unsplash("1717069541470-9b1a2b085e1f"),
   goa: pexels(248797),
   ladakh: pexels(2387873),

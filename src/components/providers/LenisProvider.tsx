@@ -9,6 +9,17 @@ gsap.registerPlugin(ScrollTrigger);
 
 export function LenisProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
+    const blockHorizontalSwipeNav = (e: WheelEvent) => {
+      if (Math.abs(e.deltaX) > Math.abs(e.deltaY) && Math.abs(e.deltaX) > 2) {
+        e.preventDefault();
+      }
+    };
+
+    window.addEventListener("wheel", blockHorizontalSwipeNav, { passive: false });
+    return () => window.removeEventListener("wheel", blockHorizontalSwipeNav);
+  }, []);
+
+  useEffect(() => {
     const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     const isTouchDevice = window.matchMedia("(pointer: coarse)").matches;
 

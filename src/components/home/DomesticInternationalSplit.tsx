@@ -1,18 +1,20 @@
 "use client";
 
 import { useRef, useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
 import { gsap } from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { domesticStates, internationalCountries } from "@/data/destinations";
 import { domesticSplitImages, internationalSplitImages } from "@/lib/images";
 import { SafeImage } from "@/components/ui/SafeImage";
+import { MagneticButton } from "@/components/ui/MagneticButton";
 import { cn } from "@/lib/utils";
+
+gsap.registerPlugin(ScrollTrigger);
 
 export function DomesticInternationalSplit() {
   const sectionRef = useRef<HTMLElement>(null);
   const [hovered, setHovered] = useState<"domestic" | "international" | null>(null);
   const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
-  const router = useRouter();
 
   useEffect(() => {
     const ctx = gsap.context(() => {
@@ -39,10 +41,6 @@ export function DomesticInternationalSplit() {
     });
   };
 
-  const handleClick = (region: "domestic" | "international") => {
-    router.push(`/packages/${region}`);
-  };
-
   return (
     <section
       ref={sectionRef}
@@ -67,7 +65,6 @@ export function DomesticInternationalSplit() {
           hovered={hovered}
           mousePos={mousePos}
           onHover={setHovered}
-          onClick={() => handleClick("domestic")}
           accentClass="bg-ocean/10"
         />
 
@@ -81,7 +78,6 @@ export function DomesticInternationalSplit() {
           hovered={hovered}
           mousePos={mousePos}
           onHover={setHovered}
-          onClick={() => handleClick("international")}
           accentClass="bg-gold/10"
         />
       </div>
@@ -99,7 +95,6 @@ function SplitPanel({
   hovered,
   mousePos,
   onHover,
-  onClick,
   accentClass,
 }: {
   region: "domestic" | "international";
@@ -111,7 +106,6 @@ function SplitPanel({
   hovered: "domestic" | "international" | null;
   mousePos: { x: number; y: number };
   onHover: (v: "domestic" | "international" | null) => void;
-  onClick: () => void;
   accentClass: string;
 }) {
   const other = region === "domestic" ? "international" : "domestic";
@@ -120,13 +114,12 @@ function SplitPanel({
   return (
     <div
       className={cn(
-        "group relative cursor-pointer overflow-hidden transition-all duration-700 ease-[cubic-bezier(0.22,1,0.36,1)] md:h-[70vh]",
+        "group relative overflow-hidden transition-all duration-700 ease-[cubic-bezier(0.22,1,0.36,1)] md:h-[70vh]",
         hovered === other ? "md:w-[35%]" : isHovered ? "md:w-[65%]" : "md:w-1/2",
         "h-[50vh] w-full"
       )}
       onMouseEnter={() => onHover(region)}
       onMouseLeave={() => onHover(null)}
-      onClick={onClick}
       style={{
         transform: isHovered
           ? `perspective(1000px) rotateY(${mousePos.x * 0.05}deg) rotateX(${-mousePos.y * 0.05}deg)`
@@ -168,6 +161,14 @@ function SplitPanel({
           </div>
           <p className="mt-4 hidden text-sm text-muted md:block">{packageCount}</p>
         </div>
+        <MagneticButton
+          as="a"
+          href={`/packages/${region}`}
+          variant="primary"
+          className="relative z-10 mt-6 w-fit !px-6 !py-3"
+        >
+          Explore {subtitle}
+        </MagneticButton>
       </div>
     </div>
   );

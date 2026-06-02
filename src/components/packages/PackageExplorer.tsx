@@ -263,7 +263,17 @@ function PackageCard({
 }) {
   return (
     <article
-      className="group relative overflow-hidden rounded-3xl glass transition-all duration-500 hover:border-gold/30 hover:-translate-y-2"
+      role="button"
+      tabIndex={0}
+      onClick={onViewDetails}
+      onKeyDown={(e) => {
+        if (e.key === "Enter" || e.key === " ") {
+          e.preventDefault();
+          onViewDetails();
+        }
+      }}
+      aria-label={`View details for ${pkg.title}`}
+      className="group relative cursor-pointer overflow-hidden rounded-3xl glass transition-all duration-500 hover:border-gold/30 hover:-translate-y-2 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gold"
       style={{ transform: "perspective(1000px)" }}
     >
       <div className="relative aspect-[4/3] overflow-hidden">
@@ -274,20 +284,30 @@ function PackageCard({
         />
         <div className="absolute top-4 right-4 flex gap-2">
           <button
-            onClick={onWishlist}
+            type="button"
+            onClick={(e) => {
+              e.stopPropagation();
+              onWishlist();
+            }}
             className={cn(
               "rounded-full p-2 glass transition-colors",
               isWishlisted && "bg-gold/20 text-gold"
             )}
+            aria-label={isWishlisted ? "Remove from wishlist" : "Add to wishlist"}
           >
             <Heart size={16} fill={isWishlisted ? "currentColor" : "none"} />
           </button>
           <button
-            onClick={onCompare}
+            type="button"
+            onClick={(e) => {
+              e.stopPropagation();
+              onCompare();
+            }}
             className={cn(
               "rounded-full p-2 glass transition-colors",
               isCompared && "bg-gold/20 text-gold"
             )}
+            aria-label={isCompared ? "Remove from comparison" : "Add to comparison"}
           >
             <GitCompare size={16} />
           </button>
@@ -309,8 +329,12 @@ function PackageCard({
         </ul>
         <div className="mt-6 flex items-center justify-between">
           <div>
-            <p className="text-xs text-muted">From</p>
-            <p className="font-display text-lg text-gold">{formatPrice(pkg.price)}</p>
+            <p className="font-body text-xs font-semibold tracking-wide text-foreground/70 uppercase">
+              From
+            </p>
+            <p className="font-body text-xl font-bold tracking-tight text-gold">
+              {formatPrice(pkg.price)}
+            </p>
           </div>
           <MagneticButton
             onClick={onViewDetails}

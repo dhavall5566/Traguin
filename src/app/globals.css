@@ -25,6 +25,22 @@
   --luxury-gradient-mid: rgba(10, 132, 255, 0.08);
   --luxury-gradient-end: rgba(217, 199, 165, 0.1);
   --shimmer-mid: rgba(212, 175, 55, 0.1);
+  --showcase-scrim-h: linear-gradient(
+    90deg,
+    var(--background) 0%,
+    color-mix(in srgb, var(--background) 60%, transparent) 50%,
+    transparent 100%
+  );
+  --showcase-scrim-v: linear-gradient(
+    to top,
+    var(--background) 0%,
+    transparent 40%,
+    color-mix(in srgb, var(--background) 30%, transparent) 100%
+  );
+  --showcase-body: var(--muted);
+  --showcase-subtitle: var(--sand);
+  --showcase-stat-label: var(--muted);
+  --showcase-progress-inactive: color-mix(in srgb, var(--foreground) 20%, transparent);
   color-scheme: dark;
 }
 
@@ -52,6 +68,21 @@
   --luxury-gradient-mid: rgba(10, 132, 255, 0.05);
   --luxury-gradient-end: rgba(122, 101, 72, 0.08);
   --shimmer-mid: rgba(212, 175, 55, 0.14);
+  --showcase-scrim-h: linear-gradient(
+    90deg,
+    color-mix(in srgb, var(--background) 94%, transparent) 0%,
+    color-mix(in srgb, var(--background) 55%, transparent) 34%,
+    transparent 58%
+  );
+  --showcase-scrim-v: linear-gradient(
+    to top,
+    color-mix(in srgb, var(--background) 50%, transparent) 0%,
+    transparent 24%
+  );
+  --showcase-body: color-mix(in srgb, var(--foreground) 78%, transparent);
+  --showcase-subtitle: color-mix(in srgb, var(--foreground) 62%, transparent);
+  --showcase-stat-label: color-mix(in srgb, var(--foreground) 55%, transparent);
+  --showcase-progress-inactive: color-mix(in srgb, var(--foreground) 28%, transparent);
   color-scheme: light;
 }
 
@@ -87,6 +118,7 @@
 
 html {
   scroll-behavior: auto;
+  overscroll-behavior-x: none;
 }
 
 html.lenis,
@@ -111,6 +143,7 @@ body {
   color: var(--foreground);
   font-family: var(--font-jakarta), system-ui, sans-serif;
   overflow-x: hidden;
+  overscroll-behavior-x: none;
   transition: background-color 0.3s ease, color 0.3s ease;
 }
 
@@ -233,4 +266,73 @@ body {
 
 .hero-glow {
   background: radial-gradient(ellipse at center, var(--hero-glow) 0%, transparent 60%);
+}
+
+.destination-showcase-scrim-h {
+  background: var(--showcase-scrim-h);
+}
+
+.destination-showcase-scrim-v {
+  background: var(--showcase-scrim-v);
+}
+
+[data-theme="light"] .destination-showcase-image {
+  filter: contrast(1.07) saturate(1.1);
+}
+
+@keyframes customer-stories-marquee {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+.customer-stories-track {
+  animation: customer-stories-marquee 45s linear infinite;
+}
+
+.customer-stories-track:hover {
+  animation-play-state: paused;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .customer-stories-track {
+    animation: none;
+    flex-wrap: wrap;
+    width: 100%;
+    max-width: 80rem;
+    margin-inline: auto;
+    justify-content: center;
+    padding-bottom: 0.5rem;
+  }
+}
+
+@keyframes featured-experiences-marquee {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+.featured-experiences-track {
+  animation: featured-experiences-marquee 55s linear infinite;
+}
+
+.featured-experiences-track:hover {
+  animation-play-state: paused;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .featured-experiences-track {
+    animation: none;
+    flex-wrap: wrap;
+    width: 100%;
+    max-width: 80rem;
+    margin-inline: auto;
+    justify-content: center;
+  }
 }

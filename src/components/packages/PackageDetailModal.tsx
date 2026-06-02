@@ -84,9 +84,15 @@ export function PackageDetailModal({ pkg, onClose }: PackageDetailModalProps) {
 
           <div className="mt-8 flex flex-col gap-4 border-t border-glass-border pt-6 sm:flex-row sm:items-center sm:justify-between">
             <div>
-              <p className="text-xs text-muted">Starting from</p>
-              <p className="font-display text-3xl text-gold">{formatPrice(pkg.price)}</p>
-              <p className="mt-1 text-xs text-muted">Per person · taxes included</p>
+              <p className="font-body text-xs font-semibold tracking-wide text-foreground/70 uppercase">
+                Starting from
+              </p>
+              <p className="font-body text-3xl font-bold tracking-tight text-gold">
+                {formatPrice(pkg.price)}
+              </p>
+              <p className="mt-1 font-body text-xs font-medium text-muted">
+                Per person · taxes included
+              </p>
             </div>
             <div className="flex flex-col gap-3 sm:flex-row">
               <MagneticButton onClick={onClose} variant="secondary" className="!px-6 !py-3">
