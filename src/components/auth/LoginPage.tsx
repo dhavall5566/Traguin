@@ -4,10 +4,33 @@ import { useState } from "react";
 import Link from "next/link";
 import { Eye, EyeOff } from "lucide-react";
 import { MagneticButton } from "@/components/ui/MagneticButton";
+import { FormField, fieldInputClass } from "@/components/ui/FormField";
+import {
+  clearFieldError,
+  hasErrors,
+  validateLoginForm,
+  type FieldErrors,
+} from "@/lib/form-validation";
 
 export function LoginPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [form, setForm] = useState({ email: "", password: "" });
+  const [errors, setErrors] = useState<FieldErrors>({});
+  const [submitError, setSubmitError] = useState("");
+
+  const update = <K extends keyof typeof form>(key: K, value: (typeof form)[K]) => {
+    setForm((prev) => ({ ...prev, [key]: value }));
+    clearFieldError(setErrors, key);
+    setSubmitError("");
+  };
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    const nextErrors = validateLoginForm(form);
+    setErrors(nextErrors);
+    if (hasErrors(nextErrors)) return;
+    setSubmitError("Sign-in is not yet connected. Please contact your travel designer.");
+  };
 
   return (
     <div className="flex min-h-screen items-center justify-center pt-20 pb-12">
@@ -20,44 +43,45 @@ export function LoginPage() {
           <p className="mt-2 text-sm text-muted">Sign in to your client portal</p>
         </div>
 
-        <form
-          onSubmit={(e) => e.preventDefault()}
-          className="mt-10 glass rounded-3xl p-8"
-        >
+        <form onSubmit={handleSubmit} noValidate className="mt-10 glass rounded-3xl p-8">
           <div className="space-y-4">
-            <div>
-              <label className="mb-2 block text-xs tracking-wide text-muted uppercase">
-                Email
-              </label>
+            {submitError && (
+              <p className="rounded-xl border border-gold/30 bg-gold/10 px-4 py-3 text-sm text-gold" role="status">
+                {submitError}
+              </p>
+            )}
+            <FormField label="Email" htmlFor="login-email" error={errors.email}>
               <input
+                id="login-email"
                 type="email"
-                required
+                autoComplete="email"
                 value={form.email}
-                onChange={(e) => setForm({ ...form, email: e.target.value })}
-                className="w-full rounded-xl border border-glass-border bg-input px-4 py-3 text-sm outline-none focus:border-gold/50"
+                onChange={(e) => update("email", e.target.value)}
+                className={fieldInputClass("email", errors)}
+                aria-invalid={!!errors.email}
               />
-            </div>
-            <div>
-              <label className="mb-2 block text-xs tracking-wide text-muted uppercase">
-                Password
-              </label>
+            </FormField>
+            <FormField label="Password" htmlFor="login-password" error={errors.password}>
               <div className="relative">
                 <input
+                  id="login-password"
                   type={showPassword ? "text" : "password"}
-                  required
+                  autoComplete="current-password"
                   value={form.password}
-                  onChange={(e) => setForm({ ...form, password: e.target.value })}
-                  className="w-full rounded-xl border border-glass-border bg-input px-4 py-3 pr-12 text-sm outline-none focus:border-gold/50"
+                  onChange={(e) => update("password", e.target.value)}
+                  className={`${fieldInputClass("password", errors)} pr-12`}
+                  aria-invalid={!!errors.password}
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
                   className="absolute top-1/2 right-4 -translate-y-1/2 text-muted"
+                  aria-label={showPassword ? "Hide password" : "Show password"}
                 >
                   {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
                 </button>
               </div>
-            </div>
+            </FormField>
           </div>
 
           <div className="mt-4 flex justify-end">

@@ -2,25 +2,18 @@
 
 import { Suspense, lazy } from "react";
 import { HeroSection } from "@/components/home/HeroSection";
-import { DomesticInternationalSplit } from "@/components/home/DomesticInternationalSplit";
 
-const DestinationShowcase = lazy(() =>
-  import("@/components/home/DestinationShowcase").then((m) => ({ default: m.DestinationShowcase }))
-);
-const FeaturedExperiences = lazy(() =>
-  import("@/components/home/FeaturedExperiences").then((m) => ({ default: m.FeaturedExperiences }))
+const FeaturedDestinations = lazy(() =>
+  import("@/components/home/FeaturedDestinations").then((m) => ({ default: m.FeaturedDestinations }))
 );
 const WhyTraguin = lazy(() =>
   import("@/components/home/WhyTraguin").then((m) => ({ default: m.WhyTraguin }))
 );
-const JourneyProcess = lazy(() =>
-  import("@/components/home/JourneyProcess").then((m) => ({ default: m.JourneyProcess }))
+const TravelPlannerForm = lazy(() =>
+  import("@/components/home/TravelPlannerForm").then((m) => ({ default: m.TravelPlannerForm }))
 );
 const CustomerStories = lazy(() =>
   import("@/components/home/CustomerStories").then((m) => ({ default: m.CustomerStories }))
-);
-const AITravelPlanner = lazy(() =>
-  import("@/components/home/AITravelPlanner").then((m) => ({ default: m.AITravelPlanner }))
 );
 const FinalCTA = lazy(() =>
   import("@/components/home/FinalCTA").then((m) => ({ default: m.FinalCTA }))
@@ -40,33 +33,24 @@ export default function HomePage() {
   return (
     <main>
       <HeroSection />
-      <DomesticInternationalSplit />
 
-      <Suspense fallback={<SectionFallback minHeight="100vh" />}>
-        <DestinationShowcase />
-      </Suspense>
-
-      <Suspense fallback={<SectionFallback minHeight="100vh" />}>
-        <FeaturedExperiences />
+      <Suspense fallback={<SectionFallback minHeight="80vh" />}>
+        <FeaturedDestinations />
       </Suspense>
 
       <Suspense fallback={<SectionFallback />}>
         <WhyTraguin />
       </Suspense>
 
-      <Suspense fallback={<SectionFallback minHeight="60vh" />}>
-        <JourneyProcess />
+      <Suspense fallback={<SectionFallback minHeight="70vh" />}>
+        <TravelPlannerForm />
       </Suspense>
 
       <Suspense fallback={<SectionFallback />}>
         <CustomerStories />
       </Suspense>
 
-      <Suspense fallback={<SectionFallback minHeight="70vh" />}>
-        <AITravelPlanner />
-      </Suspense>
-
-      <Suspense fallback={<SectionFallback minHeight="100vh" />}>
+      <Suspense fallback={<SectionFallback minHeight="80vh" />}>
         <FinalCTA />
       </Suspense>
     </main>

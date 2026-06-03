@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { ArrowRight, Star } from "lucide-react";
 import { packages } from "@/data/packages";
-import { formatPrice } from "@/lib/utils";
+import { PriceDisplay } from "@/components/ui/PriceDisplay";
 import { SafeImage } from "@/components/ui/SafeImage";
 import { MagneticButton } from "@/components/ui/MagneticButton";
 
@@ -70,14 +70,7 @@ export function FeaturedExperiences() {
                 </ul>
 
                 <div className="mt-6 flex items-center justify-between">
-                  <div>
-                    <p className="font-body text-xs font-semibold tracking-wide text-foreground/70 uppercase">
-                      Starting from
-                    </p>
-                    <p className="font-body text-xl font-bold tracking-tight text-gold">
-                      {formatPrice(pkg.price)}
-                    </p>
-                  </div>
+                  <PriceDisplay amount={pkg.price} label="Starting from" size="md" />
                   <MagneticButton
                     as="a"
                     href={`/packages/${pkg.region}`}

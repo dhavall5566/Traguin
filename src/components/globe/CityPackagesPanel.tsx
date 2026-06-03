@@ -3,7 +3,7 @@
 import { X, Star, Clock } from "lucide-react";
 import type { TravelPackage } from "@/types";
 import type { GlobeMarker } from "@/components/three/Globe";
-import { formatPrice } from "@/lib/utils";
+import { PriceDisplay } from "@/components/ui/PriceDisplay";
 import { SafeImage } from "@/components/ui/SafeImage";
 import { MagneticButton } from "@/components/ui/MagneticButton";
 
@@ -70,9 +70,9 @@ export function CityPackagesPanel({ city, packages, onClose, onPackageClick }: C
                         <Star size={11} className="fill-gold text-gold" />
                         <span className="text-xs text-foreground">{pkg.rating}</span>
                       </div>
-                      <p className="mt-1 font-display text-sm text-gold">
-                        {formatPrice(pkg.price)}
-                      </p>
+                      <div className="mt-1">
+                        <PriceDisplay amount={pkg.price} label={null} size="sm" />
+                      </div>
                     </div>
                   </div>
                   <ul className="border-t border-glass-border px-3 py-2">
@@ -90,11 +90,11 @@ export function CityPackagesPanel({ city, packages, onClose, onPackageClick }: C
         <div className="shrink-0 border-t border-glass-border p-4">
           <MagneticButton
             as="a"
-            href={`/packages/${city.region}?destination=${city.id}`}
+            href={`/destinations/${city.id}`}
             variant="primary"
             className="w-full !py-3 !text-xs"
           >
-            View All on Packages Page
+            View Full Itinerary
           </MagneticButton>
         </div>
       </div>

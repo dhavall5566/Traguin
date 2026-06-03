@@ -2,45 +2,60 @@
 
 import { useState } from "react";
 import {
-  Crown,
-  Plane,
-  Building2,
   Sparkles,
+  FileCheck,
+  Plane,
   Ship,
+  Car,
+  Crown,
   Briefcase,
 } from "lucide-react";
 import { MagneticButton } from "@/components/ui/MagneticButton";
+import { FormField, fieldInputClass } from "@/components/ui/FormField";
+import {
+  clearFieldError,
+  hasErrors,
+  validateConciergeForm,
+  type FieldErrors,
+} from "@/lib/form-validation";
+import { primaryCta, secondaryCta } from "@/data/site";
+import { cn } from "@/lib/utils";
 
 const services = [
-  {
-    icon: Crown,
-    title: "VIP Requests",
-    description: "Exclusive access, private events, and bespoke experiences tailored to your preferences.",
-  },
   {
     icon: Sparkles,
     title: "Custom Itineraries",
     description: "Every detail crafted by our travel architects for a journey uniquely yours.",
   },
   {
-    icon: Briefcase,
-    title: "Corporate Travel",
-    description: "Executive retreats, incentive trips, and seamless business travel management.",
+    icon: FileCheck,
+    title: "Visa Assistance",
+    description: "Documentation, appointments, and expedited processing handled end to end.",
   },
   {
     icon: Plane,
     title: "Private Charter",
-    description: "Private jets, helicopters, and yacht charters for ultimate freedom.",
-  },
-  {
-    icon: Building2,
-    title: "Luxury Stays",
-    description: "Access to the world's most exclusive hotels, villas, and private residences.",
+    description: "Private jets and helicopters with seamless ground coordination.",
   },
   {
     icon: Ship,
-    title: "Expedition Cruises",
-    description: "Ultra-luxury cruises to the world's most remote and breathtaking destinations.",
+    title: "Yacht Booking",
+    description: "Mediterranean, Caribbean, and Indian Ocean charters with full crew.",
+  },
+  {
+    icon: Car,
+    title: "Luxury Transfers",
+    description: "Chauffeured arrivals, inter-city transfers, and VIP airport meet-and-greet.",
+  },
+  {
+    icon: Crown,
+    title: "VIP Experiences",
+    description: "Exclusive access, private events, and bespoke moments worldwide.",
+  },
+  {
+    icon: Briefcase,
+    title: "Corporate Travel",
+    description: "Executive retreats, incentive trips, and seamless business travel management.",
   },
 ];
 
@@ -52,10 +67,19 @@ export function ConciergePage() {
     service: "",
     message: "",
   });
+  const [errors, setErrors] = useState<FieldErrors>({});
   const [submitted, setSubmitted] = useState(false);
+
+  const update = <K extends keyof typeof form>(key: K, value: (typeof form)[K]) => {
+    setForm((prev) => ({ ...prev, [key]: value }));
+    clearFieldError(setErrors, key);
+  };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    const nextErrors = validateConciergeForm(form);
+    setErrors(nextErrors);
+    if (hasErrors(nextErrors)) return;
     setSubmitted(true);
   };
 
@@ -63,14 +87,22 @@ export function ConciergePage() {
     <div className="min-h-screen pt-32 pb-20">
       <div className="section-padding pt-0">
         <div className="mx-auto max-w-7xl">
-          <p className="text-xs tracking-[0.3em] text-gold uppercase">Concierge</p>
+          <p className="text-xs tracking-[0.3em] text-gold uppercase">Travel Concierge</p>
           <h1 className="mt-2 font-display text-5xl text-foreground md:text-7xl">
-            Always On Demand
+            Travel Concierge
           </h1>
           <p className="mt-4 max-w-2xl text-lg text-muted">
-            Your personal luxury travel concierge — available 24/7 to fulfill every request,
+            Your personal luxury travel concierge — available to fulfill every request,
             no matter how extraordinary.
           </p>
+          <div className="mt-6 flex flex-wrap gap-3">
+            <MagneticButton as="a" href={primaryCta.href} variant="primary" className="!text-xs">
+              {primaryCta.label}
+            </MagneticButton>
+            <MagneticButton as="a" href={secondaryCta.href} variant="secondary" className="!text-xs">
+              {secondaryCta.label}
+            </MagneticButton>
+          </div>
 
           <div className="mt-16 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
             {services.map((service) => (
@@ -105,7 +137,7 @@ export function ConciergePage() {
               </div>
             </div>
 
-            <form onSubmit={handleSubmit} className="glass rounded-3xl p-8">
+            <form onSubmit={handleSubmit} noValidate className="glass rounded-3xl p-8">
               {submitted ? (
                 <div className="flex min-h-[400px] flex-col items-center justify-center text-center">
                   <Crown size={48} className="text-gold" />
@@ -115,49 +147,74 @@ export function ConciergePage() {
               ) : (
                 <>
                   <div className="space-y-4">
-                    <input
-                      required
-                      placeholder="Full Name"
-                      value={form.name}
-                      onChange={(e) => setForm({ ...form, name: e.target.value })}
-                      className="w-full rounded-xl border border-glass-border bg-input px-4 py-3 text-sm outline-none focus:border-gold/50"
-                    />
-                    <input
-                      required
-                      type="email"
-                      placeholder="Email Address"
-                      value={form.email}
-                      onChange={(e) => setForm({ ...form, email: e.target.value })}
-                      className="w-full rounded-xl border border-glass-border bg-input px-4 py-3 text-sm outline-none focus:border-gold/50"
-                    />
-                    <input
-                      placeholder="Phone Number"
-                      value={form.phone}
-                      onChange={(e) => setForm({ ...form, phone: e.target.value })}
-                      className="w-full rounded-xl border border-glass-border bg-input px-4 py-3 text-sm outline-none focus:border-gold/50"
-                    />
-                    <select
-                      required
-                      value={form.service}
-                      onChange={(e) => setForm({ ...form, service: e.target.value })}
-                      className="w-full rounded-xl border border-glass-border bg-input px-4 py-3 text-sm outline-none focus:border-gold/50"
-                    >
-                      <option value="">Select Service</option>
-                      {services.map((s) => (
-                        <option key={s.title} value={s.title}>{s.title}</option>
-                      ))}
-                    </select>
-                    <textarea
-                      required
-                      rows={4}
-                      placeholder="Tell us about your request..."
-                      value={form.message}
-                      onChange={(e) => setForm({ ...form, message: e.target.value })}
-                      className="w-full rounded-xl border border-glass-border bg-input px-4 py-3 text-sm outline-none focus:border-gold/50"
-                    />
+                    {hasErrors(errors) && (
+                      <p className="rounded-xl border border-red-400/30 bg-red-400/10 px-4 py-3 text-sm text-red-400" role="alert">
+                        Please correct the highlighted fields before submitting.
+                      </p>
+                    )}
+                    <FormField label="Full Name" htmlFor="concierge-name" error={errors.name}>
+                      <input
+                        id="concierge-name"
+                        autoComplete="name"
+                        value={form.name}
+                        onChange={(e) => update("name", e.target.value)}
+                        className={fieldInputClass("name", errors)}
+                        aria-invalid={!!errors.name}
+                      />
+                    </FormField>
+                    <FormField label="Email Address" htmlFor="concierge-email" error={errors.email}>
+                      <input
+                        id="concierge-email"
+                        type="email"
+                        autoComplete="email"
+                        value={form.email}
+                        onChange={(e) => update("email", e.target.value)}
+                        className={fieldInputClass("email", errors)}
+                        aria-invalid={!!errors.email}
+                      />
+                    </FormField>
+                    <FormField label="Phone Number" htmlFor="concierge-phone" error={errors.phone}>
+                      <input
+                        id="concierge-phone"
+                        type="tel"
+                        autoComplete="tel"
+                        value={form.phone}
+                        onChange={(e) => update("phone", e.target.value)}
+                        className={fieldInputClass("phone", errors)}
+                        aria-invalid={!!errors.phone}
+                      />
+                    </FormField>
+                    <FormField label="Service" htmlFor="concierge-service" error={errors.service}>
+                      <select
+                        id="concierge-service"
+                        value={form.service}
+                        onChange={(e) => update("service", e.target.value)}
+                        className={fieldInputClass("service", errors)}
+                        aria-invalid={!!errors.service}
+                      >
+                        <option value="" disabled>
+                          Select a service
+                        </option>
+                        {services.map((s) => (
+                          <option key={s.title} value={s.title}>
+                            {s.title}
+                          </option>
+                        ))}
+                      </select>
+                    </FormField>
+                    <FormField label="Message" htmlFor="concierge-message" error={errors.message}>
+                      <textarea
+                        id="concierge-message"
+                        rows={4}
+                        value={form.message}
+                        onChange={(e) => update("message", e.target.value)}
+                        className={cn(fieldInputClass("message", errors), "resize-none")}
+                        aria-invalid={!!errors.message}
+                      />
+                    </FormField>
                   </div>
                   <MagneticButton type="submit" variant="primary" className="mt-6 w-full">
-                    Submit Request
+                    Request Concierge Service
                   </MagneticButton>
                 </>
               )}

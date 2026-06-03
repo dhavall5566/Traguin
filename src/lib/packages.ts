@@ -1,4 +1,5 @@
 import { packages } from "@/data/packages";
+import { destinations } from "@/data/destinations";
 import type { TravelPackage } from "@/types";
 
 export function getPackagesForCity(cityName: string): TravelPackage[] {
@@ -22,4 +23,11 @@ export function getPackagesForCityId(cityId: string): TravelPackage[] {
   };
   const name = nameMap[cityId];
   return name ? getPackagesForCity(name) : [];
+}
+
+export function getDestinationIdForPackage(pkg: TravelPackage): string | undefined {
+  const match = destinations.find(
+    (d) => d.name.toLowerCase() === pkg.destination.toLowerCase()
+  );
+  return match?.id;
 }

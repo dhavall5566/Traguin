@@ -13,7 +13,7 @@ import {
 } from "lucide-react";
 import { packages } from "@/data/packages";
 import { destinations } from "@/data/destinations";
-import { formatPrice } from "@/lib/utils";
+import { PriceAmount, PriceDisplay } from "@/components/ui/PriceDisplay";
 import type { TravelMood, TravelPackage } from "@/types";
 import { cn } from "@/lib/utils";
 import { SafeImage } from "@/components/ui/SafeImage";
@@ -149,8 +149,11 @@ export function PackageExplorer({ region }: PackageExplorerProps) {
 
           {/* Price range */}
           <div className="mt-6 max-w-md">
-            <label className="text-xs text-muted">
-              Price: {formatPrice(priceRange[0])} — {formatPrice(priceRange[1])}
+            <label className="flex flex-wrap items-baseline gap-1 text-xs text-muted">
+              <span>Price:</span>
+              <PriceAmount amount={priceRange[0]} size="sm" />
+              <span>—</span>
+              <PriceAmount amount={priceRange[1]} size="sm" />
             </label>
             <input
               type="range"
@@ -328,14 +331,7 @@ function PackageCard({
           ))}
         </ul>
         <div className="mt-6 flex items-center justify-between">
-          <div>
-            <p className="font-body text-xs font-semibold tracking-wide text-foreground/70 uppercase">
-              From
-            </p>
-            <p className="font-body text-xl font-bold tracking-tight text-gold">
-              {formatPrice(pkg.price)}
-            </p>
-          </div>
+          <PriceDisplay amount={pkg.price} label="From" size="md" />
           <MagneticButton
             onClick={onViewDetails}
             variant="secondary"

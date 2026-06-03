@@ -1,11 +1,16 @@
 import type { Metadata } from "next";
+import { cookies } from "next/headers";
 import { Playfair_Display, Plus_Jakarta_Sans } from "next/font/google";
+import { isTheme, themeInitScript, THEME_COOKIE_NAME, type Theme } from "@/lib/theme";
 import "./globals.css";
+import { DevChunkRecovery } from "@/components/providers/DevChunkRecovery";
+import { ThreeInit } from "@/components/providers/ThreeInit";
 import { LenisProvider } from "@/components/providers/LenisProvider";
 import { PageTransition } from "@/components/providers/PageTransitionProvider";
 import { ThemeProvider } from "@/components/providers/ThemeProvider";
 import { Navigation } from "@/components/layout/Navigation";
 import { Footer } from "@/components/layout/Footer";
+import { WhatsAppFloat } from "@/components/layout/WhatsAppFloat";
 
 const playfair = Playfair_Display({
   variable: "--font-playfair",
@@ -25,7 +30,7 @@ export const metadata: Metadata = {
     template: "%s | Traguin Luxury Travel",
   },
   description:
-    "Curated luxury journeys designed around extraordinary experiences. Premium domestic and international travel packages, hotels, and concierge services.",
+    "Luxury travel concierge crafting extraordinary journeys since 2008. Bespoke destinations, experiences, stays, and white-glove service.",
   keywords: [
     "luxury travel",
     "premium packages",
@@ -44,26 +49,41 @@ export const metadata: Metadata = {
   },
 };
 
-export default function RootLayout({
+async function getServerTheme(): Promise<Theme> {
+  const cookieStore = await cookies();
+  const stored = cookieStore.get(THEME_COOKIE_NAME)?.value;
+  return isTheme(stored) ? stored : "dark";
+}
+
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const serverTheme = await getServerTheme();
+
   return (
-    <html lang="en" suppressHydrationWarning className={`${playfair.variable} ${jakarta.variable} h-full`}>
+    <html
+      lang="en"
+      suppressHydrationWarning
+      data-theme={serverTheme}
+      className={`${playfair.variable} ${jakarta.variable} h-full`}
+    >
       <head>
-        <script
-          dangerouslySetInnerHTML={{
-            __html: `(function(){try{var t=localStorage.getItem('traguin-theme');if(t==='light'||t==='dark'){document.documentElement.setAttribute('data-theme',t)}else{document.documentElement.setAttribute('data-theme',window.matchMedia('(prefers-color-scheme: light)').matches?'light':'dark')}}catch(e){document.documentElement.setAttribute('data-theme','dark')}})();`,
-          }}
-        />
+        <script dangerouslySetInnerHTML={{ __html: themeInitScript }} />
       </head>
-      <body className="min-h-full flex flex-col bg-background font-body text-foreground antialiased">
+      <body
+        suppressHydrationWarning
+        className="min-h-full flex flex-col bg-background font-body text-foreground antialiased"
+      >
         <ThemeProvider>
+          <ThreeInit />
+          <DevChunkRecovery />
           <LenisProvider>
             <Navigation />
             <PageTransition>{children}</PageTransition>
             <Footer />
+            <WhatsAppFloat />
           </LenisProvider>
         </ThemeProvider>
       </body>

@@ -1,6 +1,7 @@
 "use client";
 
 import { Suspense, useRef, useMemo, useState, useCallback } from "react";
+import { r3fOnCreated } from "@/lib/r3fClock";
 import { Canvas, useFrame, ThreeEvent } from "@react-three/fiber";
 import { Sphere, Stars, OrbitControls, Billboard, Text } from "@react-three/drei";
 import * as THREE from "three";
@@ -310,6 +311,7 @@ export function Globe({
         gl={{ antialias: true, alpha: true, powerPreference: "high-performance" }}
         dpr={[1, 1.75]}
         style={{ cursor: "inherit" }}
+        onCreated={r3fOnCreated}
       >
         <Suspense fallback={null}>
           <GlobeScene
@@ -329,7 +331,11 @@ export function LoadingGlobe({ progress }: { progress: number }) {
 
   return (
     <div className="h-full w-full">
-      <Canvas camera={{ position: [0, 0, 5], fov: 45 }} gl={{ antialias: true, alpha: true }}>
+      <Canvas
+        camera={{ position: [0, 0, 5], fov: 45 }}
+        gl={{ antialias: true, alpha: true }}
+        onCreated={r3fOnCreated}
+      >
         <ambientLight intensity={0.4} />
         <directionalLight position={[5, 3, 5]} intensity={1.4} />
         <Suspense fallback={null}>

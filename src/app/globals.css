@@ -219,6 +219,20 @@ body {
   border: 1px solid var(--glass-strong-border);
 }
 
+input[type="date"] {
+  position: relative;
+}
+
+input[type="date"]::-webkit-calendar-picker-indicator {
+  cursor: pointer;
+  opacity: 0.85;
+  filter: invert(72%) sepia(48%) saturate(500%) hue-rotate(6deg);
+}
+
+[data-theme="light"] input[type="date"]::-webkit-calendar-picker-indicator {
+  filter: invert(42%) sepia(80%) saturate(600%) hue-rotate(6deg);
+}
+
 .logo-wrap {
   display: inline-flex;
   border-radius: 0.5rem;

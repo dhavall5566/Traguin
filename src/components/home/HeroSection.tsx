@@ -1,14 +1,13 @@
 "use client";
 
 import { useState, useMemo } from "react";
+import { useRouter } from "next/navigation";
 import dynamic from "next/dynamic";
 import { ChevronDown } from "lucide-react";
 import { destinations } from "@/data/destinations";
 import { getPackagesForCityId } from "@/lib/packages";
 import type { GlobeMarker } from "@/components/three/Globe";
-import type { TravelPackage } from "@/types";
 import { CityPackagesPanel } from "@/components/globe/CityPackagesPanel";
-import { PackageDetailModal } from "@/components/packages/PackageDetailModal";
 
 const Globe = dynamic(
   () => import("@/components/three").then((m) => m.Globe),
@@ -26,8 +25,8 @@ const FloatingParticles = dynamic(
 );
 
 export function HeroSection() {
+  const router = useRouter();
   const [activeCity, setActiveCity] = useState<GlobeMarker | null>(null);
-  const [detailPackage, setDetailPackage] = useState<TravelPackage | null>(null);
 
   const markers: GlobeMarker[] = useMemo(
     () =>
@@ -50,17 +49,11 @@ export function HeroSection() {
 
   return (
     <section className="relative min-h-[100svh] overflow-hidden">
-      {detailPackage && (
-        <PackageDetailModal
-          pkg={detailPackage}
-          onClose={() => setDetailPackage(null)}
-        />
-      )}
-
+      <h1 className="sr-only">Traguin — Extraordinary luxury journeys crafted for you</h1>
       <div className="absolute inset-0 bg-background" />
       <div className="hero-glow absolute inset-0" />
 
-      <div className="absolute inset-x-0 bottom-0 top-20 md:top-24">
+      <div className="absolute inset-x-0 bottom-0 top-16 md:top-20">
         <Globe
           autoRotate
           interactive
@@ -73,20 +66,16 @@ export function HeroSection() {
 
       <FloatingParticles className="pointer-events-none absolute inset-0 opacity-20" />
 
-      <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-background/30 via-transparent to-background/60" />
-
-      <div className="pointer-events-none absolute top-28 left-1/2 z-10 -translate-x-1/2 md:top-32">
-        <p className="text-[10px] tracking-[0.35em] text-sand/90 uppercase">
-          Drag to rotate · Click a city tag for packages
-        </p>
-      </div>
+      <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-background/20 via-transparent to-background/60" />
 
       {activeCity && (
         <CityPackagesPanel
           city={activeCity}
           packages={cityPackages}
           onClose={() => setActiveCity(null)}
-          onPackageClick={setDetailPackage}
+          onPackageClick={() => {
+            if (activeCity) router.push(`/destinations/${activeCity.id}`);
+          }}
         />
       )}
 

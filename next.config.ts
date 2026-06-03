@@ -1,6 +1,18 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
+  async redirects() {
+    return [
+      { source: "/hotels", destination: "/luxury-stays", permanent: true },
+      { source: "/always-on-demand", destination: "/concierge", permanent: true },
+      { source: "/packages", destination: "/destinations", permanent: true },
+      { source: "/packages/domestic", destination: "/destinations", permanent: true },
+      { source: "/packages/international", destination: "/destinations", permanent: true },
+      { source: "/experiences", destination: "/destinations", permanent: true },
+      { source: "/experiences/:path*", destination: "/destinations", permanent: true },
+      { source: "/itineraries", destination: "/destinations", permanent: true },
+    ];
+  },
   images: {
     remotePatterns: [
       { protocol: "https", hostname: "images.unsplash.com" },

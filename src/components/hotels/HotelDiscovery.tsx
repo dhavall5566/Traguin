@@ -10,7 +10,7 @@ import {
   X,
 } from "lucide-react";
 import { hotels } from "@/data/hotels";
-import { formatPrice } from "@/lib/utils";
+import { PriceDisplay } from "@/components/ui/PriceDisplay";
 import { cn } from "@/lib/utils";
 import { SafeImage } from "@/components/ui/SafeImage";
 import { MagneticButton } from "@/components/ui/MagneticButton";
@@ -20,11 +20,30 @@ export function HotelDiscovery() {
   const [wishlist, setWishlist] = useState<string[]>([]);
   const [compare, setCompare] = useState<string[]>([]);
   const [preview, setPreview] = useState<(typeof hotels)[0] | null>(null);
-  const [regionFilter, setRegionFilter] = useState<"all" | "domestic" | "international">("all");
+  const [countryFilter, setCountryFilter] = useState<string>("all");
+  const [priceFilter, setPriceFilter] = useState<string>("all");
+  const [amenityFilter, setAmenityFilter] = useState<string>("all");
+  const [typeFilter, setTypeFilter] = useState<string>("all");
 
-  const filtered = hotels.filter(
-    (h) => regionFilter === "all" || h.region === regionFilter
-  );
+  const countries = ["all", ...new Set(hotels.map((h) => h.destination))];
+  const amenityOptions = ["all", ...new Set(hotels.flatMap((h) => h.amenities))].slice(0, 8);
+  const propertyTypes = ["all", "Resort", "Hotel", "Villa", "Palace"];
+
+  const filtered = hotels.filter((h) => {
+    if (countryFilter !== "all" && h.destination !== countryFilter) return false;
+    if (priceFilter === "under50" && h.price >= 50000) return false;
+    if (priceFilter === "50-100" && (h.price < 50000 || h.price > 100000)) return false;
+    if (priceFilter === "over100" && h.price <= 100000) return false;
+    if (amenityFilter !== "all" && !h.amenities.some((a) => a.includes(amenityFilter))) return false;
+    if (typeFilter !== "all") {
+      const name = h.name.toLowerCase();
+      if (typeFilter === "Resort" && !name.includes("resort") && !name.includes("aman")) return false;
+      if (typeFilter === "Villa" && !name.includes("villa")) return false;
+      if (typeFilter === "Palace" && !name.includes("palace")) return false;
+      if (typeFilter === "Hotel" && (name.includes("villa") || name.includes("palace"))) return false;
+    }
+    return true;
+  });
 
   return (
     <div className="min-h-screen pt-32 pb-20">
@@ -32,27 +51,81 @@ export function HotelDiscovery() {
         <div className="mx-auto max-w-7xl">
           <p className="text-xs tracking-[0.3em] text-gold uppercase">Accommodations</p>
           <h1 className="mt-2 font-display text-5xl text-foreground md:text-7xl">
-            Luxury Hotels
+            Luxury Stays
           </h1>
           <p className="mt-4 max-w-xl text-muted">
             Discover handpicked properties where exceptional service meets extraordinary settings.
           </p>
 
-          <div className="mt-10 flex flex-wrap items-center gap-4">
-            {(["all", "domestic", "international"] as const).map((r) => (
-              <button
-                key={r}
-                onClick={() => setRegionFilter(r)}
-                className={cn(
-                  "rounded-full px-4 py-2 text-xs capitalize transition-all",
-                  regionFilter === r
-                    ? "bg-gold text-on-gold"
-                    : "glass text-foreground hover:border-gold/30"
-                )}
-              >
-                {r === "all" ? "All Regions" : r}
-              </button>
-            ))}
+          <div className="mt-10 space-y-4">
+            <div className="flex flex-wrap gap-2">
+              <span className="w-full text-[10px] tracking-wide text-muted uppercase sm:w-auto sm:mr-2 sm:self-center">Country</span>
+              {countries.map((c) => (
+                <button
+                  key={c}
+                  onClick={() => setCountryFilter(c)}
+                  className={cn(
+                    "rounded-full px-3 py-1.5 text-xs transition-all",
+                    countryFilter === c ? "bg-gold text-on-gold" : "glass text-muted hover:border-gold/30"
+                  )}
+                >
+                  {c === "all" ? "All" : c}
+                </button>
+              ))}
+            </div>
+            <div className="flex flex-wrap gap-2">
+              <span className="w-full text-[10px] tracking-wide text-muted uppercase sm:w-auto sm:mr-2 sm:self-center">Type</span>
+              {propertyTypes.map((t) => (
+                <button
+                  key={t}
+                  onClick={() => setTypeFilter(t)}
+                  className={cn(
+                    "rounded-full px-3 py-1.5 text-xs transition-all",
+                    typeFilter === t ? "bg-gold text-on-gold" : "glass text-muted hover:border-gold/30"
+                  )}
+                >
+                  {t === "all" ? "All Types" : t}
+                </button>
+              ))}
+            </div>
+            <div className="flex flex-wrap gap-2">
+              <span className="w-full text-[10px] tracking-wide text-muted uppercase sm:w-auto sm:mr-2 sm:self-center">Price</span>
+              {[
+                { id: "all", label: "All" },
+                { id: "under50", label: "Under ₹50K" },
+                { id: "50-100", label: "₹50K–₹1L" },
+                { id: "over100", label: "₹1L+" },
+              ].map((p) => (
+                <button
+                  key={p.id}
+                  onClick={() => setPriceFilter(p.id)}
+                  className={cn(
+                    "rounded-full px-3 py-1.5 text-xs transition-all",
+                    priceFilter === p.id ? "bg-gold text-on-gold" : "glass text-muted hover:border-gold/30"
+                  )}
+                >
+                  {p.label}
+                </button>
+              ))}
+            </div>
+            <div className="flex flex-wrap gap-2">
+              <span className="w-full text-[10px] tracking-wide text-muted uppercase sm:w-auto sm:mr-2 sm:self-center">Amenities</span>
+              {amenityOptions.map((a) => (
+                <button
+                  key={a}
+                  onClick={() => setAmenityFilter(a)}
+                  className={cn(
+                    "rounded-full px-3 py-1.5 text-xs transition-all max-w-[10rem] truncate",
+                    amenityFilter === a ? "bg-gold text-on-gold" : "glass text-muted hover:border-gold/30"
+                  )}
+                >
+                  {a === "all" ? "All" : a}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          <div className="mt-6 flex flex-wrap items-center gap-4">
 
             <div className="ml-auto flex gap-2">
               <button
@@ -142,15 +215,13 @@ export function HotelDiscovery() {
                       ))}
                     </div>
                     <div className="mt-4 flex items-center justify-between">
-                      <p className="font-display text-lg text-gold">
-                        {formatPrice(hotel.price)}<span className="text-xs text-muted">/night</span>
-                      </p>
+                      <PriceDisplay amount={hotel.price} label="From" size="md" suffix="/night" />
                       <MagneticButton
                         variant="secondary"
                         className="!px-4 !py-2 !text-xs"
                         onClick={() => setPreview(hotel)}
                       >
-                        Quick View
+                        View Property
                       </MagneticButton>
                     </div>
                   </div>
@@ -190,11 +261,11 @@ export function HotelDiscovery() {
                   <span key={a} className="glass rounded-full px-3 py-1 text-xs">{a}</span>
                 ))}
               </div>
-              <p className="mt-6 font-display text-2xl text-gold">
-                {formatPrice(preview.price)}/night
-              </p>
+              <div className="mt-6">
+                <PriceDisplay amount={preview.price} label="From" size="lg" suffix="/night" />
+              </div>
               <MagneticButton as="a" href="/contact" variant="primary" className="mt-6">
-                Book This Hotel
+                View Property
               </MagneticButton>
             </div>
           </div>

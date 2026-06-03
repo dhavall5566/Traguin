@@ -1,0 +1,1036 @@
+[
+  {
+    "slug": "bali-soul-retreat",
+    "packageId": "bali-romantic-7d",
+    "destinationId": "bali",
+    "title": "Bali Soul Retreat",
+    "destination": "Bali",
+    "region": "international",
+    "duration": "7 Days / 6 Nights",
+    "durationDays": 7,
+    "startingPrice": 189000,
+    "priceNote": "Per couple, private villa category",
+    "heroImage": "https://images.pexels.com/photos/3608263/pexels-photo-3608263.jpeg?auto=compress&cs=tinysrgb&w=1920",
+    "tagline": "Romance, wellness, and island serenity",
+    "overview": "A carefully paced Bali journey blending private villa living, temple culture, and restorative spa rituals — designed for couples seeking intimacy without compromise.",
+    "highlights": [
+      "Private cliffside villa with infinity pool",
+      "Sunrise temple ceremony with local guide",
+      "Couples spa ritual at award-winning sanctuary",
+      "Michelin-recommended dining experiences"
+    ],
+    "featured": true,
+    "featuredOrder": 1,
+    "days": [
+      {
+        "day": 1,
+        "title": "Arrival in Ubud",
+        "description": "VIP airport transfer to your private villa. Evening welcome dinner overlooking the rice terraces.",
+        "activities": ["VIP transfer", "Villa check-in", "Welcome dinner"]
+      },
+      {
+        "day": 2,
+        "title": "Temple & Culture",
+        "description": "Sunrise visit to an ancient water temple followed by a private cultural immersion with a local artisan.",
+        "activities": ["Sunrise temple", "Artisan workshop", "Afternoon at leisure"]
+      },
+      {
+        "day": 3,
+        "title": "Wellness Ritual",
+        "description": "Full-day couples spa program with traditional Balinese healing and organic lunch.",
+        "activities": ["Spa ritual", "Organic lunch", "Sunset cocktails"]
+      },
+      {
+        "day": 4,
+        "title": "Coastal Escape",
+        "description": "Transfer to the south coast for beachfront relaxation and private cabana dining.",
+        "activities": ["Coastal transfer", "Beach club access", "Private dinner"]
+      },
+      {
+        "day": 5,
+        "title": "Island Discovery",
+        "description": "Private yacht excursion to neighboring islands with snorkeling and gourmet picnic.",
+        "activities": ["Private yacht", "Snorkeling", "Island picnic"]
+      },
+      {
+        "day": 6,
+        "title": "Leisure & Farewell",
+        "description": "Unstructured day for pool, beach, or optional cooking masterclass. Farewell degustation menu.",
+        "activities": ["Optional cooking class", "Pool & beach", "Farewell dinner"]
+      },
+      {
+        "day": 7,
+        "title": "Departure",
+        "description": "Late checkout and private transfer to the airport with departure lounge access.",
+        "activities": ["Late checkout", "Airport transfer"]
+      }
+    ],
+    "hotels": [
+      {
+        "name": "Amandari Ubud",
+        "location": "Ubud, Bali",
+        "nights": "3 Nights",
+        "image": "https://images.pexels.com/photos/3608263/pexels-photo-3608263.jpeg?auto=compress&cs=tinysrgb&w=800",
+        "description": "Clifftop sanctuary immersed in rice paddies with private pools and impeccable service.",
+        "stars": 5
+      },
+      {
+        "name": "Bulgari Resort Bali",
+        "location": "Uluwatu, Bali",
+        "nights": "3 Nights",
+        "image": "https://images.pexels.com/photos/1450360/pexels-photo-1450360.jpeg?auto=compress&cs=tinysrgb&w=800",
+        "description": "Dramatic clifftop villas overlooking the Indian Ocean with world-class dining.",
+        "stars": 5
+      }
+    ],
+    "included": [
+      "Private airport transfers",
+      "Luxury accommodation as specified",
+      "Daily breakfast and selected meals",
+      "Private guides and experiences listed",
+      "Dedicated Traguin concierge"
+    ],
+    "excluded": [
+      "International flights",
+      "Travel insurance",
+      "Personal expenses and gratuities",
+      "Visa fees where applicable"
+    ],
+    "gallery": [
+      "https://images.pexels.com/photos/3608263/pexels-photo-3608263.jpeg?auto=compress&cs=tinysrgb&w=1200",
+      "https://images.pexels.com/photos/1024993/pexels-photo-1024993.jpeg?auto=compress&cs=tinysrgb&w=1200",
+      "https://images.pexels.com/photos/1450360/pexels-photo-1450360.jpeg?auto=compress&cs=tinysrgb&w=1200",
+      "https://images.pexels.com/photos/248797/pexels-photo-248797.jpeg?auto=compress&cs=tinysrgb&w=1200"
+    ],
+    "faq": [
+      {
+        "question": "Is this itinerary suitable for honeymoons?",
+        "answer": "Absolutely. This journey is our most requested honeymoon program and can be customized with private ceremonies."
+      },
+      {
+        "question": "Can we extend our stay?",
+        "answer": "Yes. Additional nights in Ubud or the coast can be arranged with preferred partner rates."
+      },
+      {
+        "question": "What is the best time to travel?",
+        "answer": "April through October offers the finest weather, though Bali is rewarding year-round with our wet-season alternatives."
+      }
+    ],
+    "seo": {
+      "title": "Bali Soul Retreat — 7 Day Luxury Itinerary",
+      "description": "A 7-day luxury Bali itinerary with private villas, temple experiences, and couples wellness."
+    }
+  },
+  {
+    "slug": "swiss-alpine-grand-tour",
+    "packageId": "swiss-alpine-8d",
+    "destinationId": "switzerland",
+    "title": "Swiss Alpine Grand Tour",
+    "destination": "Switzerland",
+    "region": "international",
+    "duration": "8 Days / 7 Nights",
+    "durationDays": 8,
+    "startingPrice": 425000,
+    "priceNote": "Per person, first-class rail & 5-star hotels",
+    "heroImage": "https://images.pexels.com/photos/417173/pexels-photo-417173.jpeg?auto=compress&cs=tinysrgb&w=1920",
+    "tagline": "Glacier express, alpine peaks, and European refinement",
+    "overview": "Traverse Switzerland's most breathtaking landscapes aboard the Glacier Express, with stays at legendary palace hotels and private alpine experiences.",
+    "highlights": [
+      "Glacier Express first-class compartment",
+      "Matterhorn views from Zermatt",
+      "Michelin dining in Lucerne",
+      "Private lake cruise on Lake Geneva"
+    ],
+    "featured": true,
+    "featuredOrder": 2,
+    "days": [
+      {
+        "day": 1,
+        "title": "Zurich Arrival",
+        "description": "Private transfer to lakeside hotel. Evening fondue experience in the old town.",
+        "activities": ["Airport transfer", "Old town walk", "Fondue dinner"]
+      },
+      {
+        "day": 2,
+        "title": "Lucerne & Pilatus",
+        "description": "Lake cruise and cogwheel railway to Mount Pilatus with panoramic lunch.",
+        "activities": ["Lake cruise", "Mount Pilatus", "Gourmet lunch"]
+      },
+      {
+        "day": 3,
+        "title": "Glacier Express",
+        "description": "First-class Glacier Express journey through the Alps to Zermatt.",
+        "activities": ["Glacier Express", "Scenic lunch", "Zermatt arrival"]
+      },
+      {
+        "day": 4,
+        "title": "Matterhorn Day",
+        "description": "Gornergrat railway and private alpine photography session at golden hour.",
+        "activities": ["Gornergrat", "Photography session", "Alpine dinner"]
+      },
+      {
+        "day": 5,
+        "title": "Montreux",
+        "description": "Scenic transfer to the Riviera. Château visit and wine tasting.",
+        "activities": ["Scenic transfer", "Château tour", "Wine tasting"]
+      },
+      {
+        "day": 6,
+        "title": "Geneva",
+        "description": "Private city tour, watchmaking atelier visit, and lakeside Michelin dinner.",
+        "activities": ["City tour", "Atelier visit", "Michelin dinner"]
+      },
+      {
+        "day": 7,
+        "title": "Leisure Day",
+        "description": "Flexible day for shopping, spa, or optional Bern excursion.",
+        "activities": ["Spa or shopping", "Optional Bern", "Farewell dinner"]
+      },
+      {
+        "day": 8,
+        "title": "Departure",
+        "description": "Private transfer to Geneva airport with VIP assistance.",
+        "activities": ["VIP airport assist", "Departure"]
+      }
+    ],
+    "hotels": [
+      {
+        "name": "Badrutt's Palace",
+        "location": "St. Moritz",
+        "nights": "2 Nights",
+        "image": "https://images.pexels.com/photos/417173/pexels-photo-417173.jpeg?auto=compress&cs=tinysrgb&w=800",
+        "description": "Legendary lakeside palace synonymous with Swiss alpine glamour.",
+        "stars": 5
+      },
+      {
+        "name": "Mont Cervin Palace",
+        "location": "Zermatt",
+        "nights": "2 Nights",
+        "image": "https://images.pexels.com/photos/1365425/pexels-photo-1365425.jpeg?auto=compress&cs=tinysrgb&w=800",
+        "description": "Matterhorn-facing icon with exceptional dining and spa.",
+        "stars": 5
+      }
+    ],
+    "included": [
+      "First-class rail segments",
+      "5-star hotel accommodation",
+      "Private transfers throughout",
+      "Guided experiences as listed",
+      "Traguin concierge support"
+    ],
+    "excluded": [
+      "International flights",
+      "Travel insurance",
+      "Ski equipment rental",
+      "Meals not specified"
+    ],
+    "gallery": [
+      "https://images.pexels.com/photos/417173/pexels-photo-417173.jpeg?auto=compress&cs=tinysrgb&w=1200",
+      "https://images.pexels.com/photos/1365425/pexels-photo-1365425.jpeg?auto=compress&cs=tinysrgb&w=1200",
+      "https://images.pexels.com/photos/271624/pexels-photo-271624.jpeg?auto=compress&cs=tinysrgb&w=1200"
+    ],
+    "faq": [
+      {
+        "question": "Do I need a Schengen visa?",
+        "answer": "Most travelers require a Schengen visa. Our team provides invitation letters and documentation support."
+      },
+      {
+        "question": "Is the Glacier Express pre-booked?",
+        "answer": "Yes. We secure first-class seats with panoramic windows well in advance."
+      }
+    ],
+    "seo": {
+      "title": "Swiss Alpine Grand Tour — 8 Day Itinerary",
+      "description": "Luxury 8-day Switzerland itinerary featuring Glacier Express, Zermatt, and palace hotels."
+    }
+  },
+  {
+    "slug": "kerala-backwater-odyssey",
+    "packageId": "kerala-backwater-5d",
+    "destinationId": "kerala",
+    "title": "Kerala Backwater Odyssey",
+    "destination": "Kerala",
+    "region": "domestic",
+    "duration": "5 Days / 4 Nights",
+    "durationDays": 5,
+    "startingPrice": 89000,
+    "priceNote": "Per couple, luxury houseboat category",
+    "heroImage": "https://images.unsplash.com/photo-1717069541470-9b1a2b085e1f?ixlib=rb-4.1.0&auto=format&fit=crop&w=1920&q=80",
+    "tagline": "Backwaters, Ayurveda, and plantation serenity",
+    "overview": "Drift through Kerala's emerald backwaters aboard a luxury houseboat, with Ayurvedic wellness and plantation experiences woven into a restorative pace.",
+    "highlights": [
+      "Premium houseboat with private chef",
+      "Ayurvedic wellness consultation",
+      "Tea plantation private tour",
+      "Kathakali cultural performance"
+    ],
+    "featured": true,
+    "featuredOrder": 3,
+    "days": [
+      {
+        "day": 1,
+        "title": "Cochin Arrival",
+        "description": "Heritage hotel check-in. Sunset harbor cruise and seafood dinner.",
+        "activities": ["Transfer", "Harbor cruise", "Seafood dinner"]
+      },
+      {
+        "day": 2,
+        "title": "Backwater Embarkation",
+        "description": "Board luxury houseboat for overnight cruise through palm-fringed canals.",
+        "activities": ["Houseboat embark", "Canal cruise", "Onboard dinner"]
+      },
+      {
+        "day": 3,
+        "title": "Ayurveda & Culture",
+        "description": "Morning wellness treatment. Afternoon Kathakali performance in traditional theatre.",
+        "activities": ["Ayurveda session", "Kathakali show", "Local cuisine"]
+      },
+      {
+        "day": 4,
+        "title": "Munnar Plantations",
+        "description": "Scenic drive to hill station. Private tea estate tour and tasting.",
+        "activities": ["Scenic drive", "Tea estate", "Mountain lodge"]
+      },
+      {
+        "day": 5,
+        "title": "Departure",
+        "description": "Morning plantation walk and transfer to Cochin airport.",
+        "activities": ["Plantation walk", "Airport transfer"]
+      }
+    ],
+    "hotels": [
+      {
+        "name": "Brunton Boatyard",
+        "location": "Fort Kochi",
+        "nights": "1 Night",
+        "image": "https://images.unsplash.com/photo-1717069541470-9b1a2b085e1f?ixlib=rb-4.1.0&auto=format&fit=crop&w=800&q=80",
+        "description": "Heritage waterfront hotel with colonial charm and exceptional cuisine.",
+        "stars": 5
+      },
+      {
+        "name": "Luxury Houseboat",
+        "location": "Alleppey Backwaters",
+        "nights": "1 Night",
+        "image": "https://images.pexels.com/photos/1287145/pexels-photo-1287145.jpeg?auto=compress&cs=tinysrgb&w=800",
+        "description": "Air-conditioned premium houseboat with private chef and sundeck.",
+        "stars": 5
+      }
+    ],
+    "included": [
+      "Accommodation and houseboat as listed",
+      "All meals on houseboat",
+      "Private transfers",
+      "Ayurveda session and cultural show",
+      "Dedicated concierge"
+    ],
+    "excluded": [
+      "Flights to Cochin",
+      "Additional spa treatments",
+      "Personal expenses"
+    ],
+    "gallery": [
+      "https://images.unsplash.com/photo-1717069541470-9b1a2b085e1f?ixlib=rb-4.1.0&auto=format&fit=crop&w=1200&q=80",
+      "https://images.pexels.com/photos/1287145/pexels-photo-1287145.jpeg?auto=compress&cs=tinysrgb&w=1200"
+    ],
+    "faq": [
+      {
+        "question": "Is the houseboat air-conditioned?",
+        "answer": "Yes. Our premium category houseboats feature fully air-conditioned bedrooms and ensuite bathrooms."
+      }
+    ],
+    "seo": {
+      "title": "Kerala Backwater Odyssey — 5 Day Itinerary",
+      "description": "Luxury Kerala itinerary with houseboat, Ayurveda, and tea plantations."
+    }
+  },
+  {
+    "slug": "dubai-opulence",
+    "packageId": "dubai-luxury-5d",
+    "destinationId": "dubai",
+    "title": "Dubai Opulence",
+    "destination": "Dubai",
+    "region": "international",
+    "duration": "5 Days / 4 Nights",
+    "durationDays": 5,
+    "startingPrice": 245000,
+    "priceNote": "Per couple, suite category",
+    "heroImage": "https://images.unsplash.com/photo-1512453979798-5ea266f8880c?ixlib=rb-4.1.0&auto=format&fit=crop&w=1920&q=80",
+    "tagline": "Skyline splendor and desert adventures",
+    "overview": "Experience Dubai at its most extravagant — iconic suites, private desert safaris, and helicopter perspectives over a city built for wonder.",
+    "highlights": [
+      "Iconic sail-shaped suite experience",
+      "Private desert safari with falcon show",
+      "Helicopter city tour",
+      "VIP mall and dining access"
+    ],
+    "featured": true,
+    "featuredOrder": 4,
+    "days": [
+      {
+        "day": 1,
+        "title": "Arrival & Marina",
+        "description": "VIP airport meet-and-greet. Evening yacht dinner along Dubai Marina.",
+        "activities": ["VIP arrival", "Yacht dinner", "Marina views"]
+      },
+      {
+        "day": 2,
+        "title": "Desert Safari",
+        "description": "Private 4x4 desert expedition with falconry, dining under stars.",
+        "activities": ["Private safari", "Falcon show", "Desert dinner"]
+      },
+      {
+        "day": 3,
+        "title": "Sky Perspectives",
+        "description": "Helicopter tour over Palm Jumeirah and Burj Khalifa. Afternoon at leisure.",
+        "activities": ["Helicopter tour", "At leisure", "Rooftop cocktails"]
+      },
+      {
+        "day": 4,
+        "title": "Culture & Cuisine",
+        "description": "Old Dubai walking tour with private guide. Michelin-starred dinner.",
+        "activities": ["Old Dubai tour", "Gold souk", "Michelin dinner"]
+      },
+      {
+        "day": 5,
+        "title": "Departure",
+        "description": "Spa morning and private transfer to airport.",
+        "activities": ["Spa session", "Airport transfer"]
+      }
+    ],
+    "hotels": [
+      {
+        "name": "Burj Al Arab Jumeirah",
+        "location": "Dubai",
+        "nights": "4 Nights",
+        "image": "https://images.unsplash.com/photo-1512453979798-5ea266f8880c?ixlib=rb-4.1.0&auto=format&fit=crop&w=800&q=80",
+        "description": "The world's most iconic hotel with butler service and underwater dining.",
+        "stars": 5
+      }
+    ],
+    "included": [
+      "Suite accommodation",
+      "Private transfers and experiences",
+      "Selected meals",
+      "Helicopter tour",
+      "Concierge throughout"
+    ],
+    "excluded": [
+      "International flights",
+      "Travel insurance",
+      "Shopping and personal expenses"
+    ],
+    "gallery": [
+      "https://images.unsplash.com/photo-1512453979798-5ea266f8880c?ixlib=rb-4.1.0&auto=format&fit=crop&w=1200&q=80",
+      "https://images.pexels.com/photos/1365425/pexels-photo-1365425.jpeg?auto=compress&cs=tinysrgb&w=1200"
+    ],
+    "faq": [
+      {
+        "question": "What dress code applies for desert dining?",
+        "answer": "Smart casual is recommended. We provide guidance on seasonal temperatures and attire."
+      }
+    ],
+    "seo": {
+      "title": "Dubai Opulence — 5 Day Luxury Itinerary",
+      "description": "5-day Dubai luxury itinerary with Burj Al Arab, desert safari, and helicopter tour."
+    }
+  },
+  {
+    "slug": "kashmir-paradise",
+    "packageId": "kashmir-paradise-6d",
+    "destinationId": "kashmir",
+    "title": "Kashmir Paradise",
+    "destination": "Kashmir",
+    "region": "domestic",
+    "duration": "6 Days / 5 Nights",
+    "durationDays": 6,
+    "startingPrice": 78000,
+    "priceNote": "Per couple, heritage houseboat",
+    "heroImage": "https://images.pexels.com/photos/6738359/pexels-photo-6738359.jpeg?auto=compress&cs=tinysrgb&w=1920",
+    "tagline": "Dal Lake, alpine meadows, and timeless romance",
+    "overview": "Discover Kashmir's legendary beauty with shikara mornings on Dal Lake, Gulmarg's gondola, and heritage houseboat evenings.",
+    "highlights": [
+      "Dal Lake shikara at sunrise",
+      "Gulmarg gondola experience",
+      "Heritage houseboat stay",
+      "Mughal garden private tour"
+    ],
+    "featured": false,
+    "days": [
+      {
+        "day": 1,
+        "title": "Srinagar Arrival",
+        "description": "Houseboat check-in on Dal Lake. Evening kahwa and traditional Wazwan tasting.",
+        "activities": ["Houseboat check-in", "Wazwan dinner"]
+      },
+      {
+        "day": 2,
+        "title": "Dal Lake & Gardens",
+        "description": "Sunrise shikara ride and private Mughal garden tour with historian guide.",
+        "activities": ["Shikara ride", "Mughal gardens", "Local market"]
+      },
+      {
+        "day": 3,
+        "title": "Gulmarg",
+        "description": "Scenic drive to Gulmarg. Gondola ride and alpine lunch.",
+        "activities": ["Gulmarg drive", "Gondola", "Alpine lunch"]
+      },
+      {
+        "day": 4,
+        "title": "Pahalgam",
+        "description": "Valley excursion with riverside picnic and optional pony trek.",
+        "activities": ["Valley drive", "Riverside picnic", "Leisure"]
+      },
+      {
+        "day": 5,
+        "title": "Srinagar Leisure",
+        "description": "Spa day and shopping for Pashmina with expert guide.",
+        "activities": ["Spa", "Pashmina atelier", "Farewell dinner"]
+      },
+      {
+        "day": 6,
+        "title": "Departure",
+        "description": "Morning lake views and airport transfer.",
+        "activities": ["Lake morning", "Transfer"]
+      }
+    ],
+    "hotels": [
+      {
+        "name": "Heritage Houseboat",
+        "location": "Dal Lake, Srinagar",
+        "nights": "3 Nights",
+        "image": "https://images.pexels.com/photos/6738359/pexels-photo-6738359.jpeg?auto=compress&cs=tinysrgb&w=800",
+        "description": "Hand-carved cedar houseboat with lake views and traditional hospitality.",
+        "stars": 5
+      }
+    ],
+    "included": [
+      "Houseboat and hotel stays",
+      "Private transfers",
+      "Experiences listed",
+      "Selected meals",
+      "Concierge"
+    ],
+    "excluded": [
+      "Flights to Srinagar",
+      "Gondola tickets beyond included tier",
+      "Personal expenses"
+    ],
+    "gallery": [
+      "https://images.pexels.com/photos/6738359/pexels-photo-6738359.jpeg?auto=compress&cs=tinysrgb&w=1200"
+    ],
+    "faq": [
+      {
+        "question": "When is the best season?",
+        "answer": "April to October for meadows and lakes; December to February for snow experiences in Gulmarg."
+      }
+    ],
+    "seo": {
+      "title": "Kashmir Paradise — 6 Day Itinerary",
+      "description": "6-day Kashmir luxury itinerary with Dal Lake houseboat and Gulmarg."
+    }
+  },
+  {
+    "slug": "thailand-beach-6d",
+    "packageId": "thailand-beach-6d",
+    "destinationId": "thailand",
+    "title": "Thailand Island Escape",
+    "destination": "Thailand",
+    "region": "international",
+    "duration": "6 Days / 5 Nights",
+    "durationDays": 6,
+    "startingPrice": 156000,
+    "priceNote": "Per couple, beachfront resort category",
+    "heroImage": "https://images.unsplash.com/photo-1552465011-b4e21bf6e79a?ixlib=rb-4.1.0&auto=format&fit=crop&w=1920&q=80",
+    "tagline": "Golden temples, turquoise waters, island serenity",
+    "overview": "From Bangkok's culinary artistry to Andaman shores — private island hops, hands-on Thai cooking, and beachfront luxury paced for pure relaxation.",
+    "highlights": [
+      "Private island hopping in the Andaman Sea",
+      "Thai cooking masterclass with a renowned chef",
+      "Beachfront five-star resort stay",
+      "Guided temple and market immersions"
+    ],
+    "featured": true,
+    "featuredOrder": 5,
+    "days": [
+      {
+        "day": 1,
+        "title": "Bangkok Arrival",
+        "description": "VIP airport greeting and transfer to riverside luxury hotel. Evening Michelin-inspired Thai dinner.",
+        "activities": ["VIP transfer", "Hotel check-in", "Welcome dinner"]
+      },
+      {
+        "day": 2,
+        "title": "Temples & Street Flavors",
+        "description": "Private guided tour of iconic temples followed by an expert-led street food discovery.",
+        "activities": ["Temple tour", "Food walk", "Riverside cocktails"]
+      },
+      {
+        "day": 3,
+        "title": "Coastal Transfer",
+        "description": "Scenic flight to the coast. Afternoon beach club access and sunset seafood dinner.",
+        "activities": ["Domestic flight", "Beach club", "Sunset dinner"]
+      },
+      {
+        "day": 4,
+        "title": "Private Island Hopping",
+        "description": "Full-day private longtail or speedboat excursion to hidden islands with snorkelling and picnic.",
+        "activities": ["Island hopping", "Snorkelling", "Gourmet picnic"]
+      },
+      {
+        "day": 5,
+        "title": "Cooking & Leisure",
+        "description": "Morning Thai cooking masterclass. Afternoon spa or pool time at your resort.",
+        "activities": ["Cooking class", "Spa treatment", "Beach leisure"]
+      },
+      {
+        "day": 6,
+        "title": "Departure",
+        "description": "Leisurely breakfast and private transfer to the airport.",
+        "activities": ["Late checkout", "Airport transfer"]
+      }
+    ],
+    "hotels": [
+      {
+        "name": "Mandarin Oriental Bangkok",
+        "location": "Bangkok",
+        "nights": "2 Nights",
+        "image": "https://images.unsplash.com/photo-1552465011-b4e21bf6e79a?ixlib=rb-4.1.0&auto=format&fit=crop&w=800&q=80",
+        "description": "Legendary riverside address with exceptional dining and butler service.",
+        "stars": 5
+      },
+      {
+        "name": "Beachfront Luxury Resort",
+        "location": "Phuket / Krabi",
+        "nights": "3 Nights",
+        "image": "https://images.pexels.com/photos/1450360/pexels-photo-1450360.jpeg?auto=compress&cs=tinysrgb&w=800",
+        "description": "Private beach access, ocean-view suites, and world-class spa.",
+        "stars": 5
+      }
+    ],
+    "included": [
+      "Luxury accommodation as specified",
+      "Domestic flight Bangkok–coast",
+      "Private tours and island excursion",
+      "Cooking masterclass",
+      "Airport transfers and concierge"
+    ],
+    "excluded": [
+      "International flights",
+      "Travel insurance",
+      "Personal expenses",
+      "Visa fees"
+    ],
+    "gallery": [
+      "https://images.unsplash.com/photo-1552465011-b4e21bf6e79a?ixlib=rb-4.1.0&auto=format&fit=crop&w=1200&q=80",
+      "https://images.pexels.com/photos/1450360/pexels-photo-1450360.jpeg?auto=compress&cs=tinysrgb&w=1200",
+      "https://images.pexels.com/photos/3608263/pexels-photo-3608263.jpeg?auto=compress&cs=tinysrgb&w=1200"
+    ],
+    "faq": [
+      {
+        "question": "Which coast do you recommend?",
+        "answer": "We tailor Phuket, Krabi, or Koh Samui based on season and your preference for nightlife versus seclusion."
+      },
+      {
+        "question": "Is the island tour private?",
+        "answer": "Yes — your boat, captain, and guide are reserved exclusively for your party."
+      }
+    ],
+    "seo": {
+      "title": "Thailand Island Escape — 6 Day Itinerary",
+      "description": "6-day Thailand luxury itinerary with Bangkok, private islands, and beach resort."
+    }
+  },
+  {
+    "slug": "goa-coastal-4d",
+    "packageId": "goa-coastal-4d",
+    "destinationId": "goa",
+    "title": "Goa Coastal Luxe",
+    "destination": "Goa",
+    "region": "domestic",
+    "duration": "4 Days / 3 Nights",
+    "durationDays": 4,
+    "startingPrice": 65000,
+    "priceNote": "Per couple, boutique beach category",
+    "heroImage": "https://images.pexels.com/photos/248797/pexels-photo-248797.jpeg?auto=compress&cs=tinysrgb&w=1920",
+    "tagline": "Golden beaches, Portuguese soul, coastal elegance",
+    "overview": "A refined Goa escape pairing boutique beachfront living with heritage walks, private yacht sunsets, and the easy rhythm of coastal India.",
+    "highlights": [
+      "Beachfront boutique hotel",
+      "Private yacht sunset cruise",
+      "Old Goa heritage walk",
+      "Curated coastal dining"
+    ],
+    "featured": false,
+    "days": [
+      {
+        "day": 1,
+        "title": "Coastal Arrival",
+        "description": "Transfer to your beachfront boutique hotel. Evening sundowner on the sand.",
+        "activities": ["Airport transfer", "Hotel check-in", "Beach sundowner"]
+      },
+      {
+        "day": 2,
+        "title": "Heritage & Culture",
+        "description": "Private morning walk through Old Goa's churches and Latin Quarter with historian guide.",
+        "activities": ["Heritage walk", "Local lunch", "Afternoon leisure"]
+      },
+      {
+        "day": 3,
+        "title": "Yacht Sunset",
+        "description": "Private yacht charter along the coast with champagne sunset and onboard dining.",
+        "activities": ["Yacht charter", "Sunset cruise", "Onboard dinner"]
+      },
+      {
+        "day": 4,
+        "title": "Departure",
+        "description": "Relaxed breakfast and transfer to the airport.",
+        "activities": ["Beach morning", "Airport transfer"]
+      }
+    ],
+    "hotels": [
+      {
+        "name": "Ahilya by the Sea",
+        "location": "Goa",
+        "nights": "3 Nights",
+        "image": "https://images.pexels.com/photos/248797/pexels-photo-248797.jpeg?auto=compress&cs=tinysrgb&w=800",
+        "description": "Intimate cliffside boutique with Arabian Sea views and exceptional cuisine.",
+        "stars": 5
+      }
+    ],
+    "included": [
+      "Boutique hotel accommodation",
+      "Private heritage guide",
+      "Yacht sunset experience",
+      "Transfers and concierge"
+    ],
+    "excluded": [
+      "Flights to Goa",
+      "Travel insurance",
+      "Personal expenses"
+    ],
+    "gallery": [
+      "https://images.pexels.com/photos/248797/pexels-photo-248797.jpeg?auto=compress&cs=tinysrgb&w=1200",
+      "https://images.pexels.com/photos/1450360/pexels-photo-1450360.jpeg?auto=compress&cs=tinysrgb&w=1200"
+    ],
+    "faq": [
+      {
+        "question": "Best time to visit Goa?",
+        "answer": "October through March offers ideal beach weather and vibrant cultural events."
+      }
+    ],
+    "seo": {
+      "title": "Goa Coastal Luxe — 4 Day Itinerary",
+      "description": "4-day Goa luxury itinerary with boutique beach stay, heritage walk, and private yacht."
+    }
+  },
+  {
+    "slug": "ladakh-expedition-7d",
+    "packageId": "ladakh-expedition-7d",
+    "destinationId": "ladakh",
+    "title": "Ladakh High Altitude Expedition",
+    "destination": "Ladakh",
+    "region": "domestic",
+    "duration": "7 Days / 6 Nights",
+    "durationDays": 7,
+    "startingPrice": 95000,
+    "priceNote": "Per person, luxury camp & boutique lodge",
+    "heroImage": "https://images.pexels.com/photos/2387873/pexels-photo-2387873.jpeg?auto=compress&cs=tinysrgb&w=1920",
+    "tagline": "High-altitude wonder, monasteries, and starlit skies",
+    "overview": "An expertly paced Ladakh expedition with luxury camps on Pangong Lake, private monastery access, and guided stargazing in one of the world's clearest night skies.",
+    "highlights": [
+      "Pangong Lake luxury camp",
+      "Private monastery visits",
+      "Guided stargazing experience",
+      "Leh cultural immersion"
+    ],
+    "featured": false,
+    "days": [
+      {
+        "day": 1,
+        "title": "Leh Arrival & Acclimatization",
+        "description": "Gentle arrival and rest at boutique Leh lodge. Light orientation walk and oxygen support as needed.",
+        "activities": ["Airport transfer", "Rest & acclimatize", "Welcome briefing"]
+      },
+      {
+        "day": 2,
+        "title": "Leh Monasteries",
+        "description": "Private visits to Thiksey and Hemis monasteries with resident monk interaction.",
+        "activities": ["Monastery tour", "Monk meeting", "Leh market"]
+      },
+      {
+        "day": 3,
+        "title": "Nubra Valley",
+        "description": "Scenic drive over Khardung La to Nubra. Bactrian camel ride and valley camp dinner.",
+        "activities": ["Khardung La", "Nubra Valley", "Camel ride"]
+      },
+      {
+        "day": 4,
+        "title": "Pangong Lake",
+        "description": "Transfer to Pangong Lake luxury camp. Sunset photography session on the shore.",
+        "activities": ["Lake transfer", "Luxury camp", "Sunset session"]
+      },
+      {
+        "day": 5,
+        "title": "Stargazing Night",
+        "description": "Expert-led astronomy session with telescopes. Bonfire dinner under the Milky Way.",
+        "activities": ["Stargazing", "Astronomy talk", "Bonfire dinner"]
+      },
+      {
+        "day": 6,
+        "title": "Return to Leh",
+        "description": "Leisurely return to Leh. Spa recovery and farewell Ladakhi feast.",
+        "activities": ["Scenic drive", "Spa", "Farewell dinner"]
+      },
+      {
+        "day": 7,
+        "title": "Departure",
+        "description": "Morning at leisure and transfer to Leh airport.",
+        "activities": ["Leisure morning", "Airport transfer"]
+      }
+    ],
+    "hotels": [
+      {
+        "name": "The Grand Dragon Ladakh",
+        "location": "Leh",
+        "nights": "3 Nights",
+        "image": "https://images.pexels.com/photos/2387873/pexels-photo-2387873.jpeg?auto=compress&cs=tinysrgb&w=800",
+        "description": "Leh's premier boutique hotel with oxygen-enriched rooms and refined dining.",
+        "stars": 5
+      },
+      {
+        "name": "Pangong Lake Luxury Camp",
+        "location": "Pangong Lake",
+        "nights": "1 Night",
+        "image": "https://images.pexels.com/photos/1287145/pexels-photo-1287145.jpeg?auto=compress&cs=tinysrgb&w=800",
+        "description": "Heated luxury tents with lake views and private dining pavilion.",
+        "stars": 5
+      }
+    ],
+    "included": [
+      "Accommodation and luxury camp",
+      "Private vehicle and driver",
+      "Monastery and stargazing experiences",
+      "Permits and concierge support"
+    ],
+    "excluded": [
+      "Flights to Leh",
+      "Travel insurance",
+      "Personal trekking gear",
+      "Altitude medication (advisory provided)"
+    ],
+    "gallery": [
+      "https://images.pexels.com/photos/2387873/pexels-photo-2387873.jpeg?auto=compress&cs=tinysrgb&w=1200",
+      "https://images.pexels.com/photos/1287145/pexels-photo-1287145.jpeg?auto=compress&cs=tinysrgb&w=1200"
+    ],
+    "faq": [
+      {
+        "question": "How do you manage altitude?",
+        "answer": "We build in acclimatization days, monitor health daily, and provide oxygen support when needed."
+      }
+    ],
+    "seo": {
+      "title": "Ladakh Expedition — 7 Day Itinerary",
+      "description": "7-day Ladakh luxury itinerary with Pangong Lake camp, monasteries, and stargazing."
+    }
+  },
+  {
+    "slug": "vietnam-heritage-8d",
+    "packageId": "vietnam-heritage-8d",
+    "destinationId": "vietnam",
+    "title": "Vietnam Heritage Trail",
+    "destination": "Vietnam",
+    "region": "international",
+    "duration": "8 Days / 7 Nights",
+    "durationDays": 8,
+    "startingPrice": 178000,
+    "priceNote": "Per couple, boutique & cruise category",
+    "heroImage": "https://images.pexels.com/photos/3787839/pexels-photo-3787839.jpeg?auto=compress&cs=tinysrgb&w=1920",
+    "tagline": "Ha Long karsts, lantern towns, Mekong rhythms",
+    "overview": "Traverse Vietnam's most evocative landscapes — an overnight Ha Long Bay cruise, Hoi An's lantern-lit lanes, and a private Mekong Delta immersion.",
+    "highlights": [
+      "Ha Long Bay luxury cruise",
+      "Hoi An lantern town experience",
+      "Mekong Delta private tour",
+      "Hanoi old quarter discovery"
+    ],
+    "featured": false,
+    "days": [
+      {
+        "day": 1,
+        "title": "Hanoi Arrival",
+        "description": "VIP transfer to old quarter boutique hotel. Evening street food tour with local expert.",
+        "activities": ["VIP transfer", "Food tour", "Hotel check-in"]
+      },
+      {
+        "day": 2,
+        "title": "Hanoi Culture",
+        "description": "Private city tour including Temple of Literature and contemporary art gallery.",
+        "activities": ["City tour", "Art gallery", "Fine dining"]
+      },
+      {
+        "day": 3,
+        "title": "Ha Long Bay Embarkation",
+        "description": "Transfer to Ha Long. Board luxury junk for overnight cruise among limestone karsts.",
+        "activities": ["Transfer", "Cruise embark", "Kayaking"]
+      },
+      {
+        "day": 4,
+        "title": "Bay to Hoi An",
+        "description": "Sunrise tai chi on deck. Disembark and fly to Da Nang. Evening in Hoi An.",
+        "activities": ["Sunrise tai chi", "Flight", "Hoi An evening"]
+      },
+      {
+        "day": 5,
+        "title": "Hoi An Immersion",
+        "description": "Lantern town walking tour, tailor visit, and cooking class in Tra Que village.",
+        "activities": ["Heritage walk", "Cooking class", "Lantern cruise"]
+      },
+      {
+        "day": 6,
+        "title": "Mekong Delta",
+        "description": "Fly to Ho Chi Minh City. Private Mekong sampan tour with farm-to-table lunch.",
+        "activities": ["Flight", "Mekong tour", "Farm lunch"]
+      },
+      {
+        "day": 7,
+        "title": "Saigon & Leisure",
+        "description": "Morning Cu Chi or city tour option. Afternoon spa and rooftop farewell dinner.",
+        "activities": ["City or Cu Chi", "Spa", "Farewell dinner"]
+      },
+      {
+        "day": 8,
+        "title": "Departure",
+        "description": "Transfer to Tan Son Nhat airport.",
+        "activities": ["Airport transfer"]
+      }
+    ],
+    "hotels": [
+      {
+        "name": "Sofitel Legend Metropole Hanoi",
+        "location": "Hanoi",
+        "nights": "2 Nights",
+        "image": "https://images.pexels.com/photos/3787839/pexels-photo-3787839.jpeg?auto=compress&cs=tinysrgb&w=800",
+        "description": "Colonial-era icon with impeccable service in the heart of Hanoi.",
+        "stars": 5
+      },
+      {
+        "name": "Anantara Hoi An Resort",
+        "location": "Hoi An",
+        "nights": "2 Nights",
+        "image": "https://images.pexels.com/photos/3608263/pexels-photo-3608263.jpeg?auto=compress&cs=tinysrgb&w=800",
+        "description": "Riverside luxury minutes from Hoi An's ancient town.",
+        "stars": 5
+      }
+    ],
+    "included": [
+      "Boutique hotels and Ha Long cruise",
+      "Domestic flights",
+      "Private guides and Mekong tour",
+      "Selected meals and concierge"
+    ],
+    "excluded": [
+      "International flights",
+      "Travel insurance",
+      "Visa fees",
+      "Personal expenses"
+    ],
+    "gallery": [
+      "https://images.pexels.com/photos/3787839/pexels-photo-3787839.jpeg?auto=compress&cs=tinysrgb&w=1200",
+      "https://images.pexels.com/photos/3608263/pexels-photo-3608263.jpeg?auto=compress&cs=tinysrgb&w=1200",
+      "https://images.pexels.com/photos/1287145/pexels-photo-1287145.jpeg?auto=compress&cs=tinysrgb&w=1200"
+    ],
+    "faq": [
+      {
+        "question": "Is Ha Long Bay crowded?",
+        "answer": "We select less-trafficked routes and premium small-vessel cruises for a serene experience."
+      }
+    ],
+    "seo": {
+      "title": "Vietnam Heritage Trail — 8 Day Itinerary",
+      "description": "8-day Vietnam itinerary with Ha Long Bay cruise, Hoi An, and Mekong Delta."
+    }
+  },
+  {
+    "slug": "singapore-city-4d",
+    "packageId": "singapore-city-4d",
+    "destinationId": "singapore",
+    "title": "Singapore Urban Luxe",
+    "destination": "Singapore",
+    "region": "international",
+    "duration": "4 Days / 3 Nights",
+    "durationDays": 4,
+    "startingPrice": 198000,
+    "priceNote": "Per couple, Marina Bay suite category",
+    "heroImage": "https://images.pexels.com/photos/259447/pexels-photo-259447.jpeg?auto=compress&cs=tinysrgb&w=1920",
+    "tagline": "Garden city sophistication and culinary mastery",
+    "overview": "Experience Singapore at its most polished — Marina Bay skyline suites, a private hawker-to-Michelin food journey, and after-hours access to Gardens by the Bay.",
+    "highlights": [
+      "Marina Bay Sands suite experience",
+      "Private culinary food tour",
+      "Gardens by the Bay VIP access",
+      "Chauffeured city discovery"
+    ],
+    "featured": false,
+    "days": [
+      {
+        "day": 1,
+        "title": "Arrival & Skyline",
+        "description": "Chauffeured transfer to Marina Bay hotel. Evening rooftop cocktails overlooking the bay.",
+        "activities": ["Chauffeur transfer", "Suite check-in", "Rooftop cocktails"]
+      },
+      {
+        "day": 2,
+        "title": "Culinary Singapore",
+        "description": "Full-day private food tour from hawker legends to fine-dining tasting menu.",
+        "activities": ["Hawker tour", "Chef's table", "Evening leisure"]
+      },
+      {
+        "day": 3,
+        "title": "Gardens & Culture",
+        "description": "VIP early access to Gardens by the Bay. Afternoon Peranakan heritage walk in Katong.",
+        "activities": ["Gardens VIP", "Heritage walk", "Fine dining"]
+      },
+      {
+        "day": 4,
+        "title": "Departure",
+        "description": "Morning spa or pool time. Transfer to Changi with lounge access.",
+        "activities": ["Spa or leisure", "Airport transfer"]
+      }
+    ],
+    "hotels": [
+      {
+        "name": "Marina Bay Sands",
+        "location": "Singapore",
+        "nights": "3 Nights",
+        "image": "https://images.pexels.com/photos/259447/pexels-photo-259447.jpeg?auto=compress&cs=tinysrgb&w=800",
+        "description": "Iconic skyline hotel with infinity pool and world-class dining.",
+        "stars": 5
+      }
+    ],
+    "included": [
+      "Suite accommodation",
+      "Private food and heritage tours",
+      "Gardens by the Bay access",
+      "Chauffeur transfers"
+    ],
+    "excluded": [
+      "International flights",
+      "Travel insurance",
+      "Personal shopping"
+    ],
+    "gallery": [
+      "https://images.pexels.com/photos/259447/pexels-photo-259447.jpeg?auto=compress&cs=tinysrgb&w=1200",
+      "https://images.pexels.com/photos/271624/pexels-photo-271624.jpeg?auto=compress&cs=tinysrgb&w=1200"
+    ],
+    "faq": [
+      {
+        "question": "Is a visa required for Indians?",
+        "answer": "Many nationalities receive visa-free entry; we confirm requirements for your passport at booking."
+      }
+    ],
+    "seo": {
+      "title": "Singapore Urban Luxe — 4 Day Itinerary",
+      "description": "4-day Singapore luxury itinerary with Marina Bay Sands, food tour, and Gardens by the Bay."
+    }
+  }
+]

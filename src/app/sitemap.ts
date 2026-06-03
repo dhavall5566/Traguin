@@ -1,15 +1,34 @@
 import type { MetadataRoute } from "next";
+import { getAllDestinationIds } from "@/lib/destinations";
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const baseUrl = "https://traguin.com";
+  const now = new Date();
 
-  return [
-    { url: baseUrl, lastModified: new Date(), changeFrequency: "weekly", priority: 1 },
-    { url: `${baseUrl}/hotels`, lastModified: new Date(), changeFrequency: "weekly", priority: 0.9 },
-    { url: `${baseUrl}/packages/domestic`, lastModified: new Date(), changeFrequency: "weekly", priority: 0.9 },
-    { url: `${baseUrl}/packages/international`, lastModified: new Date(), changeFrequency: "weekly", priority: 0.9 },
-    { url: `${baseUrl}/always-on-demand`, lastModified: new Date(), changeFrequency: "monthly", priority: 0.8 },
-    { url: `${baseUrl}/contact`, lastModified: new Date(), changeFrequency: "monthly", priority: 0.7 },
-    { url: `${baseUrl}/login`, lastModified: new Date(), changeFrequency: "yearly", priority: 0.5 },
+  const staticRoutes = [
+    "",
+    "/destinations",
+    "/luxury-stays",
+    "/concierge",
+    "/about",
+    "/client-stories",
+    "/contact",
+    "/login",
   ];
+
+  const destinationRoutes = getAllDestinationIds().map((id) => `/destinations/${id}`);
+
+  return [...staticRoutes, ...destinationRoutes].map((path) => ({
+    url: `${baseUrl}${path}`,
+    lastModified: now,
+    changeFrequency: path.startsWith("/destinations/") ? "monthly" : path === "" ? "weekly" : "monthly",
+    priority:
+      path === ""
+        ? 1
+        : path === "/destinations"
+          ? 0.9
+          : path.startsWith("/destinations/")
+            ? 0.85
+            : 0.7,
+  }));
 }

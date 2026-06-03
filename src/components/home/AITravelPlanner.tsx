@@ -6,9 +6,16 @@ import { packages } from "@/data/packages";
 import { hotels } from "@/data/hotels";
 import { destinations } from "@/data/destinations";
 import type { TravelMood } from "@/types";
-import { formatPrice } from "@/lib/utils";
+import { PriceDisplay } from "@/components/ui/PriceDisplay";
 import { SafeImage } from "@/components/ui/SafeImage";
 import { MagneticButton } from "@/components/ui/MagneticButton";
+import { FormField, fieldInputClass } from "@/components/ui/FormField";
+import {
+  clearFieldError,
+  hasErrors,
+  validateAiPlannerForm,
+  type FieldErrors,
+} from "@/lib/form-validation";
 
 const travelStyles: TravelMood[] = ["luxury", "adventure", "romantic", "beach", "nature"];
 
@@ -44,14 +51,24 @@ export function AITravelPlanner() {
     travelers: "2",
     style: "luxury" as TravelMood,
   });
+  const [errors, setErrors] = useState<FieldErrors>({});
   const [results, setResults] = useState<{
     packages: typeof packages;
     hotels: typeof hotels;
     destinations: typeof destinations;
   } | null>(null);
 
+  const update = <K extends keyof typeof form>(key: K, value: (typeof form)[K]) => {
+    setForm((prev) => ({ ...prev, [key]: value }));
+    clearFieldError(setErrors, key);
+  };
+
   const generatePlan = () => {
-    const budget = parseInt(form.budget);
+    const nextErrors = validateAiPlannerForm(form);
+    setErrors(nextErrors);
+    if (hasErrors(nextErrors)) return;
+
+    const budget = parseInt(form.budget, 10);
     const filteredPackages = packages
       .filter(
         (p) =>
@@ -95,45 +112,69 @@ export function AITravelPlanner() {
             </p>
 
             <div className="mt-8 space-y-5">
-              <InputField
-                icon={MapPin}
-                label="Destination"
-                placeholder="e.g. Bali, Switzerland..."
-                value={form.destination}
-                onChange={(v) => setForm({ ...form, destination: v })}
-              />
-              <InputField
-                icon={Wallet}
-                label="Budget (INR)"
-                type="number"
-                value={form.budget}
-                onChange={(v) => setForm({ ...form, budget: v })}
-              />
+              {hasErrors(errors) && (
+                <p className="rounded-xl border border-red-400/30 bg-red-400/10 px-4 py-3 text-sm text-red-400" role="alert">
+                  Please correct the highlighted fields before generating your plan.
+                </p>
+              )}
+              <FormField label="Destination" htmlFor="ai-destination" icon={MapPin} error={errors.destination}>
+                <input
+                  id="ai-destination"
+                  value={form.destination}
+                  onChange={(e) => update("destination", e.target.value)}
+                  className={fieldInputClass("destination", errors)}
+                  aria-invalid={!!errors.destination}
+                />
+              </FormField>
+              <FormField label="Budget (INR)" htmlFor="ai-budget" icon={Wallet} error={errors.budget}>
+                <input
+                  id="ai-budget"
+                  type="number"
+                  min={10000}
+                  value={form.budget}
+                  onChange={(e) => update("budget", e.target.value)}
+                  className={fieldInputClass("budget", errors)}
+                  aria-invalid={!!errors.budget}
+                />
+              </FormField>
               <div className="grid grid-cols-2 gap-4">
-                <InputField
-                  icon={Calendar}
-                  label="Duration (days)"
-                  type="number"
-                  value={form.duration}
-                  onChange={(v) => setForm({ ...form, duration: v })}
-                />
-                <InputField
-                  icon={Users}
-                  label="Travelers"
-                  type="number"
-                  value={form.travelers}
-                  onChange={(v) => setForm({ ...form, travelers: v })}
-                />
+                <FormField label="Duration (Days)" htmlFor="ai-duration" icon={Calendar} error={errors.duration}>
+                  <input
+                    id="ai-duration"
+                    type="number"
+                    min={1}
+                    max={90}
+                    value={form.duration}
+                    onChange={(e) => update("duration", e.target.value)}
+                    className={fieldInputClass("duration", errors)}
+                    aria-invalid={!!errors.duration}
+                  />
+                </FormField>
+                <FormField label="Travelers" htmlFor="ai-travelers" icon={Users} error={errors.travelers}>
+                  <input
+                    id="ai-travelers"
+                    type="number"
+                    min={1}
+                    max={50}
+                    value={form.travelers}
+                    onChange={(e) => update("travelers", e.target.value)}
+                    className={fieldInputClass("travelers", errors)}
+                    aria-invalid={!!errors.travelers}
+                  />
+                </FormField>
               </div>
 
-              <div>
-                <label className="mb-2 block text-xs tracking-wide text-muted uppercase">
-                  Travel Style
-                </label>
-                <div className="flex flex-wrap gap-2">
+              <FormField label="Travel Style" htmlFor="ai-style">
+                <div
+                  id="ai-style"
+                  className="flex flex-wrap gap-2"
+                  role="group"
+                  aria-label="Travel style"
+                >
                   {travelStyles.map((style) => (
                     <button
                       key={style}
+                      type="button"
                       onClick={() => setForm({ ...form, style })}
                       className={`rounded-full px-4 py-2 text-xs capitalize transition-all ${
                         form.style === style
@@ -146,7 +187,7 @@ export function AITravelPlanner() {
                     </button>
                   ))}
                 </div>
-              </div>
+              </FormField>
 
               <MagneticButton onClick={generatePlan} variant="primary" className="w-full sm:w-auto">
                 Generate Itinerary
@@ -177,7 +218,7 @@ export function AITravelPlanner() {
                         <div className="min-w-0 flex-1">
                           <p className="font-medium text-foreground">{pkg.title}</p>
                           <p className="text-xs text-muted">{pkg.duration}</p>
-                          <p className="text-sm text-gold">{formatPrice(pkg.price)}</p>
+                          <PriceDisplay amount={pkg.price} label={null} size="sm" />
                         </div>
                         <MagneticButton
                           as="a"
@@ -207,7 +248,7 @@ export function AITravelPlanner() {
                       <div className="min-w-0 flex-1">
                         <p className="font-medium text-foreground">{hotel.name}</p>
                         <p className="text-xs text-muted">{hotel.destination}</p>
-                        <p className="text-sm text-gold">{formatPrice(hotel.price)}/night</p>
+                        <PriceDisplay amount={hotel.price} label={null} size="sm" suffix="/night" />
                       </div>
                     </div>
                   ))}
@@ -236,38 +277,6 @@ export function AITravelPlanner() {
         </div>
       </div>
     </section>
-  );
-}
-
-function InputField({
-  icon: Icon,
-  label,
-  value,
-  onChange,
-  placeholder,
-  type = "text",
-}: {
-  icon: React.ComponentType<{ size?: number; className?: string }>;
-  label: string;
-  value: string;
-  onChange: (v: string) => void;
-  placeholder?: string;
-  type?: string;
-}) {
-  return (
-    <div>
-      <label className="mb-2 flex items-center gap-2 text-xs tracking-wide text-muted uppercase">
-        <Icon size={14} className="text-gold" />
-        {label}
-      </label>
-      <input
-        type={type}
-        value={value}
-        onChange={(e) => onChange(e.target.value)}
-        placeholder={placeholder}
-        className="w-full rounded-xl border border-glass-border bg-input px-4 py-3 text-sm text-foreground outline-none transition-colors focus:border-gold/50"
-      />
-    </div>
   );
 }
 

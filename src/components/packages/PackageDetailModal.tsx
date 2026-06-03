@@ -2,9 +2,12 @@
 
 import { X, Star, Clock, MapPin } from "lucide-react";
 import type { TravelPackage } from "@/types";
-import { formatPrice } from "@/lib/utils";
+import { PriceDisplay } from "@/components/ui/PriceDisplay";
 import { SafeImage } from "@/components/ui/SafeImage";
 import { MagneticButton } from "@/components/ui/MagneticButton";
+import { getDestinationIdForPackage } from "@/lib/packages";
+import { getItineraryByDestinationId, getItineraryInquiryHref } from "@/lib/itineraries";
+import { itineraryPrimaryCta } from "@/data/site";
 
 interface PackageDetailModalProps {
   pkg: TravelPackage;
@@ -12,6 +15,9 @@ interface PackageDetailModalProps {
 }
 
 export function PackageDetailModal({ pkg, onClose }: PackageDetailModalProps) {
+  const destinationId = getDestinationIdForPackage(pkg);
+  const itinerary = destinationId ? getItineraryByDestinationId(destinationId) : undefined;
+
   return (
     <div
       className="fixed inset-0 z-[100] flex items-end justify-center bg-background/90 p-0 backdrop-blur-md sm:items-center sm:p-6"
@@ -83,28 +89,37 @@ export function PackageDetailModal({ pkg, onClose }: PackageDetailModalProps) {
           </div>
 
           <div className="mt-8 flex flex-col gap-4 border-t border-glass-border pt-6 sm:flex-row sm:items-center sm:justify-between">
-            <div>
-              <p className="font-body text-xs font-semibold tracking-wide text-foreground/70 uppercase">
-                Starting from
-              </p>
-              <p className="font-body text-3xl font-bold tracking-tight text-gold">
-                {formatPrice(pkg.price)}
-              </p>
-              <p className="mt-1 font-body text-xs font-medium text-muted">
-                Per person · taxes included
-              </p>
-            </div>
+            <PriceDisplay
+              amount={pkg.price}
+              label="Starting from"
+              size="lg"
+              note="Per person · taxes included"
+            />
             <div className="flex flex-col gap-3 sm:flex-row">
               <MagneticButton onClick={onClose} variant="secondary" className="!px-6 !py-3">
                 Close
               </MagneticButton>
+              {destinationId && (
+                <MagneticButton
+                  as="a"
+                  href={`/destinations/${destinationId}`}
+                  variant="secondary"
+                  className="!px-6 !py-3"
+                >
+                  {itinerary ? "View Full Itinerary" : "View Destination"}
+                </MagneticButton>
+              )}
               <MagneticButton
                 as="a"
-                href={`/contact?package=${encodeURIComponent(pkg.title)}`}
+                href={
+                  destinationId
+                    ? getItineraryInquiryHref(destinationId)
+                    : `/contact?package=${encodeURIComponent(pkg.title)}`
+                }
                 variant="primary"
                 className="!px-6 !py-3"
               >
-                Book This Package
+                {itineraryPrimaryCta.label}
               </MagneticButton>
             </div>
           </div>

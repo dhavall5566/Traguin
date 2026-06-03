@@ -57,9 +57,7 @@ export function LoadingScreen({ onComplete }: LoadingScreenProps) {
           <h1 className="font-display text-4xl tracking-[0.3em] text-foreground md:text-5xl">
             TRAGUIN
           </h1>
-          <p className="mt-2 text-sm tracking-[0.4em] text-gold uppercase">
-            Luxury Travel
-          </p>
+          <p className="mt-2 text-sm tracking-[0.4em] text-gold uppercase">Luxury Travel</p>
         </motion.div>
 
         <div className="relative z-10 mt-12 w-64">

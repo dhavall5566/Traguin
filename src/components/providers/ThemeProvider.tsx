@@ -4,14 +4,14 @@ import {
   createContext,
   useCallback,
   useContext,
-  useEffect,
-  useState,
+  useSyncExternalStore,
   type ReactNode,
 } from "react";
-
-export type Theme = "dark" | "light";
-
-const STORAGE_KEY = "traguin-theme";
+import {
+  persistTheme,
+  readThemeFromDocument,
+  type Theme,
+} from "@/lib/theme";
 
 interface ThemeContextValue {
   theme: Theme;
@@ -21,53 +21,37 @@ interface ThemeContextValue {
 
 const ThemeContext = createContext<ThemeContextValue | null>(null);
 
-function getInitialTheme(): Theme {
-  if (typeof window === "undefined") return "dark";
+const listeners = new Set<() => void>();
 
-  try {
-    const stored = localStorage.getItem(STORAGE_KEY);
-    if (stored === "light" || stored === "dark") return stored;
-  } catch {
-    /* ignore */
-  }
-
-  return window.matchMedia("(prefers-color-scheme: light)").matches ? "light" : "dark";
+function subscribe(onStoreChange: () => void) {
+  listeners.add(onStoreChange);
+  return () => listeners.delete(onStoreChange);
 }
 
-function applyTheme(theme: Theme) {
-  document.documentElement.setAttribute("data-theme", theme);
+function emitThemeChange() {
+  listeners.forEach((listener) => listener());
+}
+
+function getServerThemeSnapshot(): Theme {
+  return "dark";
+}
+
+function getThemeSnapshot(): Theme {
+  return readThemeFromDocument();
 }
 
 export function ThemeProvider({ children }: { children: ReactNode }) {
-  const [theme, setThemeState] = useState<Theme>("dark");
-
-  useEffect(() => {
-    const initial = getInitialTheme();
-    setThemeState(initial);
-    applyTheme(initial);
-  }, []);
+  const theme = useSyncExternalStore(subscribe, getThemeSnapshot, getServerThemeSnapshot);
 
   const setTheme = useCallback((next: Theme) => {
-    setThemeState(next);
-    applyTheme(next);
-    try {
-      localStorage.setItem(STORAGE_KEY, next);
-    } catch {
-      /* ignore */
-    }
+    persistTheme(next);
+    emitThemeChange();
   }, []);
 
   const toggleTheme = useCallback(() => {
-    setThemeState((current) => {
-      const next = current === "dark" ? "light" : "dark";
-      applyTheme(next);
-      try {
-        localStorage.setItem(STORAGE_KEY, next);
-      } catch {
-        /* ignore */
-      }
-      return next;
-    });
+    const next = readThemeFromDocument() === "dark" ? "light" : "dark";
+    persistTheme(next);
+    emitThemeChange();
   }, []);
 
   return (
@@ -84,3 +68,5 @@ export function useTheme() {
   }
   return context;
 }
+
+export type { Theme };

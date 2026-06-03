@@ -1,6 +1,7 @@
 "use client";
 
 import { useRef, useMemo } from "react";
+import { r3fOnCreated } from "@/lib/r3fClock";
 import { Canvas, useFrame } from "@react-three/fiber";
 import * as THREE from "three";
 
@@ -54,6 +55,7 @@ export function FloatingParticles({ className }: { className?: string }) {
         gl={{ antialias: false, alpha: true }}
         dpr={[1, 1.5]}
         style={{ pointerEvents: "none" }}
+        onCreated={r3fOnCreated}
       >
         <ambientLight intensity={0.5} />
         <ParticleField />

@@ -45,7 +45,7 @@ export function TextReveal({
   }, [children, delay]);
 
   return (
-    <Tag ref={ref as never} className={cn("font-display", className)}>
+    <Tag ref={ref as never} className={cn("font-display", className)} suppressHydrationWarning>
       {children}
     </Tag>
   );

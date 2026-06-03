@@ -1,0 +1,73 @@
+"use client";
+
+import { testimonials } from "@/data/moods";
+import { SectionHeader } from "@/components/ui/SectionHeader";
+import { SafeImage } from "@/components/ui/SafeImage";
+import { MagneticButton } from "@/components/ui/MagneticButton";
+import { primaryCta, secondaryCta } from "@/data/site";
+
+export function ClientStoriesPage() {
+  return (
+    <div className="min-h-screen pt-24 pb-20 md:pt-28">
+      <div className="section-padding pt-0">
+        <div className="mx-auto max-w-7xl">
+          <SectionHeader
+            align="left"
+            eyebrow="Testimonials"
+            title="Client Stories"
+            description="Gallery of journeys, reviews, and case studies from travelers who chose Traguin."
+          />
+
+          <div className="mt-8 flex flex-wrap gap-3">
+            <MagneticButton as="a" href={primaryCta.href} variant="primary" className="!text-xs">
+              {primaryCta.label}
+            </MagneticButton>
+            <MagneticButton as="a" href={secondaryCta.href} variant="secondary" className="!text-xs">
+              {secondaryCta.label}
+            </MagneticButton>
+          </div>
+
+          <div className="mt-12 grid grid-cols-2 gap-3 md:grid-cols-3 lg:grid-cols-4">
+            {testimonials.map((t) => (
+              <div key={t.id} className="relative aspect-square overflow-hidden rounded-xl">
+                <SafeImage src={t.image} alt={t.name} className="h-full w-full object-cover" loading="lazy" />
+                <div className="absolute inset-0 bg-gradient-to-t from-background/90 to-transparent p-3 flex flex-col justify-end">
+                  <p className="text-xs font-medium text-foreground">{t.destination}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          <div className="mt-16 grid gap-8 md:grid-cols-2">
+            {testimonials.map((story) => (
+              <article key={story.id} className="glass rounded-2xl border border-glass-border p-6 md:p-8">
+                <blockquote className="text-sm leading-relaxed text-foreground md:text-base">
+                  &ldquo;{story.quote}&rdquo;
+                </blockquote>
+                <footer className="mt-6 flex items-center gap-4 border-t border-glass-border pt-6">
+                  <div className="relative h-12 w-12 overflow-hidden rounded-full">
+                    <SafeImage src={story.image} alt={story.name} className="h-full w-full object-cover" />
+                  </div>
+                  <div>
+                    <p className="font-medium text-foreground">{story.name}</p>
+                    <p className="text-xs text-gold">{story.destination} · {story.tripType}</p>
+                  </div>
+                </footer>
+              </article>
+            ))}
+          </div>
+
+          <section className="mt-16 glass rounded-3xl border border-glass-border p-8 text-center md:p-12">
+            <h2 className="font-display text-2xl text-foreground md:text-3xl">Videos & Case Studies</h2>
+            <p className="mx-auto mt-3 max-w-lg text-sm text-muted">
+              Documentary-style journey films and detailed case studies are available during your consultation.
+            </p>
+            <MagneticButton as="a" href="/contact" variant="primary" className="mt-6">
+              Schedule Consultation
+            </MagneticButton>
+          </section>
+        </div>
+      </div>
+    </div>
+  );
+}
