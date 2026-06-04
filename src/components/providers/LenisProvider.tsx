@@ -1,13 +1,17 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useRef, useState } from "react";
 import Lenis from "lenis";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { LenisContext } from "@/components/providers/LenisContext";
 
 gsap.registerPlugin(ScrollTrigger);
 
 export function LenisProvider({ children }: { children: React.ReactNode }) {
+  const lenisRef = useRef<Lenis | null>(null);
+  const [lenisReady, setLenisReady] = useState<Lenis | null>(null);
+
   useEffect(() => {
     const blockHorizontalSwipeNav = (e: WheelEvent) => {
       if (Math.abs(e.deltaX) > Math.abs(e.deltaY) && Math.abs(e.deltaX) > 2) {
@@ -33,7 +37,15 @@ export function LenisProvider({ children }: { children: React.ReactNode }) {
       easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
       smoothWheel: true,
       touchMultiplier: 1,
+      allowNestedScroll: true,
+      prevent: (node) => {
+        if (!(node instanceof HTMLElement)) return false;
+        return node.closest("[data-lenis-prevent]") !== null;
+      },
     });
+
+    lenisRef.current = lenis;
+    setLenisReady(lenis);
 
     lenis.on("scroll", ScrollTrigger.update);
 
@@ -67,9 +79,13 @@ export function LenisProvider({ children }: { children: React.ReactNode }) {
     return () => {
       cancelAnimationFrame(rafId);
       lenis.destroy();
+      lenisRef.current = null;
+      setLenisReady(null);
       ScrollTrigger.scrollerProxy(document.body, {});
     };
   }, []);
 
-  return <>{children}</>;
+  return (
+    <LenisContext.Provider value={{ lenis: lenisReady }}>{children}</LenisContext.Provider>
+  );
 }

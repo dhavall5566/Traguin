@@ -1,6 +1,6 @@
 "use client";
 
-import { ReactNode } from "react";
+import { type MouseEvent, ReactNode } from "react";
 import { cn } from "@/lib/utils";
 
 interface MagneticButtonProps {
@@ -8,7 +8,7 @@ interface MagneticButtonProps {
   className?: string;
   as?: "button" | "a";
   href?: string;
-  onClick?: () => void;
+  onClick?: (e: MouseEvent<HTMLButtonElement | HTMLAnchorElement>) => void;
   type?: "button" | "submit" | "reset";
   variant?: "primary" | "secondary" | "ghost";
 }

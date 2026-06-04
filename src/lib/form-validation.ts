@@ -172,6 +172,12 @@ export function validateInquiryForm(form: InquiryFormValues): FieldErrors {
   });
 }
 
+export type HotelBookingFormValues = InquiryFormValues;
+
+export function validateHotelBookingForm(form: HotelBookingFormValues): FieldErrors {
+  return validateInquiryForm(form);
+}
+
 export type ConciergeFormValues = {
   name: string;
   email: string;

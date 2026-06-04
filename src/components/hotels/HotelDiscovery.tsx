@@ -1,15 +1,10 @@
 "use client";
 
 import { useState } from "react";
-import {
-  Map,
-  Grid3X3,
-  Heart,
-  GitCompare,
-  Star,
-  X,
-} from "lucide-react";
+import { Map, Grid3X3, Heart, GitCompare, Star } from "lucide-react";
 import { hotels } from "@/data/hotels";
+import type { Hotel } from "@/types";
+import { HotelDetailModal } from "@/components/hotels/HotelDetailModal";
 import { PriceDisplay } from "@/components/ui/PriceDisplay";
 import { cn } from "@/lib/utils";
 import { SafeImage } from "@/components/ui/SafeImage";
@@ -19,7 +14,9 @@ export function HotelDiscovery() {
   const [view, setView] = useState<"grid" | "map">("grid");
   const [wishlist, setWishlist] = useState<string[]>([]);
   const [compare, setCompare] = useState<string[]>([]);
-  const [preview, setPreview] = useState<(typeof hotels)[0] | null>(null);
+  const [selectedHotel, setSelectedHotel] = useState<Hotel | null>(null);
+
+  const openHotel = (hotel: Hotel) => setSelectedHotel(hotel);
   const [countryFilter, setCountryFilter] = useState<string>("all");
   const [priceFilter, setPriceFilter] = useState<string>("all");
   const [amenityFilter, setAmenityFilter] = useState<string>("all");
@@ -154,13 +151,19 @@ export function HotelDiscovery() {
               {filtered.map((hotel) => (
                 <article
                   key={hotel.id}
-                  className="group overflow-hidden rounded-3xl glass transition-all duration-500 hover:border-gold/30 hover:-translate-y-2"
+                  role="button"
+                  tabIndex={0}
+                  onClick={() => openHotel(hotel)}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter" || e.key === " ") {
+                      e.preventDefault();
+                      openHotel(hotel);
+                    }
+                  }}
+                  className="group cursor-pointer overflow-hidden rounded-3xl glass transition-all duration-500 hover:border-gold/30 hover:-translate-y-2 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gold"
                   style={{ transform: "perspective(1000px)" }}
                 >
-                  <div
-                    className="relative aspect-[4/3] cursor-pointer overflow-hidden"
-                    onClick={() => setPreview(hotel)}
-                  >
+                  <div className="relative aspect-[4/3] overflow-hidden">
                     <SafeImage
                       src={hotel.image}
                       alt={`${hotel.name}, ${hotel.destination}`}
@@ -219,7 +222,7 @@ export function HotelDiscovery() {
                       <MagneticButton
                         variant="secondary"
                         className="!px-4 !py-2 !text-xs"
-                        onClick={() => setPreview(hotel)}
+                        onClick={() => openHotel(hotel)}
                       >
                         View Property
                       </MagneticButton>
@@ -237,39 +240,8 @@ export function HotelDiscovery() {
         </div>
       </div>
 
-      {preview && (
-        <div
-          className="fixed inset-0 z-[100] flex items-center justify-center bg-background/95 p-6 backdrop-blur-xl"
-          onClick={() => setPreview(null)}
-        >
-          <div
-            className="relative max-w-2xl overflow-hidden rounded-3xl glass"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <button
-              onClick={() => setPreview(null)}
-              className="absolute top-4 right-4 z-10 rounded-full p-2 glass"
-            >
-              <X size={20} />
-            </button>
-            <SafeImage src={preview.image} alt={preview.name} className="aspect-video w-full object-cover" />
-            <div className="p-8">
-              <h3 className="font-display text-3xl text-foreground">{preview.name}</h3>
-              <p className="text-sand">{preview.destination}</p>
-              <div className="mt-4 flex flex-wrap gap-2">
-                {preview.amenities.map((a) => (
-                  <span key={a} className="glass rounded-full px-3 py-1 text-xs">{a}</span>
-                ))}
-              </div>
-              <div className="mt-6">
-                <PriceDisplay amount={preview.price} label="From" size="lg" suffix="/night" />
-              </div>
-              <MagneticButton as="a" href="/contact" variant="primary" className="mt-6">
-                View Property
-              </MagneticButton>
-            </div>
-          </div>
-        </div>
+      {selectedHotel && (
+        <HotelDetailModal hotel={selectedHotel} onClose={() => setSelectedHotel(null)} />
       )}
     </div>
   );

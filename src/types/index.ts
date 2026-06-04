@@ -38,6 +38,11 @@ export interface TravelPackage {
   featured?: boolean;
 }
 
+export interface NearbyAttraction {
+  name: string;
+  distance: string;
+}
+
 export interface Hotel {
   id: string;
   name: string;
@@ -47,7 +52,9 @@ export interface Hotel {
   price: number;
   image: string;
   amenities: string[];
+  nearbyAttractions: NearbyAttraction[];
   rating: number;
+  description?: string;
 }
 
 export interface Testimonial {

@@ -8,6 +8,7 @@ import { MagneticButton } from "@/components/ui/MagneticButton";
 import { getDestinationIdForPackage } from "@/lib/packages";
 import { getItineraryByDestinationId, getItineraryInquiryHref } from "@/lib/itineraries";
 import { itineraryPrimaryCta } from "@/data/site";
+import { useModalScrollLock } from "@/lib/use-modal-scroll-lock";
 
 interface PackageDetailModalProps {
   pkg: TravelPackage;
@@ -18,26 +19,34 @@ export function PackageDetailModal({ pkg, onClose }: PackageDetailModalProps) {
   const destinationId = getDestinationIdForPackage(pkg);
   const itinerary = destinationId ? getItineraryByDestinationId(destinationId) : undefined;
 
+  useModalScrollLock(true);
+
   return (
     <div
-      className="fixed inset-0 z-[100] flex items-end justify-center bg-background/90 p-0 backdrop-blur-md sm:items-center sm:p-6"
+      className="fixed inset-0 z-[100] flex items-end justify-center overflow-hidden bg-background/90 p-0 backdrop-blur-md sm:items-center sm:p-6"
       onClick={onClose}
       role="dialog"
       aria-modal="true"
       aria-labelledby="package-detail-title"
+      data-lenis-prevent
     >
       <div
-        className="relative max-h-[92vh] w-full max-w-3xl overflow-y-auto rounded-t-3xl border border-gold/20 bg-surface shadow-2xl sm:rounded-3xl"
+        className="relative flex max-h-[92vh] min-h-0 w-full max-w-3xl flex-col overflow-hidden rounded-t-3xl border border-gold/20 bg-surface shadow-2xl sm:rounded-3xl"
         onClick={(e) => e.stopPropagation()}
+        data-lenis-prevent
       >
         <button
           onClick={onClose}
-          className="absolute top-4 right-4 z-10 rounded-full p-2 glass transition-colors hover:text-gold"
+          className="absolute top-4 right-4 z-20 rounded-full p-2 glass transition-colors hover:text-gold"
           aria-label="Close"
         >
           <X size={22} />
         </button>
 
+        <div
+          className="min-h-0 flex-1 overflow-y-auto overscroll-y-contain [-webkit-overflow-scrolling:touch]"
+          data-lenis-prevent
+        >
         <div className="relative aspect-[16/9] w-full overflow-hidden sm:aspect-[21/9]">
           <SafeImage
             src={pkg.image}
@@ -123,6 +132,7 @@ export function PackageDetailModal({ pkg, onClose }: PackageDetailModalProps) {
               </MagneticButton>
             </div>
           </div>
+        </div>
         </div>
       </div>
     </div>
