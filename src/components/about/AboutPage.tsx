@@ -7,7 +7,7 @@ import { SafeImage } from "@/components/ui/SafeImage";
 const sections = [
   {
     title: "Our Story",
-    body: "Founded in Ahmedabad, Traguin began with simple belief: luxury travel should feel personal, not transactional. What started as bespoke domestic journeys has grown into a global concierge practice trusted by families, executives, and celebrants alike.",
+    body: "Founded in Ahmedabad, TRAGUIN began with simple belief: luxury travel should feel personal, not transactional. What started as bespoke domestic journeys has grown into a global concierge practice trusted by families, executives, and celebrants alike.",
   },
   {
     title: "Since 2008",
@@ -39,7 +39,7 @@ export function AboutPage() {
           <div className="grid gap-12 lg:grid-cols-2 lg:items-center">
             <SectionHeader
               align="left"
-              eyebrow="Traguin"
+              eyebrow="TRAGUIN"
               title="About Us"
               description="A luxury travel concierge studio devoted to extraordinary journeys."
             />

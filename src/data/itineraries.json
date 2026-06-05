@@ -88,7 +88,7 @@
       "Luxury accommodation as specified",
       "Daily breakfast and selected meals",
       "Private guides and experiences listed",
-      "Dedicated Traguin concierge"
+      "Dedicated TRAGUIN concierge"
     ],
     "excluded": [
       "International flights",
@@ -216,7 +216,7 @@
       "5-star hotel accommodation",
       "Private transfers throughout",
       "Guided experiences as listed",
-      "Traguin concierge support"
+      "TRAGUIN concierge support"
     ],
     "excluded": [
       "International flights",
@@ -1031,6 +1031,512 @@
     "seo": {
       "title": "Singapore Urban Luxe — 4 Day Itinerary",
       "description": "4-day Singapore luxury itinerary with Marina Bay Sands, food tour, and Gardens by the Bay."
+    }
+  },
+  {
+    "slug": "japan-cultural-grand-tour",
+    "packageId": "japan-culture-9d",
+    "destinationId": "japan",
+    "title": "Japan Cultural Grand Tour",
+    "destination": "Japan",
+    "region": "international",
+    "duration": "9 Days / 8 Nights",
+    "durationDays": 9,
+    "startingPrice": 385000,
+    "priceNote": "Per couple, luxury ryokan & city hotel category",
+    "heroImage": "https://images.pexels.com/photos/30988649/pexels-photo-30988649.jpeg?auto=compress&cs=tinysrgb&w=1920",
+    "tagline": "Temples, tradition, and Michelin artistry",
+    "overview": "A masterfully paced Japan journey from Tokyo's contemporary pulse to Kyoto's timeless grace — private temple access, kaiseki dining, and ryokan immersion with TRAGUIN concierge throughout.",
+    "highlights": [
+      "Private early-morning temple access in Kyoto",
+      "Michelin kaiseki and omakase experiences",
+      "Luxury ryokan with onsen ritual",
+      "Shinkansen first-class transfers"
+    ],
+    "featured": true,
+    "featuredOrder": 6,
+    "days": [
+      {
+        "day": 1,
+        "title": "Tokyo Arrival",
+        "description": "VIP airport meet-and-greet. Evening welcome dinner in Ginza with skyline views.",
+        "activities": ["VIP transfer", "Hotel check-in", "Welcome dinner"]
+      },
+      {
+        "day": 2,
+        "title": "Tokyo Discovery",
+        "description": "Private guide through Asakusa, Meiji Shrine, and curated contemporary art galleries.",
+        "activities": ["Asakusa tour", "Meiji Shrine", "Gallery visit"]
+      },
+      {
+        "day": 3,
+        "title": "Culinary Tokyo",
+        "description": "Tsukiji outer market tasting with chef. Evening Michelin-starred kaiseki.",
+        "activities": ["Market tour", "Chef experience", "Kaiseki dinner"]
+      },
+      {
+        "day": 4,
+        "title": "Hakone Retreat",
+        "description": "Shinkansen to Hakone. Private onsen ryokan with Mount Fuji views.",
+        "activities": ["Shinkansen", "Ryokan check-in", "Onsen ritual"]
+      },
+      {
+        "day": 5,
+        "title": "Kyoto Arrival",
+        "description": "Scenic transfer to Kyoto. Evening stroll through Gion's lantern-lit lanes.",
+        "activities": ["Transfer to Kyoto", "Gion walk", "Traditional dinner"]
+      },
+      {
+        "day": 6,
+        "title": "Kyoto Temples",
+        "description": "Private dawn access to Fushimi Inari and Kiyomizu-dera before public hours.",
+        "activities": ["Dawn temple access", "Tea ceremony", "Afternoon leisure"]
+      },
+      {
+        "day": 7,
+        "title": "Arashiyama & Craft",
+        "description": "Bamboo grove at sunrise. Private workshop with a master kimono artisan.",
+        "activities": ["Bamboo grove", "Artisan workshop", "River cruise"]
+      },
+      {
+        "day": 8,
+        "title": "Nara Day Trip",
+        "description": "Private excursion to Nara Park and Todai-ji with historian guide.",
+        "activities": ["Nara excursion", "Temple visit", "Farewell kaiseki"]
+      },
+      {
+        "day": 9,
+        "title": "Departure",
+        "description": "Morning at leisure. Kansai or Tokyo airport transfer with lounge access.",
+        "activities": ["Leisure morning", "Airport transfer"]
+      }
+    ],
+    "hotels": [
+      {
+        "name": "Aman Tokyo",
+        "location": "Tokyo",
+        "nights": "3 Nights",
+        "image": "https://images.unsplash.com/photo-1540959736712-19563eedd508?ixlib=rb-4.1.0&auto=format&fit=crop&w=800&q=80",
+        "description": "Serene urban sanctuary with panoramic city views and minimalist Japanese design.",
+        "stars": 5
+      },
+      {
+        "name": "Gora Kadan",
+        "location": "Hakone",
+        "nights": "1 Night",
+        "image": "https://images.pexels.com/photos/189296/pexels-photo-189296.jpeg?auto=compress&cs=tinysrgb&w=800",
+        "description": "Legendary ryokan with private onsen and kaiseki dining in the mountains.",
+        "stars": 5
+      },
+      {
+        "name": "Suiran Kyoto",
+        "location": "Kyoto",
+        "nights": "3 Nights",
+        "image": "https://images.pexels.com/photos/261181/pexels-photo-261181.jpeg?auto=compress&cs=tinysrgb&w=800",
+        "description": "Luxury retreat on the banks of the Hozu River near Arashiyama.",
+        "stars": 5
+      }
+    ],
+    "included": [
+      "Luxury accommodation as specified",
+      "Shinkansen first-class segments",
+      "Private guides and temple access",
+      "Selected Michelin dining",
+      "Dedicated TRAGUIN concierge"
+    ],
+    "excluded": [
+      "International flights",
+      "Japan Rail Pass extras beyond itinerary",
+      "Travel insurance",
+      "Personal shopping"
+    ],
+    "gallery": [
+      "https://images.pexels.com/photos/30988649/pexels-photo-30988649.jpeg?auto=compress&cs=tinysrgb&w=1200",
+      "https://images.unsplash.com/photo-1540959736712-19563eedd508?ixlib=rb-4.1.0&auto=format&fit=crop&w=1200&q=80",
+      "https://images.unsplash.com/photo-1536098598794-41711c91d3fd?ixlib=rb-4.1.0&auto=format&fit=crop&w=1200&q=80",
+      "https://images.unsplash.com/photo-1545569341-9eb8b30979d2?ixlib=rb-4.1.0&auto=format&fit=crop&w=1200&q=80",
+      "https://images.unsplash.com/photo-1542051841853-71698feba9a4?ixlib=rb-4.1.0&auto=format&fit=crop&w=1200&q=80"
+    ],
+    "faq": [
+      {
+        "question": "When is cherry blossom season?",
+        "answer": "Late March through early April is peak sakura. We adjust routing and accommodations for your preferred travel window."
+      },
+      {
+        "question": "Is the itinerary suitable for first-time visitors?",
+        "answer": "Yes. This is our signature introduction to Japan, balancing icons with intimate private experiences."
+      }
+    ],
+    "seo": {
+      "title": "Japan Cultural Grand Tour — 9 Day Itinerary",
+      "description": "9-day Japan luxury itinerary with Tokyo, Kyoto, ryokan onsen, and Michelin dining."
+    }
+  },
+  {
+    "slug": "maldives-overwater-escape",
+    "packageId": "maldives-overwater-6d",
+    "destinationId": "maldives",
+    "title": "Maldives Overwater Escape",
+    "destination": "Maldives",
+    "region": "international",
+    "duration": "6 Days / 5 Nights",
+    "durationDays": 6,
+    "startingPrice": 295000,
+    "priceNote": "Per couple, overwater villa category",
+    "heroImage": "https://images.pexels.com/photos/1287461/pexels-photo-1287461.jpeg?auto=compress&cs=tinysrgb&w=1920",
+    "tagline": "Turquoise lagoons and absolute seclusion",
+    "overview": "Five nights of uninterrupted Indian Ocean bliss — overwater villa living, private sandbank dining, and marine encounters curated for couples seeking privacy and polish.",
+    "highlights": [
+      "Overwater villa with glass floor panels",
+      "Private sandbank champagne picnic",
+      "Sunset dolphin cruise",
+      "Couples spa over the lagoon"
+    ],
+    "featured": true,
+    "featuredOrder": 7,
+    "days": [
+      {
+        "day": 1,
+        "title": "Seaplane Arrival",
+        "description": "VIP lounge and scenic seaplane to your private island resort. Sunset cocktails on arrival.",
+        "activities": ["Seaplane transfer", "Villa check-in", "Sunset cocktails"]
+      },
+      {
+        "day": 2,
+        "title": "Lagoon Leisure",
+        "description": "Unstructured day for pool, reef snorkeling, and in-villa dining.",
+        "activities": ["Snorkeling", "Pool & lagoon", "In-villa dinner"]
+      },
+      {
+        "day": 3,
+        "title": "Sandbank Picnic",
+        "description": "Private sandbank escape with chef-prepared lunch and champagne.",
+        "activities": ["Sandbank picnic", "Photography session", "Stargazing dinner"]
+      },
+      {
+        "day": 4,
+        "title": "Marine Discovery",
+        "description": "Sunrise dolphin cruise. Afternoon couples spa ritual over the water.",
+        "activities": ["Dolphin cruise", "Spa ritual", "Beach barbecue"]
+      },
+      {
+        "day": 5,
+        "title": "Underwater Dining",
+        "description": "Optional diving or submarine excursion. Farewell underwater restaurant experience.",
+        "activities": ["Diving or submarine", "Underwater dining", "Farewell night"]
+      },
+      {
+        "day": 6,
+        "title": "Departure",
+        "description": "Leisurely breakfast and seaplane transfer to Malé international airport.",
+        "activities": ["Beach morning", "Seaplane transfer"]
+      }
+    ],
+    "hotels": [
+      {
+        "name": "Soneva Jani",
+        "location": "Noonu Atoll",
+        "nights": "5 Nights",
+        "image": "https://images.pexels.com/photos/1287461/pexels-photo-1287461.jpeg?auto=compress&cs=tinysrgb&w=800",
+        "description": "Iconic overwater villas with retractable roofs and observatory-grade stargazing.",
+        "stars": 5
+      }
+    ],
+    "included": [
+      "Overwater villa accommodation",
+      "Seaplane transfers",
+      "Sandbank picnic and dolphin cruise",
+      "Daily breakfast and selected dinners",
+      "Dedicated island host"
+    ],
+    "excluded": [
+      "International flights to Malé",
+      "Travel insurance",
+      "Premium spirits and diving certifications",
+      "Green tax (advised at booking)"
+    ],
+    "gallery": [
+      "https://images.pexels.com/photos/1287461/pexels-photo-1287461.jpeg?auto=compress&cs=tinysrgb&w=1200",
+      "https://images.pexels.com/photos/1450360/pexels-photo-1450360.jpeg?auto=compress&cs=tinysrgb&w=1200",
+      "https://images.pexels.com/photos/1024965/pexels-photo-1024965.jpeg?auto=compress&cs=tinysrgb&w=1200"
+    ],
+    "faq": [
+      {
+        "question": "Is this itinerary honeymoon-ready?",
+        "answer": "Yes. We add private turndowns, celebration dining, and photography upon request."
+      },
+      {
+        "question": "What is the best season?",
+        "answer": "November through April offers the calmest seas and finest visibility for snorkeling."
+      }
+    ],
+    "seo": {
+      "title": "Maldives Overwater Escape — 6 Day Itinerary",
+      "description": "6-day Maldives luxury itinerary with overwater villa, sandbank picnic, and dolphin cruise."
+    }
+  },
+  {
+    "slug": "mediterranean-grand-voyage",
+    "packageId": "mediterranean-cruise-10d",
+    "destinationId": "mediterranean",
+    "title": "Mediterranean Grand Voyage",
+    "destination": "Mediterranean",
+    "region": "international",
+    "duration": "10 Days / 9 Nights",
+    "durationDays": 10,
+    "startingPrice": 520000,
+    "priceNote": "Per couple, suite stateroom category",
+    "heroImage": "https://images.pexels.com/photos/3601425/pexels-photo-3601425.jpeg?auto=compress&cs=tinysrgb&w=1920",
+    "tagline": "Coastal gems and cultural ports",
+    "overview": "Sail the Mediterranean aboard an ultra-luxury small ship — Amalfi cliffs, Santorini sunsets, and Barcelona's artistry with private shore excursions and white-glove service throughout.",
+    "highlights": [
+      "Suite stateroom with butler service",
+      "Amalfi Coast private boat excursion",
+      "Santorini caldera sunset dinner",
+      "Onboard Michelin-caliber dining"
+    ],
+    "featured": false,
+    "days": [
+      {
+        "day": 1,
+        "title": "Barcelona Embarkation",
+        "description": "Chauffeured transfer to port. Suite embarkation with champagne welcome.",
+        "activities": ["Port transfer", "Suite embarkation", "Welcome dinner"]
+      },
+      {
+        "day": 2,
+        "title": "At Sea",
+        "description": "Spa, pool, and enrichment lectures. Captain's gala dinner.",
+        "activities": ["Spa & leisure", "Enrichment talk", "Gala dinner"]
+      },
+      {
+        "day": 3,
+        "title": "Monte Carlo",
+        "description": "Private Monaco and Eze village tour with reserved casino lounge access.",
+        "activities": ["Monaco tour", "Eze village", "Evening at sea"]
+      },
+      {
+        "day": 4,
+        "title": "Portofino & Cinque Terre",
+        "description": "Tender to Portofino. Private Riva boat along the Ligurian coast.",
+        "activities": ["Portofino tender", "Coastal boat tour", "Onboard dining"]
+      },
+      {
+        "day": 5,
+        "title": "Amalfi Coast",
+        "description": "Private gozzo boat to hidden coves. Lunch in Positano cliffside restaurant.",
+        "activities": ["Amalfi boat tour", "Positano lunch", "Sunset sailing"]
+      },
+      {
+        "day": 6,
+        "title": "At Sea",
+        "description": "Cooking class with ship's chef. Wine pairing dinner.",
+        "activities": ["Cooking class", "Wine pairing", "Evening entertainment"]
+      },
+      {
+        "day": 7,
+        "title": "Santorini",
+        "description": "Private caldera catamaran with onboard chef. Oia sunset dinner.",
+        "activities": ["Catamaran cruise", "Oia sunset", "Caldera dinner"]
+      },
+      {
+        "day": 8,
+        "title": "Mykonos",
+        "description": "Beach club reservation and guided exploration of Little Venice.",
+        "activities": ["Beach club", "Mykonos town", "Farewell party"]
+      },
+      {
+        "day": 9,
+        "title": "Athens (Piraeus)",
+        "description": "Private Acropolis access before crowds. Disembarkation or overnight extension.",
+        "activities": ["Acropolis tour", "Plaka lunch", "Disembarkation"]
+      },
+      {
+        "day": 10,
+        "title": "Departure",
+        "description": "Athens airport transfer or optional Peloponnese extension.",
+        "activities": ["Optional extension", "Airport transfer"]
+      }
+    ],
+    "hotels": [
+      {
+        "name": "Suite Stateroom — Ultra-Luxury Liner",
+        "location": "Mediterranean Sea",
+        "nights": "9 Nights",
+        "image": "https://images.pexels.com/photos/3601425/pexels-photo-3601425.jpeg?auto=compress&cs=tinysrgb&w=800",
+        "description": "Spacious suite with veranda, butler service, and priority tender access.",
+        "stars": 5
+      }
+    ],
+    "included": [
+      "Suite stateroom and onboard dining",
+      "Private shore excursions listed",
+      "Port transfers on embark/disembark",
+      "Onboard gratuities",
+      "TRAGUIN voyage concierge"
+    ],
+    "excluded": [
+      "International flights",
+      "Travel insurance",
+      "Premium shore excursions not listed",
+      "Pre/post hotel nights unless added"
+    ],
+    "gallery": [
+      "https://images.pexels.com/photos/3601425/pexels-photo-3601425.jpeg?auto=compress&cs=tinysrgb&w=1200",
+      "https://images.pexels.com/photos/1018698/pexels-photo-1018698.jpeg?auto=compress&cs=tinysrgb&w=1200",
+      "https://images.pexels.com/photos/1450360/pexels-photo-1450360.jpeg?auto=compress&cs=tinysrgb&w=1200"
+    ],
+    "faq": [
+      {
+        "question": "Will I experience seasickness?",
+        "answer": "Small luxury ships with stabilizers navigate calm Mediterranean routes; we advise cabin placement for comfort."
+      },
+      {
+        "question": "Can we add Rome before embarkation?",
+        "answer": "Yes. Pre-cruise Rome and Vatican private tours are popular add-ons."
+      }
+    ],
+    "seo": {
+      "title": "Mediterranean Grand Voyage — 10 Day Cruise Itinerary",
+      "description": "10-day Mediterranean luxury cruise with Amalfi, Santorini, and suite stateroom."
+    }
+  },
+  {
+    "slug": "asia-pacific-explorer",
+    "packageId": "asia-pacific-cruise-12d",
+    "destinationId": "asia-pacific",
+    "title": "Asia Pacific Explorer",
+    "destination": "Asia Pacific",
+    "region": "international",
+    "duration": "12 Days / 11 Nights",
+    "durationDays": 12,
+    "startingPrice": 480000,
+    "priceNote": "Per couple, panoramic suite category",
+    "heroImage": "https://images.pexels.com/photos/3608263/pexels-photo-3608263.jpeg?auto=compress&cs=tinysrgb&w=1920",
+    "tagline": "Exotic shores and expedition elegance",
+    "overview": "An Asia Pacific voyage blending Bali's spirituality, Komodo's wild beauty, and Singapore's polish — expedition-grade shore experiences with the comfort of an ultra-luxury liner.",
+    "highlights": [
+      "Panoramic suite with wraparound views",
+      "Komodo dragon private expedition",
+      "Bali temple and rice terrace access",
+      "Singapore culinary finale"
+    ],
+    "featured": false,
+    "days": [
+      {
+        "day": 1,
+        "title": "Singapore Embarkation",
+        "description": "Chauffeured transfer to cruise terminal. Suite embarkation and Southeast Asian tasting menu.",
+        "activities": ["Port transfer", "Embarkation", "Welcome dinner"]
+      },
+      {
+        "day": 2,
+        "title": "At Sea",
+        "description": "Wellness deck, cultural enrichment, and formal dining night.",
+        "activities": ["Spa", "Cultural lecture", "Formal dinner"]
+      },
+      {
+        "day": 3,
+        "title": "Bali (Benoa)",
+        "description": "Private Ubud tour with water temple and rice terrace lunch.",
+        "activities": ["Ubud tour", "Water temple", "Terrace lunch"]
+      },
+      {
+        "day": 4,
+        "title": "Lombok",
+        "description": "Coastal village visit and secluded beach club afternoon.",
+        "activities": ["Village tour", "Beach club", "Return to ship"]
+      },
+      {
+        "day": 5,
+        "title": "Komodo National Park",
+        "description": "Private ranger-led Komodo dragon expedition with pink beach picnic.",
+        "activities": ["Komodo trek", "Pink beach", "Expedition briefing"]
+      },
+      {
+        "day": 6,
+        "title": "At Sea",
+        "description": "Photography workshop and Indonesian wine-pairing dinner.",
+        "activities": ["Workshop", "Wine dinner", "Evening show"]
+      },
+      {
+        "day": 7,
+        "title": "Borneo (Sandakan)",
+        "description": "Optional orangutan sanctuary visit or river cruise through mangroves.",
+        "activities": ["Sanctuary visit", "River cruise", "Onboard night"]
+      },
+      {
+        "day": 8,
+        "title": "At Sea",
+        "description": "Leisure day with pool, library, and chef's table reservation.",
+        "activities": ["Pool leisure", "Chef's table", "Stargazing deck"]
+      },
+      {
+        "day": 9,
+        "title": "Manila",
+        "description": "Intramuros heritage walk and private collection museum visit.",
+        "activities": ["Intramuros tour", "Museum visit", "Filipino feast"]
+      },
+      {
+        "day": 10,
+        "title": "At Sea",
+        "description": "Final sea day with farewell gala and packing concierge.",
+        "activities": ["Gala dinner", "Packing service", "Entertainment"]
+      },
+      {
+        "day": 11,
+        "title": "Singapore Return",
+        "description": "Disembarkation. Optional overnight at Marina Bay partner hotel.",
+        "activities": ["Disembarkation", "Optional hotel", "Skyline evening"]
+      },
+      {
+        "day": 12,
+        "title": "Departure",
+        "description": "Changi airport transfer with lounge access.",
+        "activities": ["Leisure morning", "Airport transfer"]
+      }
+    ],
+    "hotels": [
+      {
+        "name": "Panoramic Suite — Expedition Liner",
+        "location": "Asia Pacific",
+        "nights": "11 Nights",
+        "image": "https://images.pexels.com/photos/3608263/pexels-photo-3608263.jpeg?auto=compress&cs=tinysrgb&w=800",
+        "description": "Wraparound-suite with butler, expedition gear storage, and priority tender.",
+        "stars": 5
+      }
+    ],
+    "included": [
+      "Panoramic suite accommodation",
+      "Expedition shore programs listed",
+      "Onboard dining and gratuities",
+      "Port transfers embark/disembark",
+      "Dedicated voyage concierge"
+    ],
+    "excluded": [
+      "International flights",
+      "Travel insurance",
+      "Optional orangutan extension fees",
+      "Pre/post hotel unless added"
+    ],
+    "gallery": [
+      "https://images.pexels.com/photos/3608263/pexels-photo-3608263.jpeg?auto=compress&cs=tinysrgb&w=1200",
+      "https://images.pexels.com/photos/1450360/pexels-photo-1450360.jpeg?auto=compress&cs=tinysrgb&w=1200",
+      "https://images.pexels.com/photos/1287145/pexels-photo-1287145.jpeg?auto=compress&cs=tinysrgb&w=1200"
+    ],
+    "faq": [
+      {
+        "question": "How strenuous is the Komodo trek?",
+        "answer": "Moderate. Private rangers pace the group; alternative boat-based viewing is available."
+      },
+      {
+        "question": "Can we extend in Bali after the cruise?",
+        "answer": "Yes. We offer seamless transitions to our Bali Soul Retreat itinerary."
+      }
+    ],
+    "seo": {
+      "title": "Asia Pacific Explorer — 12 Day Cruise Itinerary",
+      "description": "12-day Asia Pacific luxury cruise with Bali, Komodo, and panoramic suite."
     }
   }
 ]

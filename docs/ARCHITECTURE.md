@@ -1,4 +1,4 @@
-# Traguin — Architecture Overview
+# TRAGUIN — Architecture Overview
 
 ## Tech Stack
 

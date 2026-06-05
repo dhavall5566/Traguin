@@ -1,4 +1,4 @@
-# Traguin Luxury Travel Platform — Sitemap
+# TRAGUIN Luxury Travel Platform — Sitemap
 
 ## Public Routes
 
@@ -21,7 +21,7 @@
 4. **Interactive World Map** — 3D globe with country selection
 5. **Travel Mood Selector** — 8 mood cards with recommendations
 6. **Featured Experiences** — Horizontal scroll package cards
-7. **Why Traguin** — Animated statistics counters
+7. **Why TRAGUIN** — Animated statistics counters
 8. **Journey Process** — Horizontal timeline (6 steps)
 9. **Customer Stories** — Story-style testimonials with modal
 10. **AI Travel Planner** — Interactive itinerary generator

@@ -1,16 +1,20 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { useSearchParams } from "next/navigation";
 import { Map, Grid3X3, Heart, GitCompare, Star } from "lucide-react";
 import { hotels } from "@/data/hotels";
 import type { Hotel } from "@/types";
 import { HotelDetailModal } from "@/components/hotels/HotelDetailModal";
 import { PriceDisplay } from "@/components/ui/PriceDisplay";
+import { getHotelById } from "@/lib/hotels";
 import { cn } from "@/lib/utils";
-import { SafeImage } from "@/components/ui/SafeImage";
+import { HotelImageSlider } from "@/components/hotels/HotelImageSlider";
+import { getHotelGalleryImages } from "@/lib/hotel-images";
 import { MagneticButton } from "@/components/ui/MagneticButton";
 
 export function HotelDiscovery() {
+  const searchParams = useSearchParams();
   const [view, setView] = useState<"grid" | "map">("grid");
   const [wishlist, setWishlist] = useState<string[]>([]);
   const [compare, setCompare] = useState<string[]>([]);
@@ -25,6 +29,22 @@ export function HotelDiscovery() {
   const countries = ["all", ...new Set(hotels.map((h) => h.destination))];
   const amenityOptions = ["all", ...new Set(hotels.flatMap((h) => h.amenities))].slice(0, 8);
   const propertyTypes = ["all", "Resort", "Hotel", "Villa", "Palace"];
+
+  useEffect(() => {
+    const hotelId = searchParams.get("hotel");
+    if (hotelId) {
+      const hotel = getHotelById(hotelId);
+      if (hotel) setSelectedHotel(hotel);
+    }
+
+    const destination = searchParams.get("destination");
+    if (destination) {
+      const match = hotels.find(
+        (h) => h.destination.toLowerCase() === destination.toLowerCase()
+      );
+      setCountryFilter(match ? match.destination : destination);
+    }
+  }, [searchParams]);
 
   const filtered = hotels.filter((h) => {
     if (countryFilter !== "all" && h.destination !== countryFilter) return false;
@@ -164,10 +184,12 @@ export function HotelDiscovery() {
                   style={{ transform: "perspective(1000px)" }}
                 >
                   <div className="relative aspect-[4/3] overflow-hidden">
-                    <SafeImage
-                      src={hotel.image}
+                    <HotelImageSlider
+                      images={getHotelGalleryImages(hotel)}
                       alt={`${hotel.name}, ${hotel.destination}`}
-                      className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-110"
+                      className="h-full w-full"
+                      showIndicators={false}
+                      pauseOnHover
                     />
                     <div className="absolute top-4 right-4 flex gap-2">
                       <button

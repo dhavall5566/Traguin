@@ -4,7 +4,8 @@ const pexels = (id: number, width = 1200) =>
 const unsplash = (id: string, width = 1200) =>
   `https://images.unsplash.com/photo-${id}?ixlib=rb-4.1.0&auto=format&fit=crop&w=${width}&q=80`;
 
-export const FALLBACK_IMAGE = pexels(417173);
+/** Neutral travel placeholder — not tied to any single destination */
+export const FALLBACK_IMAGE = pexels(2387866);
 
 export const images = {
   hero: unsplash("1469854523086-cc02fe5d8800", 1920),

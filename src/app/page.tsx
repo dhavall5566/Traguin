@@ -1,7 +1,7 @@
 "use client";
 
 import { Suspense, lazy } from "react";
-import { HeroSection } from "@/components/home/HeroSection";
+import { SlidingPackages } from "@/components/home/SlidingPackages";
 
 const FeaturedDestinations = lazy(() =>
   import("@/components/home/FeaturedDestinations").then((m) => ({ default: m.FeaturedDestinations }))
@@ -32,7 +32,7 @@ function SectionFallback({ minHeight = "40vh" }: { minHeight?: string }) {
 export default function HomePage() {
   return (
     <main>
-      <HeroSection />
+      <SlidingPackages />
 
       <Suspense fallback={<SectionFallback minHeight="80vh" />}>
         <FeaturedDestinations />

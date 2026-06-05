@@ -31,7 +31,7 @@ export function WhyTraguin() {
     <section ref={sectionRef} className="section-padding relative overflow-hidden">
       <div className="relative mx-auto max-w-7xl">
         <SectionHeader
-          title="Why Traguin"
+          title="Why TRAGUIN"
           description="Eighteen years of crafting journeys that transcend ordinary travel."
         />
 

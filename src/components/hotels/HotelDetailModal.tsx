@@ -4,8 +4,10 @@ import { useEffect } from "react";
 import { X, Star, MapPin, Sparkles, Navigation } from "lucide-react";
 import type { Hotel } from "@/types";
 import { PriceDisplay } from "@/components/ui/PriceDisplay";
-import { SafeImage } from "@/components/ui/SafeImage";
+import { HotelImageSlider } from "@/components/hotels/HotelImageSlider";
 import { HotelBookingForm } from "@/components/hotels/HotelBookingForm";
+import { HotelReviewForm } from "@/components/hotels/HotelReviewForm";
+import { getHotelGalleryImages } from "@/lib/hotel-images";
 import { useModalScrollLock } from "@/lib/use-modal-scroll-lock";
 import { cn } from "@/lib/utils";
 
@@ -53,29 +55,25 @@ export function HotelDetailModal({ hotel, onClose }: HotelDetailModalProps) {
           data-lenis-prevent
         >
           <div className="relative aspect-[16/9] w-full shrink-0 overflow-hidden sm:aspect-[21/9]">
-            <SafeImage
-              src={hotel.image}
+            <HotelImageSlider
+              images={getHotelGalleryImages(hotel)}
               alt={`${hotel.name}, ${hotel.destination}`}
-              className="h-full w-full object-cover"
+              className="h-full w-full"
+              showIndicators
             />
-            <div className="absolute inset-0 bg-gradient-to-t from-surface via-surface/20 to-transparent" />
-            <div className="absolute right-4 bottom-4 left-4 sm:right-16 sm:bottom-6 sm:left-6">
-              <div className="flex items-center gap-1">
-                {[...Array(hotel.stars)].map((_, i) => (
-                  <Star key={i} size={14} className="fill-gold text-gold" />
-                ))}
-              </div>
-              <h2
-                id="hotel-detail-title"
-                className="mt-2 font-display text-2xl text-foreground sm:text-4xl"
-              >
-                {hotel.name}
-              </h2>
-              <p className="mt-1 flex items-center gap-1.5 text-sm text-muted">
-                <MapPin size={14} className="text-gold" />
-                {hotel.destination}
-              </p>
-            </div>
+          </div>
+
+          <div className="border-b border-glass-border bg-surface px-6 py-5 sm:px-8 sm:py-6">
+            <h2
+              id="hotel-detail-title"
+              className="font-display text-2xl text-foreground sm:text-4xl"
+            >
+              {hotel.name}
+            </h2>
+            <p className="mt-1 flex items-center gap-1.5 text-sm text-muted">
+              <MapPin size={14} className="shrink-0 text-gold" />
+              {hotel.destination}
+            </p>
           </div>
 
           <div className="grid gap-8 p-6 lg:grid-cols-5 lg:gap-10 lg:p-8">
@@ -86,9 +84,16 @@ export function HotelDetailModal({ hotel, onClose }: HotelDetailModalProps) {
 
               <div className="flex flex-wrap items-end justify-between gap-4 border-b border-glass-border pb-6">
                 <PriceDisplay amount={hotel.price} label="From" size="lg" suffix="/night" />
-                <span className="text-sm text-muted">
-                  Guest rating <span className="text-gold">{hotel.rating}</span>/5
-                </span>
+                <div className="flex flex-col items-end gap-2">
+                  <div className="flex items-center gap-1" aria-label={`${hotel.stars} star property`}>
+                    {[...Array(hotel.stars)].map((_, i) => (
+                      <Star key={i} size={14} className="fill-gold text-gold" />
+                    ))}
+                  </div>
+                  <span className="text-sm text-muted">
+                    Guest rating <span className="text-gold">{hotel.rating}</span>/5
+                  </span>
+                </div>
               </div>
 
               <section>
@@ -136,8 +141,9 @@ export function HotelDetailModal({ hotel, onClose }: HotelDetailModalProps) {
               </section>
             </div>
 
-            <div className="lg:col-span-2 lg:self-start">
+            <div className="space-y-6 lg:col-span-2 lg:self-start">
               <HotelBookingForm hotel={hotel} />
+              <HotelReviewForm hotel={hotel} />
             </div>
           </div>
         </div>

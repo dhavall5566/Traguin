@@ -13,13 +13,16 @@ import {
   X,
 } from "lucide-react";
 import type { Itinerary } from "@/types/itinerary";
+import { HotelImageSlider } from "@/components/hotels/HotelImageSlider";
 import { SafeImage } from "@/components/ui/SafeImage";
 import { PriceDisplay } from "@/components/ui/PriceDisplay";
+import { getDestinationGalleryImages } from "@/lib/destination-images";
 import { MagneticButton } from "@/components/ui/MagneticButton";
 import { ItineraryInquiryForm } from "@/components/itineraries/ItineraryInquiryForm";
 import { ItineraryTimeline } from "@/components/itineraries/ItineraryTimeline";
 import { contactInfo } from "@/data/contact";
 import { itineraryPrimaryCta, itinerarySecondaryCta } from "@/data/site";
+import { getLuxuryStayHrefForItineraryHotel } from "@/lib/hotels";
 import { scrollToInquirySection } from "@/lib/scroll-to-inquiry";
 import { cn } from "@/lib/utils";
 
@@ -29,8 +32,13 @@ type ItineraryDetailProps = {
 };
 
 export function ItineraryDetail({ itinerary, destinationName }: ItineraryDetailProps) {
+  const destinationGallery = getDestinationGalleryImages(
+    itinerary.destinationId,
+    itinerary.heroImage
+  );
+
   const whatsappMessage = encodeURIComponent(
-    `Hello Traguin, I'm interested in the ${itinerary.title} itinerary (${itinerary.duration}).`
+    `Hello TRAGUIN, I'm interested in the ${itinerary.title} itinerary (${itinerary.duration}).`
   );
   const whatsappHref = `${contactInfo.whatsappHref}?text=${whatsappMessage}`;
 
@@ -44,12 +52,15 @@ export function ItineraryDetail({ itinerary, destinationName }: ItineraryDetailP
     <article>
       {/* Hero */}
       <section className="relative min-h-[50svh] md:min-h-[60svh]">
-        <SafeImage
-          src={itinerary.heroImage}
-          alt={itinerary.title}
-          className="absolute inset-0 h-full w-full object-cover"
-          loading="eager"
-        />
+        <div className="absolute inset-0 overflow-hidden">
+          <HotelImageSlider
+            images={destinationGallery}
+            alt={itinerary.title}
+            className="h-full w-full"
+            intervalMs={4000}
+            showIndicators={false}
+          />
+        </div>
         <div className="absolute inset-0 bg-background/60" />
         <div className="absolute inset-0 bg-gradient-to-t from-background via-background/40 to-transparent" />
 
@@ -136,16 +147,23 @@ export function ItineraryDetail({ itinerary, destinationName }: ItineraryDetailP
           <h2 className="font-display text-3xl text-foreground md:text-4xl">Hotel Information</h2>
           <div className="mt-10 grid gap-8 md:grid-cols-2">
             {itinerary.hotels.map((hotel) => (
-              <div
+              <Link
                 key={hotel.name}
-                className="overflow-hidden rounded-2xl border border-glass-border glass"
+                href={getLuxuryStayHrefForItineraryHotel(hotel)}
+                className="group block overflow-hidden rounded-2xl border border-glass-border glass transition-all duration-300 hover:border-gold/35 hover:shadow-[0_16px_40px_-16px_rgba(212,175,55,0.2)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gold"
               >
-                <div className="relative aspect-[16/9]">
-                  <SafeImage src={hotel.image} alt={hotel.name} className="h-full w-full object-cover" />
+                <div className="relative aspect-[16/9] overflow-hidden">
+                  <SafeImage
+                    src={hotel.image}
+                    alt={hotel.name}
+                    className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+                  />
                 </div>
                 <div className="p-6">
                   <div className="flex items-center justify-between gap-2">
-                    <h3 className="font-display text-xl text-foreground">{hotel.name}</h3>
+                    <h3 className="font-display text-xl text-foreground transition-colors group-hover:text-gold">
+                      {hotel.name}
+                    </h3>
                     {hotel.stars && (
                       <div className="flex gap-0.5">
                         {[...Array(hotel.stars)].map((_, i) => (
@@ -156,8 +174,11 @@ export function ItineraryDetail({ itinerary, destinationName }: ItineraryDetailP
                   </div>
                   <p className="mt-1 text-sm text-gold">{hotel.location} · {hotel.nights}</p>
                   <p className="mt-3 text-sm leading-relaxed text-muted">{hotel.description}</p>
+                  <p className="mt-4 text-xs font-medium tracking-wide text-gold uppercase opacity-0 transition-opacity duration-300 group-hover:opacity-100">
+                    View property →
+                  </p>
                 </div>
-              </div>
+              </Link>
             ))}
           </div>
         </div>
@@ -174,12 +195,12 @@ export function ItineraryDetail({ itinerary, destinationName }: ItineraryDetailP
       </section>
 
       {/* Gallery */}
-      {itinerary.gallery.length > 0 && (
+      {destinationGallery.length > 0 && (
         <section className="section-padding">
           <div className="mx-auto max-w-7xl">
             <h2 className="font-display text-3xl text-foreground md:text-4xl">Gallery</h2>
             <div className="mt-8 grid grid-cols-2 gap-3 md:grid-cols-3 lg:grid-cols-4">
-              {itinerary.gallery.map((src, i) => (
+              {destinationGallery.map((src, i) => (
                 <div key={src} className={cn("relative overflow-hidden rounded-xl", i === 0 && "col-span-2 row-span-2 aspect-square md:aspect-auto md:min-h-[280px]")}>
                   <SafeImage
                     src={src}

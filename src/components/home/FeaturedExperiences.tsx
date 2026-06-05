@@ -48,29 +48,36 @@ export function FeaturedExperiences() {
                   alt={`${pkg.title} — ${pkg.destination}`}
                   className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-110"
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-background via-background/20 to-transparent" />
+                <div className="card-image-scrim absolute inset-0" aria-hidden />
 
-                <div className="absolute top-4 right-4 flex items-center gap-1 glass rounded-full px-3 py-1">
+                <div className="absolute top-4 right-4 z-[1] flex items-center gap-1 glass rounded-full px-3 py-1">
                   <Star size={12} className="fill-gold text-gold" />
                   <span className="text-xs text-foreground">{pkg.rating}</span>
                 </div>
               </div>
 
-              <div className="absolute bottom-0 w-full p-6 md:p-8">
+              <div className="absolute bottom-0 z-[1] w-full p-6 md:p-8">
                 <p className="text-xs tracking-wide text-sand uppercase">{pkg.destination}</p>
-                <h3 className="mt-1 font-display text-2xl text-foreground">{pkg.title}</h3>
-                <p className="mt-1 text-sm text-muted">{pkg.duration}</p>
+                <h3 className="mt-1 font-display text-2xl text-white">{pkg.title}</h3>
+                <p className="mt-1 text-sm text-white/80">{pkg.duration}</p>
 
                 <ul className="mt-4 space-y-1">
                   {pkg.highlights.slice(0, 2).map((h) => (
-                    <li key={h} className="text-xs text-muted">
+                    <li key={h} className="text-xs text-white/75">
                       • {h}
                     </li>
                   ))}
                 </ul>
 
-                <div className="mt-6 flex items-center justify-between">
-                  <PriceDisplay amount={pkg.price} label="Starting from" size="md" />
+                <div className="mt-6 flex items-center justify-between gap-3">
+                  <div className="card-price-badge shrink-0">
+                    <PriceDisplay
+                      amount={pkg.price}
+                      label="Starting from"
+                      size="md"
+                      variant="overlay"
+                    />
+                  </div>
                   <MagneticButton
                     as="a"
                     href={`/packages/${pkg.region}`}

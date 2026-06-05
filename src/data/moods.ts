@@ -104,7 +104,7 @@ export const testimonials = [
     name: "Priya & Arjun Sharma",
     destination: "Bali",
     tripType: "Luxury Honeymoon",
-    quote: "Traguin transformed our honeymoon into a cinematic love story. Every moment felt personally orchestrated.",
+    quote: "TRAGUIN transformed our honeymoon into a cinematic love story. Every moment felt personally orchestrated.",
     image: images.couple1,
   },
   {
@@ -128,7 +128,7 @@ export const testimonials = [
     name: "Vikram & Neha Kapoor",
     destination: "Dubai",
     tripType: "Corporate Retreat",
-    quote: "Corporate retreat turned luxury escape. Traguin handled everything with white-glove precision.",
+    quote: "Corporate retreat turned luxury escape. TRAGUIN handled everything with white-glove precision.",
     image: images.couple2,
   },
   {

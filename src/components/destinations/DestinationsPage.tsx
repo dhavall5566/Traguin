@@ -38,10 +38,12 @@ export function DestinationsPage() {
                     return (
                       <DestinationCard
                         key={`${category.id}-${dest.id}`}
+                        destinationId={dest.id}
                         name={dest.name}
+                        location={category.title}
                         description={
                           itinerary
-                            ? itinerary.highlights.slice(0, 2).join(" · ")
+                            ? itinerary.highlights.slice(0, 3).join(" ")
                             : dest.description
                         }
                         image={itinerary?.heroImage ?? dest.image}
@@ -49,6 +51,7 @@ export function DestinationsPage() {
                         href={`/destinations/${dest.id}`}
                         cta={itinerary ? "View Itinerary" : "View Destination"}
                         duration={itinerary?.duration}
+                        rating={itinerary ? 5 : 4}
                       />
                     );
                   })}

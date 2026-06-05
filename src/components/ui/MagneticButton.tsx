@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { type MouseEvent, ReactNode } from "react";
 import { cn } from "@/lib/utils";
 
@@ -37,6 +38,14 @@ export function MagneticButton({
   );
 
   if (as === "a" && href) {
+    const isInternal = href.startsWith("/") && !href.startsWith("//");
+    if (isInternal) {
+      return (
+        <Link href={href} className={classes} data-cursor="pointer">
+          {children}
+        </Link>
+      );
+    }
     return (
       <a href={href} className={classes} data-cursor="pointer">
         {children}

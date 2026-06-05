@@ -1,4 +1,4 @@
-# Traguin Design System
+# TRAGUIN Design System
 
 ## Brand Identity
 
@@ -26,8 +26,8 @@
 
 | Role | Font | Class |
 |------|------|-------|
-| Headings | Playfair Display | `font-display` |
-| Body | Plus Jakarta Sans | `font-body` |
+| Headings | Helvetica Neue / Helvetica | `font-display` |
+| Body | Helvetica Neue / Helvetica | `font-body` |
 
 **Heading scale:** `text-4xl` → `text-8xl` for hero, `text-2xl` → `text-3xl` for section titles
 

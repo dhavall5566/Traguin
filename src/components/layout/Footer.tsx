@@ -15,7 +15,7 @@ export function Footer() {
               <span className="logo-wrap">
                 <Image
                   src="/traguin-logo.png"
-                  alt="Traguin"
+                  alt="TRAGUIN"
                   width={1024}
                   height={386}
                   className="h-9 w-auto object-contain object-left"
@@ -132,7 +132,7 @@ export function Footer() {
 
         <div className="mt-12 flex flex-col items-center justify-between gap-4 border-t border-glass-border pt-8 md:flex-row">
           <p className="text-xs text-muted">
-            © {new Date().getFullYear()} Traguin Luxury Travel. All rights reserved.
+            © {new Date().getFullYear()} TRAGUIN Luxury Travel. All rights reserved.
           </p>
           <div className="flex gap-6 text-xs text-muted">
             <Link href="#" className="hover:text-foreground">Privacy Policy</Link>

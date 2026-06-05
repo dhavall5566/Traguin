@@ -1,6 +1,7 @@
 import { packages } from "@/data/packages";
 import { destinations } from "@/data/destinations";
 import type { TravelPackage } from "@/types";
+import { getItineraryByPackageId } from "@/lib/itineraries";
 
 export function getPackagesForCity(cityName: string): TravelPackage[] {
   return packages.filter(
@@ -16,6 +17,10 @@ export function getPackagesForCityId(cityId: string): TravelPackage[] {
     thailand: "Thailand",
     vietnam: "Vietnam",
     singapore: "Singapore",
+    japan: "Japan",
+    maldives: "Maldives",
+    mediterranean: "Mediterranean",
+    "asia-pacific": "Asia Pacific",
     kerala: "Kerala",
     kashmir: "Kashmir",
     goa: "Goa",
@@ -30,4 +35,15 @@ export function getDestinationIdForPackage(pkg: TravelPackage): string | undefin
     (d) => d.name.toLowerCase() === pkg.destination.toLowerCase()
   );
   return match?.id;
+}
+
+/** Primary CTA for a package card — full itinerary when available, else destination or package listing. */
+export function getPackageJourneyHref(pkg: TravelPackage): string {
+  const itinerary = getItineraryByPackageId(pkg.id);
+  if (itinerary) return `/destinations/${itinerary.destinationId}`;
+
+  const destinationId = getDestinationIdForPackage(pkg);
+  if (destinationId) return `/destinations/${destinationId}`;
+
+  return `/packages/${pkg.region}`;
 }

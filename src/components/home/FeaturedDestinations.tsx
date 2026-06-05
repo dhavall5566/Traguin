@@ -24,10 +24,12 @@ export function FeaturedDestinations() {
             return (
               <DestinationCard
                 key={dest.id}
+                destinationId={dest.id}
                 name={dest.name}
+                location={itinerary?.destination ?? dest.name}
                 description={
                   itinerary
-                    ? itinerary.highlights.slice(0, 2).join(" · ")
+                    ? itinerary.highlights.slice(0, 3).join(" ")
                     : dest.description
                 }
                 image={itinerary?.heroImage ?? dest.image}

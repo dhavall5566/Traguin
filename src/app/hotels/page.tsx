@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { Suspense } from "react";
 import { HotelDiscovery } from "@/components/hotels/HotelDiscovery";
 
 export const metadata: Metadata = {
@@ -7,5 +8,9 @@ export const metadata: Metadata = {
 };
 
 export default function HotelsPage() {
-  return <HotelDiscovery />;
+  return (
+    <Suspense fallback={null}>
+      <HotelDiscovery />
+    </Suspense>
+  );
 }

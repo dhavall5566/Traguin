@@ -18,7 +18,7 @@ type DestinationDetailProps = {
 
 export function DestinationDetail({ destination }: DestinationDetailProps) {
   const whatsappMessage = encodeURIComponent(
-    `Hello Traguin, I'm interested in a luxury journey to ${destination.name}.`
+    `Hello TRAGUIN, I'm interested in a luxury journey to ${destination.name}.`
   );
   const whatsappHref = `${contactInfo.whatsappHref}?text=${whatsappMessage}`;
 

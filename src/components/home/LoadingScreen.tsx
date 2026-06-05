@@ -1,8 +1,8 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
-import { LoadingGlobe } from "@/components/three";
 
 interface LoadingScreenProps {
   onComplete: () => void;
@@ -33,30 +33,29 @@ export function LoadingScreen({ onComplete }: LoadingScreenProps) {
         className="fixed inset-0 z-[10000] flex flex-col items-center justify-center bg-background"
         exit={{
           opacity: 0,
-          scale: 1.2,
+          scale: 1.05,
           transition: { duration: 1, ease: [0.22, 1, 0.36, 1] },
         }}
       >
         <div className="absolute inset-0 luxury-gradient opacity-30" />
 
         <motion.div
-          className="relative h-[50vh] w-full max-w-2xl"
-          initial={{ scale: 0.8, opacity: 0 }}
+          className="relative z-10 text-center"
+          initial={{ scale: 0.9, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
-          transition={{ duration: 1.2, ease: [0.22, 1, 0.36, 1] }}
+          transition={{ duration: 1, ease: [0.22, 1, 0.36, 1] }}
         >
-          <LoadingGlobe progress={progress} />
-        </motion.div>
-
-        <motion.div
-          className="relative z-10 mt-8 text-center"
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.5, duration: 0.8 }}
-        >
-          <h1 className="font-display text-4xl tracking-[0.3em] text-foreground md:text-5xl">
+          <Image
+            src="/traguin-logo.png"
+            alt="TRAGUIN"
+            width={120}
+            height={120}
+            className="mx-auto h-24 w-auto object-contain md:h-28"
+            priority
+          />
+          <h2 className="mt-8 font-display text-4xl tracking-[0.3em] text-foreground md:text-5xl">
             TRAGUIN
-          </h1>
+          </h2>
           <p className="mt-2 text-sm tracking-[0.4em] text-gold uppercase">Luxury Travel</p>
         </motion.div>
 

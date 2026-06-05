@@ -1,5 +1,10 @@
 @import "tailwindcss";
 
+/* Helvetica stack — used site-wide */
+:root {
+  --font-helvetica: "Helvetica Neue", Helvetica, Arial, sans-serif;
+}
+
 /* Dark theme (default) */
 :root,
 [data-theme="dark"] {
@@ -41,25 +46,42 @@
   --showcase-subtitle: var(--sand);
   --showcase-stat-label: var(--muted);
   --showcase-progress-inactive: color-mix(in srgb, var(--foreground) 20%, transparent);
+  --hero-packages-scrim-h: var(--showcase-scrim-h);
+  --hero-packages-scrim-v: var(--showcase-scrim-v);
+  --hero-packages-overlay: rgba(11, 11, 11, 0.28);
+  --nav-shell-bg: rgba(17, 17, 17, 0.78);
+  --nav-shell-border: rgba(255, 255, 255, 0.12);
+  --nav-shell-shadow: 0 12px 40px rgba(0, 0, 0, 0.35);
+  --nav-track-bg: rgba(0, 0, 0, 0.35);
+  --nav-track-border: rgba(255, 255, 255, 0.08);
+  --nav-link-active-fg: #ffffff;
   color-scheme: dark;
 }
 
 /* Light theme */
 [data-theme="light"] {
-  --background: #faf8f5;
-  --surface: #ffffff;
-  --surface-elevated: #f3f0eb;
+  --background: #ede8e0;
+  --surface: #f5f2ec;
+  --surface-elevated: #e8e2d8;
   --foreground: #1a1612;
   --muted: #6b6358;
   --gold: #b8941f;
   --gold-light: #d4af37;
   --ocean: #0066cc;
   --sand: #7a6548;
-  --glass: rgba(255, 255, 255, 0.82);
-  --glass-border: rgba(26, 22, 18, 0.1);
-  --glass-strong: rgba(255, 255, 255, 0.94);
-  --glass-strong-border: rgba(26, 22, 18, 0.08);
+  --glass: #ffffff;
+  --glass-border: rgba(26, 22, 18, 0.2);
+  --glass-strong: #ffffff;
+  --glass-strong-border: rgba(26, 22, 18, 0.16);
   --input-bg: #ffffff;
+  --card-shadow:
+    0 1px 2px rgba(26, 22, 18, 0.05),
+    0 8px 28px rgba(26, 22, 18, 0.09),
+    0 0 0 1px rgba(26, 22, 18, 0.06);
+  --card-shadow-hover:
+    0 2px 4px rgba(26, 22, 18, 0.06),
+    0 14px 36px rgba(26, 22, 18, 0.12),
+    0 0 0 1px rgba(184, 148, 31, 0.22);
   --on-gold: #ffffff;
   --logo-wrap-bg: transparent;
   --hero-glow: rgba(212, 175, 55, 0.12);
@@ -83,6 +105,28 @@
   --showcase-subtitle: color-mix(in srgb, var(--foreground) 62%, transparent);
   --showcase-stat-label: color-mix(in srgb, var(--foreground) 55%, transparent);
   --showcase-progress-inactive: color-mix(in srgb, var(--foreground) 28%, transparent);
+  /* Hero keeps a dark left scrim so white copy stays readable on photos */
+  --hero-packages-scrim-h: linear-gradient(
+    90deg,
+    rgba(12, 11, 10, 0.96) 0%,
+    rgba(12, 11, 10, 0.88) 28%,
+    rgba(12, 11, 10, 0.62) 48%,
+    rgba(12, 11, 10, 0.28) 62%,
+    transparent 76%
+  );
+  --hero-packages-scrim-v: linear-gradient(
+    to top,
+    rgba(12, 11, 10, 0.75) 0%,
+    rgba(12, 11, 10, 0.35) 30%,
+    transparent 52%
+  );
+  --hero-packages-overlay: rgba(12, 11, 10, 0.38);
+  --nav-shell-bg: rgba(255, 255, 255, 0.94);
+  --nav-shell-border: rgba(26, 22, 18, 0.14);
+  --nav-shell-shadow: 0 10px 36px rgba(26, 22, 18, 0.1);
+  --nav-track-bg: #ebe8e2;
+  --nav-track-border: rgba(26, 22, 18, 0.08);
+  --nav-link-active-fg: #ffffff;
   color-scheme: light;
 }
 
@@ -100,16 +144,17 @@
   --color-glass-border: var(--glass-border);
   --color-input: var(--input-bg);
   --color-on-gold: var(--on-gold);
-  --font-display: var(--font-playfair);
-  --font-body: var(--font-jakarta);
+  --font-display: var(--font-helvetica);
+  --font-body: var(--font-helvetica);
+  --font-sans: var(--font-helvetica);
 }
 
 .font-display {
-  font-family: var(--font-playfair), Georgia, "Times New Roman", serif;
+  font-family: var(--font-helvetica);
 }
 
 .font-body {
-  font-family: var(--font-jakarta), system-ui, sans-serif;
+  font-family: var(--font-helvetica);
 }
 
 * {
@@ -117,6 +162,7 @@
 }
 
 html {
+  font-family: var(--font-helvetica);
   scroll-behavior: auto;
   overscroll-behavior-x: none;
 }
@@ -141,7 +187,7 @@ html.lenis body {
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: var(--font-jakarta), system-ui, sans-serif;
+  font-family: var(--font-helvetica);
   overflow-x: hidden;
   overscroll-behavior-x: none;
   transition: background-color 0.3s ease, color 0.3s ease;
@@ -200,6 +246,76 @@ body {
   border: 1px solid var(--glass-border);
 }
 
+/* Light mode: lift cards off section backgrounds */
+[data-theme="light"] .glass:where(.rounded-xl, .rounded-2xl, .rounded-3xl) {
+  box-shadow: var(--card-shadow);
+}
+
+[data-theme="light"] .glass:where(.rounded-xl, .rounded-2xl, .rounded-3xl):hover {
+  box-shadow: var(--card-shadow-hover);
+}
+
+[data-theme="light"] .glass-strong {
+  box-shadow: var(--card-shadow);
+  border-color: var(--glass-strong-border);
+}
+
+[data-theme="light"] :is(.rounded-xl, .rounded-2xl, .rounded-3xl).border.border-glass-border {
+  box-shadow: var(--card-shadow);
+}
+
+[data-theme="light"] :is(.rounded-xl, .rounded-2xl, .rounded-3xl).border.border-glass-border.bg-surface {
+  background: #ffffff;
+}
+
+[data-theme="light"] :is(input, select, textarea).border-glass-border {
+  border-color: rgba(26, 22, 18, 0.22);
+  box-shadow: 0 1px 3px rgba(26, 22, 18, 0.07);
+}
+
+[data-theme="light"] :is(input, select, textarea).border-glass-border:focus {
+  border-color: color-mix(in srgb, var(--gold) 55%, transparent);
+  box-shadow:
+    0 1px 3px rgba(26, 22, 18, 0.07),
+    0 0 0 3px rgba(184, 148, 31, 0.15);
+}
+
+/* Photo cards: dark footer scrim so copy stays visible in light mode */
+.card-image-scrim {
+  background: linear-gradient(
+    to top,
+    rgba(10, 10, 10, 0.97) 0%,
+    rgba(10, 10, 10, 0.82) 26%,
+    rgba(10, 10, 10, 0.42) 52%,
+    transparent 76%
+  );
+  pointer-events: none;
+}
+
+.card-price-badge {
+  display: inline-block;
+  border-radius: 0.75rem;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  background: rgba(8, 8, 8, 0.72);
+  padding: 0.5rem 0.875rem;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.35);
+}
+
+.destination-card {
+  background: var(--surface);
+}
+
+[data-theme="light"] .destination-card {
+  background: #ffffff;
+  box-shadow: var(--card-shadow);
+}
+
+[data-theme="light"] .destination-card:hover {
+  box-shadow: var(--card-shadow-hover);
+}
+
 @media (max-width: 768px) {
   .glass {
     backdrop-filter: blur(8px);
@@ -217,6 +333,63 @@ body {
   backdrop-filter: blur(40px);
   -webkit-backdrop-filter: blur(40px);
   border: 1px solid var(--glass-strong-border);
+}
+
+.nav-bar {
+  background: var(--nav-shell-bg);
+  border-color: var(--nav-shell-border);
+  box-shadow: var(--nav-shell-shadow);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+}
+
+@media (min-width: 768px) {
+  .nav-bar {
+    border-radius: 9999px;
+  }
+}
+
+.nav-bar--scrolled {
+  box-shadow:
+    var(--nav-shell-shadow),
+    0 0 0 1px color-mix(in srgb, var(--gold) 12%, transparent);
+}
+
+/* Recessed pill track — all links inside one capsule */
+.nav-links-track {
+  border-radius: 9999px;
+  border: 0.5px solid var(--nav-track-border);
+  background: var(--nav-track-bg);
+  box-shadow: inset 0 1px 4px rgba(0, 0, 0, 0.08);
+}
+
+[data-theme="light"] .nav-links-track {
+  box-shadow: inset 0 1px 3px rgba(26, 22, 18, 0.07);
+}
+
+.nav-link-pill--idle {
+  color: var(--muted);
+}
+
+.nav-link-pill--idle:hover {
+  color: var(--foreground);
+}
+
+/* Flat active tab */
+.nav-active-bubble {
+  background: var(--gold);
+  box-shadow: none;
+}
+
+.nav-link-pill--active {
+  color: var(--nav-link-active-fg);
+  font-weight: 600;
+}
+
+.nav-mobile-panel {
+  background: var(--nav-shell-bg);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
 }
 
 input[type="date"] {
@@ -288,6 +461,18 @@ input[type="date"]::-webkit-calendar-picker-indicator {
 
 .destination-showcase-scrim-v {
   background: var(--showcase-scrim-v);
+}
+
+.sliding-packages-scrim-h {
+  background: var(--hero-packages-scrim-h);
+}
+
+.sliding-packages-scrim-v {
+  background: var(--hero-packages-scrim-v);
+}
+
+.sliding-packages-overlay {
+  background: var(--hero-packages-overlay);
 }
 
 [data-theme="light"] .destination-showcase-image {

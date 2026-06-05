@@ -37,7 +37,7 @@ export function ItineraryCard({
           className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
           loading="lazy"
         />
-        <div className="absolute inset-0 bg-gradient-to-t from-background via-background/20 to-transparent" />
+        <div className="card-image-scrim absolute inset-0" aria-hidden />
         <div className="absolute bottom-4 left-4 right-4 flex items-end justify-between gap-2">
           <span className="inline-flex items-center gap-1.5 rounded-full glass px-3 py-1 text-[10px] tracking-wide text-foreground uppercase">
             <Clock size={12} className="text-gold" />

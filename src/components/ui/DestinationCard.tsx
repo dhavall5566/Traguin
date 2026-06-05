@@ -1,19 +1,28 @@
 "use client";
 
 import Link from "next/link";
-import { ArrowUpRight, Clock } from "lucide-react";
-import { SafeImage } from "@/components/ui/SafeImage";
+import { Clock, Star } from "lucide-react";
+import { HotelImageSlider } from "@/components/hotels/HotelImageSlider";
 import { PriceDisplay } from "@/components/ui/PriceDisplay";
+import { getDestinationGalleryImages } from "@/lib/destination-images";
 import { cn } from "@/lib/utils";
+
+const DESTINATION_SLIDE_INTERVAL_MS = 4000;
 
 type DestinationCardProps = {
   name: string;
   description: string;
   image: string;
+  /** Resolves five destination photos for the card slider */
+  destinationId: string;
   startingPrice?: number;
   href: string;
   cta?: string;
   duration?: string;
+  /** Region or country shown under the title */
+  location?: string;
+  /** 1–5 star row; defaults to 5 for curated journeys */
+  rating?: number;
   className?: string;
 };
 
@@ -21,45 +30,77 @@ export function DestinationCard({
   name,
   description,
   image,
+  destinationId,
   startingPrice,
   href,
   cta = "View Journey",
   duration,
+  location,
+  rating = 5,
   className,
 }: DestinationCardProps) {
+  const stars = Math.min(5, Math.max(0, Math.round(rating)));
+  const galleryImages = getDestinationGalleryImages(destinationId, image);
+
   return (
     <Link
       href={href}
       className={cn(
-        "group relative block overflow-hidden rounded-2xl border border-glass-border bg-surface transition-all duration-500 hover:border-gold/40 hover:shadow-[0_24px_48px_-12px_rgba(0,0,0,0.35)]",
+        "destination-card group flex h-full flex-col overflow-hidden rounded-3xl border border-glass-border bg-surface transition-all duration-500",
+        "hover:border-gold/35 hover:shadow-[0_20px_48px_-16px_rgba(0,0,0,0.28)] hover:-translate-y-1",
+        "focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gold",
         className
       )}
     >
-      <div className="relative aspect-[4/5] overflow-hidden sm:aspect-[3/4]">
-        <SafeImage
-          src={image}
+      <div className="relative aspect-[4/3] overflow-hidden">
+        <HotelImageSlider
+          images={galleryImages}
           alt={name}
-          className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
-          loading="lazy"
+          className="h-full w-full"
+          intervalMs={DESTINATION_SLIDE_INTERVAL_MS}
+          showIndicators={false}
+          pauseOnHover
         />
-        <div className="absolute inset-0 bg-gradient-to-t from-background via-background/20 to-transparent opacity-90 transition-opacity group-hover:opacity-95" />
         {duration && (
-          <span className="absolute top-4 left-4 inline-flex items-center gap-1.5 rounded-full glass px-3 py-1 text-[10px] tracking-wide text-foreground uppercase">
-            <Clock size={11} className="text-gold" />
+          <span className="absolute top-4 left-4 z-20 inline-flex items-center gap-1.5 rounded-full border border-glass-border bg-surface/95 px-3 py-1 text-[10px] font-medium tracking-wide text-foreground uppercase shadow-sm backdrop-blur-sm">
+            <Clock size={11} className="text-gold" aria-hidden />
             {duration}
           </span>
         )}
-        <div className="absolute inset-x-0 bottom-0 p-6">
-          {startingPrice != null && (
-            <div className="mb-3">
-              <PriceDisplay amount={startingPrice} size="sm" />
-            </div>
+      </div>
+
+      <div className="flex flex-1 flex-col p-5 md:p-6">
+        {stars > 0 && (
+          <div className="flex items-center gap-0.5" aria-label={`${stars} out of 5 stars`}>
+            {Array.from({ length: stars }).map((_, i) => (
+              <Star key={i} size={12} className="fill-gold text-gold" aria-hidden />
+            ))}
+          </div>
+        )}
+
+        <h3 className="mt-2 font-display text-xl leading-snug text-foreground md:text-[1.35rem]">
+          {name}
+        </h3>
+
+        {location && <p className="mt-0.5 text-sm text-muted">{location}</p>}
+
+        <p className="mt-3 line-clamp-2 text-[11px] leading-relaxed text-sand md:text-xs">
+          {description}
+        </p>
+
+        <div className="mt-auto flex items-end justify-between gap-3 pt-5">
+          {startingPrice != null ? (
+            <PriceDisplay amount={startingPrice} label="From" size="md" />
+          ) : (
+            <span />
           )}
-          <h3 className="font-display text-2xl text-foreground md:text-3xl">{name}</h3>
-          <p className="mt-2 line-clamp-2 text-sm text-muted">{description}</p>
-          <span className="mt-4 inline-flex items-center gap-2 text-xs tracking-[0.2em] text-gold uppercase transition-gap group-hover:gap-3">
+          <span
+            className={cn(
+              "shrink-0 rounded-full border border-glass-border bg-surface px-4 py-2 text-xs font-medium tracking-wide text-foreground",
+              "shadow-sm transition-colors group-hover:border-gold/40"
+            )}
+          >
             {cta}
-            <ArrowUpRight size={14} />
           </span>
         </div>
       </div>

@@ -15,7 +15,7 @@ export function ClientStoriesPage() {
             align="left"
             eyebrow="Testimonials"
             title="Client Stories"
-            description="Gallery of journeys, reviews, and case studies from travelers who chose Traguin."
+            description="Gallery of journeys, reviews, and case studies from travelers who chose TRAGUIN."
           />
 
           <div className="mt-8 flex flex-wrap gap-3">

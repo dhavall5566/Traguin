@@ -178,6 +178,23 @@ export function validateHotelBookingForm(form: HotelBookingFormValues): FieldErr
   return validateInquiryForm(form);
 }
 
+export type HotelReviewFormValues = {
+  name: string;
+  rating: number;
+  review: string;
+};
+
+export function validateHotelReviewForm(form: HotelReviewFormValues): FieldErrors {
+  const ratingError =
+    form.rating < 1 || form.rating > 5 ? "Please select a star rating" : undefined;
+
+  return collectErrors({
+    name: validateName(form.name),
+    rating: ratingError,
+    review: validateMessage(form.review, 20),
+  });
+}
+
 export type ConciergeFormValues = {
   name: string;
   email: string;

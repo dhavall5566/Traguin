@@ -1,4 +1,4 @@
-# Traguin Luxury Travel Platform
+# TRAGUIN Luxury Travel Platform
 
 A world-class luxury travel experience platform built with Next.js, Three.js, GSAP, and Framer Motion.
 
@@ -58,4 +58,4 @@ See [docs/DESIGN_SYSTEM.md](./docs/DESIGN_SYSTEM.md) for colors, typography, and
 
 ## License
 
-Private — Traguin Luxury Travel
+Private — TRAGUIN Luxury Travel
