@@ -69,7 +69,7 @@ export function PackageExplorer({ region }: PackageExplorerProps) {
   };
 
   return (
-    <div className="min-h-screen pt-32 pb-20">
+    <div className="min-h-screen pb-20">
       {detailPackage && (
         <PackageDetailModal
           pkg={detailPackage}
@@ -77,7 +77,7 @@ export function PackageExplorer({ region }: PackageExplorerProps) {
         />
       )}
 
-      <div className="section-padding pt-0">
+      <div className="page-x-padding">
         <div className="mx-auto max-w-7xl">
           <p className="text-xs tracking-[0.3em] text-gold uppercase">
             {region === "domestic" ? "India" : "International"}

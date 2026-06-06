@@ -1,8 +1,6 @@
 import { SectionHeader } from "@/components/ui/SectionHeader";
 import { MagneticButton } from "@/components/ui/MagneticButton";
 import { primaryCta, secondaryCta } from "@/data/site";
-import { images } from "@/lib/images";
-import { SafeImage } from "@/components/ui/SafeImage";
 
 const sections = [
   {
@@ -33,8 +31,8 @@ const sections = [
 
 export function AboutPage() {
   return (
-    <div className="min-h-screen pt-24 pb-20 md:pt-28">
-      <div className="section-padding pt-0">
+    <div className="pb-16 md:pb-20 pt-12 md:pt-8">
+      <div className="page-x-padding">
         <div className="mx-auto max-w-7xl">
           <div className="grid gap-12 lg:grid-cols-2 lg:items-center">
             <SectionHeader
@@ -43,12 +41,8 @@ export function AboutPage() {
               title="About Us"
               description="A luxury travel concierge studio devoted to extraordinary journeys."
             />
-            <div className="relative aspect-[4/3] overflow-hidden rounded-3xl">
-              <SafeImage src={images.luxury} alt="Luxury travel" className="h-full w-full object-cover" />
-            </div>
           </div>
-
-          <div className="mt-16 flex flex-wrap gap-3">
+          <div className="mt-6 flex flex-wrap gap-3">
             <MagneticButton as="a" href={primaryCta.href} variant="primary" className="!text-xs">
               {primaryCta.label}
             </MagneticButton>
@@ -57,7 +51,7 @@ export function AboutPage() {
             </MagneticButton>
           </div>
 
-          <div className="mt-20 grid gap-8 md:grid-cols-2">
+          <div className="mt-6 grid gap-8 md:grid-cols-2">
             {sections.map((s) => (
               <article key={s.title} className="glass rounded-2xl border border-glass-border p-8">
                 <h2 className="font-display text-2xl text-foreground">{s.title}</h2>

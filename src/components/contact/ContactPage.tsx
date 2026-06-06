@@ -45,8 +45,8 @@ export function ContactPage() {
   };
 
   return (
-    <div className="pt-24 pb-16 md:pt-28 md:pb-20">
-      <div className="section-padding pt-0">
+    <div className="pb-16 md:pb-20 pt-12 md:pt-8">
+      <div className="page-x-padding">
         <div className="mx-auto max-w-7xl">
           <div className="grid items-start gap-8 lg:grid-cols-5 lg:gap-x-12 lg:gap-y-10">
             <div className="lg:col-span-2">

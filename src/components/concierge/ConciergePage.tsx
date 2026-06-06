@@ -84,8 +84,8 @@ export function ConciergePage() {
   };
 
   return (
-    <div className="min-h-screen pt-32 pb-20">
-      <div className="section-padding pt-0">
+    <div className="pb-16 md:pb-20 pt-12 md:pt-8">
+      <div className="page-x-padding">
         <div className="mx-auto max-w-7xl">
           <p className="text-xs tracking-[0.3em] text-gold uppercase">Travel Concierge</p>
           <h1 className="mt-2 font-display text-5xl text-foreground md:text-7xl">
@@ -104,7 +104,7 @@ export function ConciergePage() {
             </MagneticButton>
           </div>
 
-          <div className="mt-16 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+          <div className="mt-6 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
             {services.map((service) => (
               <div
                 key={service.title}

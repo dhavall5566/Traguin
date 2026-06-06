@@ -9,8 +9,8 @@ import { primaryCta, secondaryCta } from "@/data/site";
 
 export function DestinationsPage() {
   return (
-    <div className="min-h-screen pt-24 pb-20 md:pt-28">
-      <div className="section-padding pt-0">
+    <div className="pb-16 md:pb-20 pt-12 md:pt-8">
+      <div className="page-x-padding">
         <div className="mx-auto max-w-7xl">
           <SectionHeader
             align="left"

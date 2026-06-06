@@ -9,7 +9,7 @@ export const metadata: Metadata = {
 
 export default function InternationalPackagesPage() {
   return (
-    <Suspense fallback={<div className="min-h-screen pt-32 pb-20" />}>
+    <Suspense fallback={<div className="min-h-screen pb-20" />}>
       <PackageExplorer region="international" />
     </Suspense>
   );

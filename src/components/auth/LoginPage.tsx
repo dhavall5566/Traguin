@@ -33,8 +33,8 @@ export function LoginPage() {
   };
 
   return (
-    <div className="flex min-h-screen items-center justify-center pt-20 pb-12">
-      <div className="section-padding w-full max-w-md pt-0">
+    <div className="flex min-h-[calc(100dvh-var(--nav-offset))] items-center justify-center pb-12">
+      <div className="page-x-padding w-full max-w-md">
         <div className="text-center">
           <Link href="/" className="inline-block">
             <span className="font-display text-2xl tracking-[0.2em]">TRAGUIN</span>

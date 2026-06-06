@@ -8,8 +8,8 @@ import { primaryCta, secondaryCta } from "@/data/site";
 
 export function ClientStoriesPage() {
   return (
-    <div className="min-h-screen pt-24 pb-20 md:pt-28">
-      <div className="section-padding pt-0">
+    <div className="pb-16 md:pb-20 pt-12 md:pt-8">
+      <div className="page-x-padding">
         <div className="mx-auto max-w-7xl">
           <SectionHeader
             align="left"
@@ -18,7 +18,7 @@ export function ClientStoriesPage() {
             description="Gallery of journeys, reviews, and case studies from travelers who chose TRAGUIN."
           />
 
-          <div className="mt-8 flex flex-wrap gap-3">
+          <div className="mt-6 flex flex-wrap gap-3">
             <MagneticButton as="a" href={primaryCta.href} variant="primary" className="!text-xs">
               {primaryCta.label}
             </MagneticButton>
@@ -27,7 +27,7 @@ export function ClientStoriesPage() {
             </MagneticButton>
           </div>
 
-          <div className="mt-12 grid grid-cols-2 gap-3 md:grid-cols-3 lg:grid-cols-4">
+          <div className="mt-6 grid grid-cols-2 gap-3 md:grid-cols-3 lg:grid-cols-4">
             {testimonials.map((t) => (
               <div key={t.id} className="relative aspect-square overflow-hidden rounded-xl">
                 <SafeImage src={t.image} alt={t.name} className="h-full w-full object-cover" loading="lazy" />

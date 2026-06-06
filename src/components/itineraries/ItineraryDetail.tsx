@@ -64,7 +64,7 @@ export function ItineraryDetail({ itinerary, destinationName }: ItineraryDetailP
         <div className="absolute inset-0 bg-background/60" />
         <div className="absolute inset-0 bg-gradient-to-t from-background via-background/40 to-transparent" />
 
-        <div className="relative mx-auto flex min-h-[50svh] max-w-7xl flex-col justify-end px-4 pb-10 pt-28 sm:px-6 md:min-h-[60svh] md:pb-14 md:pt-32">
+        <div className="relative mx-auto flex min-h-[50svh] max-w-7xl flex-col justify-end px-4 pb-10 pt-4 sm:px-6 md:min-h-[60svh] md:pb-14">
           <Link
             href="/destinations"
             className="mb-6 inline-flex w-fit items-center gap-2 text-xs tracking-wide text-muted transition-colors hover:text-gold"

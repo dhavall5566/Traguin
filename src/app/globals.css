@@ -3,6 +3,17 @@
 /* Helvetica stack — used site-wide */
 :root {
   --font-helvetica: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  /* Fixed floating nav + breathing room before page titles */
+  --nav-height: 4.5rem;
+  --page-top-gap: 0.75rem;
+  --nav-offset: var(--nav-height);
+}
+
+@media (min-width: 768px) {
+  :root {
+    --nav-height: 4.75rem;
+    --page-top-gap: 1rem;
+  }
 }
 
 /* Dark theme (default) */
@@ -420,6 +431,16 @@ input[type="date"]::-webkit-calendar-picker-indicator {
 
 .section-padding {
   padding: clamp(4rem, 10vw, 8rem) clamp(1.5rem, 5vw, 4rem);
+}
+
+.page-below-nav {
+  padding-top: var(--nav-offset);
+}
+
+/* Horizontal gutters + small gap below the navbar before tab titles */
+.page-x-padding {
+  padding-inline: clamp(1.5rem, 5vw, 4rem);
+  padding-top: var(--page-top-gap);
 }
 
 .text-balance {

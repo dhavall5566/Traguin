@@ -40,7 +40,7 @@ export function DestinationDetail({ destination }: DestinationDetailProps) {
         <div className="absolute inset-0 bg-background/65" />
         <div className="absolute inset-0 bg-gradient-to-t from-background via-transparent to-background/40" />
 
-        <div className="relative mx-auto flex min-h-[45svh] max-w-7xl flex-col justify-end px-4 pb-10 pt-28 sm:px-6 md:min-h-[55svh] md:pb-14">
+        <div className="relative mx-auto flex min-h-[45svh] max-w-7xl flex-col justify-end px-4 pb-10 pt-4 sm:px-6 md:min-h-[55svh] md:pb-14">
           <Link
             href="/destinations"
             className="mb-6 inline-flex w-fit items-center gap-2 text-xs tracking-wide text-muted transition-colors hover:text-gold"

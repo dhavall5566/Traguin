@@ -71,10 +71,11 @@ export function DestinationCard({
 
       <div className="flex flex-1 flex-col p-5 md:p-6">
         {stars > 0 && (
-          <div className="flex items-center gap-0.5" aria-label={`${stars} out of 5 stars`}>
+          <div className="flex items-center gap-1.5" aria-label={`${rating.toFixed(1)} out of 5 stars`}>
             {Array.from({ length: stars }).map((_, i) => (
               <Star key={i} size={12} className="fill-gold text-gold" aria-hidden />
             ))}
+            <span className="text-xs text-foreground">{rating.toFixed(1)}</span>
           </div>
         )}
 
