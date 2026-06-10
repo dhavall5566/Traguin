@@ -145,7 +145,7 @@ export function HotelBookingForm({ hotel }: HotelBookingFormProps) {
           <FormField label="Message" htmlFor="hotel-booking-message" error={errors.message}>
             <textarea
               id="hotel-booking-message"
-              rows={4}
+              rows={3}
               value={form.message}
               onChange={(e) => update("message", e.target.value)}
               className={cn(fieldInputClass("message", errors), "resize-none")}

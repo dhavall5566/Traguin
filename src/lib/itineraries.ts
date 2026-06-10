@@ -1,12 +1,7 @@
 import itinerariesJson from "@/data/itineraries.json";
 import type { Itinerary } from "@/types/itinerary";
 
-/** All itineraries — add entries to `src/data/itineraries.json` with matching `destinationId`. Shown at /destinations/[destinationId]. */
-export const itineraries: Itinerary[] = itinerariesJson as Itinerary[];
-
-export function getAllItineraries(): Itinerary[] {
-  return itineraries;
-}
+const itineraries: Itinerary[] = itinerariesJson as Itinerary[];
 
 export function getItineraryBySlug(slug: string): Itinerary | undefined {
   return itineraries.find((i) => i.slug === slug);
@@ -34,9 +29,25 @@ export function getDefaultItineraryInquiryHref(): string {
   return featured ? getItineraryInquiryHref(featured.destinationId) : "/destinations";
 }
 
-export function getFeaturedItineraries(limit = 4): Itinerary[] {
-  return itineraries
-    .filter((i) => i.featured)
-    .sort((a, b) => (a.featuredOrder ?? 99) - (b.featuredOrder ?? 99))
-    .slice(0, limit);
+function slugHash(slug: string) {
+  let hash = 0;
+  for (let i = 0; i < slug.length; i++) {
+    hash = (hash * 31 + slug.charCodeAt(i)) >>> 0;
+  }
+  return hash;
+}
+
+export function getItineraryRating(itinerary: Pick<Itinerary, "slug" | "rating">): number {
+  if (itinerary.rating != null) return itinerary.rating;
+  const hash = slugHash(itinerary.slug);
+  return Math.round((4.7 + (hash % 4) * 0.1) * 10) / 10;
+}
+
+export function getItineraryReviewCount(
+  itinerary: Pick<Itinerary, "slug" | "rating" | "reviewCount">
+): number {
+  if (itinerary.reviewCount != null) return itinerary.reviewCount;
+  const hash = slugHash(itinerary.slug);
+  const rating = getItineraryRating(itinerary);
+  return 36 + (hash % 140) + Math.round(rating * 10);
 }

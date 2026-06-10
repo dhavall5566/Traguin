@@ -12,7 +12,3 @@ export function formatPrice(amount: number, currency = "INR") {
     maximumFractionDigits: 0,
   }).format(amount);
 }
-
-export function formatNumber(num: number) {
-  return new Intl.NumberFormat("en-IN").format(num);
-}

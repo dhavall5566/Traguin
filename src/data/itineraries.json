@@ -834,6 +834,168 @@
     }
   },
   {
+    "slug": "shimla-delight-luxury",
+    "packageId": "himachal-shimla-delight-4d",
+    "destinationId": "himachal",
+    "title": "Shimla Delight Luxury Family Escape",
+    "destination": "Himachal Pradesh",
+    "region": "domestic",
+    "duration": "4 Days / 3 Nights",
+    "durationDays": 4,
+    "startingPrice": 24500,
+    "priceNote": "Per person, MAPAI plan (HP-001 / TRG-HIM-2026-001)",
+    "heroImage": "https://images.pexels.com/photos/3574440/pexels-photo-3574440.jpeg?auto=compress&cs=tinysrgb&w=1920",
+    "tagline": "Queen of Hills — colonial heritage, alpine Kufri, and Mashobra serenity",
+    "overview": "A bespoke TRAGUIN Himachal package crafted for multi-generational families and couples. Journey from Delhi or Chandigarh into Shimla's imperial charm, Kufri's snow peaks, and Mashobra's quiet orchards — with a private Innova Crysta, lazy mornings, and our signature orchard high-tea picnic.",
+    "highlights": [
+      "Viceregal Lodge & Mall Road heritage walk",
+      "Kufri Mahasu Peak private horse trail",
+      "TRAGUIN Mashobra orchard high-tea picnic",
+      "Luxury MAPAI dining at handpicked Shimla resorts",
+      "Private Toyota Innova Crysta throughout"
+    ],
+    "featured": true,
+    "days": [
+      {
+        "day": 1,
+        "title": "Delhi / Chandigarh to Shimla | The Grand Ascent",
+        "description": "Private pickup from Delhi or Chandigarh, a scenic drive via the Himalayan Expressway with premium lunch stops, and a warm welcome at your Shimla resort with sunset valley views.",
+        "activities": [
+          "Sightseeing Included: Himalayan Expressway Scenic Overlooks, Timber Trail Pass.",
+          "Evening Experience: Leisurely resort settling followed by a custom multi-cuisine welcome buffet.",
+          "Overnight Stay: Luxury Mountain Resort in Shimla.",
+          "Meals Included: Gourmet Dinner."
+        ]
+      },
+      {
+        "day": 2,
+        "title": "Shimla Local Sightseeing | Colonial Heritage Exploration",
+        "description": "Full-day colonial heritage tour with a local historian — Viceregal Lodge, The Ridge, Christ Church, Mall Road, a reserved café table, and Lakkar Bazaar woodwork.",
+        "activities": [
+          "Sightseeing Included: Viceregal Lodge, The Ridge, Christ Church, Mall Road, Scandal Point, Lakkar Bazaar.",
+          "Optional Activities: A thrilling private ropeway ride up to the historic Jakhoo Hill Temple.",
+          "Evening Experience: Sun-downer strolls followed by a premium candlelight family dinner by the fireplace.",
+          "Overnight Stay: Luxury Mountain Resort in Shimla.",
+          "Meals Included: Premium Breakfast & Dinner."
+        ]
+      },
+      {
+        "day": 3,
+        "title": "Shimla • Kufri • Mashobra Excursion | Alpine Spectacles",
+        "description": "Alpine day trip through Hasan Valley to Kufri and Mahasu Peak, then a secluded Mashobra orchard visit with TRAGUIN's signature high-tea picnic.",
+        "activities": [
+          "Sightseeing Included: Hasan Valley, Kufri Peak Points, Mashobra Exclusive Countryside Trails.",
+          "Optional Activities: Local traditional costume photography, yak rides, and soft zip-lining adventures.",
+          "Evening Experience: An ambient evening at the resort with live soft music or traditional mountain folk elements.",
+          "Overnight Stay: Luxury Mountain Resort in Shimla.",
+          "Meals Included: Premium Breakfast & Dinner."
+        ]
+      },
+      {
+        "day": 4,
+        "title": "Shimla to Delhi / Chandigarh | Return Journey with Memories",
+        "description": "Leisurely mountain breakfast, time for local shopping, then a smooth descent to Delhi or Chandigarh with en-route valley stops.",
+        "activities": [
+          "Sightseeing Included: En-route panoramic valley photography stops and local fruit orchard stops.",
+          "Drop Location: Delhi / Chandigarh Airport or Railway Station.",
+          "Meals Included: Premium Breakfast."
+        ]
+      }
+    ],
+    "hotels": [
+      {
+        "category": "Option 01 — Deluxe",
+        "hotelId": "willow-banks-shimla",
+        "name": "Hotel Willow Banks / Toshali Royal Resort",
+        "location": "Shimla, Himachal Pradesh",
+        "nights": "03 Nights Stay",
+        "roomType": "Premium Valley View Room",
+        "mealPlan": "Buffet Breakfast & Dinner",
+        "image": "https://images.pexels.com/photos/4877062/pexels-photo-4877062.jpeg?auto=compress&cs=tinysrgb&w=800",
+        "description": "Meticulously vetted deluxe properties with premium valley-facing rooms and buffet breakfast & dinner.",
+        "stars": 4
+      },
+      {
+        "category": "Option 02 — Premium",
+        "hotelId": "radisson-jass-shimla",
+        "name": "Radisson Jass Shimla / The Gateway Resort",
+        "location": "Shimla, Himachal Pradesh",
+        "nights": "03 Nights Stay",
+        "roomType": "Deluxe Himalayan View Room",
+        "mealPlan": "Daily Breakfast & Dinner",
+        "image": "https://images.pexels.com/photos/3574440/pexels-photo-3574440.jpeg?auto=compress&cs=tinysrgb&w=800",
+        "description": "Premium Himalayan-view rooms with daily breakfast and multi-cuisine dinners.",
+        "stars": 4
+      },
+      {
+        "category": "Option 03 — Luxury",
+        "hotelId": "welcomhotel-itc-shimla",
+        "name": "The Orchid Hotel / Welcomhotel by ITC, Shimla",
+        "location": "Shimla, Himachal Pradesh",
+        "nights": "03 Nights Stay",
+        "roomType": "Luxury Executive Balcony Suite",
+        "mealPlan": "Gourmet MAPAI Plan",
+        "image": "https://images.pexels.com/photos/7170023/pexels-photo-7170023.jpeg?auto=compress&cs=tinysrgb&w=800",
+        "description": "Executive balcony suites with panoramic valley views and gourmet MAPAI dining.",
+        "stars": 5
+      },
+      {
+        "category": "Option 04 — Ultra Luxury",
+        "hotelId": "wildflower-hall-shimla",
+        "name": "Wildflower Hall, An Oberoi Resort / Taj The Trees",
+        "location": "Shimla & Mashobra, Himachal Pradesh",
+        "nights": "03 Nights Stay",
+        "roomType": "Premier Mountain View Room",
+        "mealPlan": "Chef's Special MAPAI Plan",
+        "image": "https://images.unsplash.com/photo-1657894736581-ccc35d62d9e2?ixlib=rb-4.1.0&auto=format&fit=crop&w=800&q=80",
+        "description": "Ultra-luxury mountain sanctuaries with premier rooms and chef's special MAPAI plan.",
+        "stars": 5
+      }
+    ],
+    "included": [
+      "Elite Stays: 03 Nights in meticulously vetted premium/luxury hotels.",
+      "Curated Gastronomy: Daily lavish morning breakfasts and multi-cuisine dinners.",
+      "Luxury Transport: Private Toyota Innova Crysta for all transfers & sightseeing.",
+      "Welcome Amenities: Personalized welcome kit with fresh local juices and dry fruits.",
+      "TRAGUIN Signature Event: Private premium high-tea picnic organized in Mashobra.",
+      "Expert Chauffeur: Elite, highly verified mountain driver with deep destination roots.",
+      "Taxes & Fees: Complete toll taxes, parking fees, state entry charges, and driver allowances.",
+      "TRAGUIN Support: 24/7 priority concierge backing throughout the trip."
+    ],
+    "excluded": [
+      "Airfare / Train Tickets: Main flight costs to and from Delhi/Chandigarh.",
+      "Monument Access: Individual ticketing fees for historical buildings or museums.",
+      "Adventure Add-ons: Costs linked to private horse rides, yaks, or winter skiing.",
+      "Personal Expenses: In-room ordering, professional laundry services, and tips.",
+      "Optional Tours: Any extra sightseeing route outside the defined proposal bounds."
+    ],
+    "gallery": [
+      "https://images.pexels.com/photos/3574440/pexels-photo-3574440.jpeg?auto=compress&cs=tinysrgb&w=1200",
+      "https://images.pexels.com/photos/4877062/pexels-photo-4877062.jpeg?auto=compress&cs=tinysrgb&w=1200",
+      "https://images.pexels.com/photos/7170023/pexels-photo-7170023.jpeg?auto=compress&cs=tinysrgb&w=1200",
+      "https://images.unsplash.com/photo-1657894736581-ccc35d62d9e2?ixlib=rb-4.1.0&auto=format&fit=crop&w=1200&q=80",
+      "https://images.pexels.com/photos/818342/pexels-photo-818342.jpeg?auto=compress&cs=tinysrgb&w=1200"
+    ],
+    "faq": [
+      {
+        "question": "What is the best season for this Himachal tour?",
+        "answer": "March to June and October to February are ideal. Summers are pleasant (15°C–26°C); winters bring snow and require heavy woolens."
+      },
+      {
+        "question": "Can the package start from Chandigarh instead of Delhi?",
+        "answer": "Yes. Transfers and drops are flexible between Delhi and Chandigarh airport or railway station."
+      },
+      {
+        "question": "Which hotel category is included?",
+        "answer": "We offer Deluxe through Ultra-Luxury options including Willow Banks, Radisson Jass, Welcomhotel by ITC, and Wildflower Hall — priced per your selected tier."
+      }
+    ],
+    "seo": {
+      "title": "Shimla Delight Luxury Family Escape — 4 Day Himachal Itinerary",
+      "description": "4-day premium Himachal Pradesh itinerary with Shimla heritage, Kufri peaks, Mashobra high-tea, and luxury MAPAI stays."
+    }
+  },
+  {
     "slug": "vietnam-heritage-8d",
     "packageId": "vietnam-heritage-8d",
     "destinationId": "vietnam",
@@ -1118,7 +1280,8 @@
         "nights": "3 Nights",
         "image": "https://images.unsplash.com/photo-1540959736712-19563eedd508?ixlib=rb-4.1.0&auto=format&fit=crop&w=800&q=80",
         "description": "Serene urban sanctuary with panoramic city views and minimalist Japanese design.",
-        "stars": 5
+        "stars": 5,
+        "hotelId": "aman-tokyo"
       },
       {
         "name": "Gora Kadan",
@@ -1126,7 +1289,8 @@
         "nights": "1 Night",
         "image": "https://images.pexels.com/photos/189296/pexels-photo-189296.jpeg?auto=compress&cs=tinysrgb&w=800",
         "description": "Legendary ryokan with private onsen and kaiseki dining in the mountains.",
-        "stars": 5
+        "stars": 5,
+        "hotelId": "gora-kadan"
       },
       {
         "name": "Suiran Kyoto",
@@ -1134,7 +1298,8 @@
         "nights": "3 Nights",
         "image": "https://images.pexels.com/photos/261181/pexels-photo-261181.jpeg?auto=compress&cs=tinysrgb&w=800",
         "description": "Luxury retreat on the banks of the Hozu River near Arashiyama.",
-        "stars": 5
+        "stars": 5,
+        "hotelId": "suiran-kyoto"
       }
     ],
     "included": [

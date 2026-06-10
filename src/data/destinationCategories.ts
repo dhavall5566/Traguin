@@ -54,6 +54,7 @@ export const destinationCategories: DestinationCategory[] = [
       { id: "kerala", name: "Kerala", description: "Backwaters and Ayurvedic wellness.", image: destImg("kerala", images.kerala), startingPrice: 89000 },
       { id: "goa", name: "Goa", description: "Coastal elegance and heritage.", image: destImg("goa", images.goa), startingPrice: 65000 },
       { id: "ladakh", name: "Ladakh", description: "High-altitude adventure and monasteries.", image: destImg("ladakh", images.ladakh), startingPrice: 95000 },
+      { id: "himachal", name: "Himachal Pradesh", description: "Shimla heritage, Kufri peaks, and Mashobra orchards.", image: destImg("himachal", images.himachal), startingPrice: 24500 },
     ],
   },
   {

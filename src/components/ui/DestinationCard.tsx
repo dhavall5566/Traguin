@@ -5,6 +5,7 @@ import { Clock, Star } from "lucide-react";
 import { HotelImageSlider } from "@/components/hotels/HotelImageSlider";
 import { PriceDisplay } from "@/components/ui/PriceDisplay";
 import { getDestinationGalleryImages } from "@/lib/destination-images";
+import { getDestinationRating, getDestinationReviewCount } from "@/lib/destinations";
 import { cn } from "@/lib/utils";
 
 const DESTINATION_SLIDE_INTERVAL_MS = 4000;
@@ -21,8 +22,10 @@ type DestinationCardProps = {
   duration?: string;
   /** Region or country shown under the title */
   location?: string;
-  /** 1–5 star row; defaults to 5 for curated journeys */
+  /** 1–5 star row; defaults to itinerary/destination rating when omitted */
   rating?: number;
+  /** Guest review count; derived from destination when omitted */
+  reviewCount?: number;
   className?: string;
 };
 
@@ -36,10 +39,14 @@ export function DestinationCard({
   cta = "View Journey",
   duration,
   location,
-  rating = 5,
+  rating,
+  reviewCount,
   className,
 }: DestinationCardProps) {
-  const stars = Math.min(5, Math.max(0, Math.round(rating)));
+  const displayRating = rating ?? getDestinationRating(destinationId);
+  const displayReviewCount =
+    reviewCount ?? getDestinationReviewCount(destinationId, displayRating);
+  const stars = Math.min(5, Math.max(0, Math.round(displayRating)));
   const galleryImages = getDestinationGalleryImages(destinationId, image);
 
   return (
@@ -71,11 +78,17 @@ export function DestinationCard({
 
       <div className="flex flex-1 flex-col p-5 md:p-6">
         {stars > 0 && (
-          <div className="flex items-center gap-1.5" aria-label={`${rating.toFixed(1)} out of 5 stars`}>
+          <div
+            className="flex flex-wrap items-center gap-1.5"
+            aria-label={`${displayRating.toFixed(1)} out of 5 from ${displayReviewCount} guest reviews`}
+          >
             {Array.from({ length: stars }).map((_, i) => (
               <Star key={i} size={12} className="fill-gold text-gold" aria-hidden />
             ))}
-            <span className="text-xs text-foreground">{rating.toFixed(1)}</span>
+            <span className="text-xs font-medium text-foreground">{displayRating.toFixed(1)}</span>
+            <span className="text-xs text-muted">
+              ({displayReviewCount} {displayReviewCount === 1 ? "review" : "reviews"})
+            </span>
           </div>
         )}
 

@@ -27,10 +27,68 @@ const NAME_TO_ID: Record<string, string> = {
   "anantara hoi an resort": "anantara-hoi-an",
   "marina bay sands": "marina-bay-sands",
   "badrutts palace": "badrutt-palace",
+  "hotel willow banks": "willow-banks-shimla",
+  "toshali royal resort": "willow-banks-shimla",
+  "radisson jass shimla": "radisson-jass-shimla",
+  "the gateway resort": "radisson-jass-shimla",
+  "the orchid hotel": "welcomhotel-itc-shimla",
+  "welcomhotel by itc shimla": "welcomhotel-itc-shimla",
+  "wildflower hall an oberoi resort": "wildflower-hall-shimla",
+  "taj the trees": "wildflower-hall-shimla",
+  "aman tokyo": "aman-tokyo",
+  "gora kadan": "gora-kadan",
+  "suiran kyoto": "suiran-kyoto",
 };
 
 export function getHotelById(id: string): Hotel | undefined {
   return hotels.find((h) => h.id === id);
+}
+
+/** Stable guest review count for display when not set on the hotel record */
+export function getHotelReviewCount(hotel: Pick<Hotel, "id" | "rating" | "reviewCount">): number {
+  if (hotel.reviewCount != null) return hotel.reviewCount;
+
+  let hash = 0;
+  for (let i = 0; i < hotel.id.length; i++) {
+    hash = (hash * 31 + hotel.id.charCodeAt(i)) >>> 0;
+  }
+
+  const base = 48 + (hash % 180);
+  const ratingBoost = Math.round(hotel.rating * 12);
+  return base + ratingBoost;
+}
+
+/** Properties in the same destination, then region — excludes the current hotel */
+export function getSimilarHotels(hotel: Hotel, limit = 8): Hotel[] {
+  const others = hotels.filter((h) => h.id !== hotel.id);
+
+  const sameDestination = others.filter((h) => h.destination === hotel.destination);
+  const sameRegion = others.filter(
+    (h) => h.region === hotel.region && h.destination !== hotel.destination
+  );
+
+  const ranked = [...sameDestination, ...sameRegion].sort((a, b) => {
+    const destBoost =
+      (a.destination === hotel.destination ? 1 : 0) -
+      (b.destination === hotel.destination ? 1 : 0);
+    if (destBoost !== 0) return -destBoost;
+
+    const ratingDiff = b.rating - a.rating;
+    if (ratingDiff !== 0) return ratingDiff;
+
+    return Math.abs(a.price - hotel.price) - Math.abs(b.price - hotel.price);
+  });
+
+  const seen = new Set<string>();
+  const unique: Hotel[] = [];
+  for (const item of ranked) {
+    if (seen.has(item.id)) continue;
+    seen.add(item.id);
+    unique.push(item);
+    if (unique.length >= limit) break;
+  }
+
+  return unique;
 }
 
 export function findHotelForItineraryHotel(itineraryHotel: ItineraryHotel): Hotel | undefined {
@@ -46,6 +104,13 @@ export function findHotelForItineraryHotel(itineraryHotel: ItineraryHotel): Hote
 
 /** Deep link to luxury stays — opens property detail when matched */
 export function getLuxuryStayHrefForItineraryHotel(itineraryHotel: ItineraryHotel): string {
+  if (itineraryHotel.hotelId) {
+    const byId = getHotelById(itineraryHotel.hotelId);
+    if (byId) {
+      return `/luxury-stays?hotel=${encodeURIComponent(byId.id)}`;
+    }
+  }
+
   const match = findHotelForItineraryHotel(itineraryHotel);
   if (match) {
     return `/luxury-stays?hotel=${encodeURIComponent(match.id)}`;

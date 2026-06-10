@@ -12,6 +12,14 @@ export interface ItineraryHotel {
   image: string;
   description: string;
   stars?: number;
+  /** Links to a property in the luxury stays catalog */
+  hotelId?: string;
+  /** Package tier label, e.g. "Option 01 — Deluxe" */
+  category?: string;
+  /** Room category from the proposal */
+  roomType?: string;
+  /** Assigned meal plan */
+  mealPlan?: string;
 }
 
 export interface ItineraryFaq {
@@ -32,6 +40,10 @@ export interface Itinerary {
   durationDays: number;
   startingPrice: number;
   priceNote?: string;
+  /** Guest rating out of 5; generated when omitted */
+  rating?: number;
+  /** Number of guest reviews; generated when omitted */
+  reviewCount?: number;
   heroImage: string;
   tagline: string;
   overview: string;

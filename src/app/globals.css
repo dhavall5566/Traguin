@@ -35,7 +35,6 @@
   --input-bg: rgba(255, 255, 255, 0.05);
   --on-gold: #0b0b0b;
   --logo-wrap-bg: #ffffff;
-  --hero-glow: rgba(212, 175, 55, 0.07);
   --selection-bg: rgba(212, 175, 55, 0.3);
   --luxury-gradient-start: rgba(212, 175, 55, 0.15);
   --luxury-gradient-mid: rgba(10, 132, 255, 0.08);
@@ -53,16 +52,20 @@
     transparent 40%,
     color-mix(in srgb, var(--background) 30%, transparent) 100%
   );
-  --showcase-body: var(--muted);
-  --showcase-subtitle: var(--sand);
-  --showcase-stat-label: var(--muted);
-  --showcase-progress-inactive: color-mix(in srgb, var(--foreground) 20%, transparent);
   --hero-packages-scrim-h: var(--showcase-scrim-h);
   --hero-packages-scrim-v: var(--showcase-scrim-v);
   --hero-packages-overlay: rgba(11, 11, 11, 0.28);
   --nav-shell-bg: rgba(17, 17, 17, 0.78);
   --nav-shell-border: rgba(255, 255, 255, 0.12);
   --nav-shell-shadow: 0 12px 40px rgba(0, 0, 0, 0.35);
+  --nav-liquid-bg: rgba(22, 22, 24, 0.38);
+  --nav-liquid-border: rgba(255, 255, 255, 0.28);
+  --nav-liquid-shadow:
+    0 8px 32px rgba(0, 0, 0, 0.18),
+    inset 0 1px 0 rgba(255, 255, 255, 0.14);
+  --nav-liquid-blur: 44px;
+  --nav-liquid-track-bg: rgba(255, 255, 255, 0.06);
+  --nav-liquid-track-border: rgba(255, 255, 255, 0.14);
   --nav-track-bg: rgba(0, 0, 0, 0.35);
   --nav-track-border: rgba(255, 255, 255, 0.08);
   --nav-link-active-fg: #ffffff;
@@ -95,7 +98,6 @@
     0 0 0 1px rgba(184, 148, 31, 0.22);
   --on-gold: #ffffff;
   --logo-wrap-bg: transparent;
-  --hero-glow: rgba(212, 175, 55, 0.12);
   --selection-bg: rgba(184, 148, 31, 0.22);
   --luxury-gradient-start: rgba(212, 175, 55, 0.1);
   --luxury-gradient-mid: rgba(10, 132, 255, 0.05);
@@ -112,10 +114,6 @@
     color-mix(in srgb, var(--background) 50%, transparent) 0%,
     transparent 24%
   );
-  --showcase-body: color-mix(in srgb, var(--foreground) 78%, transparent);
-  --showcase-subtitle: color-mix(in srgb, var(--foreground) 62%, transparent);
-  --showcase-stat-label: color-mix(in srgb, var(--foreground) 55%, transparent);
-  --showcase-progress-inactive: color-mix(in srgb, var(--foreground) 28%, transparent);
   /* Hero keeps a dark left scrim so white copy stays readable on photos */
   --hero-packages-scrim-h: linear-gradient(
     90deg,
@@ -135,6 +133,14 @@
   --nav-shell-bg: rgba(255, 255, 255, 0.94);
   --nav-shell-border: rgba(26, 22, 18, 0.14);
   --nav-shell-shadow: 0 10px 36px rgba(26, 22, 18, 0.1);
+  --nav-liquid-bg: rgba(255, 255, 255, 0.52);
+  --nav-liquid-border: rgba(255, 255, 255, 0.72);
+  --nav-liquid-shadow:
+    0 8px 28px rgba(26, 22, 18, 0.08),
+    inset 0 1px 0 rgba(255, 255, 255, 0.85);
+  --nav-liquid-blur: 48px;
+  --nav-liquid-track-bg: rgba(255, 255, 255, 0.42);
+  --nav-liquid-track-border: rgba(255, 255, 255, 0.55);
   --nav-track-bg: #ebe8e2;
   --nav-track-border: rgba(26, 22, 18, 0.08);
   --nav-link-active-fg: #ffffff;
@@ -347,11 +353,19 @@ body {
 }
 
 .nav-bar {
+  position: relative;
+  isolation: isolate;
   background: var(--nav-shell-bg);
   border-color: var(--nav-shell-border);
   box-shadow: var(--nav-shell-shadow);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
+  backdrop-filter: blur(20px) saturate(1.15);
+  -webkit-backdrop-filter: blur(20px) saturate(1.15);
+  transition:
+    background 0.5s cubic-bezier(0.22, 1, 0.36, 1),
+    border-color 0.5s cubic-bezier(0.22, 1, 0.36, 1),
+    box-shadow 0.5s cubic-bezier(0.22, 1, 0.36, 1),
+    backdrop-filter 0.5s cubic-bezier(0.22, 1, 0.36, 1),
+    -webkit-backdrop-filter 0.5s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 @media (min-width: 768px) {
@@ -360,10 +374,119 @@ body {
   }
 }
 
-.nav-bar--scrolled {
-  box-shadow:
-    var(--nav-shell-shadow),
-    0 0 0 1px color-mix(in srgb, var(--gold) 12%, transparent);
+/* Scrolled (desktop): same layout — invisible chrome, visible tab labels only */
+@media (min-width: 1024px) {
+  .nav-bar--scrolled {
+    background: transparent;
+    border-color: transparent;
+    box-shadow: none;
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+  }
+
+  .nav-bar--scrolled::before {
+    opacity: 0;
+  }
+
+  /* Hidden but still occupies space — layout unchanged */
+  .nav-bar--scrolled .nav-bar-brand,
+  .nav-bar--scrolled .nav-bar-actions {
+    visibility: hidden;
+    pointer-events: none;
+  }
+
+  .nav-bar--scrolled .nav-links-track {
+    background: transparent;
+    border-color: transparent;
+    box-shadow: none;
+  }
+
+  .nav-bar--scrolled .nav-active-bubble {
+    visibility: hidden;
+    opacity: 0;
+    background: transparent;
+  }
+
+  .nav-bar--scrolled .nav-link-pill {
+    position: relative;
+    z-index: 2;
+    color: var(--muted);
+  }
+
+  .nav-bar--scrolled .nav-link-pill--idle:hover {
+    color: var(--foreground);
+  }
+
+  .nav-bar--scrolled .nav-link-pill--active {
+    color: var(--gold);
+    font-weight: 600;
+  }
+
+  /* Hover while scrolled: restore full visible navbar */
+  .nav-bar--scrolled:hover {
+    background: var(--nav-shell-bg);
+    border-color: var(--nav-shell-border);
+    box-shadow:
+      var(--nav-shell-shadow),
+      0 0 0 1px color-mix(in srgb, var(--gold) 12%, transparent);
+    backdrop-filter: blur(20px) saturate(1.15);
+    -webkit-backdrop-filter: blur(20px) saturate(1.15);
+  }
+
+  .nav-bar--scrolled:hover .nav-bar-brand,
+  .nav-bar--scrolled:hover .nav-bar-actions {
+    visibility: visible;
+    pointer-events: auto;
+  }
+
+  .nav-bar--scrolled:hover .nav-links-track {
+    background: var(--nav-track-bg);
+    border-color: var(--nav-track-border);
+    box-shadow: inset 0 1px 4px rgba(0, 0, 0, 0.08);
+  }
+
+  [data-theme="light"] .nav-bar--scrolled:hover .nav-links-track {
+    box-shadow: inset 0 1px 3px rgba(26, 22, 18, 0.07);
+  }
+
+  .nav-bar--scrolled:hover .nav-active-bubble {
+    visibility: visible;
+    opacity: 1;
+    background: var(--gold);
+  }
+
+  .nav-bar--scrolled:hover .nav-link-pill--active {
+    color: var(--nav-link-active-fg);
+  }
+
+  .nav-bar--scrolled:hover .nav-link-pill--idle {
+    color: var(--muted);
+  }
+}
+
+.nav-bar--scrolled::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.16) 0%,
+    rgba(255, 255, 255, 0.04) 38%,
+    transparent 62%
+  );
+  opacity: 0;
+  transition: opacity 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+  pointer-events: none;
+}
+
+[data-theme="light"] .nav-bar--scrolled::before {
+  background: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.72) 0%,
+    rgba(255, 255, 255, 0.2) 42%,
+    transparent 68%
+  );
 }
 
 /* Recessed pill track — all links inside one capsule */
@@ -372,6 +495,10 @@ body {
   border: 0.5px solid var(--nav-track-border);
   background: var(--nav-track-bg);
   box-shadow: inset 0 1px 4px rgba(0, 0, 0, 0.08);
+  transition:
+    background 0.5s cubic-bezier(0.22, 1, 0.36, 1),
+    border-color 0.5s cubic-bezier(0.22, 1, 0.36, 1),
+    box-shadow 0.5s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 [data-theme="light"] .nav-links-track {
@@ -390,6 +517,12 @@ body {
 .nav-active-bubble {
   background: var(--gold);
   box-shadow: none;
+  transition: opacity 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.nav-bar-brand,
+.nav-bar-actions {
+  transition: visibility 0.4s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 .nav-link-pill--active {
@@ -472,18 +605,6 @@ input[type="date"]::-webkit-calendar-picker-indicator {
   animation: shimmer 3s infinite;
 }
 
-.hero-glow {
-  background: radial-gradient(ellipse at center, var(--hero-glow) 0%, transparent 60%);
-}
-
-.destination-showcase-scrim-h {
-  background: var(--showcase-scrim-h);
-}
-
-.destination-showcase-scrim-v {
-  background: var(--showcase-scrim-v);
-}
-
 .sliding-packages-scrim-h {
   background: var(--hero-packages-scrim-h);
 }
@@ -494,10 +615,6 @@ input[type="date"]::-webkit-calendar-picker-indicator {
 
 .sliding-packages-overlay {
   background: var(--hero-packages-overlay);
-}
-
-[data-theme="light"] .destination-showcase-image {
-  filter: contrast(1.07) saturate(1.1);
 }
 
 @keyframes customer-stories-marquee {
@@ -529,30 +646,3 @@ input[type="date"]::-webkit-calendar-picker-indicator {
   }
 }
 
-@keyframes featured-experiences-marquee {
-  0% {
-    transform: translateX(0);
-  }
-  100% {
-    transform: translateX(-50%);
-  }
-}
-
-.featured-experiences-track {
-  animation: featured-experiences-marquee 55s linear infinite;
-}
-
-.featured-experiences-track:hover {
-  animation-play-state: paused;
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .featured-experiences-track {
-    animation: none;
-    flex-wrap: wrap;
-    width: 100%;
-    max-width: 80rem;
-    margin-inline: auto;
-    justify-content: center;
-  }
-}

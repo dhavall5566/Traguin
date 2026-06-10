@@ -104,7 +104,7 @@ export function Navigation() {
         >
           <Link
             href="/"
-            className="group relative z-10 shrink-0 pl-0.5"
+            className="nav-bar-brand group relative z-10 shrink-0 pl-0.5"
             aria-label="TRAGUIN home"
           >
             <span className="logo-wrap transition-opacity duration-300 group-hover:opacity-90">
@@ -119,11 +119,11 @@ export function Navigation() {
             </span>
           </Link>
 
-          <div className="hidden min-w-0 flex-1 items-center lg:flex lg:px-2">
+          <div className="nav-bar-links hidden min-w-0 flex-1 items-center lg:flex lg:px-2">
             <DesktopNavTrack pathname={pathname} />
           </div>
 
-          <div className="relative z-10 ml-auto flex shrink-0 items-center gap-2 md:gap-2.5">
+          <div className="nav-bar-actions relative z-10 ml-auto flex shrink-0 items-center gap-2 md:gap-2.5">
             <MagneticButton
               as="a"
               href={primaryCta.href}

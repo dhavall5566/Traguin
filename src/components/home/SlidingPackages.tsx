@@ -3,13 +3,13 @@
 import { useCallback, useEffect, useRef, useState, type MouseEvent } from "react";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
-import { ChevronDown, ChevronLeft, ChevronRight, Clock, MapPin } from "lucide-react";
+import { ChevronDown, ChevronLeft, ChevronRight, Clock, MapPin, Star } from "lucide-react";
 import { packages } from "@/data/packages";
 import type { TravelPackage } from "@/types";
 import { SafeImage } from "@/components/ui/SafeImage";
 import { formatPrice } from "@/lib/utils";
 import { MagneticButton } from "@/components/ui/MagneticButton";
-import { getPackageJourneyHref } from "@/lib/packages";
+import { getPackageJourneyHref, getPackageReviewCount } from "@/lib/packages";
 import { cn } from "@/lib/utils";
 
 const AUTO_ADVANCE_MS = 4000;
@@ -94,6 +94,8 @@ function ShowcaseBackground({
 
 function ShowcaseContent({ pkg }: { pkg: TravelPackage }) {
   const journeyHref = getPackageJourneyHref(pkg);
+  const reviewCount = getPackageReviewCount(pkg);
+  const stars = Math.min(5, Math.max(0, Math.round(pkg.rating)));
   const item = {
     hidden: { opacity: 0, y: 18 },
     show: (i: number) => ({
@@ -146,7 +148,7 @@ function ShowcaseContent({ pkg }: { pkg: TravelPackage }) {
       <motion.h2
         custom={1}
         variants={item}
-        className="mt-3 font-display text-4xl leading-[1.05] text-white uppercase sm:text-5xl md:text-6xl lg:text-7xl"
+        className="mt-3 font-display text-4xl leading-[1.05] text-white sm:text-5xl md:text-6xl lg:text-7xl"
       >
         {pkg.title}
       </motion.h2>
@@ -154,7 +156,22 @@ function ShowcaseContent({ pkg }: { pkg: TravelPackage }) {
       <motion.div
         custom={2}
         variants={item}
-        className="mt-4 flex flex-wrap items-center gap-4 text-sm text-white/75"
+        className="mt-4 flex flex-wrap items-center gap-1.5"
+        aria-label={`${pkg.rating.toFixed(1)} out of 5 from ${reviewCount} guest reviews`}
+      >
+        {Array.from({ length: stars }).map((_, i) => (
+          <Star key={i} size={14} className="fill-gold text-gold" aria-hidden />
+        ))}
+        <span className="text-sm font-medium text-white">{pkg.rating.toFixed(1)}</span>
+        <span className="text-sm text-white/65">
+          ({reviewCount} {reviewCount === 1 ? "review" : "reviews"})
+        </span>
+      </motion.div>
+
+      <motion.div
+        custom={3}
+        variants={item}
+        className="mt-3 flex flex-wrap items-center gap-4 text-sm text-white/75"
       >
         <span className="flex items-center gap-2">
           <Clock size={16} className="text-gold" />
@@ -163,14 +180,14 @@ function ShowcaseContent({ pkg }: { pkg: TravelPackage }) {
       </motion.div>
 
       <motion.p
-        custom={3}
+        custom={4}
         variants={item}
         className="mt-5 max-w-md text-sm leading-relaxed text-white/75 md:text-base"
       >
         {packageBlurb(pkg)}
       </motion.p>
 
-      <motion.ul custom={4} variants={item} className="mt-5 space-y-2">
+      <motion.ul custom={5} variants={item} className="mt-5 space-y-2">
         {pkg.highlights.slice(0, 3).map((highlight) => (
           <li
             key={highlight}
@@ -182,7 +199,7 @@ function ShowcaseContent({ pkg }: { pkg: TravelPackage }) {
         ))}
       </motion.ul>
 
-      <motion.div custom={5} variants={item} className="mt-6">
+      <motion.div custom={6} variants={item} className="mt-6">
         <p className="text-xs font-semibold tracking-wide text-white/60 uppercase">
           From
         </p>
@@ -191,7 +208,7 @@ function ShowcaseContent({ pkg }: { pkg: TravelPackage }) {
         </p>
       </motion.div>
 
-      <motion.div custom={6} variants={item} className="mt-8 flex flex-wrap items-center gap-4">
+      <motion.div custom={7} variants={item} className="mt-8 flex flex-wrap items-center gap-4">
         <MagneticButton
           as="a"
           href={journeyHref}
@@ -539,7 +556,7 @@ export function SlidingPackages() {
       </div>
 
       <Link
-        href="/packages/international"
+        href="/destinations"
         className="absolute top-24 right-6 z-10 hidden text-xs tracking-[0.2em] text-white/60 uppercase transition-colors hover:text-white md:block lg:top-28 lg:right-12"
       >
         All packages →

@@ -225,13 +225,6 @@ export function validateLoginForm(form: LoginFormValues): FieldErrors {
   });
 }
 
-export type AiPlannerFormValues = {
-  destination: string;
-  budget: string;
-  duration: string;
-  travelers: string;
-};
-
 export type TravelPlannerFormValues = {
   destination: string;
   startDate: string;
@@ -277,17 +270,4 @@ export function validateTravelPlannerForm(
     ...validateTravelPlannerStep(1, form, minDate),
     ...validateTravelPlannerStep(2, form, minDate),
   };
-}
-
-export function validateAiPlannerForm(form: AiPlannerFormValues): FieldErrors {
-  return collectErrors({
-    destination: validateDestination(form.destination, false),
-    budget: validatePositiveNumber(form.budget, "budget", { min: 10000, max: 50000000 }),
-    duration: validatePositiveNumber(form.duration, "duration", {
-      min: 1,
-      max: 90,
-      integer: true,
-    }),
-    travelers: validateTravelers(form.travelers),
-  });
 }

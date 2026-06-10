@@ -3,6 +3,8 @@ export type TravelMood =
   | "adventure"
   | "romantic"
   | "family"
+  | "solo"
+  | "cultural"
   | "wildlife"
   | "beach"
   | "nature"
@@ -54,28 +56,8 @@ export interface Hotel {
   amenities: string[];
   nearbyAttractions: NearbyAttraction[];
   rating: number;
+  /** Number of guest reviews; generated when omitted */
+  reviewCount?: number;
   description?: string;
 }
 
-export interface Testimonial {
-  id: string;
-  name: string;
-  destination: string;
-  quote: string;
-  image: string;
-  video?: string;
-}
-
-export interface JourneyStep {
-  id: string;
-  title: string;
-  description: string;
-  icon: string;
-}
-
-export interface MoodOption {
-  id: TravelMood;
-  label: string;
-  description: string;
-  image: string;
-}

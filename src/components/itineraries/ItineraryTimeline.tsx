@@ -190,9 +190,11 @@ export function ItineraryTimeline({ days, durationDays }: ItineraryTimelineProps
                   <h3 className="mt-2 font-display text-2xl text-foreground md:text-4xl">
                     {selected.title}
                   </h3>
-                  <p className="mt-4 max-w-2xl text-sm leading-relaxed text-muted md:text-base">
-                    {selected.description}
-                  </p>
+                  {selected.description && (
+                    <p className="mt-4 max-w-2xl text-sm leading-relaxed text-muted md:text-base">
+                      {selected.description}
+                    </p>
+                  )}
                 </div>
 
                 <div className="px-6 py-8 md:px-10 md:py-10">
@@ -203,25 +205,36 @@ export function ItineraryTimeline({ days, durationDays }: ItineraryTimelineProps
 
                   {selected.activities.length > 0 ? (
                     <ul className="mt-6 space-y-4">
-                      {selected.activities.map((activity, index) => (
-                        <li
-                          key={activity}
-                          className="flex gap-4 rounded-xl border border-glass-border bg-surface/80 p-4 transition-colors hover:border-gold/20"
-                        >
-                          <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-gold/15 font-display text-sm text-gold">
-                            {String(index + 1).padStart(2, "0")}
-                          </span>
-                          <div className="min-w-0 flex-1 pt-1">
-                            <p className="font-display text-base text-foreground md:text-lg">
-                              {activity}
-                            </p>
-                            <p className="mt-1 text-xs text-muted">
-                              Curated experience · private arrangements
-                            </p>
-                          </div>
-                          <Check size={16} className="mt-2 shrink-0 text-gold/70" aria-hidden />
-                        </li>
-                      ))}
+                      {selected.activities.map((activity, index) => {
+                        const parsed = parseActivityLine(activity);
+                        return (
+                          <li
+                            key={`${activity}-${index}`}
+                            className="flex gap-4 rounded-xl border border-glass-border bg-surface/80 p-4 transition-colors hover:border-gold/20"
+                          >
+                            <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-gold/15 font-display text-sm text-gold">
+                              {String(index + 1).padStart(2, "0")}
+                            </span>
+                            <div className="min-w-0 flex-1 pt-1">
+                              {parsed.label ? (
+                                <>
+                                  <p className="text-xs font-semibold tracking-wide text-gold uppercase">
+                                    {parsed.label}
+                                  </p>
+                                  <p className="mt-1 font-display text-base leading-relaxed text-foreground md:text-lg">
+                                    {parsed.detail}
+                                  </p>
+                                </>
+                              ) : (
+                                <p className="font-display text-base leading-relaxed text-foreground md:text-lg">
+                                  {parsed.detail}
+                                </p>
+                              )}
+                            </div>
+                            <Check size={16} className="mt-2 shrink-0 text-gold/70" aria-hidden />
+                          </li>
+                        );
+                      })}
                     </ul>
                   ) : (
                     <p className="mt-4 text-sm text-muted">Leisure day — pace set by you.</p>
@@ -242,6 +255,17 @@ type DayListCardProps = {
   isExpanded: boolean;
   onSelect: () => void;
 };
+
+function parseActivityLine(activity: string) {
+  const colonIndex = activity.indexOf(":");
+  if (colonIndex > 0 && colonIndex <= 48) {
+    return {
+      label: activity.slice(0, colonIndex).trim(),
+      detail: activity.slice(colonIndex + 1).trim(),
+    };
+  }
+  return { label: null, detail: activity };
+}
 
 function DayListCard({ day, isSelected, isExpanded, onSelect }: DayListCardProps) {
   return (
@@ -286,20 +310,10 @@ function DayListCard({ day, isSelected, isExpanded, onSelect }: DayListCardProps
           >
             {day.title}
           </h3>
-          {!isExpanded && (
-            <>
-              <p className="mt-2 line-clamp-2 text-sm leading-relaxed text-muted">
-                {day.description}
-              </p>
-              {day.activities.length > 0 && (
-                <p className="mt-3 text-[10px] tracking-wide text-gold/80 uppercase md:text-[11px]">
-                  {day.activities.length} activities · Tap to view
-                </p>
-              )}
-            </>
-          )}
-          {isExpanded && !isSelected && (
-            <p className="mt-1 line-clamp-1 text-xs text-muted">{day.description}</p>
+          {!isExpanded && day.activities.length > 0 && (
+            <p className="mt-3 text-[10px] tracking-wide text-gold/80 uppercase md:text-[11px]">
+              {day.activities.length} activities · Tap to view
+            </p>
           )}
         </div>
       </button>

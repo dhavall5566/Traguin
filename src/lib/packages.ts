@@ -1,33 +1,24 @@
-import { packages } from "@/data/packages";
 import { destinations } from "@/data/destinations";
 import type { TravelPackage } from "@/types";
-import { getItineraryByPackageId } from "@/lib/itineraries";
+import {
+  getItineraryByPackageId,
+  getItineraryReviewCount,
+} from "@/lib/itineraries";
 
-export function getPackagesForCity(cityName: string): TravelPackage[] {
-  return packages.filter(
-    (p) => p.destination.toLowerCase() === cityName.toLowerCase()
-  );
+function packageHash(id: string) {
+  let hash = 0;
+  for (let i = 0; i < id.length; i++) {
+    hash = (hash * 31 + id.charCodeAt(i)) >>> 0;
+  }
+  return hash;
 }
 
-export function getPackagesForCityId(cityId: string): TravelPackage[] {
-  const nameMap: Record<string, string> = {
-    bali: "Bali",
-    dubai: "Dubai",
-    switzerland: "Switzerland",
-    thailand: "Thailand",
-    vietnam: "Vietnam",
-    singapore: "Singapore",
-    japan: "Japan",
-    maldives: "Maldives",
-    mediterranean: "Mediterranean",
-    "asia-pacific": "Asia Pacific",
-    kerala: "Kerala",
-    kashmir: "Kashmir",
-    goa: "Goa",
-    ladakh: "Ladakh",
-  };
-  const name = nameMap[cityId];
-  return name ? getPackagesForCity(name) : [];
+export function getPackageReviewCount(pkg: TravelPackage): number {
+  const itinerary = getItineraryByPackageId(pkg.id);
+  if (itinerary) return getItineraryReviewCount(itinerary);
+
+  const hash = packageHash(pkg.id);
+  return 48 + (hash % 130) + Math.round(pkg.rating * 10);
 }
 
 export function getDestinationIdForPackage(pkg: TravelPackage): string | undefined {
@@ -37,7 +28,7 @@ export function getDestinationIdForPackage(pkg: TravelPackage): string | undefin
   return match?.id;
 }
 
-/** Primary CTA for a package card — full itinerary when available, else destination or package listing. */
+/** Primary CTA for a package card — full itinerary when available, else destination listing. */
 export function getPackageJourneyHref(pkg: TravelPackage): string {
   const itinerary = getItineraryByPackageId(pkg.id);
   if (itinerary) return `/destinations/${itinerary.destinationId}`;
@@ -45,5 +36,5 @@ export function getPackageJourneyHref(pkg: TravelPackage): string {
   const destinationId = getDestinationIdForPackage(pkg);
   if (destinationId) return `/destinations/${destinationId}`;
 
-  return `/packages/${pkg.region}`;
+  return "/destinations";
 }
