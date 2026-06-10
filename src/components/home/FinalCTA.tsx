@@ -30,7 +30,7 @@ export function FinalCTA() {
         </p>
         <div className="mt-10 flex flex-col items-center justify-center gap-4 sm:flex-row">
           <MagneticButton as="a" href="/contact" variant="primary" className="!px-8 !py-4">
-            Schedule Consultation
+            Connect With a Travel Expert
           </MagneticButton>
           <MagneticButton
             as="a"
@@ -39,7 +39,7 @@ export function FinalCTA() {
             className="!px-8 !py-4 inline-flex items-center gap-2"
           >
             <MessageCircle size={18} />
-            WhatsApp Concierge
+            WhatsApp Travel Expert
           </MagneticButton>
         </div>
         <div className="mt-6 flex flex-wrap items-center justify-center gap-4 text-sm">

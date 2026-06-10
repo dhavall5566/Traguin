@@ -17,7 +17,7 @@ type DestinationHotelsSliderProps = {
 export function DestinationHotelsSlider({
   destinationName,
   hotels,
-  subtitle = "Other handpicked properties our concierge recommends while you plan this journey.",
+  subtitle = "Other handpicked properties our travel experts recommend while you plan this journey.",
 }: DestinationHotelsSliderProps) {
   const trackRef = useRef<HTMLDivElement>(null);
   const [canScrollLeft, setCanScrollLeft] = useState(false);

@@ -37,38 +37,50 @@ export function DestinationDetail({ destination }: DestinationDetailProps) {
 
   return (
     <article>
-      <section className="relative min-h-[45svh] md:min-h-[55svh]">
+      <section className="relative min-h-[45svh] w-full md:min-h-[55svh]">
         <SafeImage
           src={destination.image}
           alt={destination.name}
-          className="absolute inset-0 h-full w-full object-cover"
+          className="absolute inset-0 z-0 h-full w-full object-cover"
           loading="eager"
         />
-        <div className="absolute inset-0 bg-background/65" />
-        <div className="absolute inset-0 bg-gradient-to-t from-background via-transparent to-background/40" />
+        <div className="absolute inset-0 z-[1] bg-black/40" />
+        <div className="absolute inset-0 z-[1] bg-gradient-to-b from-black/55 via-black/10 to-transparent" />
+        <div className="absolute inset-0 z-[1] bg-gradient-to-t from-background via-background/75 to-transparent" />
 
-        <div className="relative mx-auto flex min-h-[45svh] max-w-7xl flex-col justify-end px-4 pb-10 pt-4 sm:px-6 md:min-h-[55svh] md:pb-14">
-          <Link
-            href="/destinations"
-            className="mb-6 inline-flex w-fit items-center gap-2 text-xs tracking-wide text-muted transition-colors hover:text-gold"
-          >
-            <ArrowLeft size={14} />
-            All Destinations
-          </Link>
-          <p className="text-xs tracking-[0.3em] text-gold uppercase">{destination.categoryTitle}</p>
-          <h1 className="mt-2 font-display text-4xl text-foreground md:text-6xl">{destination.name}</h1>
-          <p className="mt-4 max-w-2xl text-muted">{destination.description}</p>
-          <div className="mt-6">
-            <PriceDisplay amount={destination.startingPrice} label="From" size="lg" />
-          </div>
-          <div className="mt-8 flex flex-wrap gap-3">
-            <MagneticButton as="a" href="#inquiry" variant="primary">
-              {itineraryPrimaryCta.label}
-            </MagneticButton>
-            <MagneticButton as="a" href={whatsappHref} variant="secondary" className="inline-flex items-center gap-2">
-              <MessageCircle size={18} />
-              WhatsApp
-            </MagneticButton>
+        <div className="pointer-events-none absolute inset-0 z-10">
+          <div className="mx-auto flex h-full max-w-7xl flex-col justify-end px-4 pb-10 pt-28 sm:px-6 md:pb-14 md:pt-32">
+            <div className="pointer-events-auto">
+              <Link
+                href="/destinations"
+                className="mb-6 inline-flex w-fit items-center gap-2 text-xs tracking-wide text-white/75 transition-colors hover:text-white"
+              >
+                <ArrowLeft size={14} />
+                All Destinations
+              </Link>
+              <p className="text-xs tracking-[0.3em] text-gold uppercase">{destination.categoryTitle}</p>
+              <h1 className="mt-2 font-display text-4xl text-white drop-shadow-[0_2px_12px_rgba(0,0,0,0.45)] md:text-6xl">
+                {destination.name}
+              </h1>
+              <p className="mt-4 max-w-2xl text-white/85">{destination.description}</p>
+              <div className="mt-6">
+                <PriceDisplay
+                  amount={destination.startingPrice}
+                  label="From"
+                  size="lg"
+                  variant="overlay"
+                />
+              </div>
+              <div className="mt-8 flex flex-wrap gap-3">
+                <MagneticButton as="a" href="#inquiry" variant="primary">
+                  {itineraryPrimaryCta.label}
+                </MagneticButton>
+                <MagneticButton as="a" href={whatsappHref} variant="secondary" className="inline-flex items-center gap-2">
+                  <MessageCircle size={18} />
+                  WhatsApp
+                </MagneticButton>
+              </div>
+            </div>
           </div>
         </div>
       </section>

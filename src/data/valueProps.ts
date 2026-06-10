@@ -8,15 +8,15 @@ export const valueProps = [
     icon: Sparkles,
   },
   {
-    id: "concierge",
-    title: "Concierge Service",
+    id: "expert",
+    title: "Travel Expert Service",
     description: "Dedicated support before, during, and after every journey you take with us.",
     icon: Headphones,
   },
   {
     id: "expertise",
     title: "Trusted Expertise",
-    description: "Luxury travel specialists curating exceptional experiences since 2008.",
+    description: "Luxury travel specialists curating exceptional experiences since 2024.",
     icon: Award,
   },
   {

@@ -1,11 +1,10 @@
 "use client";
 
-import { useEffect, useMemo, useState, type ComponentType } from "react";
+import { useEffect, useMemo, type ComponentType } from "react";
 import Link from "next/link";
 import {
   ArrowLeft,
   Check,
-  ChevronDown,
   Clock,
   MapPin,
   MessageCircle,
@@ -25,7 +24,6 @@ import { itineraryPrimaryCta, itinerarySecondaryCta } from "@/data/site";
 import { resolveItineraryHotelCard } from "@/lib/hotels";
 import { getItineraryRating, getItineraryReviewCount } from "@/lib/itineraries";
 import { scrollToInquirySection } from "@/lib/scroll-to-inquiry";
-import { cn } from "@/lib/utils";
 
 type ItineraryDetailProps = {
   itinerary: Itinerary;
@@ -45,7 +43,7 @@ export function ItineraryDetail({ itinerary, destinationName }: ItineraryDetailP
 
   const hotelSubtitle = itinerary.hotels.some((h) => h.category)
     ? "Handpicked accommodation tiers included in this journey — explore each property in detail."
-    : "Handpicked properties our concierge recommends for this journey.";
+    : "Handpicked properties our travel experts recommend for this journey.";
 
   const rating = getItineraryRating(itinerary);
   const reviewCount = getItineraryReviewCount(itinerary);
@@ -63,39 +61,53 @@ export function ItineraryDetail({ itinerary, destinationName }: ItineraryDetailP
 
   return (
     <article>
-      {/* Hero gallery — images only */}
-      <section className="px-3 pt-4 md:px-6 md:pt-6">
-        <div className="mx-auto w-full max-w-[90rem]">
-          <div className="relative aspect-[16/9] max-h-[min(55svh,580px)] w-full overflow-hidden rounded-2xl border border-glass-border shadow-[0_20px_50px_-24px_rgba(0,0,0,0.45)] sm:aspect-[21/9] md:rounded-3xl">
-            <HotelImageSlider
-              images={destinationGallery}
-              alt={itinerary.title}
-              className="h-full w-full"
-              intervalMs={4000}
-              showIndicators
+      {/* Hero slider */}
+      <section className="relative w-full">
+        <div className="relative aspect-[16/9] max-h-[58svh] w-full overflow-hidden sm:aspect-[21/9] md:max-h-[68svh]">
+          <HotelImageSlider
+            images={destinationGallery}
+            alt={itinerary.title}
+            className="h-full w-full"
+            intervalMs={4000}
+            showIndicators
+            indicatorsClassName="bottom-4 sm:bottom-5"
+          />
+        </div>
+
+        <div className="absolute bottom-4 left-4 z-10 sm:bottom-6 sm:left-6 md:bottom-8 md:left-8">
+          <div className="glass rounded-2xl border border-glass-border bg-surface/90 px-4 py-3 shadow-[0_12px_40px_-16px_rgba(0,0,0,0.5)] backdrop-blur-md sm:px-5 sm:py-4">
+            <PriceDisplay
+              amount={itinerary.startingPrice}
+              label="Starting from"
+              size="lg"
+              note={itinerary.priceNote}
             />
           </div>
         </div>
       </section>
 
-      {/* Title & actions — solid panel below slider */}
+      {/* Title, price, actions & meta */}
       <section className="border-b border-glass-border bg-surface">
         <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 md:py-10">
           <Link
             href="/destinations"
-            className="mb-6 inline-flex w-fit items-center gap-2 text-xs tracking-wide text-muted transition-colors hover:text-gold"
+            className="inline-flex w-fit items-center gap-2 text-xs tracking-wide text-muted transition-colors hover:text-gold"
           >
             <ArrowLeft size={14} />
             All Destinations
           </Link>
-          <p className="text-xs tracking-[0.3em] text-gold uppercase">
-            {destinationName ?? itinerary.destination}
-          </p>
-          <h1 className="mt-2 font-display text-4xl text-foreground md:text-6xl lg:text-7xl">
-            {itinerary.title}
-          </h1>
-          <p className="mt-4 max-w-2xl text-base text-muted md:text-lg">{itinerary.tagline}</p>
-          <div className="mt-8 flex flex-wrap gap-3">
+
+          <div className="mt-8 max-w-3xl">
+            <p className="text-xs tracking-[0.3em] text-gold uppercase">
+              {destinationName ?? itinerary.destination}
+            </p>
+            <h1 className="mt-2 font-display text-4xl text-foreground md:text-5xl lg:text-6xl xl:text-7xl">
+              {itinerary.title}
+            </h1>
+            <p className="mt-4 text-base leading-relaxed text-muted md:text-lg">{itinerary.tagline}</p>
+          </div>
+
+          <div className="mt-8 flex flex-wrap items-center gap-3 border-t border-glass-border pt-8">
             <MagneticButton as="a" href="#inquiry" variant="primary">
               {itineraryPrimaryCta.label}
             </MagneticButton>
@@ -107,13 +119,8 @@ export function ItineraryDetail({ itinerary, destinationName }: ItineraryDetailP
               {itinerarySecondaryCta.label}
             </MagneticButton>
           </div>
-        </div>
-      </section>
 
-      {/* Duration & Pricing bar */}
-      <section className="border-y border-glass-border bg-surface">
-        <div className="section-padding py-8">
-          <div className="mx-auto grid max-w-7xl gap-6 sm:grid-cols-2 lg:grid-cols-4">
+          <div className="mt-8 grid gap-8 border-t border-glass-border pt-8 sm:grid-cols-3">
             <MetaItem icon={Clock} label="Duration" value={itinerary.duration} />
             <MetaItem
               icon={MapPin}
@@ -121,12 +128,6 @@ export function ItineraryDetail({ itinerary, destinationName }: ItineraryDetailP
               value={`${itinerary.destination} · ${itinerary.region === "domestic" ? "India" : "International"}`}
             />
             <ReviewMetaItem rating={rating} reviewCount={reviewCount} />
-            <div>
-              <p className="text-xs tracking-wide text-muted uppercase">Starting Price</p>
-              <div className="mt-2">
-                <PriceDisplay amount={itinerary.startingPrice} label="From" size="lg" note={itinerary.priceNote} />
-              </div>
-            </div>
           </div>
         </div>
       </section>
@@ -171,24 +172,13 @@ export function ItineraryDetail({ itinerary, destinationName }: ItineraryDetailP
         </section>
       )}
 
-      {/* Included / Excluded + FAQ */}
+      {/* Included / Excluded */}
       <section className="section-padding bg-surface">
         <div className="mx-auto max-w-7xl">
           <div className="grid gap-4 md:grid-cols-2 md:gap-5">
             <InclusionList title="Included" items={itinerary.included} positive />
             <InclusionList title="Excluded" items={itinerary.excluded} />
           </div>
-
-          {itinerary.faq.length > 0 && (
-            <div className="mx-auto mt-10 max-w-3xl md:mt-12">
-              <h2 className="text-center font-display text-3xl text-foreground md:text-4xl">FAQ</h2>
-              <div className="mt-6 space-y-2">
-                {itinerary.faq.map((item) => (
-                  <FaqItem key={item.question} question={item.question} answer={item.answer} />
-                ))}
-              </div>
-            </div>
-          )}
         </div>
       </section>
 
@@ -201,7 +191,7 @@ export function ItineraryDetail({ itinerary, destinationName }: ItineraryDetailP
           <div className="flex flex-col justify-center lg:col-span-2">
             <div className="glass rounded-3xl border border-glass-border p-8 text-center">
               <MessageCircle size={40} className="mx-auto text-gold" />
-              <h3 className="mt-4 font-display text-2xl text-foreground">WhatsApp Concierge</h3>
+              <h3 className="mt-4 font-display text-2xl text-foreground">WhatsApp Travel Expert</h3>
               <p className="mt-2 text-sm text-muted">
                 Prefer to chat? Message our travel expert directly about {itinerary.title}.
               </p>
@@ -310,22 +300,3 @@ function InclusionList({
   );
 }
 
-function FaqItem({ question, answer }: { question: string; answer: string }) {
-  const [open, setOpen] = useState(false);
-  return (
-    <div className="glass rounded-xl border border-glass-border">
-      <button
-        type="button"
-        onClick={() => setOpen(!open)}
-        className="flex w-full items-center justify-between gap-4 px-5 py-4 text-left"
-        aria-expanded={open}
-      >
-        <span className="text-sm font-medium text-foreground">{question}</span>
-        <ChevronDown size={18} className={cn("shrink-0 text-gold transition-transform", open && "rotate-180")} />
-      </button>
-      {open && (
-        <p className="border-t border-glass-border px-5 pb-4 text-sm leading-relaxed text-muted">{answer}</p>
-      )}
-    </div>
-  );
-}

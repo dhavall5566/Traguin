@@ -86,16 +86,19 @@ export function TravelPlannerForm() {
   };
 
   return (
-    <section id="planner" className="section-padding relative overflow-hidden bg-surface scroll-mt-28">
+    <section
+      id="planner"
+      className="relative overflow-hidden bg-surface px-[clamp(1.5rem,5vw,4rem)] py-[clamp(2.5rem,6vw,4.5rem)] scroll-mt-[var(--site-header-height)]"
+    >
       <div className="absolute inset-0 luxury-gradient opacity-15" />
       <div className="relative mx-auto max-w-3xl">
         <SectionHeader
           eyebrow="Your Journey Begins Here"
           title="Plan Your Extraordinary Journey"
-          description="Share your vision and our travel designers will craft a personalized itinerary within 48 hours."
+          titleClassName="text-[clamp(1.35rem,4.2vw,3.25rem)] whitespace-nowrap md:text-[clamp(1.75rem,4.2vw,3.25rem)] lg:text-[clamp(2rem,4.2vw,3.25rem)]"
         />
 
-        <div className="mt-10 flex justify-center gap-2">
+        <div className="mt-6 flex justify-center gap-2">
           {steps.map((label, i) => (
             <div key={label} className="flex items-center gap-2">
               <span

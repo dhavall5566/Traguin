@@ -10,6 +10,8 @@ export const FALLBACK_IMAGE = pexels(2387866);
 export const images = {
   hero: unsplash("1469854523086-cc02fe5d8800", 1920),
   travel: pexels(2387866, 1920),
+  /** Moraine Lake — Plan My Journey CTA background */
+  plannerCta: pexels(1365425, 3840),
 
   // Domestic — distinct verified photos
   kashmir: pexels(6738359),
@@ -28,6 +30,12 @@ export const images = {
   singapore: pexels(259447),
 
   beach: pexels(1450360),
+
+  // Experience showcase bento grid
+  experienceGroupTours: pexels(3184339, 1400),
+  experiencePrivateLuxe: unsplash("1555402738-d891e226a6bb", 1400),
+  experienceCorporate: pexels(1181677, 1400),
+  experienceSchool: pexels(8199572, 1400),
 
   couple1: unsplash("1524504388940-b1c1722653e1", 400),
   man1: unsplash("1507003211169-0a1dd7228f2d", 400),

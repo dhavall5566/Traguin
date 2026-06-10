@@ -1,6 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { useLenis } from "@/components/providers/LenisContext";
+import { scrollToConsultationSection } from "@/lib/scroll-to-consultation";
 import { Mail, Phone, MapPin, Clock, Send, MessageCircle } from "lucide-react";
 import { MagneticButton } from "@/components/ui/MagneticButton";
 import { FormField, fieldInputClass } from "@/components/ui/FormField";
@@ -27,9 +29,23 @@ const contactItems = [
 ] as const;
 
 export function ContactPage() {
+  const { lenis } = useLenis();
   const [form, setForm] = useState({ name: "", email: "", phone: "", message: "" });
   const [errors, setErrors] = useState<FieldErrors>({});
   const [submitted, setSubmitted] = useState(false);
+
+  useEffect(() => {
+    const scrollToForm = () => scrollToConsultationSection(lenis);
+    scrollToForm();
+
+    const timers = [0, 120, 350, 700].map((delay) => window.setTimeout(scrollToForm, delay));
+    window.addEventListener("hashchange", scrollToForm);
+
+    return () => {
+      timers.forEach((timer) => window.clearTimeout(timer));
+      window.removeEventListener("hashchange", scrollToForm);
+    };
+  }, [lenis]);
 
   const update = <K extends keyof typeof form>(key: K, value: (typeof form)[K]) => {
     setForm((prev) => ({ ...prev, [key]: value }));
@@ -45,14 +61,15 @@ export function ContactPage() {
   };
 
   return (
-    <div className="pb-16 md:pb-20 pt-12 md:pt-8">
+    <div className="pb-16 pt-12 md:pb-20 md:pt-8">
       <div className="page-x-padding">
         <div className="mx-auto max-w-7xl">
           <div className="grid items-start gap-8 lg:grid-cols-5 lg:gap-x-12 lg:gap-y-10">
             <div className="lg:col-span-2">
               <h1 className="mt-2 font-display text-5xl text-foreground md:text-7xl">Contact</h1>
               <p className="mt-4 max-w-xl text-muted">
-                Speak with our travel designers for a complimentary consultation.
+                Speak with our travel designers for a complimentary planning session with a TRAGUIN
+                travel expert.
               </p>
               <div className="mt-6 flex flex-col gap-3 sm:flex-row">
                 <MagneticButton
@@ -62,7 +79,7 @@ export function ContactPage() {
                   className="inline-flex items-center justify-center gap-2"
                 >
                   <MessageCircle size={18} />
-                  WhatsApp Concierge
+                  WhatsApp Travel Expert
                 </MagneticButton>
                 <MagneticButton as="a" href={contactInfo.phoneHref} variant="secondary">
                   Call Us
@@ -97,17 +114,18 @@ export function ContactPage() {
             </div>
 
             <form
+              id="consultation"
               onSubmit={handleSubmit}
               noValidate
-              className="glass rounded-3xl p-6 md:p-8 lg:col-span-3 lg:col-start-3 lg:row-span-2"
+              className="glass scroll-mt-[var(--site-header-height)] rounded-3xl p-6 md:p-8 lg:col-span-3 lg:col-start-3 lg:row-span-2"
             >
-              <h2 className="font-display text-2xl text-foreground">Consultation Request</h2>
-              <p className="mt-2 text-sm text-muted">We respond within one business day.</p>
+              <h2 className="font-display text-2xl text-foreground">CONSULTATION Request</h2>
+              <p className="mt-2 text-sm text-muted">We respond within 2 working hours.</p>
               {submitted ? (
                 <div className="flex min-h-[220px] flex-col items-center justify-center text-center">
                   <Send size={48} className="text-gold" />
                   <h3 className="mt-4 font-display text-2xl">Message Sent</h3>
-                  <p className="mt-2 text-muted">We&apos;ll be in touch within 24 hours.</p>
+                  <p className="mt-2 text-muted">We&apos;ll be in touch within 2 working hours.</p>
                 </div>
               ) : (
                 <div className="mt-6 space-y-4">
@@ -162,7 +180,7 @@ export function ContactPage() {
                     />
                   </FormField>
                   <MagneticButton type="submit" variant="primary">
-                    Schedule Consultation
+                    Connect With a Travel Expert
                   </MagneticButton>
                 </div>
               )}

@@ -9,9 +9,10 @@ export default function sitemap(): MetadataRoute.Sitemap {
     "",
     "/destinations",
     "/luxury-stays",
-    "/concierge",
+    "/travel-expert",
     "/about",
     "/client-stories",
+    "/careers",
     "/contact",
     "/login",
   ];

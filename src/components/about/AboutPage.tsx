@@ -1,15 +1,17 @@
 import { SectionHeader } from "@/components/ui/SectionHeader";
+import { FaqSection } from "@/components/ui/FaqSection";
 import { MagneticButton } from "@/components/ui/MagneticButton";
+import { aboutFaq } from "@/data/faq";
 import { primaryCta, secondaryCta } from "@/data/site";
 
 const sections = [
   {
     title: "Our Story",
-    body: "Founded in Ahmedabad, TRAGUIN began with simple belief: luxury travel should feel personal, not transactional. What started as bespoke domestic journeys has grown into a global concierge practice trusted by families, executives, and celebrants alike.",
+    body: "Founded in Ahmedabad, TRAGUIN began with simple belief: luxury travel should feel personal, not transactional. What started as bespoke domestic journeys has grown into a global travel expert practice trusted by families, executives, and celebrants alike.",
   },
   {
-    title: "Since 2008",
-    body: "For nearly two decades we have refined our craft — pairing discerning travelers with properties, experiences, and specialists that reflect their standards, not a brochure.",
+    title: "Since 2024",
+    body: "We have refined our craft from day one — pairing discerning travelers with properties, experiences, and specialists that reflect their standards, not a brochure.",
   },
   {
     title: "Philosophy",
@@ -17,7 +19,7 @@ const sections = [
   },
   {
     title: "Team",
-    body: "Our travel designers, concierge leads, and on-ground partners operate as one studio. You work with specialists who know your preferences before you need to repeat them.",
+    body: "Our travel designers, travel expert leads, and on-ground partners operate as one studio. You work with specialists who know your preferences before you need to repeat them.",
   },
   {
     title: "Partnerships",
@@ -39,7 +41,8 @@ export function AboutPage() {
               align="left"
               eyebrow="TRAGUIN"
               title="About Us"
-              description="A luxury travel concierge studio devoted to extraordinary journeys."
+              description="A luxury travel expert studio devoted to extraordinary journeys."
+              titleClassName="font-semibold"
             />
           </div>
           <div className="mt-6 flex flex-wrap gap-3">
@@ -54,11 +57,15 @@ export function AboutPage() {
           <div className="mt-6 grid gap-8 md:grid-cols-2">
             {sections.map((s) => (
               <article key={s.title} className="glass rounded-2xl border border-glass-border p-8">
-                <h2 className="font-display text-2xl text-foreground">{s.title}</h2>
+                <h2 className="font-display text-2xl font-semibold text-foreground">{s.title}</h2>
                 <p className="mt-4 text-sm leading-relaxed text-muted">{s.body}</p>
               </article>
             ))}
           </div>
+
+          <section className="mt-16 rounded-3xl border border-glass-border bg-surface/60 px-4 py-10 sm:px-8 md:mt-20 md:py-12">
+            <FaqSection items={aboutFaq} titleClassName="font-semibold" />
+          </section>
         </div>
       </div>
     </div>

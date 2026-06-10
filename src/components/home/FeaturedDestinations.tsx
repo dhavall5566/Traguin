@@ -3,15 +3,16 @@
 import Link from "next/link";
 import { ArrowUpRight } from "lucide-react";
 import { featuredDestinations } from "@/data/featuredDestinations";
-import { getDefaultItineraryInquiryHref, getItineraryByDestinationId } from "@/lib/itineraries";
+import { getItineraryByDestinationId } from "@/lib/itineraries";
 import { SectionHeader } from "@/components/ui/SectionHeader";
 import { DestinationCard } from "@/components/ui/DestinationCard";
-import { MagneticButton } from "@/components/ui/MagneticButton";
-import { itineraryPrimaryCta, itinerarySecondaryCta } from "@/data/site";
 
 export function FeaturedDestinations() {
   return (
-    <section id="destinations" className="section-padding relative">
+    <section
+      id="destinations"
+      className="relative px-[clamp(1.5rem,5vw,4rem)] pt-[clamp(1rem,2.5vw,1.75rem)] pb-6"
+    >
       <div className="mx-auto max-w-7xl">
         <SectionHeader
           eyebrow="Curated Collection"
@@ -41,15 +42,7 @@ export function FeaturedDestinations() {
             );
           })}
         </div>
-        <div className="mt-10 flex flex-col items-center justify-between gap-6 sm:flex-row">
-          <div className="flex flex-wrap justify-center gap-3">
-            <MagneticButton as="a" href={getDefaultItineraryInquiryHref()} variant="primary">
-              {itineraryPrimaryCta.label}
-            </MagneticButton>
-            <MagneticButton as="a" href={itinerarySecondaryCta.href} variant="secondary">
-              {itinerarySecondaryCta.label}
-            </MagneticButton>
-          </div>
+        <div className="mt-10 flex justify-center sm:justify-end">
           <Link
             href="/destinations"
             className="inline-flex items-center gap-2 text-xs tracking-[0.2em] text-gold uppercase transition-colors hover:text-foreground"

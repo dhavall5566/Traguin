@@ -1,6 +1,7 @@
 "use client";
 
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import { useSearchParams } from "next/navigation";
 import {
   Search,
   X,
@@ -30,7 +31,6 @@ import { SectionHeader } from "@/components/ui/SectionHeader";
 import { DestinationCard } from "@/components/ui/DestinationCard";
 import { MagneticButton } from "@/components/ui/MagneticButton";
 import { FilterDropdown } from "@/components/ui/FilterDropdown";
-import { primaryCta, secondaryCta } from "@/data/site";
 import type { TravelMood } from "@/types";
 
 const PRICE_FILTERS = [
@@ -195,15 +195,27 @@ function DestinationGrid({
   );
 }
 
+function parseRegionParam(value: string | null): RegionFilterId {
+  if (value === "domestic" || value === "international") return value;
+  return "all";
+}
+
 export function DestinationsPage() {
+  const searchParams = useSearchParams();
   const [searchQuery, setSearchQuery] = useState("");
   const [categoryFilter, setCategoryFilter] = useState("all");
-  const [regionFilter, setRegionFilter] = useState<RegionFilterId>("all");
+  const [regionFilter, setRegionFilter] = useState<RegionFilterId>(() =>
+    parseRegionParam(searchParams.get("region"))
+  );
   const [moodFilter, setMoodFilter] = useState<MoodFilterId>("all");
   const [priceFilter, setPriceFilter] = useState<PriceFilterId>("all");
   const [itineraryFilter, setItineraryFilter] = useState<ItineraryFilterId>("all");
   const [sortBy, setSortBy] = useState<SortId>("recommended");
   const [openDropdown, setOpenDropdown] = useState<string | null>(null);
+
+  useEffect(() => {
+    setRegionFilter(parseRegionParam(searchParams.get("region")));
+  }, [searchParams]);
 
   const activateSiblingFilter = useCallback((targetId: string) => {
     setOpenDropdown(targetId);
@@ -357,14 +369,6 @@ export function DestinationsPage() {
             title="Destinations"
             description="Explore curated regions — each destination opens a full day-by-day itinerary when available."
           />
-          <div className="mt-8 flex flex-wrap gap-3">
-            <MagneticButton as="a" href={primaryCta.href} variant="primary" className="!text-xs">
-              {primaryCta.label}
-            </MagneticButton>
-            <MagneticButton as="a" href={secondaryCta.href} variant="secondary" className="!text-xs">
-              {secondaryCta.label}
-            </MagneticButton>
-          </div>
 
           <section
             className="mt-10 rounded-3xl border border-glass-border bg-surface/80 p-4 shadow-[0_24px_60px_-32px_rgba(0,0,0,0.35)] sm:p-5"

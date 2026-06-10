@@ -1,7 +1,6 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState, type MouseEvent } from "react";
-import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
 import { ChevronDown, ChevronLeft, ChevronRight, Clock, MapPin, Star } from "lucide-react";
 import { packages } from "@/data/packages";
@@ -13,7 +12,7 @@ import { getPackageJourneyHref, getPackageReviewCount } from "@/lib/packages";
 import { cn } from "@/lib/utils";
 
 const AUTO_ADVANCE_MS = 4000;
-const BG_TRANSITION_S = 1;
+const BG_TRANSITION_S = 1.4;
 const CARD_TRANSITION_S = 0.85;
 const CONTENT_STAGGER = 0.07;
 const CARD_VANISH_S = 0.55;
@@ -74,7 +73,7 @@ function ShowcaseBackground({
             initial={false}
             animate={{
               opacity: isActive ? 1 : 0,
-              scale: isActive ? 1.05 : 1.1,
+              scale: isActive ? 1.14 : 1,
               x: isActive ? parallax.x : 0,
               y: isActive ? parallax.y : 0,
             }}
@@ -257,7 +256,7 @@ function PackageCard({
         <p className="text-[10px] tracking-[0.18em] text-white/75 uppercase sm:text-xs">
           {pkg.destination}
         </p>
-        <p className="mt-1.5 line-clamp-2 text-xs font-semibold leading-snug text-white sm:text-sm">
+        <p className="mt-1.5 line-clamp-2 text-xs font-normal leading-snug text-white sm:text-sm">
           {pkg.title}
         </p>
       </div>
@@ -517,7 +516,7 @@ export function SlidingPackages() {
         <div className="sliding-packages-overlay absolute inset-0 z-[1]" />
       </div>
 
-      <div className="relative z-20 flex h-full flex-col pt-20 md:pt-24">
+      <div className="relative z-20 flex h-full flex-col pt-[var(--site-header-height)]">
         <div className="flex flex-1 flex-col justify-center lg:flex-row lg:items-center">
           <div className="section-padding w-full shrink-0 lg:w-[48%] lg:max-w-2xl">
             <AnimatePresence mode="wait">
@@ -554,13 +553,6 @@ export function SlidingPackages() {
           </div>
         </div>
       </div>
-
-      <Link
-        href="/destinations"
-        className="absolute top-24 right-6 z-10 hidden text-xs tracking-[0.2em] text-white/60 uppercase transition-colors hover:text-white md:block lg:top-28 lg:right-12"
-      >
-        All packages →
-      </Link>
 
       <div className="pointer-events-none absolute bottom-6 left-1/2 z-10 hidden -translate-x-1/2 lg:flex">
         <div className="flex flex-col items-center gap-2 text-white/60">

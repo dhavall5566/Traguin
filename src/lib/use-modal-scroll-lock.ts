@@ -11,6 +11,7 @@ export function useModalScrollLock(locked: boolean) {
     if (!locked) return;
 
     const scrollY = window.scrollY;
+    const routeAtLock = window.location.pathname + window.location.hash;
     const { style } = document.body;
 
     style.overflow = "hidden";
@@ -29,7 +30,16 @@ export function useModalScrollLock(locked: boolean) {
       style.left = "";
       style.right = "";
       style.width = "";
-      window.scrollTo(0, scrollY);
+
+      const routeChanged = window.location.pathname + window.location.hash !== routeAtLock;
+
+      if (routeChanged) {
+        window.scrollTo(0, 0);
+        lenis?.scrollTo(0, { immediate: true });
+      } else {
+        window.scrollTo(0, scrollY);
+      }
+
       lenis?.start();
     };
   }, [locked, lenis]);

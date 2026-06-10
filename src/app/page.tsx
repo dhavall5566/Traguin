@@ -2,9 +2,13 @@
 
 import { Suspense, lazy } from "react";
 import { SlidingPackages } from "@/components/home/SlidingPackages";
+import { DomesticInternationalSplit } from "@/components/home/DomesticInternationalSplit";
 
 const FeaturedDestinations = lazy(() =>
   import("@/components/home/FeaturedDestinations").then((m) => ({ default: m.FeaturedDestinations }))
+);
+const ExperienceShowcase = lazy(() =>
+  import("@/components/home/ExperienceShowcase").then((m) => ({ default: m.ExperienceShowcase }))
 );
 const WhyTraguin = lazy(() =>
   import("@/components/home/WhyTraguin").then((m) => ({ default: m.WhyTraguin }))
@@ -15,9 +19,7 @@ const TravelPlannerForm = lazy(() =>
 const CustomerStories = lazy(() =>
   import("@/components/home/CustomerStories").then((m) => ({ default: m.CustomerStories }))
 );
-const FinalCTA = lazy(() =>
-  import("@/components/home/FinalCTA").then((m) => ({ default: m.FinalCTA }))
-);
+import { PlanMyJourneyCTA } from "@/components/home/PlanMyJourneyCTA";
 
 function SectionFallback({ minHeight = "40vh" }: { minHeight?: string }) {
   return (
@@ -34,8 +36,16 @@ export default function HomePage() {
     <main>
       <SlidingPackages />
 
+      <Suspense fallback={<SectionFallback minHeight="50vh" />}>
+        <DomesticInternationalSplit />
+      </Suspense>
+
       <Suspense fallback={<SectionFallback minHeight="80vh" />}>
         <FeaturedDestinations />
+      </Suspense>
+
+      <Suspense fallback={<SectionFallback minHeight="70vh" />}>
+        <ExperienceShowcase />
       </Suspense>
 
       <Suspense fallback={<SectionFallback />}>
@@ -50,9 +60,7 @@ export default function HomePage() {
         <CustomerStories />
       </Suspense>
 
-      <Suspense fallback={<SectionFallback minHeight="80vh" />}>
-        <FinalCTA />
-      </Suspense>
+      <PlanMyJourneyCTA />
     </main>
   );
 }

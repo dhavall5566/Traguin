@@ -1,11 +1,11 @@
 export const primaryCta = {
   label: "Plan My Journey",
-  href: "/#planner",
+  href: "/#plan-my-journey",
 } as const;
 
 export const secondaryCta = {
-  label: "Speak With Concierge",
-  href: "/contact",
+  label: "Speak With Travel Expert",
+  href: "/contact#consultation",
 } as const;
 
 export const itineraryPrimaryCta = {
@@ -16,14 +16,14 @@ export const itineraryPrimaryCta = {
 
 export const itinerarySecondaryCta = {
   label: "Speak With Travel Expert",
-  href: "/contact",
+  href: "/contact#consultation",
 } as const;
 
 export const navLinks = [
   { href: "/", label: "Home" },
   { href: "/destinations", label: "Destinations" },
   { href: "/luxury-stays", label: "Luxury Stays" },
-  { href: "/concierge", label: "Travel Concierge" },
+  { href: "/travel-expert", label: "Travel Expert" },
   { href: "/client-stories", label: "Client Stories" },
   { href: "/about", label: "About" },
   { href: "/contact", label: "Contact" },
@@ -33,12 +33,13 @@ export const footerExploreLinks = [
   { href: "/", label: "Home" },
   { href: "/destinations", label: "Destinations" },
   { href: "/luxury-stays", label: "Luxury Stays" },
-  { href: "/concierge", label: "Travel Concierge" },
+  { href: "/travel-expert", label: "Travel Expert" },
 ] as const;
 
 export const footerCompanyLinks = [
   { href: "/about", label: "About" },
   { href: "/client-stories", label: "Client Stories" },
+  { href: "/careers", label: "Careers" },
   { href: "/contact", label: "Contact" },
   { href: "/login", label: "Client Portal" },
 ] as const;

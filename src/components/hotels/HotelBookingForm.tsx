@@ -65,7 +65,7 @@ export function HotelBookingForm({ hotel }: HotelBookingFormProps) {
       <input type="hidden" name="hotelId" value={hotel.id} />
       <h3 className="font-display text-xl text-foreground md:text-2xl">Request a Booking</h3>
       <p className="mt-2 text-sm text-muted">
-        Share your stay details and our concierge will confirm availability for{" "}
+        Share your stay details and our travel expert will confirm availability for{" "}
         <span className="text-foreground">{hotel.name}</span>.
       </p>
 

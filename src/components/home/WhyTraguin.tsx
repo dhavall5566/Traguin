@@ -28,11 +28,14 @@ export function WhyTraguin() {
   }, []);
 
   return (
-    <section ref={sectionRef} className="section-padding relative overflow-hidden">
+    <section
+      ref={sectionRef}
+      className="relative overflow-hidden px-[clamp(1.5rem,5vw,4rem)] pb-[clamp(4rem,10vw,8rem)] pt-6"
+    >
       <div className="relative mx-auto max-w-7xl">
         <SectionHeader
           title="Why TRAGUIN"
-          description="Eighteen years of crafting journeys that transcend ordinary travel."
+          description="Crafting extraordinary journeys since 2024."
         />
 
         <div className="mt-16 grid gap-6 sm:grid-cols-2 lg:grid-cols-4 lg:gap-8">
@@ -50,7 +53,7 @@ export function WhyTraguin() {
                 <div className="mb-5 flex h-14 w-14 items-center justify-center rounded-full bg-gold/10 transition-colors group-hover:bg-gold/20">
                   <Icon size={24} className="text-gold" />
                 </div>
-                <h3 className="font-display text-xl text-foreground">{item.title}</h3>
+                <h3 className="font-body text-xl font-bold text-foreground">{item.title}</h3>
                 <p className="mt-3 text-sm leading-relaxed text-muted">{item.description}</p>
               </div>
             );

@@ -6,6 +6,7 @@ type SectionHeaderProps = {
   description?: string;
   align?: "center" | "left";
   className?: string;
+  titleClassName?: string;
 };
 
 export function SectionHeader({
@@ -14,6 +15,7 @@ export function SectionHeader({
   description,
   align = "center",
   className,
+  titleClassName,
 }: SectionHeaderProps) {
   return (
     <div
@@ -25,7 +27,14 @@ export function SectionHeader({
       {eyebrow && (
         <p className="mb-4 text-xs tracking-[0.3em] text-gold uppercase">{eyebrow}</p>
       )}
-      <h2 className="font-display text-4xl text-foreground md:text-5xl lg:text-6xl">{title}</h2>
+      <h2
+        className={cn(
+          "font-display text-4xl text-foreground md:text-5xl lg:text-6xl",
+          titleClassName
+        )}
+      >
+        {title}
+      </h2>
       {description && (
         <p
           className={cn(

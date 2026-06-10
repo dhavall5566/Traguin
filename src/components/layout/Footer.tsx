@@ -23,7 +23,7 @@ export function Footer() {
               </span>
             </Link>
             <p className="mt-4 max-w-xs text-sm leading-relaxed text-muted">
-              Curating extraordinary journeys for discerning travelers since 2008.
+              Curating extraordinary journeys for discerning travelers since 2024.
               Where luxury meets authentic experience.
             </p>
             <div className="mt-5 flex gap-4">
@@ -114,12 +114,6 @@ export function Footer() {
                   className="hover:text-foreground"
                 >
                   {contactInfo.whatsapp}
-                </a>
-              </li>
-              <li className="flex items-center gap-3 text-sm text-muted">
-                <Mail size={16} className="shrink-0 text-gold" />
-                <a href={contactInfo.emailHref} className="hover:text-foreground">
-                  {contactInfo.email}
                 </a>
               </li>
               <li className="flex items-start gap-3 text-sm text-muted">

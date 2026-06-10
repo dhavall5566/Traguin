@@ -56,16 +56,6 @@ export function ClientStoriesPage() {
               </article>
             ))}
           </div>
-
-          <section className="mt-16 glass rounded-3xl border border-glass-border p-8 text-center md:p-12">
-            <h2 className="font-display text-2xl text-foreground md:text-3xl">Videos & Case Studies</h2>
-            <p className="mx-auto mt-3 max-w-lg text-sm text-muted">
-              Documentary-style journey films and detailed case studies are available during your consultation.
-            </p>
-            <MagneticButton as="a" href="/contact" variant="primary" className="mt-6">
-              Schedule Consultation
-            </MagneticButton>
-          </section>
         </div>
       </div>
     </div>

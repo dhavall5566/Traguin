@@ -52,7 +52,7 @@ export function SimilarHotelsSlider({ hotel, onSelectHotel }: SimilarHotelsSlide
             More stays in {hotel.destination}
           </h3>
           <p className="mt-2 max-w-lg text-sm text-muted">
-            Other handpicked properties our concierge recommends while you plan this journey.
+            Other handpicked properties our travel experts recommend while you plan this journey.
           </p>
         </div>
 
