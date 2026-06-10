@@ -1,4 +1,5 @@
 import { hotels } from "@/data/hotels";
+import { getHotelGalleryImages } from "@/lib/hotel-images";
 import type { ItineraryHotel } from "@/types/itinerary";
 import type { Hotel } from "@/types";
 
@@ -100,6 +101,80 @@ export function findHotelForItineraryHotel(itineraryHotel: ItineraryHotel): Hote
     const hotelKey = normalize(hotel.name);
     return hotelKey === key || hotelKey.includes(key) || key.includes(hotelKey);
   });
+}
+
+export type DestinationHotelCard = {
+  key: string;
+  href: string;
+  name: string;
+  destination: string;
+  description: string;
+  images: string[];
+  stars: number;
+  rating: number;
+  reviewCount: number;
+  amenities: string[];
+  price?: number;
+  category?: string;
+};
+
+export function getHotelsByDestinationName(name: string, limit = 12): Hotel[] {
+  const key = normalize(name);
+  return hotels
+    .filter((hotel) => {
+      const dest = normalize(hotel.destination);
+      return dest === key || dest.includes(key) || key.includes(dest);
+    })
+    .sort((a, b) => b.rating - a.rating || a.price - b.price)
+    .slice(0, limit);
+}
+
+export function getLuxuryStayHrefForHotel(hotel: Hotel): string {
+  return `/luxury-stays?hotel=${encodeURIComponent(hotel.id)}`;
+}
+
+export function resolveItineraryHotelCard(itineraryHotel: ItineraryHotel): DestinationHotelCard {
+  const catalog = findHotelForItineraryHotel(itineraryHotel);
+  const href = getLuxuryStayHrefForItineraryHotel(itineraryHotel);
+  const destination =
+    catalog?.destination ??
+    itineraryHotel.location.split(",").pop()?.trim() ??
+    itineraryHotel.location.split("·")[0]?.trim() ??
+    itineraryHotel.location;
+
+  const rating = catalog?.rating ?? 4.8;
+  const reviewSeed = catalog ?? { id: normalize(itineraryHotel.name), rating, reviewCount: undefined };
+
+  return {
+    key: itineraryHotel.hotelId ?? itineraryHotel.category ?? itineraryHotel.name,
+    href,
+    name: itineraryHotel.name,
+    destination,
+    description: itineraryHotel.description,
+    images: catalog ? getHotelGalleryImages(catalog) : [itineraryHotel.image],
+    stars: itineraryHotel.stars ?? catalog?.stars ?? 5,
+    rating,
+    reviewCount: getHotelReviewCount(reviewSeed),
+    amenities: catalog?.amenities.slice(0, 4) ?? [],
+    price: catalog?.price,
+    category: itineraryHotel.category,
+  };
+}
+
+export function resolveCatalogHotelCard(hotel: Hotel): DestinationHotelCard {
+  return {
+    key: hotel.id,
+    href: getLuxuryStayHrefForHotel(hotel),
+    name: hotel.name,
+    destination: hotel.destination,
+    description: hotel.description ?? "",
+    images: getHotelGalleryImages(hotel),
+    stars: hotel.stars,
+    rating: hotel.rating,
+    reviewCount: getHotelReviewCount(hotel),
+    amenities: hotel.amenities.slice(0, 4),
+    price: hotel.price,
+  };
 }
 
 /** Deep link to luxury stays — opens property detail when matched */

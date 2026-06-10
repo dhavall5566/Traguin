@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, type ComponentType } from "react";
+import { useEffect, useMemo, useState, type ComponentType } from "react";
 import Link from "next/link";
 import {
   ArrowLeft,
@@ -12,12 +12,9 @@ import {
   Star,
   X,
 } from "lucide-react";
-import type { Hotel } from "@/types";
-import type { Itinerary, ItineraryHotel } from "@/types/itinerary";
-import { HotelDetailModal } from "@/components/hotels/HotelDetailModal";
+import type { Itinerary } from "@/types/itinerary";
+import { DestinationHotelsSlider } from "@/components/hotels/DestinationHotelsSlider";
 import { HotelImageSlider } from "@/components/hotels/HotelImageSlider";
-import { ItineraryHotelPreviewModal } from "@/components/itineraries/ItineraryHotelPreviewModal";
-import { SafeImage } from "@/components/ui/SafeImage";
 import { PriceDisplay } from "@/components/ui/PriceDisplay";
 import { getDestinationGalleryImages } from "@/lib/destination-images";
 import { MagneticButton } from "@/components/ui/MagneticButton";
@@ -25,7 +22,7 @@ import { ItineraryInquiryForm } from "@/components/itineraries/ItineraryInquiryF
 import { ItineraryTimeline } from "@/components/itineraries/ItineraryTimeline";
 import { contactInfo } from "@/data/contact";
 import { itineraryPrimaryCta, itinerarySecondaryCta } from "@/data/site";
-import { findHotelForItineraryHotel } from "@/lib/hotels";
+import { resolveItineraryHotelCard } from "@/lib/hotels";
 import { getItineraryRating, getItineraryReviewCount } from "@/lib/itineraries";
 import { scrollToInquirySection } from "@/lib/scroll-to-inquiry";
 import { cn } from "@/lib/utils";
@@ -36,24 +33,19 @@ type ItineraryDetailProps = {
 };
 
 export function ItineraryDetail({ itinerary, destinationName }: ItineraryDetailProps) {
-  const [selectedCatalogHotel, setSelectedCatalogHotel] = useState<Hotel | null>(null);
-  const [selectedItineraryHotel, setSelectedItineraryHotel] = useState<ItineraryHotel | null>(null);
-
   const destinationGallery = getDestinationGalleryImages(
     itinerary.destinationId,
     itinerary.heroImage
   );
 
-  const openItineraryHotel = (hotel: ItineraryHotel) => {
-    const match = findHotelForItineraryHotel(hotel);
-    if (match) {
-      setSelectedCatalogHotel(match);
-      setSelectedItineraryHotel(null);
-      return;
-    }
-    setSelectedItineraryHotel(hotel);
-    setSelectedCatalogHotel(null);
-  };
+  const hotelCards = useMemo(
+    () => itinerary.hotels.map(resolveItineraryHotelCard),
+    [itinerary.hotels]
+  );
+
+  const hotelSubtitle = itinerary.hotels.some((h) => h.category)
+    ? "Handpicked accommodation tiers included in this journey — explore each property in detail."
+    : "Handpicked properties our concierge recommends for this journey.";
 
   const rating = getItineraryRating(itinerary);
   const reviewCount = getItineraryReviewCount(itinerary);
@@ -167,73 +159,38 @@ export function ItineraryDetail({ itinerary, destinationName }: ItineraryDetailP
       <ItineraryTimeline days={itinerary.days} durationDays={itinerary.durationDays} />
 
       {/* Hotels */}
-      <section className="section-padding">
-        <div className="mx-auto max-w-7xl">
-          <p className="text-xs tracking-[0.3em] text-gold uppercase">Accommodation</p>
-          <h2 className="mt-2 font-display text-3xl text-foreground md:text-4xl">Hotel Information</h2>
-          {itinerary.hotels.some((h) => h.category) && (
-            <p className="mt-3 max-w-3xl text-sm leading-relaxed text-muted md:text-base">
-              Shimla Luxury Resorts · 03 Nights Stay — four handpicked tiers available under this
-              package.
-            </p>
-          )}
-
-          <div className="mt-10 grid gap-8 md:grid-cols-2">
-            {itinerary.hotels.map((hotel) => (
-              <ItineraryHotelCard
-                key={hotel.category ?? hotel.name}
-                hotel={hotel}
-                onOpen={() => openItineraryHotel(hotel)}
-              />
-            ))}
+      {hotelCards.length > 0 && (
+        <section className="section-padding">
+          <div className="mx-auto max-w-7xl">
+            <DestinationHotelsSlider
+              destinationName={destinationName ?? itinerary.destination}
+              hotels={hotelCards}
+              subtitle={hotelSubtitle}
+            />
           </div>
-        </div>
-      </section>
+        </section>
+      )}
 
-      {/* Included / Excluded */}
+      {/* Included / Excluded + FAQ */}
       <section className="section-padding bg-surface">
         <div className="mx-auto max-w-7xl">
-          <div className="grid gap-8 md:grid-cols-2">
+          <div className="grid gap-4 md:grid-cols-2 md:gap-5">
             <InclusionList title="Included" items={itinerary.included} positive />
             <InclusionList title="Excluded" items={itinerary.excluded} />
           </div>
+
+          {itinerary.faq.length > 0 && (
+            <div className="mx-auto mt-10 max-w-3xl md:mt-12">
+              <h2 className="text-center font-display text-3xl text-foreground md:text-4xl">FAQ</h2>
+              <div className="mt-6 space-y-2">
+                {itinerary.faq.map((item) => (
+                  <FaqItem key={item.question} question={item.question} answer={item.answer} />
+                ))}
+              </div>
+            </div>
+          )}
         </div>
       </section>
-
-      {/* Gallery */}
-      {destinationGallery.length > 0 && (
-        <section className="section-padding">
-          <div className="mx-auto max-w-7xl">
-            <h2 className="font-display text-3xl text-foreground md:text-4xl">Gallery</h2>
-            <div className="mt-8 grid grid-cols-2 gap-3 md:grid-cols-3 lg:grid-cols-4">
-              {destinationGallery.map((src, i) => (
-                <div key={src} className={cn("relative overflow-hidden rounded-xl", i === 0 && "col-span-2 row-span-2 aspect-square md:aspect-auto md:min-h-[280px]")}>
-                  <SafeImage
-                    src={src}
-                    alt={`${itinerary.title} gallery ${i + 1}`}
-                    className="h-full min-h-[120px] w-full object-cover"
-                    loading="lazy"
-                  />
-                </div>
-              ))}
-            </div>
-          </div>
-        </section>
-      )}
-
-      {/* FAQ */}
-      {itinerary.faq.length > 0 && (
-        <section className="section-padding bg-surface">
-          <div className="mx-auto max-w-3xl">
-            <h2 className="text-center font-display text-3xl text-foreground md:text-4xl">FAQ</h2>
-            <div className="mt-8 space-y-3">
-              {itinerary.faq.map((item) => (
-                <FaqItem key={item.question} question={item.question} answer={item.answer} />
-              ))}
-            </div>
-          </div>
-        </section>
-      )}
 
       {/* Inquiry + WhatsApp */}
       <section className="section-padding">
@@ -264,81 +221,7 @@ export function ItineraryDetail({ itinerary, destinationName }: ItineraryDetailP
           </div>
         </div>
       </section>
-      {selectedCatalogHotel && (
-        <HotelDetailModal
-          hotel={selectedCatalogHotel}
-          onClose={() => setSelectedCatalogHotel(null)}
-          onSelectHotel={setSelectedCatalogHotel}
-        />
-      )}
-
-      {selectedItineraryHotel && (
-        <ItineraryHotelPreviewModal
-          hotel={selectedItineraryHotel}
-          onClose={() => setSelectedItineraryHotel(null)}
-        />
-      )}
     </article>
-  );
-}
-
-function ItineraryHotelCard({
-  hotel,
-  onOpen,
-}: {
-  hotel: ItineraryHotel;
-  onOpen: () => void;
-}) {
-  return (
-    <button
-      type="button"
-      onClick={onOpen}
-      className="group w-full overflow-hidden rounded-2xl border border-glass-border glass text-left transition-all duration-300 hover:border-gold/35 hover:shadow-[0_16px_40px_-16px_rgba(212,175,55,0.2)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gold"
-    >
-      <div className="relative aspect-[16/9] overflow-hidden">
-        <SafeImage
-          src={hotel.image}
-          alt={hotel.name}
-          className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
-        />
-      </div>
-      <div className="p-6">
-        {hotel.category && (
-          <p className="text-[10px] font-semibold tracking-[0.2em] text-gold uppercase">
-            {hotel.category}
-          </p>
-        )}
-        <div className={cn("flex items-center justify-between gap-2", hotel.category && "mt-2")}>
-          <h3 className="font-display text-xl text-foreground transition-colors group-hover:text-gold">
-            {hotel.name}
-          </h3>
-          {hotel.stars ? (
-            <div className="flex shrink-0 gap-0.5">
-              {[...Array(hotel.stars)].map((_, i) => (
-                <Star key={i} size={12} className="fill-gold text-gold" />
-              ))}
-            </div>
-          ) : null}
-        </div>
-        <p className="mt-1 text-sm text-gold">
-          {hotel.location} · {hotel.nights}
-        </p>
-        <p className="mt-3 text-sm leading-relaxed text-muted">{hotel.description}</p>
-        {hotel.roomType && (
-          <p className="mt-3 text-sm text-muted">
-            <span className="font-medium text-foreground/80">Room:</span> {hotel.roomType}
-          </p>
-        )}
-        {hotel.mealPlan && (
-          <p className="mt-1 text-sm text-muted">
-            <span className="font-medium text-foreground/80">Meals:</span> {hotel.mealPlan}
-          </p>
-        )}
-        <p className="mt-4 text-xs font-medium tracking-wide text-gold uppercase opacity-0 transition-opacity duration-300 group-hover:opacity-100">
-          View property →
-        </p>
-      </div>
-    </button>
   );
 }
 

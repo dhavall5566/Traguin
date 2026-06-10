@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import {
   Search,
   X,
@@ -71,6 +71,15 @@ const SORT_OPTIONS = [
   { id: "price-asc", label: "Price: Low to high" },
   { id: "price-desc", label: "Price: High to low" },
   { id: "name", label: "Name A–Z" },
+] as const;
+
+const DESTINATION_FILTER_IDS = [
+  "region",
+  "collection",
+  "travel-style",
+  "budget",
+  "journey-type",
+  "sort",
 ] as const;
 
 type PriceFilterId = (typeof PRICE_FILTERS)[number]["id"];
@@ -195,6 +204,13 @@ export function DestinationsPage() {
   const [itineraryFilter, setItineraryFilter] = useState<ItineraryFilterId>("all");
   const [sortBy, setSortBy] = useState<SortId>("recommended");
   const [openDropdown, setOpenDropdown] = useState<string | null>(null);
+
+  const activateSiblingFilter = useCallback((targetId: string) => {
+    setOpenDropdown(targetId);
+    window.requestAnimationFrame(() => {
+      document.getElementById(`${targetId}-trigger`)?.focus({ preventScroll: true });
+    });
+  }, []);
 
   const subRegionOptions = useMemo(
     () => getSubRegionOptions(regionFilter),
@@ -416,6 +432,8 @@ export function DestinationsPage() {
                 onChange={(value) => handleRegionFilterChange(value as RegionFilterId)}
                 isOpen={openDropdown === "region"}
                 onToggle={setOpenDropdown}
+                siblingIds={[...DESTINATION_FILTER_IDS]}
+                onActivateSibling={activateSiblingFilter}
               />
               <FilterDropdown
                 id="collection"
@@ -425,6 +443,8 @@ export function DestinationsPage() {
                 onChange={setCategoryFilter}
                 isOpen={openDropdown === "collection"}
                 onToggle={setOpenDropdown}
+                siblingIds={[...DESTINATION_FILTER_IDS]}
+                onActivateSibling={activateSiblingFilter}
               />
               <FilterDropdown
                 id="travel-style"
@@ -438,6 +458,8 @@ export function DestinationsPage() {
                 onChange={(value) => setMoodFilter(value as MoodFilterId)}
                 isOpen={openDropdown === "travel-style"}
                 onToggle={setOpenDropdown}
+                siblingIds={[...DESTINATION_FILTER_IDS]}
+                onActivateSibling={activateSiblingFilter}
               />
               <FilterDropdown
                 id="budget"
@@ -451,6 +473,8 @@ export function DestinationsPage() {
                 onChange={(value) => setPriceFilter(value as PriceFilterId)}
                 isOpen={openDropdown === "budget"}
                 onToggle={setOpenDropdown}
+                siblingIds={[...DESTINATION_FILTER_IDS]}
+                onActivateSibling={activateSiblingFilter}
               />
               <FilterDropdown
                 id="journey-type"
@@ -464,6 +488,8 @@ export function DestinationsPage() {
                 onChange={(value) => setItineraryFilter(value as ItineraryFilterId)}
                 isOpen={openDropdown === "journey-type"}
                 onToggle={setOpenDropdown}
+                siblingIds={[...DESTINATION_FILTER_IDS]}
+                onActivateSibling={activateSiblingFilter}
               />
               <FilterDropdown
                 id="sort"
@@ -473,6 +499,8 @@ export function DestinationsPage() {
                 onChange={(value) => setSortBy(value as SortId)}
                 isOpen={openDropdown === "sort"}
                 onToggle={setOpenDropdown}
+                siblingIds={[...DESTINATION_FILTER_IDS]}
+                onActivateSibling={activateSiblingFilter}
               />
             </div>
           </section>

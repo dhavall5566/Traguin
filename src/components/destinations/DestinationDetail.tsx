@@ -1,15 +1,17 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useMemo } from "react";
 import Link from "next/link";
 import { ArrowLeft, MapPin, MessageCircle } from "lucide-react";
 import type { DestinationListing } from "@/lib/destinations";
+import { DestinationHotelsSlider } from "@/components/hotels/DestinationHotelsSlider";
 import { SafeImage } from "@/components/ui/SafeImage";
 import { PriceDisplay } from "@/components/ui/PriceDisplay";
 import { MagneticButton } from "@/components/ui/MagneticButton";
 import { ItineraryInquiryForm } from "@/components/itineraries/ItineraryInquiryForm";
 import { contactInfo } from "@/data/contact";
 import { itineraryPrimaryCta, itinerarySecondaryCta, primaryCta } from "@/data/site";
+import { getHotelsByDestinationName, resolveCatalogHotelCard } from "@/lib/hotels";
 import { scrollToInquirySection } from "@/lib/scroll-to-inquiry";
 
 type DestinationDetailProps = {
@@ -17,6 +19,11 @@ type DestinationDetailProps = {
 };
 
 export function DestinationDetail({ destination }: DestinationDetailProps) {
+  const hotelCards = useMemo(
+    () => getHotelsByDestinationName(destination.name).map(resolveCatalogHotelCard),
+    [destination.name]
+  );
+
   const whatsappMessage = encodeURIComponent(
     `Hello TRAGUIN, I'm interested in a luxury journey to ${destination.name}.`
   );
@@ -81,6 +88,17 @@ export function DestinationDetail({ destination }: DestinationDetailProps) {
           </MagneticButton>
         </div>
       </section>
+
+      {hotelCards.length > 0 && (
+        <section className="section-padding bg-surface pt-0">
+          <div className="mx-auto max-w-7xl">
+            <DestinationHotelsSlider
+              destinationName={destination.name}
+              hotels={hotelCards}
+            />
+          </div>
+        </section>
+      )}
 
       <section className="section-padding bg-surface pt-0">
         <div className="mx-auto max-w-7xl">

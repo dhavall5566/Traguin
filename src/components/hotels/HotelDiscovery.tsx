@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import {
   Heart,
@@ -29,6 +29,8 @@ import { HotelImageSlider } from "@/components/hotels/HotelImageSlider";
 import { getHotelGalleryImages } from "@/lib/hotel-images";
 import { MagneticButton } from "@/components/ui/MagneticButton";
 import { FilterDropdown, type FilterDropdownOption } from "@/components/ui/FilterDropdown";
+
+const HOTEL_FILTER_IDS = ["destination", "property-type", "price", "amenities", "sort"] as const;
 
 const PROPERTY_TYPES = ["all", "Resort", "Hotel", "Villa", "Palace"] as const;
 
@@ -79,6 +81,13 @@ export function HotelDiscovery() {
   const [typeFilter, setTypeFilter] = useState<string>("all");
   const [sortBy, setSortBy] = useState<SortId>("recommended");
   const [openDropdown, setOpenDropdown] = useState<string | null>(null);
+
+  const activateSiblingFilter = useCallback((targetId: string) => {
+    setOpenDropdown(targetId);
+    window.requestAnimationFrame(() => {
+      document.getElementById(`${targetId}-trigger`)?.focus({ preventScroll: true });
+    });
+  }, []);
 
   const countries = useMemo(
     () => ["all", ...[...new Set(hotels.map((h) => h.destination))].sort()],
@@ -320,6 +329,8 @@ export function HotelDiscovery() {
                 onChange={setCountryFilter}
                 isOpen={openDropdown === "destination"}
                 onToggle={setOpenDropdown}
+                siblingIds={[...HOTEL_FILTER_IDS]}
+                onActivateSibling={activateSiblingFilter}
               />
               <FilterDropdown
                 id="property-type"
@@ -329,6 +340,8 @@ export function HotelDiscovery() {
                 onChange={setTypeFilter}
                 isOpen={openDropdown === "property-type"}
                 onToggle={setOpenDropdown}
+                siblingIds={[...HOTEL_FILTER_IDS]}
+                onActivateSibling={activateSiblingFilter}
               />
               <FilterDropdown
                 id="price"
@@ -338,6 +351,8 @@ export function HotelDiscovery() {
                 onChange={setPriceFilter}
                 isOpen={openDropdown === "price"}
                 onToggle={setOpenDropdown}
+                siblingIds={[...HOTEL_FILTER_IDS]}
+                onActivateSibling={activateSiblingFilter}
               />
               <FilterDropdown
                 id="amenities"
@@ -347,6 +362,8 @@ export function HotelDiscovery() {
                 onChange={setAmenityFilter}
                 isOpen={openDropdown === "amenities"}
                 onToggle={setOpenDropdown}
+                siblingIds={[...HOTEL_FILTER_IDS]}
+                onActivateSibling={activateSiblingFilter}
               />
               <FilterDropdown
                 id="sort"
@@ -356,6 +373,8 @@ export function HotelDiscovery() {
                 onChange={(value) => setSortBy(value as SortId)}
                 isOpen={openDropdown === "sort"}
                 onToggle={setOpenDropdown}
+                siblingIds={[...HOTEL_FILTER_IDS]}
+                onActivateSibling={activateSiblingFilter}
               />
             </div>
           </section>
