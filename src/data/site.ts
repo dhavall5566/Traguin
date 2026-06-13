@@ -1,0 +1,45 @@
+export const primaryCta = {
+  label: "Plan My Journey",
+  href: "/#plan-my-journey",
+} as const;
+
+export const secondaryCta = {
+  label: "Speak With Travel Expert",
+  href: "/contact#consultation",
+} as const;
+
+export const itineraryPrimaryCta = {
+  label: "Get Custom Quote",
+  /** Overridden per-destination via getItineraryInquiryHref(); fallback for generic links */
+  href: "/destinations/bali#inquiry",
+} as const;
+
+export const itinerarySecondaryCta = {
+  label: "Speak With Travel Expert",
+  href: "/contact#consultation",
+} as const;
+
+export const navLinks = [
+  { href: "/", label: "Home" },
+  { href: "/destinations", label: "Destinations" },
+  { href: "/luxury-stays", label: "Luxury Stays" },
+  { href: "/travel-expert", label: "Travel Expert" },
+  { href: "/client-stories", label: "Client Stories" },
+  { href: "/about", label: "About" },
+  { href: "/contact", label: "Contact" },
+] as const;
+
+export const footerExploreLinks = [
+  { href: "/", label: "Home" },
+  { href: "/destinations", label: "Destinations" },
+  { href: "/luxury-stays", label: "Luxury Stays" },
+  { href: "/travel-expert", label: "Travel Expert" },
+] as const;
+
+export const footerCompanyLinks = [
+  { href: "/about", label: "About" },
+  { href: "/client-stories", label: "Client Stories" },
+  { href: "/careers", label: "Careers" },
+  { href: "/contact", label: "Contact" },
+  { href: "/login", label: "Client Portal" },
+] as const;

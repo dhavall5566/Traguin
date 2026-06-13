@@ -1,0 +1,25 @@
+import type { NextConfig } from "next";
+
+const nextConfig: NextConfig = {
+  async redirects() {
+    return [
+      { source: "/hotels", destination: "/luxury-stays", permanent: true },
+      { source: "/concierge", destination: "/travel-expert", permanent: true },
+      { source: "/always-on-demand", destination: "/travel-expert", permanent: true },
+      { source: "/packages", destination: "/destinations", permanent: true },
+      { source: "/packages/domestic", destination: "/destinations", permanent: true },
+      { source: "/packages/international", destination: "/destinations", permanent: true },
+      { source: "/experiences", destination: "/#experiences", permanent: false },
+      { source: "/itineraries", destination: "/destinations", permanent: true },
+    ];
+  },
+  images: {
+    remotePatterns: [
+      { protocol: "https", hostname: "images.unsplash.com" },
+      { protocol: "https", hostname: "images.pexels.com" },
+      { protocol: "https", hostname: "videos.pexels.com" },
+    ],
+  },
+};
+
+export default nextConfig;
