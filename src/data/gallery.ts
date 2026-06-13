@@ -1,4 +1,77 @@
+import { images } from "@/lib/images";
 import { galleryImages } from "@/lib/gallery-images";
+import { packages } from "@/data/packages";
+import { testimonials } from "@/data/moods";
+
+export const galleryClientWall = testimonials.map((client, index) => ({
+  id: client.id,
+  name: client.name,
+  destination: client.destination,
+  tripType: client.tripType,
+  image: client.image,
+  rotate: [-3, 2, -1, 3, -2, 1][index % 6],
+}));
+
+export const galleryMoments = [
+  {
+    id: "kashmir-shikara",
+    type: "photo",
+    title: "Dal Lake Quiet Morning",
+    destination: "Kashmir",
+    caption: "Client shikara transfer arranged before sunrise.",
+    image: packages.find((pkg) => pkg.destination === "Kashmir")?.image ?? images.kashmir,
+    featured: true,
+  },
+  {
+    id: "bali-villa-film",
+    type: "video",
+    title: "Bali Villa Arrival",
+    destination: "Bali",
+    caption: "A short travel film from a private honeymoon arrival.",
+    poster: packages.find((pkg) => pkg.destination === "Bali")?.image ?? images.bali,
+    src: "https://videos.pexels.com/video-files/2169880/2169880-hd_1920_1080_30fps.mp4",
+    featured: true,
+  },
+  {
+    id: "swiss-alpine",
+    type: "photo",
+    title: "Alpine First Class",
+    destination: "Switzerland",
+    caption: "Glacier-route views paired with a private dining plan.",
+    image: packages.find((pkg) => pkg.destination === "Switzerland")?.image ?? images.switzerland,
+    featured: false,
+  },
+  {
+    id: "kerala-backwaters",
+    type: "photo",
+    title: "Backwater Stillness",
+    destination: "Kerala",
+    caption: "Family houseboat day with a slow, unhurried pace.",
+    image: packages.find((pkg) => pkg.destination === "Kerala")?.image ?? images.kerala,
+    featured: false,
+  },
+  {
+    id: "desert-table",
+    type: "video",
+    title: "Private Desert Table",
+    destination: "Dubai",
+    caption: "Golden-hour dining setup after a private desert drive.",
+    poster: packages.find((pkg) => pkg.destination === "Dubai")?.image ?? images.dubai,
+    src: "https://videos.pexels.com/video-files/855564/855564-hd_1920_1080_24fps.mp4",
+    featured: false,
+  },
+  {
+    id: "japan-ritual",
+    type: "photo",
+    title: "Cultural Discovery",
+    destination: "Japan",
+    caption: "Quiet temple access and guided rituals away from crowds.",
+    image: packages.find((pkg) => pkg.destination === "Japan")?.image ?? images.hero,
+    featured: false,
+  },
+] as const;
+
+export type GalleryMoment = (typeof galleryMoments)[number];
 
 export const galleryCategories = [
   { id: "all", label: "All" },

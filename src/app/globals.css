@@ -655,11 +655,49 @@ input[type="date"]::-webkit-calendar-picker-indicator {
   overflow: hidden;
   min-width: 0;
   min-height: 0;
+  isolation: isolate;
   border-radius: 1.25rem;
+  border: 1px solid var(--glass-border);
   background: color-mix(in srgb, var(--foreground) 5%, var(--surface));
+  box-shadow: 0 18px 48px -34px rgba(0, 0, 0, 0.42);
   animation: gallery-fade-in 0.5s cubic-bezier(0.22, 1, 0.36, 1) both;
   grid-column: span var(--gallery-col-span-mobile, 1);
   grid-row: span var(--gallery-row-span-mobile, 1);
+}
+
+.gallery-tile::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  background:
+    linear-gradient(to top, rgba(0, 0, 0, 0.28), transparent 42%),
+    radial-gradient(circle at 30% 20%, rgba(255, 255, 255, 0.18), transparent 34%);
+  opacity: 0.45;
+  transition: opacity 0.45s ease;
+}
+
+.gallery-tile::after {
+  content: "";
+  position: absolute;
+  inset: 0.65rem;
+  z-index: 2;
+  pointer-events: none;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: inherit;
+  opacity: 0;
+  transform: scale(0.985);
+  transition: opacity 0.45s ease, transform 0.45s ease;
+}
+
+.gallery-tile:hover::before {
+  opacity: 0.18;
+}
+
+.gallery-tile:hover::after {
+  opacity: 1;
+  transform: scale(1);
 }
 
 @media (min-width: 640px) {
@@ -942,6 +980,18 @@ input[type="date"]::-webkit-calendar-picker-indicator {
   text-transform: uppercase;
 }
 
+.plan-journey-card {
+  overflow: hidden;
+  isolation: isolate;
+  border-radius: clamp(1.5rem, 3vw, 2.25rem);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: #050505;
+  box-shadow:
+    0 26px 70px -44px rgba(0, 0, 0, 0.55),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  clip-path: inset(0 round clamp(1.5rem, 3vw, 2.25rem));
+}
+
 .home-page .home-region-panel__cta.rounded-full {
   font-size: 0.75rem;
   font-weight: 700;
@@ -956,9 +1006,40 @@ input[type="date"]::-webkit-calendar-picker-indicator {
   text-transform: uppercase;
 }
 
-.home-page .home-journey-card__detail {
+.home-page .home-journey-card__detail,
+.home-page .home-value-card__highlight {
   letter-spacing: 0.12em;
   text-transform: uppercase;
+}
+
+.home-value-grid {
+  align-items: stretch;
+}
+
+.home-value-grid > [data-reveal-item] {
+  min-height: 0;
+}
+
+.home-value-card {
+  position: relative;
+  overflow: hidden;
+  border: 1px solid var(--glass-border);
+  border-radius: 1rem;
+  background:
+    linear-gradient(
+      160deg,
+      color-mix(in srgb, var(--surface) 94%, transparent) 0%,
+      color-mix(in srgb, var(--gold) 4%, var(--surface)) 100%
+    );
+}
+
+.home-value-card::before {
+  content: "";
+  position: absolute;
+  inset: 0 0 auto;
+  height: 2px;
+  background: linear-gradient(90deg, transparent 0%, var(--gold) 50%, transparent 100%);
+  opacity: 0.55;
 }
 
 /* Inner pages — editorial layout (A&K / luxury tour operator style) */
@@ -991,11 +1072,12 @@ input[type="date"]::-webkit-calendar-picker-indicator {
   background:
     linear-gradient(
       to top,
-      color-mix(in srgb, var(--background) 72%, transparent) 0%,
-      color-mix(in srgb, var(--background) 28%, transparent) 10%,
-      transparent 22%
+      rgba(0, 0, 0, 0.48) 0%,
+      rgba(0, 0, 0, 0.22) 12%,
+      transparent 28%
     ),
-    linear-gradient(to right, rgba(0, 0, 0, 0.62) 0%, rgba(0, 0, 0, 0.18) 55%, transparent 100%);
+    linear-gradient(to right, rgba(0, 0, 0, 0.78) 0%, rgba(0, 0, 0, 0.48) 36%, rgba(0, 0, 0, 0.12) 68%, transparent 100%),
+    linear-gradient(to bottom, rgba(0, 0, 0, 0.18) 0%, transparent 32%);
 }
 
 .page-hero__content {
@@ -1003,6 +1085,7 @@ input[type="date"]::-webkit-calendar-picker-indicator {
   min-height: clamp(18rem, 42vw, 28rem);
   align-items: flex-end;
   padding-block: clamp(2.5rem, 6vw, 4rem);
+  text-shadow: 0 2px 18px rgba(0, 0, 0, 0.45);
 }
 
 .page-hero--editorial {
@@ -1022,6 +1105,138 @@ input[type="date"]::-webkit-calendar-picker-indicator {
       color-mix(in srgb, var(--gold) 4%, var(--surface)) 100%
     );
   box-shadow: inset 0 1px 0 color-mix(in srgb, var(--gold) 15%, transparent);
+}
+
+.gallery-studio {
+  background:
+    linear-gradient(
+      135deg,
+      color-mix(in srgb, var(--gold) 7%, var(--surface)) 0%,
+      color-mix(in srgb, var(--surface) 92%, transparent) 44%,
+      color-mix(in srgb, var(--foreground) 4%, var(--surface)) 100%
+    );
+  box-shadow:
+    0 28px 80px -54px rgba(0, 0, 0, 0.5),
+    inset 0 1px 0 color-mix(in srgb, var(--gold) 16%, transparent);
+}
+
+.gallery-section-heading {
+  border-bottom: 1px solid var(--glass-border);
+  padding-bottom: clamp(1.25rem, 3vw, 2rem);
+}
+
+.gallery-client-collage {
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  align-items: center;
+  gap: clamp(0.75rem, 2vw, 1.15rem);
+  min-height: clamp(28rem, 46vw, 34rem);
+}
+
+.gallery-hanging-photo--collage {
+  grid-column: span 3;
+}
+
+.gallery-hanging-photo--collage:nth-child(1) {
+  grid-column: 1 / span 3;
+  grid-row: 1 / span 2;
+}
+
+.gallery-hanging-photo--collage:nth-child(2) {
+  grid-column: 4 / span 3;
+  grid-row: 1;
+  align-self: end;
+}
+
+.gallery-hanging-photo--collage:nth-child(3) {
+  grid-column: 3 / span 3;
+  grid-row: 2 / span 2;
+  z-index: 2;
+}
+
+.gallery-hanging-photo--collage:nth-child(4) {
+  grid-column: 1 / span 2;
+  grid-row: 3;
+}
+
+.gallery-hanging-photo--collage:nth-child(5) {
+  grid-column: 5 / span 2;
+  grid-row: 3;
+}
+
+.gallery-hanging-photo--collage:nth-child(6) {
+  grid-column: 2 / span 2;
+  grid-row: 4;
+}
+
+.gallery-wall {
+  position: relative;
+  overflow: hidden;
+}
+
+.gallery-wall::before {
+  content: "";
+  position: absolute;
+  inset: 0 0 auto;
+  height: 2px;
+  background: linear-gradient(90deg, transparent 0%, var(--gold) 50%, transparent 100%);
+  opacity: 0.42;
+}
+
+.gallery-hanging-photo {
+  position: relative;
+  transform: rotate(var(--rotate, 0deg));
+  border-radius: 1.35rem;
+  border: 1px solid var(--glass-border);
+  background: color-mix(in srgb, var(--surface) 94%, white 6%);
+  padding: 0.75rem;
+  box-shadow:
+    0 18px 42px -28px rgba(0, 0, 0, 0.35),
+    inset 0 1px 0 rgba(255, 255, 255, 0.12);
+  transition: transform 0.45s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.45s ease;
+}
+
+.gallery-hanging-photo:hover {
+  transform: rotate(0deg) translateY(-4px);
+  box-shadow:
+    0 26px 54px -28px color-mix(in srgb, var(--gold) 20%, rgba(0, 0, 0, 0.45)),
+    inset 0 1px 0 rgba(255, 255, 255, 0.14);
+}
+
+.gallery-hanging-photo__pin {
+  position: absolute;
+  top: 0.55rem;
+  left: 50%;
+  z-index: 1;
+  height: 0.7rem;
+  width: 0.7rem;
+  transform: translateX(-50%);
+  border-radius: 999px;
+  border: 1px solid color-mix(in srgb, var(--gold) 55%, transparent);
+  background: radial-gradient(circle at 35% 35%, var(--gold-light), var(--gold));
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.24);
+}
+
+@media (max-width: 767px) {
+  .gallery-client-collage {
+    display: flex;
+    min-height: 0;
+    gap: 1rem;
+    overflow-x: auto;
+    padding: 0.25rem 0.25rem 1rem;
+    scroll-snap-type: x mandatory;
+    scrollbar-width: none;
+  }
+
+  .gallery-client-collage::-webkit-scrollbar {
+    display: none;
+  }
+
+  .gallery-hanging-photo--collage {
+    width: min(74vw, 17rem);
+    flex: 0 0 auto;
+    scroll-snap-align: center;
+  }
 }
 
 .page-filter-panel {
@@ -1045,14 +1260,104 @@ input[type="date"]::-webkit-calendar-picker-indicator {
 
 .itinerary-hero__scrim {
   background:
-    linear-gradient(180deg, rgba(0, 0, 0, 0.35) 0%, transparent 38%),
-    linear-gradient(0deg, var(--background) 0%, transparent 52%);
+    linear-gradient(180deg, rgba(0, 0, 0, 0.42) 0%, transparent 34%),
+    linear-gradient(
+      to top,
+      rgba(0, 0, 0, 0.78) 0%,
+      rgba(0, 0, 0, 0.42) 16%,
+      rgba(0, 0, 0, 0.12) 36%,
+      transparent 52%
+    ),
+    linear-gradient(to right, rgba(0, 0, 0, 0.62) 0%, rgba(0, 0, 0, 0.22) 55%, transparent 100%);
 }
 
 .itinerary-hero__price {
+  position: relative;
+  overflow: hidden;
+  border-radius: 1.25rem;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  background: rgba(0, 0, 0, 0.42);
+  padding: 1.25rem 1.5rem;
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
   box-shadow:
     0 24px 60px -24px rgba(0, 0, 0, 0.55),
     inset 0 1px 0 rgba(255, 255, 255, 0.12);
+}
+
+.itinerary-hero__price::before {
+  content: "";
+  position: absolute;
+  inset: 0 0 auto;
+  height: 2px;
+  background: linear-gradient(90deg, transparent 0%, var(--gold) 50%, transparent 100%);
+}
+
+.itinerary-page {
+  --itinerary-section-y: clamp(3.5rem, 8vw, 6rem);
+  padding-bottom: clamp(5rem, 10vw, 6rem);
+}
+
+.itinerary-section {
+  padding-block: var(--itinerary-section-y);
+  padding-inline: var(--layout-gutter-x);
+}
+
+.itinerary-section--compact {
+  padding-block: clamp(2.5rem, 5vw, 4rem);
+}
+
+.itinerary-section--surface {
+  background: color-mix(in srgb, var(--surface) 72%, transparent);
+  border-block: 1px solid color-mix(in srgb, var(--gold) 8%, var(--glass-border));
+}
+
+.itinerary-prose {
+  max-width: 38rem;
+  font-size: clamp(1rem, 1.6vw, 1.125rem);
+  line-height: 1.85;
+  color: color-mix(in srgb, var(--foreground) 82%, var(--muted));
+}
+
+.itinerary-quote {
+  position: relative;
+  padding: clamp(1.25rem, 3vw, 1.75rem) 0 clamp(1.25rem, 3vw, 1.75rem) clamp(1.25rem, 3vw, 1.75rem);
+  border-left: 2px solid color-mix(in srgb, var(--gold) 55%, transparent);
+  background: linear-gradient(
+    90deg,
+    color-mix(in srgb, var(--gold) 6%, transparent) 0%,
+    transparent 72%
+  );
+}
+
+.itinerary-meta-card {
+  position: relative;
+  overflow: hidden;
+  border-radius: 1.25rem;
+  border: 1px solid var(--glass-border);
+  background: color-mix(in srgb, var(--surface) 94%, transparent);
+  padding: 1.25rem 1.125rem;
+  box-shadow:
+    0 16px 40px -28px rgba(0, 0, 0, 0.28),
+    inset 0 1px 0 color-mix(in srgb, var(--gold) 10%, transparent);
+  transition: border-color 0.35s ease, box-shadow 0.35s ease;
+}
+
+.itinerary-meta-card::before {
+  content: "";
+  position: absolute;
+  inset: 0 auto auto 0;
+  width: 100%;
+  height: 2px;
+  background: linear-gradient(90deg, var(--gold) 0%, transparent 100%);
+  opacity: 0.55;
+}
+
+.itinerary-meta-card:hover {
+  border-color: color-mix(in srgb, var(--gold) 22%, var(--glass-border));
+  box-shadow:
+    0 20px 48px -24px color-mix(in srgb, var(--gold) 18%, transparent),
+    inset 0 1px 0 color-mix(in srgb, var(--gold) 14%, transparent);
 }
 
 .itinerary-pull-quote {
@@ -1081,6 +1386,10 @@ input[type="date"]::-webkit-calendar-picker-indicator {
 }
 
 .itinerary-highlight-card {
+  position: relative;
+  overflow: hidden;
+  border-radius: 1.25rem;
+  border: 1px solid var(--glass-border);
   background:
     linear-gradient(
       145deg,
@@ -1088,30 +1397,22 @@ input[type="date"]::-webkit-calendar-picker-indicator {
       color-mix(in srgb, var(--gold) 3%, var(--surface)) 100%
     );
   box-shadow:
-    0 16px 40px -24px rgba(0, 0, 0, 0.35),
-    inset 0 1px 0 color-mix(in srgb, var(--gold) 12%, transparent);
+    0 12px 32px -24px rgba(0, 0, 0, 0.28),
+    inset 0 1px 0 color-mix(in srgb, var(--gold) 10%, transparent);
+  transition: border-color 0.35s ease, transform 0.35s ease, box-shadow 0.35s ease;
 }
 
-.itinerary-highlight-card::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  border-radius: inherit;
-  background: linear-gradient(
-    135deg,
-    color-mix(in srgb, var(--gold) 14%, transparent) 0%,
-    transparent 42%
-  );
-  opacity: 0;
-  transition: opacity 0.45s ease;
-  pointer-events: none;
-}
-
-.itinerary-highlight-card:hover::after {
-  opacity: 1;
+.itinerary-highlight-card:hover {
+  border-color: color-mix(in srgb, var(--gold) 24%, var(--glass-border));
+  transform: translateY(-2px);
+  box-shadow:
+    0 20px 44px -24px color-mix(in srgb, var(--gold) 16%, transparent),
+    inset 0 1px 0 color-mix(in srgb, var(--gold) 14%, transparent);
 }
 
 .itinerary-expert-card {
+  position: relative;
+  overflow: hidden;
   background:
     linear-gradient(
       160deg,
@@ -1119,11 +1420,72 @@ input[type="date"]::-webkit-calendar-picker-indicator {
       var(--surface) 55%,
       color-mix(in srgb, var(--gold) 4%, var(--surface)) 100%
     );
-  box-shadow: 0 28px 70px -32px rgba(0, 0, 0, 0.4);
+  box-shadow:
+    0 28px 70px -32px rgba(0, 0, 0, 0.28),
+    inset 0 1px 0 color-mix(in srgb, var(--gold) 12%, transparent);
+}
+
+.itinerary-inclusion-card {
+  background: color-mix(in srgb, var(--surface) 88%, transparent);
+  box-shadow:
+    0 16px 40px -28px rgba(0, 0, 0, 0.22),
+    inset 0 1px 0 color-mix(in srgb, var(--gold) 8%, transparent);
+}
+
+.itinerary-inquiry-form {
+  background:
+    linear-gradient(
+      165deg,
+      color-mix(in srgb, var(--surface) 96%, var(--gold) 4%) 0%,
+      color-mix(in srgb, var(--surface) 92%, transparent) 100%
+    );
+  box-shadow:
+    0 24px 60px -32px rgba(0, 0, 0, 0.28),
+    inset 0 1px 0 color-mix(in srgb, var(--gold) 10%, transparent);
 }
 
 .itinerary-sticky-bar {
   box-shadow: 0 -12px 40px -20px rgba(0, 0, 0, 0.35);
+}
+
+html.itinerary-sticky-active .itinerary-page {
+  padding-bottom: clamp(3rem, 6vw, 4rem);
+}
+
+.site-footer {
+  margin-top: clamp(2.5rem, 5vw, 4rem);
+}
+
+html.itinerary-sticky-active .site-footer {
+  padding-bottom: calc(var(--itinerary-sticky-bar-height, 5.25rem) + env(safe-area-inset-bottom, 0px) + 0.75rem);
+  transition: padding-bottom 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* Niki floating travel expert agent — always bottom-right via portal */
+.niki-agent {
+  position: fixed;
+  z-index: 50;
+  top: auto;
+  left: auto;
+  right: max(1rem, env(safe-area-inset-right, 0px));
+  bottom: calc(1.5rem + var(--itinerary-sticky-bar-height, 0px));
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.75rem;
+  pointer-events: none;
+  filter: drop-shadow(0 10px 28px rgba(0, 0, 0, 0.55));
+  transition: bottom 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.niki-agent > * {
+  pointer-events: auto;
+}
+
+@media (min-width: 640px) {
+  .niki-agent {
+    right: max(1.5rem, env(safe-area-inset-right, 0px));
+  }
 }
 
 .itinerary-gallery {
@@ -1134,11 +1496,6 @@ input[type="date"]::-webkit-calendar-picker-indicator {
   .itinerary-gallery {
     grid-template-rows: repeat(2, minmax(13rem, 1fr));
   }
-}
-
-/* Niki floating travel expert agent */
-.niki-agent {
-  filter: drop-shadow(0 10px 28px rgba(0, 0, 0, 0.55));
 }
 
 .niki-agent__avatar {
@@ -1471,29 +1828,48 @@ main > div > section {
   background: color-mix(in srgb, var(--foreground) 88%, var(--gold));
 }
 
-.travel-expert-bento {
-  grid-auto-rows: minmax(11rem, auto);
+.travel-expert-bento,
+.travel-expert-services-grid {
+  align-items: stretch;
 }
 
 .travel-expert-service-card {
-  background: color-mix(in srgb, var(--surface) 72%, transparent);
+  background: var(--surface);
   isolation: isolate;
 }
 
-.travel-expert-service-card--featured {
-  min-height: 20rem;
+.travel-expert-service-card__media-scrim {
+  background: linear-gradient(
+    180deg,
+    transparent 0%,
+    color-mix(in srgb, var(--surface) 22%, transparent) 100%
+  );
 }
 
-@media (min-width: 1024px) {
-  .travel-expert-bento .travel-expert-service-card--featured {
-    min-height: 100%;
+.travel-expert-service-card--horizontal .travel-expert-service-card__media-scrim {
+  background: linear-gradient(
+    90deg,
+    transparent 50%,
+    color-mix(in srgb, var(--surface) 40%, transparent) 100%
+  );
+}
+
+.travel-expert-service-card__body {
+  border-top: 1px solid var(--glass-border);
+}
+
+.travel-expert-service-card--horizontal .travel-expert-service-card__body {
+  border-top: none;
+}
+
+@media (min-width: 640px) {
+  .travel-expert-service-card--horizontal .travel-expert-service-card__body {
+    border-left: 1px solid var(--glass-border);
   }
 }
 
-@media (min-width: 1024px) {
-  .travel-expert-bento .lg\:col-span-3.lg\:row-span-2 {
-    min-height: 100%;
-  }
+.travel-expert-service-card__body--selected {
+  background: color-mix(in srgb, var(--gold) 5%, var(--surface));
 }
 
 @keyframes shimmer {

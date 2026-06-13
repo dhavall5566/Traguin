@@ -104,10 +104,10 @@ export function PlanMyJourneyCTA() {
   };
 
   return (
-    <HomeSection id="plan-my-journey" spacing="compact">
+    <HomeSection id="plan-my-journey" spacing="default" className="!pb-[clamp(3.5rem,8vw,6rem)]">
       <div
         ref={sectionRef}
-        className="relative flex min-h-[clamp(22rem,52vw,32rem)] items-center justify-center overflow-visible rounded-[clamp(1.25rem,3vw,2rem)]"
+        className="plan-journey-card relative flex min-h-[clamp(22rem,52vw,32rem)] items-center justify-center"
         aria-labelledby="plan-my-journey-heading"
       >
         <div ref={bgRef} className="pointer-events-none absolute inset-0 overflow-hidden rounded-[inherit] will-change-transform">

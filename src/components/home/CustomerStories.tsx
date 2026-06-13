@@ -3,7 +3,6 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
-import Link from "next/link";
 import { ChevronLeft, ChevronRight, Quote, ArrowUpRight } from "lucide-react";
 import { testimonials } from "@/data/moods";
 import { SectionHeader } from "@/components/ui/SectionHeader";
@@ -197,18 +196,15 @@ export function CustomerStories() {
           </div>
         </div>
 
-      <HomeSectionActions className="site-container--content !mt-10 w-full lg:!mt-12">
-        <MagneticButton as="a" href={primaryCta.href} variant="primary" className="w-full !justify-center">
+      <HomeSectionActions className="site-container--content !mt-10 lg:!mt-12">
+        <MagneticButton as="a" href={primaryCta.href} variant="primary">
           Plan Your Journey
           <ArrowUpRight size={14} />
         </MagneticButton>
-        <Link
-          href="/client-stories"
-          className="inline-flex w-full items-center justify-center gap-2 text-xs tracking-[0.18em] text-gold uppercase transition-colors hover:text-foreground sm:w-auto sm:justify-start"
-        >
+        <MagneticButton as="a" href="/client-stories" variant="secondary">
           Read All Stories
           <ArrowUpRight size={14} />
-        </Link>
+        </MagneticButton>
       </HomeSectionActions>
     </HomeSection>
   );

@@ -34,7 +34,12 @@ export const metadata: Metadata = {
     type: "website",
   },
   icons: {
-    icon: "/traguin-logo.png",
+    icon: [
+      { url: "/favicon.png", sizes: "64x64", type: "image/png" },
+      { url: "/icon.png", sizes: "512x512", type: "image/png" },
+    ],
+    shortcut: "/favicon.png",
+    apple: [{ url: "/apple-icon.png", sizes: "180x180", type: "image/png" }],
   },
 };
 
@@ -82,8 +87,8 @@ export default async function RootLayout({
             <Navigation />
             <PageTransition>{children}</PageTransition>
             <Footer />
-            <NikiAgent />
           </LenisProvider>
+          <NikiAgent />
         </ThemeProvider>
       </body>
     </html>

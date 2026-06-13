@@ -26,7 +26,7 @@ function InstagramIcon({ size = 16 }: { size?: number }) {
 
 export function Footer() {
   return (
-    <footer className="relative border-t border-glass-border bg-surface">
+    <footer className="site-footer relative border-t border-glass-border bg-surface">
       <div className="absolute inset-0 luxury-gradient opacity-20" />
       <div className="home-section relative">
       <div className="site-container">
@@ -132,6 +132,12 @@ export function Footer() {
                   {contactInfo.whatsapp}
                 </a>
               </li>
+              <li className="flex items-center gap-3 text-sm text-muted">
+                <Mail size={16} className="shrink-0 text-gold" />
+                <a href={contactInfo.emailHref} className="hover:text-foreground">
+                  {contactInfo.email}
+                </a>
+              </li>
               <li className="flex items-start gap-3 text-sm text-muted">
                 <Clock size={16} className="mt-0.5 shrink-0 text-gold" />
                 <span>{contactInfo.hours}</span>
@@ -145,8 +151,12 @@ export function Footer() {
             © {new Date().getFullYear()} TRAGUIN Luxury Travel. All rights reserved.
           </p>
           <div className="flex gap-6 text-xs text-muted">
-            <Link href="#" className="hover:text-foreground">Privacy Policy</Link>
-            <Link href="#" className="hover:text-foreground">Terms of Service</Link>
+            <Link href="/privacy-policy" className="hover:text-foreground">
+              Privacy Policy
+            </Link>
+            <Link href="/terms-of-service" className="hover:text-foreground">
+              Terms of Service
+            </Link>
           </div>
         </div>
       </div>

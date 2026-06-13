@@ -18,9 +18,10 @@ export function ClientStoriesPage() {
           {testimonials.map((t) => (
             <div key={t.id} className="relative aspect-square overflow-hidden rounded-xl">
               <SafeImage src={t.image} alt={t.name} className="h-full w-full object-cover" loading="lazy" />
-              <div className="absolute inset-0 flex flex-col justify-end bg-gradient-to-t from-background/90 to-transparent p-3">
-                <p className="text-xs font-medium text-foreground">{t.destination}</p>
-                <p className="text-[10px] text-muted">{t.tripType}</p>
+              <div className="pointer-events-none absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-black/75 via-black/25 to-transparent" />
+              <div className="absolute inset-x-0 bottom-0 flex flex-col justify-end p-3">
+                <p className="text-xs font-medium text-white">{t.destination}</p>
+                <p className="text-[10px] text-white/70">{t.tripType}</p>
               </div>
             </div>
           ))}

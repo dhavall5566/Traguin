@@ -46,13 +46,13 @@ export function ItineraryInquiryForm({ itineraryTitle, itinerarySlug }: Itinerar
   return (
     <form
       id="inquiry"
-      className="glass scroll-mt-28 rounded-3xl border border-glass-border p-6 md:p-8"
+      className="itinerary-inquiry-form scroll-mt-28 rounded-[1.75rem] border border-glass-border p-6 md:p-8 lg:p-10"
       onSubmit={handleSubmit}
       noValidate
     >
       <input type="hidden" name="itinerary" value={itinerarySlug} />
-      <h2 className="font-display text-2xl text-foreground md:text-3xl">Request This Itinerary</h2>
-      <p className="mt-2 text-sm text-muted">
+      <h2 className="font-display text-[clamp(1.5rem,3vw,2rem)] text-foreground">Request this itinerary</h2>
+      <p className="mt-2 text-sm leading-relaxed text-foreground/72">
         Share your details and our travel expert will prepare a custom quote for{" "}
         <span className="text-foreground">{itineraryTitle}</span>.
       </p>

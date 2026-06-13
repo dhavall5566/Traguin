@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { MessageCircle } from "lucide-react";
 import type { Itinerary } from "@/types/itinerary";
@@ -15,6 +15,7 @@ type ItineraryStickyBarProps = {
 
 export function ItineraryStickyBar({ itinerary, whatsappHref }: ItineraryStickyBarProps) {
   const [visible, setVisible] = useState(false);
+  const barRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const onScroll = () => setVisible(window.scrollY > 520);
@@ -23,16 +24,46 @@ export function ItineraryStickyBar({ itinerary, whatsappHref }: ItineraryStickyB
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
+  useLayoutEffect(() => {
+    const root = document.documentElement;
+    const bar = barRef.current;
+
+    if (!visible || !bar) {
+      root.classList.remove("itinerary-sticky-active");
+      root.style.removeProperty("--itinerary-sticky-bar-height");
+      return;
+    }
+
+    root.classList.add("itinerary-sticky-active");
+
+    const syncHeight = () => {
+      root.style.setProperty("--itinerary-sticky-bar-height", `${bar.offsetHeight}px`);
+    };
+
+    syncHeight();
+
+    const observer = new ResizeObserver(syncHeight);
+    observer.observe(bar);
+    window.addEventListener("resize", syncHeight);
+
+    return () => {
+      observer.disconnect();
+      window.removeEventListener("resize", syncHeight);
+      root.classList.remove("itinerary-sticky-active");
+      root.style.removeProperty("--itinerary-sticky-bar-height");
+    };
+  }, [visible]);
+
   return (
     <AnimatePresence>
       {visible && (
         <motion.div
-          initial={{ y: 80, rotateX: 18, opacity: 0 }}
-          animate={{ y: 0, rotateX: 0, opacity: 1 }}
-          exit={{ y: 80, rotateX: 12, opacity: 0 }}
-          transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
-          style={{ transformPerspective: 1200, transformOrigin: "center bottom" }}
-          className="itinerary-sticky-bar fixed inset-x-0 bottom-0 z-40 border-t border-glass-border bg-surface/92 px-4 py-3 backdrop-blur-xl sm:px-6 [transform-style:preserve-3d]"
+          ref={barRef}
+          initial={{ y: 72, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          exit={{ y: 72, opacity: 0 }}
+          transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
+          className="itinerary-sticky-bar fixed inset-x-0 bottom-0 z-40 border-t border-glass-border bg-surface/95 px-4 py-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] backdrop-blur-xl sm:px-6"
         >
           <div className="site-container flex flex-wrap items-center justify-between gap-3">
             <div className="min-w-0">

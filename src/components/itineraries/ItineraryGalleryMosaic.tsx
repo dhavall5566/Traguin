@@ -6,6 +6,7 @@ import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { SafeImage } from "@/components/ui/SafeImage";
 import { ItineraryReveal3D } from "@/components/itineraries/ItineraryReveal3D";
+import { ItinerarySectionHeader } from "@/components/itineraries/ItinerarySectionHeader";
 import { Tilt3DCard } from "@/components/itineraries/Tilt3DCard";
 
 gsap.registerPlugin(ScrollTrigger);
@@ -64,17 +65,14 @@ export function ItineraryGalleryMosaic({ images, destination }: ItineraryGallery
   const secondary = rest.slice(0, 4);
 
   return (
-    <section className="itinerary-3d-stage section-padding overflow-hidden pt-0">
+    <section className="itinerary-section itinerary-section--compact overflow-hidden pt-0">
       <div className="site-container">
         <ItineraryReveal3D variant="left" className="mb-8 max-w-2xl md:mb-10">
-          <p className="text-xs tracking-[0.28em] text-gold uppercase">Visual journey</p>
-          <h2 className="mt-3 font-display text-3xl text-foreground md:text-4xl">
-            {destination} in frame
-          </h2>
-          <p className="mt-3 text-sm leading-relaxed text-muted sm:text-base">
-            A glimpse of the landscapes, stays, and moments that define this itinerary, every frame
-            chosen to reflect the pace and spirit of your journey.
-          </p>
+          <ItinerarySectionHeader
+            eyebrow="Visual journey"
+            title={`${destination} in frame`}
+            description="Landscapes, stays, and moments that define the pace and spirit of your journey."
+          />
         </ItineraryReveal3D>
 
         <div

@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import Link from "next/link";
 import { MessageCircle, Send, X } from "lucide-react";
 import { SafeImage } from "@/components/ui/SafeImage";
@@ -17,14 +18,28 @@ type ChatMessage = {
 };
 
 const TYPING_MS = 900;
+const BUBBLE_REVEAL_SCROLL = 480;
 
 export function NikiAgent() {
+  const [mounted, setMounted] = useState(false);
   const [open, setOpen] = useState(false);
+  const [showBubble, setShowBubble] = useState(false);
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [typing, setTyping] = useState(false);
   const [welcomed, setWelcomed] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
   const messageId = useRef(0);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  useEffect(() => {
+    const onScroll = () => setShowBubble(window.scrollY > BUBBLE_REVEAL_SCROLL);
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
 
   useEffect(() => {
     scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: "smooth" });
@@ -68,8 +83,10 @@ export function NikiAgent() {
 
   const toggle = () => setOpen((prev) => !prev);
 
-  return (
-    <div className="niki-agent fixed bottom-6 right-6 z-50 flex flex-col items-end gap-3">
+  if (!mounted) return null;
+
+  return createPortal(
+    <div className="niki-agent" aria-live="polite">
       {open && (
         <div
           className="niki-agent__panel flex w-[min(100vw-2rem,22rem)] flex-col overflow-hidden rounded-2xl border border-glass-border bg-surface shadow-[0_28px_80px_-24px_rgba(0,0,0,0.55)] sm:w-[22rem]"
@@ -181,13 +198,15 @@ export function NikiAgent() {
 
       {!open && (
         <div className="niki-agent__teaser flex items-center gap-2.5">
-          <button
-            type="button"
-            onClick={toggle}
-            className="niki-agent__bubble shrink-0 cursor-pointer whitespace-nowrap rounded-full border border-gold/35 px-5 py-2.5 text-sm font-semibold transition-transform hover:scale-[1.03] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gold"
-          >
-            {nikiAgent.greeting}
-          </button>
+          {showBubble && (
+            <button
+              type="button"
+              onClick={toggle}
+              className="niki-agent__bubble shrink-0 cursor-pointer whitespace-nowrap rounded-full border border-gold/35 px-5 py-2.5 text-sm font-semibold transition-[opacity,transform] duration-300 hover:scale-[1.03] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gold"
+            >
+              {nikiAgent.greeting}
+            </button>
+          )}
           <button
             type="button"
             onClick={toggle}
@@ -213,6 +232,7 @@ export function NikiAgent() {
           <X size={24} />
         </button>
       )}
-    </div>
+    </div>,
+    document.body
   );
 }

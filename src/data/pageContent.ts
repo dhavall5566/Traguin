@@ -65,6 +65,17 @@ export const pageHeroes = {
     primaryAction: primaryCta,
     secondaryAction: { label: "View Destinations", href: "/destinations" },
   },
+  gallery: {
+    eyebrow: "Travel Gallery",
+    badge: "Photos & Films",
+    title: "Gallery",
+    description:
+      "A visual wall of client moments, destination photography, and short films from journeys designed by TRAGUIN.",
+    image: images.experiencePrivateLuxe,
+    imageAlt: "Luxury travel moment captured on a curated journey",
+    primaryAction: primaryCta,
+    secondaryAction: { label: "View Stories", href: "/client-stories" },
+  },
   about: {
     eyebrow: "Our Studio",
     badge: "Ahmedabad · Global Reach",

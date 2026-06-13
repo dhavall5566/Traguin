@@ -25,6 +25,7 @@ export const navLinks = [
   { href: "/luxury-stays", label: "Luxury Stays" },
   { href: "/travel-expert", label: "Travel Expert" },
   { href: "/client-stories", label: "Client Stories" },
+  { href: "/gallery", label: "Gallery" },
   { href: "/about", label: "About" },
   { href: "/contact", label: "Contact" },
 ] as const;
@@ -34,11 +35,13 @@ export const footerExploreLinks = [
   { href: "/destinations", label: "Destinations" },
   { href: "/luxury-stays", label: "Luxury Stays" },
   { href: "/travel-expert", label: "Travel Expert" },
+  { href: "/gallery", label: "Gallery" },
 ] as const;
 
 export const footerCompanyLinks = [
   { href: "/about", label: "About" },
   { href: "/client-stories", label: "Client Stories" },
+  { href: "/gallery", label: "Gallery" },
   { href: "/careers", label: "Careers" },
   { href: "/contact", label: "Contact" },
   { href: "/login", label: "Client Portal" },

@@ -46,7 +46,7 @@ export function DomesticInternationalSplit() {
       <div ref={gridRef} className="home-grid md:grid-cols-2 [perspective:1400px]">
         {panels.map((panel, index) => (
           <Reveal3D key={panel.id} variant={index === 0 ? "left" : "right"} delay={index * 0.08}>
-            <Tilt3DCard max={9} scale={1.015}>
+            <Tilt3DCard max={9} scale={1.015} className="overflow-hidden rounded-2xl">
               <article className="group relative flex min-h-[400px] flex-col overflow-hidden rounded-2xl border border-white/10 shadow-[0_12px_36px_-14px_rgba(0,0,0,0.35)] transition-[border-color,box-shadow] duration-500 hover:border-gold/30 hover:shadow-[0_18px_44px_-14px_rgba(0,0,0,0.42)] sm:min-h-[440px]">
                 <SafeImage
                   src={panel.image}

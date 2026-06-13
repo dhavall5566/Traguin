@@ -4,6 +4,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import gsap from "gsap";
 import { Check, ChevronRight, Sparkles, X } from "lucide-react";
 import type { ItineraryDay } from "@/types/itinerary";
+import { ItinerarySectionHeader } from "@/components/itineraries/ItinerarySectionHeader";
 import { cn } from "@/lib/utils";
 
 type ItineraryTimelineProps = {
@@ -156,20 +157,14 @@ export function ItineraryTimeline({ days, durationDays }: ItineraryTimelineProps
   }, [selectedDay, displayedDay]);
 
   return (
-    <section ref={sectionRef} className="section-padding bg-surface">
+    <section ref={sectionRef} className="itinerary-section itinerary-section--surface">
       <div className="site-container">
-        <header className="text-center md:text-left">
-          <p className="text-xs tracking-[0.35em] text-gold uppercase">Your Journey</p>
-          <h2 className="mt-2 font-display text-3xl text-foreground md:text-4xl lg:text-5xl">
-            Day-by-Day
-          </h2>
-          <p className="mt-3 max-w-xl text-sm leading-relaxed text-muted">
-            {durationDays} days · {days.length} curated chapters
-            {!hasSelection && (
-              <span className="text-foreground/45"> · Select a day to unfold the full plan</span>
-            )}
-          </p>
-        </header>
+        <ItinerarySectionHeader
+          eyebrow="Your journey"
+          title="Day-by-day"
+          description={`${durationDays} days · ${days.length} curated chapters${!hasSelection ? " · Select a day to unfold the full plan" : ""}`}
+          className="md:max-w-xl"
+        />
 
         <div
           className={cn(

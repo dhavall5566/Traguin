@@ -6,14 +6,14 @@ import type { Itinerary } from "@/types/itinerary";
 import { DestinationHotelsSlider } from "@/components/hotels/DestinationHotelsSlider";
 import { ItineraryGalleryMosaic } from "@/components/itineraries/ItineraryGalleryMosaic";
 import { ItineraryHero } from "@/components/itineraries/ItineraryHero";
+import { ItineraryInquiryForm } from "@/components/itineraries/ItineraryInquiryForm";
 import { ItineraryMetaStrip } from "@/components/itineraries/ItineraryMetaStrip";
 import { ItineraryReveal3D } from "@/components/itineraries/ItineraryReveal3D";
+import { ItinerarySectionHeader } from "@/components/itineraries/ItinerarySectionHeader";
 import { ItineraryStickyBar } from "@/components/itineraries/ItineraryStickyBar";
-import { Tilt3DCard } from "@/components/itineraries/Tilt3DCard";
-import { MagneticButton } from "@/components/ui/MagneticButton";
-import { ItineraryInquiryForm } from "@/components/itineraries/ItineraryInquiryForm";
 import { ItineraryTimeline } from "@/components/itineraries/ItineraryTimeline";
 import { PageCTA } from "@/components/layout/PageCTA";
+import { MagneticButton } from "@/components/ui/MagneticButton";
 import { contactInfo } from "@/data/contact";
 import { itinerarySecondaryCta } from "@/data/site";
 import { getDestinationGalleryImages } from "@/lib/destination-images";
@@ -38,11 +38,12 @@ export function ItineraryDetail({ itinerary, destinationName }: ItineraryDetailP
   );
 
   const hotelSubtitle = itinerary.hotels.some((h) => h.category)
-    ? "Handpicked accommodation tiers included in this journey, explore each property in detail."
-    : "Handpicked properties our travel experts recommend for this journey.";
+    ? "Handpicked accommodation tiers included in this journey."
+    : "Properties our travel experts recommend for this journey.";
 
   const rating = getItineraryRating(itinerary);
   const reviewCount = getItineraryReviewCount(itinerary);
+  const displayDestination = destinationName ?? itinerary.destination;
 
   const whatsappMessage = encodeURIComponent(
     `Hello TRAGUIN, I'm interested in the ${itinerary.title} itinerary (${itinerary.duration}).`
@@ -56,7 +57,7 @@ export function ItineraryDetail({ itinerary, destinationName }: ItineraryDetailP
   }, []);
 
   return (
-    <article className="itinerary-3d-stage pb-20 md:pb-24">
+    <article className="itinerary-page">
       <ItineraryHero
         itinerary={itinerary}
         destinationName={destinationName}
@@ -66,47 +67,41 @@ export function ItineraryDetail({ itinerary, destinationName }: ItineraryDetailP
 
       <ItineraryMetaStrip itinerary={itinerary} rating={rating} reviewCount={reviewCount} />
 
-      <section className="section-padding">
-        <div className="site-container">
-          <div className="grid gap-12 lg:grid-cols-[1.1fr_0.9fr] lg:gap-16 xl:gap-20">
-            <ItineraryReveal3D variant="left">
-              <p className="text-xs tracking-[0.28em] text-gold uppercase">The journey</p>
-              <h2 className="mt-3 font-display text-3xl text-foreground md:text-4xl lg:text-[2.75rem]">
-                Overview
-              </h2>
-              <p className="mt-6 text-base leading-[1.85] text-muted md:text-lg">{itinerary.overview}</p>
-              <blockquote className="itinerary-pull-quote mt-8 border-l-2 border-gold/50 pl-6">
-                <p className="font-display text-xl leading-snug text-foreground md:text-2xl">
+      <section className="itinerary-section overflow-visible">
+        <div className="site-container overflow-visible">
+          <div className="grid gap-12 overflow-visible lg:grid-cols-[1.05fr_0.95fr] lg:gap-16 xl:gap-20">
+            <ItineraryReveal3D variant="up">
+              <ItinerarySectionHeader eyebrow="The journey" title="Overview" />
+              <p className="itinerary-prose mt-8">{itinerary.overview}</p>
+              <blockquote className="itinerary-quote mt-10">
+                <p className="font-display text-[clamp(1.25rem,2.5vw,1.75rem)] leading-snug text-foreground">
                   &ldquo;{itinerary.tagline}&rdquo;
                 </p>
-                <footer className="mt-3 text-xs tracking-[0.2em] text-muted uppercase">
-                  {destinationName ?? itinerary.destination} · TRAGUIN Signature
+                <footer className="mt-4 text-[10px] tracking-[0.22em] text-muted uppercase">
+                  {displayDestination} · TRAGUIN Signature
                 </footer>
               </blockquote>
             </ItineraryReveal3D>
 
-            <ItineraryReveal3D variant="right" delay={0.08}>
-              <p className="text-xs tracking-[0.28em] text-gold uppercase">Curated moments</p>
-              <h2 className="mt-3 font-display text-3xl text-foreground md:text-4xl">Highlights</h2>
-              <ul className="mt-6 grid gap-3 sm:grid-cols-2 lg:grid-cols-1 xl:grid-cols-2">
+            <ItineraryReveal3D variant="up" delay={0.06}>
+              <ItinerarySectionHeader
+                eyebrow="Curated moments"
+                title="Highlights"
+                description="The experiences that define this itinerary."
+              />
+              <ul className="mt-8 space-y-3">
                 {itinerary.highlights.map((highlight, index) => (
-                  <ItineraryReveal3D
-                    key={highlight}
-                    as="li"
-                    variant="flip"
-                    delay={index * 0.06}
-                    className="list-none"
-                  >
-                    <Tilt3DCard
-                      max={12}
-                      className="itinerary-highlight-card group relative overflow-hidden rounded-2xl border border-glass-border bg-surface/60 p-5 transition-shadow duration-500 hover:border-gold/30 hover:shadow-[0_20px_50px_-28px_color-mix(in_srgb,var(--gold)_35%,transparent)]"
+                  <li key={highlight} className="itinerary-highlight-card flex gap-4 p-5 sm:p-6">
+                    <span
+                      className="shrink-0 font-display text-2xl leading-none text-gold/30"
+                      aria-hidden
                     >
-                      <span className="font-display text-3xl leading-none text-gold/25 transition-colors group-hover:text-gold/40">
-                        {String(index + 1).padStart(2, "0")}
-                      </span>
-                      <p className="mt-3 text-sm leading-relaxed text-foreground">{highlight}</p>
-                    </Tilt3DCard>
-                  </ItineraryReveal3D>
+                      {String(index + 1).padStart(2, "0")}
+                    </span>
+                    <p className="min-w-0 flex-1 pt-0.5 text-sm leading-relaxed text-foreground sm:text-[0.9375rem]">
+                      {highlight}
+                    </p>
+                  </li>
                 ))}
               </ul>
             </ItineraryReveal3D>
@@ -116,7 +111,7 @@ export function ItineraryDetail({ itinerary, destinationName }: ItineraryDetailP
 
       <ItineraryGalleryMosaic
         images={itinerary.gallery.length >= 3 ? itinerary.gallery : destinationGallery}
-        destination={destinationName ?? itinerary.destination}
+        destination={displayDestination}
       />
 
       <ItineraryReveal3D variant="up">
@@ -124,11 +119,11 @@ export function ItineraryDetail({ itinerary, destinationName }: ItineraryDetailP
       </ItineraryReveal3D>
 
       {hotelCards.length > 0 && (
-        <section className="section-padding pt-0">
+        <section className="itinerary-section itinerary-section--compact">
           <div className="site-container">
-            <ItineraryReveal3D variant="scale">
+            <ItineraryReveal3D variant="up">
               <DestinationHotelsSlider
-                destinationName={destinationName ?? itinerary.destination}
+                destinationName={displayDestination}
                 hotels={hotelCards}
                 subtitle={hotelSubtitle}
               />
@@ -137,73 +132,72 @@ export function ItineraryDetail({ itinerary, destinationName }: ItineraryDetailP
         </section>
       )}
 
-      <section className="section-padding bg-surface">
+      <section className="itinerary-section itinerary-section--surface">
         <div className="site-container">
-          <ItineraryReveal3D variant="up" className="mb-8 max-w-2xl">
-            <p className="text-xs tracking-[0.28em] text-gold uppercase">Transparent planning</p>
-            <h2 className="mt-3 font-display text-3xl text-foreground md:text-4xl">
-              What&apos;s included
-            </h2>
-          </ItineraryReveal3D>
+          <ItinerarySectionHeader
+            eyebrow="Transparent planning"
+            title="What's included"
+            description="Every detail accounted for, so you travel with complete clarity."
+            className="mb-10"
+          />
           <div className="grid gap-4 md:grid-cols-2 md:gap-5">
-            <ItineraryReveal3D variant="left" delay={0.05}>
-              <Tilt3DCard max={8}>
-                <InclusionList title="Included" items={itinerary.included} positive />
-              </Tilt3DCard>
+            <ItineraryReveal3D variant="left" delay={0.04}>
+              <InclusionList title="Included" items={itinerary.included} positive />
             </ItineraryReveal3D>
-            <ItineraryReveal3D variant="right" delay={0.1}>
-              <Tilt3DCard max={8}>
-                <InclusionList title="Excluded" items={itinerary.excluded} />
-              </Tilt3DCard>
+            <ItineraryReveal3D variant="right" delay={0.08}>
+              <InclusionList title="Excluded" items={itinerary.excluded} />
             </ItineraryReveal3D>
           </div>
         </div>
       </section>
 
-      <section className="section-padding">
-        <div className="site-container grid gap-10 lg:grid-cols-5 lg:gap-12">
-          <ItineraryReveal3D variant="left" className="lg:col-span-3">
-            <ItineraryInquiryForm itineraryTitle={itinerary.title} itinerarySlug={itinerary.slug} />
-          </ItineraryReveal3D>
-          <ItineraryReveal3D variant="right" delay={0.08} className="flex flex-col justify-center lg:col-span-2">
-            <Tilt3DCard max={9} scale={1.015}>
-              <div className="itinerary-expert-card relative overflow-hidden rounded-3xl border border-gold/20 p-8 text-center">
-              <div
-                className="pointer-events-none absolute -right-8 -top-8 h-32 w-32 rounded-full bg-gold/[0.08] blur-2xl"
-                aria-hidden
-              />
-              <MessageCircle size={40} className="relative mx-auto text-gold" />
-              <h3 className="relative mt-4 font-display text-2xl text-foreground">
-                WhatsApp Travel Expert
-              </h3>
-              <p className="relative mt-2 text-sm text-muted">
-                Prefer to chat? Message our travel expert directly about {itinerary.title}.
-              </p>
-              <MagneticButton
-                as="a"
-                href={whatsappHref}
-                variant="primary"
-                className="relative mt-6 inline-flex w-full items-center justify-center gap-2 sm:w-auto"
-              >
-                <MessageCircle size={18} />
-                Chat on WhatsApp
-              </MagneticButton>
-              <MagneticButton
-                as="a"
-                href={itinerarySecondaryCta.href}
-                variant="secondary"
-                className="relative mt-3 w-full sm:w-auto"
-              >
-                {itinerarySecondaryCta.label}
-              </MagneticButton>
-              </div>
-            </Tilt3DCard>
+      <section className="itinerary-section">
+        <div className="site-container">
+          <div className="grid items-start gap-10 lg:grid-cols-5 lg:gap-12">
+            <ItineraryReveal3D variant="left" className="lg:col-span-3 lg:sticky lg:top-28 lg:self-start">
+              <ItineraryInquiryForm itineraryTitle={itinerary.title} itinerarySlug={itinerary.slug} />
+            </ItineraryReveal3D>
+
+            <ItineraryReveal3D variant="right" delay={0.06} className="lg:col-span-2">
+              <aside className="itinerary-expert-card relative overflow-hidden rounded-[1.75rem] border border-gold/20 p-8 text-center md:p-10">
+                <div
+                  className="pointer-events-none absolute -right-8 -top-8 h-32 w-32 rounded-full bg-gold/[0.08] blur-2xl"
+                  aria-hidden
+                />
+                <div className="relative mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-gold/10">
+                  <MessageCircle size={28} className="text-gold" />
+                </div>
+                <h3 className="relative mt-5 font-display text-2xl text-foreground">
+                  WhatsApp Travel Expert
+                </h3>
+                <p className="relative mt-3 text-sm leading-relaxed text-foreground/72">
+                  Prefer to chat? Message our travel expert directly about {itinerary.title}.
+                </p>
+                <MagneticButton
+                  as="a"
+                  href={whatsappHref}
+                  variant="primary"
+                  className="relative mt-7 inline-flex w-full items-center justify-center gap-2"
+                >
+                  <MessageCircle size={18} />
+                  Chat on WhatsApp
+                </MagneticButton>
+                <MagneticButton
+                  as="a"
+                  href={itinerarySecondaryCta.href}
+                  variant="secondary"
+                  className="relative mt-3 w-full"
+                >
+                  {itinerarySecondaryCta.label}
+                </MagneticButton>
+              </aside>
+            </ItineraryReveal3D>
+          </div>
+
+          <ItineraryReveal3D variant="up" className="mt-14 overflow-visible md:mt-16">
+            <PageCTA />
           </ItineraryReveal3D>
         </div>
-
-        <ItineraryReveal3D variant="scale" className="site-container">
-          <PageCTA />
-        </ItineraryReveal3D>
       </section>
 
       <ItineraryStickyBar itinerary={itinerary} whatsappHref={whatsappHref} />
@@ -221,15 +215,26 @@ function InclusionList({
   positive?: boolean;
 }) {
   return (
-    <div className="glass rounded-2xl border border-glass-border p-6 md:p-8">
-      <h3 className="font-display text-xl text-foreground">{title}</h3>
-      <ul className="mt-6 space-y-3">
+    <div className="itinerary-inclusion-card h-full rounded-[1.25rem] border border-glass-border p-6 md:p-8">
+      <div className="flex items-center gap-3">
+        <span
+          className={`flex h-9 w-9 items-center justify-center rounded-lg ${positive ? "bg-gold/10" : "bg-surface-elevated"}`}
+        >
+          {positive ? (
+            <Check size={18} className="text-gold" />
+          ) : (
+            <X size={18} className="text-muted" />
+          )}
+        </span>
+        <h3 className="font-display text-xl text-foreground">{title}</h3>
+      </div>
+      <ul className="mt-6 space-y-3.5">
         {items.map((item) => (
-          <li key={item} className="flex items-start gap-3 text-sm text-muted">
+          <li key={item} className="flex items-start gap-3 text-sm leading-relaxed text-foreground/78">
             {positive ? (
-              <Check size={16} className="mt-0.5 shrink-0 text-gold" />
+              <Check size={15} className="mt-0.5 shrink-0 text-gold" />
             ) : (
-              <X size={16} className="mt-0.5 shrink-0 text-muted" />
+              <X size={15} className="mt-0.5 shrink-0 text-muted" />
             )}
             {item}
           </li>

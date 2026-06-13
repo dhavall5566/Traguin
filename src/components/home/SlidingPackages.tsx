@@ -18,9 +18,9 @@ const CARD_TRANSITION_S = 0.85;
 const CONTENT_STAGGER = 0.07;
 const CARD_VANISH_S = 0.55;
 const NEXT_CARD_COUNT = 2;
-const CARD_GAP = 24;
-const CARD_WIDTH_MAX = 240;
-const CARD_WIDTH_MIN = 168;
+const CARD_GAP = 26;
+const CARD_WIDTH_MAX = 300;
+const CARD_WIDTH_MIN = 190;
 const CARD_HEIGHT_RATIO = 4 / 3; // height = width * 4/3 (3:4 portrait)
 
 const showcasePackages = packages.filter((p) => p.featured);
@@ -28,7 +28,7 @@ const PACKAGE_COUNT = showcasePackages.length;
 
 function getCardLayout(containerWidth: number) {
   const slots = 1 + NEXT_CARD_COUNT;
-  const trackPadding = 16;
+  const trackPadding = 8;
   const fitWidth = Math.floor(
     (containerWidth - trackPadding - CARD_GAP * slots) / slots
   );
@@ -457,7 +457,7 @@ function MobileCardStrip({
         {showcasePackages.map((pkg, i) => (
           <div
             key={pkg.id}
-            className="aspect-[3/4] w-[min(85vw,240px)] shrink-0 snap-center"
+            className="aspect-[3/4] w-[min(82vw,280px)] shrink-0 snap-center"
           >
             <motion.div
               animate={{
@@ -571,20 +571,20 @@ export function SlidingPackages() {
 
       <div className="relative z-20 flex min-h-[calc(100svh-var(--site-header-height))] flex-col pt-[var(--site-header-height)] pb-8 sm:pb-10 lg:pb-12">
         <div className="home-shell flex flex-1 flex-col">
-          <div className="site-container flex flex-1 flex-col justify-center gap-6 py-5 sm:py-6 lg:flex-row lg:items-center lg:gap-10 lg:py-8 xl:gap-12">
-          <div className="w-full min-w-0 shrink lg:w-[min(48%,36rem)]">
+          <div className="site-container flex flex-1 flex-col justify-center gap-6 py-5 sm:py-6 lg:flex-row lg:items-center lg:gap-8 lg:py-8 xl:gap-10">
+          <div className="w-full min-w-0 shrink lg:w-[42%] xl:w-[min(40%,34rem)]">
             <AnimatePresence mode="wait">
               {active && <ShowcaseContent key={active.id} pkg={active} />}
             </AnimatePresence>
           </div>
 
-          <div className="flex w-full min-w-0 flex-col items-center justify-center gap-4 sm:gap-5 lg:w-[52%] lg:gap-5">
+          <div className="flex w-full min-w-0 flex-col items-center justify-center gap-4 sm:gap-5 lg:w-[58%] lg:gap-5 xl:w-[60%]">
             <DesktopCardStage
               activeIndex={activeIndex}
               onSelect={goTo}
               onPauseChange={setPausedWithInteraction}
             />
-            <div className="hidden w-full max-w-[820px] justify-center lg:flex">
+            <div className="hidden w-full max-w-[940px] justify-center lg:flex">
               <CarouselControls
                 onPrev={prev}
                 onNext={next}

@@ -78,7 +78,7 @@ export function ItineraryHero({
   return (
     <section
       ref={sectionRef}
-      className="itinerary-hero itinerary-3d-stage relative min-h-[72svh] w-full overflow-hidden md:min-h-[80svh]"
+      className="itinerary-hero relative min-h-[78svh] w-full overflow-hidden md:min-h-[88svh]"
     >
       <div ref={imageWrapRef} className="absolute inset-0 overflow-hidden will-change-transform">
         <HotelImageSlider
@@ -86,51 +86,51 @@ export function ItineraryHero({
           alt={itinerary.title}
           className="h-full w-full"
           imageClassName="h-full w-full scale-105 object-cover"
-          intervalMs={5000}
+          intervalMs={5500}
           showIndicators
-          indicatorsClassName="bottom-[7.5rem] sm:bottom-[8.5rem] md:bottom-32"
+          indicatorsClassName="bottom-[8.5rem] sm:bottom-[9.5rem] md:bottom-[10.5rem]"
         />
       </div>
 
       <div className="itinerary-hero__scrim pointer-events-none absolute inset-0 z-[1]" aria-hidden />
-      <div
-        className="pointer-events-none absolute inset-0 z-[1] bg-gradient-to-t from-background via-background/55 to-black/25"
-        aria-hidden
-      />
 
-      <div className="page-x-padding relative z-10 flex min-h-[72svh] flex-col md:min-h-[80svh]">
-        <div className="site-container flex flex-1 flex-col pt-28 pb-8 md:pt-32 md:pb-12">
+      <div className="page-x-padding relative z-10 flex min-h-[78svh] flex-col md:min-h-[88svh]">
+        <div className="site-container flex flex-1 flex-col pt-28 pb-10 md:pt-32 md:pb-14">
           <Link
             ref={backRef}
             href="/destinations"
-            className="inline-flex w-fit [transform-style:preserve-3d] items-center gap-2 rounded-full border border-white/20 bg-black/20 px-4 py-2 text-xs tracking-wide text-white/85 backdrop-blur-md transition-colors hover:border-white/35 hover:text-white"
+            className="itinerary-hero__back inline-flex w-fit items-center gap-2 rounded-full border border-white/20 bg-black/25 px-4 py-2 text-[10px] tracking-[0.16em] text-white/90 uppercase backdrop-blur-md transition-colors hover:border-white/40 hover:bg-black/35 hover:text-white"
           >
-            <ArrowLeft size={14} />
+            <ArrowLeft size={13} />
             All Destinations
           </Link>
 
-          <div className="mt-auto grid gap-8 lg:grid-cols-[1fr_auto] lg:items-end lg:gap-12">
-            <div ref={copyRef} className="max-w-3xl [transform-style:preserve-3d]">
-              <div className="flex flex-wrap items-center gap-2">
+          <div className="mt-auto grid gap-8 lg:grid-cols-[1fr_auto] lg:items-end lg:gap-14">
+            <div ref={copyRef} className="max-w-3xl">
+              <div className="flex flex-wrap items-center gap-2.5">
                 <p className="text-xs tracking-[0.28em] text-gold-light uppercase">
                   {destinationName ?? itinerary.destination}
                 </p>
+                <span className="hidden h-3 w-px bg-white/25 sm:block" aria-hidden />
+                <p className="text-[10px] tracking-[0.2em] text-white/65 uppercase">
+                  {itinerary.region === "domestic" ? "India" : "International"}
+                </p>
                 {itinerary.featured && (
-                  <span className="inline-flex items-center gap-1.5 rounded-full border border-gold/40 bg-gold/15 px-3 py-1 text-[10px] tracking-[0.18em] text-gold-light uppercase backdrop-blur-sm">
+                  <span className="inline-flex items-center gap-1.5 rounded-full border border-gold/35 bg-gold/15 px-3 py-1 text-[10px] tracking-[0.16em] text-gold-light uppercase backdrop-blur-sm">
                     <Sparkles size={11} aria-hidden />
-                    Featured Journey
+                    Signature
                   </span>
                 )}
               </div>
 
-              <h1 className="mt-4 font-display text-[clamp(2.5rem,7vw,4.75rem)] leading-[1.02] tracking-tight text-white drop-shadow-[0_4px_24px_rgba(0,0,0,0.45)]">
+              <h1 className="mt-5 font-display text-[clamp(2.625rem,7.5vw,5rem)] leading-[1.02] tracking-tight text-white drop-shadow-[0_4px_32px_rgba(0,0,0,0.5)]">
                 {itinerary.title}
               </h1>
-              <p className="mt-4 max-w-2xl text-base leading-relaxed text-white/88 sm:text-lg">
+              <p className="mt-4 max-w-xl text-base leading-relaxed text-white/88 sm:text-lg">
                 {itinerary.tagline}
               </p>
 
-              <div className="mt-8 flex flex-wrap gap-3">
+              <div className="mt-8 flex flex-wrap items-center gap-3">
                 <MagneticButton as="a" href="#inquiry" variant="primary">
                   {itineraryPrimaryCta.label}
                 </MagneticButton>
@@ -147,17 +147,14 @@ export function ItineraryHero({
                   as="a"
                   href={itinerarySecondaryCta.href}
                   variant="ghost"
-                  className="!text-xs !text-white/75 hover:!text-white"
+                  className="!text-xs !text-white/80 hover:!text-white"
                 >
                   {itinerarySecondaryCta.label}
                 </MagneticButton>
               </div>
             </div>
 
-            <div
-              ref={priceRef}
-              className="itinerary-hero__price shrink-0 [transform-style:preserve-3d] rounded-2xl border border-white/15 bg-black/35 px-5 py-4 backdrop-blur-xl sm:px-6 sm:py-5 lg:min-w-[15rem]"
-            >
+            <div ref={priceRef} className="itinerary-hero__price shrink-0 lg:min-w-[16rem]">
               <PriceDisplay
                 amount={itinerary.startingPrice}
                 label="Starting from"
