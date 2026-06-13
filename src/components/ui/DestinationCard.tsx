@@ -6,10 +6,7 @@ import { HotelImageSlider } from "@/components/hotels/HotelImageSlider";
 import { PriceDisplay } from "@/components/ui/PriceDisplay";
 import { getDestinationGalleryImages } from "@/lib/destination-images";
 import { getDestinationRating, getDestinationReviewCount } from "@/lib/destinations";
-<<<<<<< HEAD
-=======
 import { useTilt3D } from "@/hooks/useTilt3D";
->>>>>>> dhaval
 import { cn } from "@/lib/utils";
 
 const DESTINATION_SLIDE_INTERVAL_MS = 4000;
@@ -30,15 +27,11 @@ type DestinationCardProps = {
   rating?: number;
   /** Guest review count; derived from destination when omitted */
   reviewCount?: number;
-<<<<<<< HEAD
-  className?: string;
-=======
   /** Region label, e.g. India or International */
   regionLabel?: string;
   className?: string;
   /** Enable mouse-tilt 3D effect on desktop */
   tilt?: boolean;
->>>>>>> dhaval
 };
 
 export function DestinationCard({
@@ -53,16 +46,11 @@ export function DestinationCard({
   location,
   rating,
   reviewCount,
-<<<<<<< HEAD
-  className,
-}: DestinationCardProps) {
-=======
   regionLabel,
   className,
   tilt = false,
 }: DestinationCardProps) {
   const tiltRef = useTilt3D<HTMLAnchorElement>({ max: 11, scale: 1.02 });
->>>>>>> dhaval
   const displayRating = rating ?? getDestinationRating(destinationId);
   const displayReviewCount =
     reviewCount ?? getDestinationReviewCount(destinationId, displayRating);
@@ -71,12 +59,6 @@ export function DestinationCard({
 
   return (
     <Link
-<<<<<<< HEAD
-      href={href}
-      className={cn(
-        "destination-card group flex h-full flex-col overflow-hidden rounded-3xl border border-glass-border bg-surface transition-all duration-500",
-        "hover:border-gold/35 hover:shadow-[0_20px_48px_-16px_rgba(0,0,0,0.28)] hover:-translate-y-1",
-=======
       ref={tilt ? tiltRef : undefined}
       href={href}
       className={cn(
@@ -84,7 +66,6 @@ export function DestinationCard({
         "shadow-[0_8px_28px_-12px_rgba(0,0,0,0.18)] hover:border-gold/30 hover:shadow-[0_16px_40px_-14px_rgba(0,0,0,0.22)]",
         !tilt && "hover:-translate-y-0.5",
         tilt && "[transform-style:preserve-3d] will-change-transform",
->>>>>>> dhaval
         "focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gold",
         className
       )}
@@ -99,11 +80,7 @@ export function DestinationCard({
           pauseOnHover
         />
         {duration && (
-<<<<<<< HEAD
-          <span className="absolute top-4 left-4 z-20 inline-flex items-center gap-1.5 rounded-full border border-glass-border bg-surface/95 px-3 py-1 text-[10px] font-medium tracking-wide text-foreground uppercase shadow-sm backdrop-blur-sm">
-=======
           <span className="absolute top-4 left-4 z-20 inline-flex items-center gap-1.5 rounded-full border border-glass-border bg-surface/95 px-3 py-1 text-[10px] font-bold tracking-[0.16em] text-foreground uppercase shadow-sm backdrop-blur-sm">
->>>>>>> dhaval
             <Clock size={11} className="text-gold" aria-hidden />
             {duration}
           </span>
@@ -111,11 +88,6 @@ export function DestinationCard({
       </div>
 
       <div className="flex flex-1 flex-col p-5 md:p-6">
-<<<<<<< HEAD
-        {stars > 0 && (
-          <div
-            className="flex flex-wrap items-center gap-1.5"
-=======
         {(location || regionLabel) && (
           <p className="text-[10px] font-semibold tracking-[0.2em] text-gold uppercase">
             {location}
@@ -133,7 +105,6 @@ export function DestinationCard({
         {stars > 0 && (
           <div
             className="mt-2 flex flex-wrap items-center gap-1.5"
->>>>>>> dhaval
             aria-label={`${displayRating.toFixed(1)} out of 5 from ${displayReviewCount} guest reviews`}
           >
             {Array.from({ length: stars }).map((_, i) => (
@@ -146,15 +117,6 @@ export function DestinationCard({
           </div>
         )}
 
-<<<<<<< HEAD
-        <h3 className="mt-2 font-display text-xl leading-snug text-foreground md:text-[1.35rem]">
-          {name}
-        </h3>
-
-        {location && <p className="mt-0.5 text-sm text-muted">{location}</p>}
-
-=======
->>>>>>> dhaval
         <p className="mt-3 line-clamp-2 text-[11px] leading-relaxed text-sand md:text-xs">
           {description}
         </p>
@@ -167,11 +129,7 @@ export function DestinationCard({
           )}
           <span
             className={cn(
-<<<<<<< HEAD
-              "shrink-0 rounded-full border border-glass-border bg-surface px-4 py-2 text-xs font-medium tracking-wide text-foreground",
-=======
               "shrink-0 rounded-full border border-glass-border bg-surface px-4 py-2 text-[10px] font-bold tracking-[0.14em] text-foreground uppercase",
->>>>>>> dhaval
               "shadow-sm transition-colors group-hover:border-gold/40"
             )}
           >

@@ -59,11 +59,7 @@ export function getHotelReviewCount(hotel: Pick<Hotel, "id" | "rating" | "review
   return base + ratingBoost;
 }
 
-<<<<<<< HEAD
-/** Properties in the same destination, then region — excludes the current hotel */
-=======
 /** Properties in the same destination, then region, excludes the current hotel */
->>>>>>> dhaval
 export function getSimilarHotels(hotel: Hotel, limit = 8): Hotel[] {
   const others = hotels.filter((h) => h.id !== hotel.id);
 
@@ -181,11 +177,7 @@ export function resolveCatalogHotelCard(hotel: Hotel): DestinationHotelCard {
   };
 }
 
-<<<<<<< HEAD
-/** Deep link to luxury stays — opens property detail when matched */
-=======
 /** Deep link to luxury stays, opens property detail when matched */
->>>>>>> dhaval
 export function getLuxuryStayHrefForItineraryHotel(itineraryHotel: ItineraryHotel): string {
   if (itineraryHotel.hotelId) {
     const byId = getHotelById(itineraryHotel.hotelId);

@@ -15,11 +15,7 @@ export function getLocalDateIso(): string {
   return `${y}-${m}-${day}`;
 }
 
-<<<<<<< HEAD
-/** Blocking script in <head> — runs before paint; syncs html attribute + cookie + localStorage. */
-=======
 /** Blocking script in <head>, runs before paint; syncs html attribute + cookie + localStorage. */
->>>>>>> dhaval
 export const themeInitScript = `(function(){try{var t=localStorage.getItem("${THEME_STORAGE_KEY}");if(t!=="light"&&t!=="dark"){t=window.matchMedia("(prefers-color-scheme: light)").matches?"light":"dark";}document.documentElement.setAttribute("data-theme",t);document.cookie="${THEME_COOKIE_NAME}="+t+";path=/;max-age=31536000;SameSite=Lax";localStorage.setItem("${THEME_STORAGE_KEY}",t);}catch(e){document.documentElement.setAttribute("data-theme","dark");}})();`;
 
 export function readThemeFromDocument(): Theme {

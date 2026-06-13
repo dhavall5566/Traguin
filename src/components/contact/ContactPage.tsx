@@ -6,13 +6,10 @@ import { scrollToConsultationSection } from "@/lib/scroll-to-consultation";
 import { Mail, Phone, MapPin, Clock, Send, MessageCircle } from "lucide-react";
 import { MagneticButton } from "@/components/ui/MagneticButton";
 import { FormField, fieldInputClass } from "@/components/ui/FormField";
-<<<<<<< HEAD
-=======
 import { PageShell } from "@/components/layout/PageShell";
 import { PageHero } from "@/components/layout/PageHero";
 import { TrustBar } from "@/components/layout/TrustBar";
 import { PageCTA } from "@/components/layout/PageCTA";
->>>>>>> dhaval
 import {
   clearFieldError,
   hasErrors,
@@ -20,10 +17,7 @@ import {
   type FieldErrors,
 } from "@/lib/form-validation";
 import { contactInfo } from "@/data/contact";
-<<<<<<< HEAD
-=======
 import { pageHeroes } from "@/data/pageContent";
->>>>>>> dhaval
 import { cn } from "@/lib/utils";
 
 const contactItems = [
@@ -72,34 +66,6 @@ export function ContactPage() {
   };
 
   return (
-<<<<<<< HEAD
-    <div className="pb-16 pt-12 md:pb-20 md:pt-8">
-      <div className="page-x-padding">
-        <div className="mx-auto max-w-7xl">
-          <div className="grid items-start gap-8 lg:grid-cols-5 lg:gap-x-12 lg:gap-y-10">
-            <div className="lg:col-span-2">
-              <h1 className="mt-2 font-display text-5xl text-foreground md:text-7xl">Contact</h1>
-              <p className="mt-4 max-w-xl text-muted">
-                Speak with our travel designers for a complimentary planning session with a TRAGUIN
-                travel expert.
-              </p>
-              <div className="mt-6 flex flex-col gap-3 sm:flex-row">
-                <MagneticButton
-                  as="a"
-                  href={contactInfo.whatsappHref}
-                  variant="primary"
-                  className="inline-flex items-center justify-center gap-2"
-                >
-                  <MessageCircle size={18} />
-                  WhatsApp Travel Expert
-                </MagneticButton>
-                <MagneticButton as="a" href={contactInfo.phoneHref} variant="secondary">
-                  Call Us
-                </MagneticButton>
-              </div>
-
-              <div className="mt-8 space-y-6">
-=======
     <>
       <PageHero {...pageHeroes.contact} />
       <TrustBar />
@@ -126,7 +92,6 @@ export function ContactPage() {
             </div>
 
             <div className="mt-8 space-y-6">
->>>>>>> dhaval
                 {contactItems.map((item) => (
                   <div key={item.label} className="flex gap-4">
                     <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-gold/10">
@@ -159,11 +124,7 @@ export function ContactPage() {
               noValidate
               className="glass scroll-mt-[var(--site-header-height)] rounded-3xl p-6 md:p-8 lg:col-span-3 lg:col-start-3 lg:row-span-2"
             >
-<<<<<<< HEAD
-              <h2 className="font-display text-2xl text-foreground">CONSULTATION Request</h2>
-=======
               <h2 className="font-display text-2xl text-foreground">Consultation request</h2>
->>>>>>> dhaval
               <p className="mt-2 text-sm text-muted">We respond within 2 working hours.</p>
               {submitted ? (
                 <div className="flex min-h-[220px] flex-col items-center justify-center text-center">
@@ -229,17 +190,10 @@ export function ContactPage() {
                 </div>
               )}
             </form>
-<<<<<<< HEAD
-          </div>
-        </div>
-      </div>
-    </div>
-=======
         </div>
 
         <PageCTA />
       </PageShell>
     </>
->>>>>>> dhaval
   );
 }

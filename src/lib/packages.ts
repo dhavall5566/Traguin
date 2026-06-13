@@ -28,11 +28,7 @@ export function getDestinationIdForPackage(pkg: TravelPackage): string | undefin
   return match?.id;
 }
 
-<<<<<<< HEAD
-/** Primary CTA for a package card — full itinerary when available, else destination listing. */
-=======
 /** Primary CTA for a package card, full itinerary when available, else destination listing. */
->>>>>>> dhaval
 export function getPackageJourneyHref(pkg: TravelPackage): string {
   const itinerary = getItineraryByPackageId(pkg.id);
   if (itinerary) return `/destinations/${itinerary.destinationId}`;

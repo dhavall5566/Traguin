@@ -44,17 +44,10 @@ export const experienceShowcase: ExperienceShowcaseItem[] = [
     number: "03",
     title: "Corporate Events",
     description:
-<<<<<<< HEAD
-      "Executive retreats, incentive travel, and offsites executed with precision — from venue selection to on-ground coordination.",
-    image: images.experienceCorporate,
-    imageCaption:
-      "Boardroom to beach — seamless corporate travel and event management worldwide.",
-=======
       "Executive retreats, incentive travel, and offsites executed with precision, from venue selection to on-ground coordination.",
     image: images.experienceCorporate,
     imageCaption:
       "Boardroom to beach, seamless corporate travel and event management worldwide.",
->>>>>>> dhaval
     href: "/experiences/corporate-events",
     layout: "tall-stack",
     variant: "light",

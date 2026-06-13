@@ -1,15 +1,11 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-<<<<<<< HEAD
-import { SafeImage } from "@/components/ui/SafeImage";
-=======
 import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { SafeImage } from "@/components/ui/SafeImage";
 import { Reveal3D } from "@/components/ui/Reveal3D";
->>>>>>> dhaval
 import { PhoneCountrySelect } from "@/components/ui/PhoneCountrySelect";
 import {
   pickPlannerCtaBackground,
@@ -18,14 +14,6 @@ import {
 import { contactInfo } from "@/data/contact";
 import { defaultCountryCode } from "@/data/country-codes";
 import { collectErrors, hasErrors, validatePhone, type FieldErrors } from "@/lib/form-validation";
-<<<<<<< HEAD
-import { cn } from "@/lib/utils";
-
-const WHATSAPP_GREEN = "#25D366";
-
-export function PlanMyJourneyCTA() {
-  const sectionRef = useRef<HTMLElement>(null);
-=======
 import { HomeSection } from "@/components/home/HomeSection";
 import { cn } from "@/lib/utils";
 
@@ -36,7 +24,6 @@ const WHATSAPP_GREEN = "#25D366";
 export function PlanMyJourneyCTA() {
   const sectionRef = useRef<HTMLDivElement>(null);
   const bgRef = useRef<HTMLDivElement>(null);
->>>>>>> dhaval
   const wasInViewRef = useRef(false);
   const visitCountRef = useRef(0);
   const [backgroundIndex, setBackgroundIndex] = useState(0);
@@ -84,8 +71,6 @@ export function PlanMyJourneyCTA() {
     return () => observer.disconnect();
   }, []);
 
-<<<<<<< HEAD
-=======
   useGSAP(
     () => {
       const bg = bgRef.current;
@@ -110,7 +95,6 @@ export function PlanMyJourneyCTA() {
     { scope: sectionRef }
   );
 
->>>>>>> dhaval
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     const next = collectErrors({ phone: validatePhone(phone, true) });
@@ -120,16 +104,6 @@ export function PlanMyJourneyCTA() {
   };
 
   return (
-<<<<<<< HEAD
-    <section
-      ref={sectionRef}
-      id="plan-my-journey"
-      className="scroll-mt-[var(--site-header-height)] px-[clamp(1.25rem,4vw,3.5rem)] pt-[clamp(1rem,2.5vw,1.75rem)] pb-[clamp(3rem,7vw,5.5rem)]"
-      aria-labelledby="plan-my-journey-heading"
-    >
-      <div className="relative mx-auto flex min-h-[clamp(22rem,52vw,32rem)] max-w-7xl items-center justify-center overflow-visible rounded-[clamp(1.25rem,3vw,2rem)]">
-        <div className="pointer-events-none absolute inset-0 overflow-hidden rounded-[inherit]">
-=======
     <HomeSection id="plan-my-journey" spacing="compact">
       <div
         ref={sectionRef}
@@ -137,7 +111,6 @@ export function PlanMyJourneyCTA() {
         aria-labelledby="plan-my-journey-heading"
       >
         <div ref={bgRef} className="pointer-events-none absolute inset-0 overflow-hidden rounded-[inherit] will-change-transform">
->>>>>>> dhaval
           <SafeImage
             key={background.src}
             src={background.src}
@@ -152,20 +125,12 @@ export function PlanMyJourneyCTA() {
           <div className="absolute inset-0 bg-gradient-to-r from-black/65 via-black/45 to-black/30" />
         </div>
 
-<<<<<<< HEAD
-        <div className="relative z-10 mx-auto w-full max-w-3xl overflow-visible px-6 py-[clamp(3rem,8vw,5rem)] text-center sm:px-10">
-=======
         <Reveal3D variant="scale" className="relative z-10 site-container--content overflow-visible px-6 py-[clamp(3rem,8vw,5rem)] text-center sm:px-10">
->>>>>>> dhaval
           <h2
             id="plan-my-journey-heading"
             className="font-display text-[clamp(1.75rem,4.5vw,3.25rem)] leading-[1.15] tracking-tight text-white"
           >
-<<<<<<< HEAD
-            Your Story Begins at TRAGUIN.
-=======
             Your Story Begins at TRAGUIN
->>>>>>> dhaval
           </h2>
           <p className="mx-auto mt-4 max-w-xl text-sm leading-relaxed text-white/85 sm:mt-5 sm:text-base">
             Speak with our travel designers for priority access to curated luxury journeys, bespoke
@@ -238,14 +203,8 @@ export function PlanMyJourneyCTA() {
               )}
             </form>
           )}
-<<<<<<< HEAD
-        </div>
-      </div>
-    </section>
-=======
         </Reveal3D>
       </div>
     </HomeSection>
->>>>>>> dhaval
   );
 }

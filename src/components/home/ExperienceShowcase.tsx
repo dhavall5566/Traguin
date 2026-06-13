@@ -1,23 +1,16 @@
 "use client";
 
-<<<<<<< HEAD
-import { useMemo, useState } from "react";
-=======
 import { useMemo, useRef, useState } from "react";
 import Link from "next/link";
->>>>>>> dhaval
 import { ArrowUpRight } from "lucide-react";
 import { experienceShowcase, type ExperienceShowcaseItem } from "@/data/experienceShowcase";
 import { getExperienceDetail } from "@/data/experienceDetails";
 import { ExperienceDetailModal } from "@/components/experiences/ExperienceDetailModal";
 import { SafeImage } from "@/components/ui/SafeImage";
-<<<<<<< HEAD
-=======
 import { SectionHeader } from "@/components/ui/SectionHeader";
 import { Reveal3D } from "@/components/ui/Reveal3D";
 import { HomeSection, HomeSectionActions } from "@/components/home/HomeSection";
 import { useStaggerReveal3D } from "@/hooks/useStaggerReveal3D";
->>>>>>> dhaval
 import { cn } from "@/lib/utils";
 
 function BentoNumber({ value }: { value: string }) {
@@ -202,14 +195,9 @@ function ExperienceBentoRow({
 
   return (
     <div
-<<<<<<< HEAD
-      className={cn(
-        "experience-bento-row gap-4 sm:gap-5 lg:gap-6",
-=======
       data-reveal-item
       className={cn(
         "experience-bento-row gap-4 [transform-style:preserve-3d] sm:gap-5 lg:gap-6",
->>>>>>> dhaval
         widePosition === "left" ? "experience-bento-row--wide-left" : "experience-bento-row--wide-right",
         hoverInRow && hoverIndex === 0 && "experience-bento-row--hover-first",
         hoverInRow && hoverIndex === 1 && "experience-bento-row--hover-second"
@@ -233,42 +221,14 @@ export function ExperienceShowcase() {
   const [activeSlug, setActiveSlug] = useState<string | null>(null);
   const [hoveredId, setHoveredId] = useState<string | null>(null);
   const activeExperience = activeSlug ? getExperienceDetail(activeSlug) : null;
-<<<<<<< HEAD
-=======
   const bentoRef = useRef<HTMLDivElement>(null);
   useStaggerReveal3D(bentoRef, { variant: "left", stagger: 0.18 });
->>>>>>> dhaval
 
   const topRow = experienceShowcase.slice(0, 2);
   const bottomRow = experienceShowcase.slice(2, 4);
 
   return (
     <>
-<<<<<<< HEAD
-      <section
-        id="experiences"
-        className="relative scroll-mt-[var(--site-header-height)] bg-[var(--bento-section-bg)] px-[clamp(1.25rem,4vw,3.5rem)] py-[clamp(3rem,7vw,5.5rem)]"
-      >
-        <div className="mx-auto max-w-[90rem]">
-          <div className="flex flex-col gap-4 sm:gap-5 lg:gap-6">
-            <ExperienceBentoRow
-              items={topRow}
-              hoveredId={hoveredId}
-              onHover={setHoveredId}
-              onOpen={setActiveSlug}
-              widePosition="left"
-            />
-            <ExperienceBentoRow
-              items={bottomRow}
-              hoveredId={hoveredId}
-              onHover={setHoveredId}
-              onOpen={setActiveSlug}
-              widePosition="right"
-            />
-          </div>
-        </div>
-      </section>
-=======
       <HomeSection
         id="experiences"
         tone="surface"
@@ -321,7 +281,6 @@ export function ExperienceShowcase() {
         </HomeSectionActions>
         </Reveal3D>
       </HomeSection>
->>>>>>> dhaval
 
       {activeExperience && (
         <ExperienceDetailModal

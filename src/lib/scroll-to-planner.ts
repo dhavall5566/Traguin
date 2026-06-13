@@ -2,11 +2,7 @@ import type Lenis from "lenis";
 
 export const PLANNER_SECTION_ID = "plan-my-journey";
 export const PLANNER_SCROLL_PENDING_KEY = "traguin:scroll-to-plan-my-journey";
-<<<<<<< HEAD
-/** Fast animated scroll — noticeable motion without feeling slow */
-=======
 /** Fast animated scroll, noticeable motion without feeling slow */
->>>>>>> dhaval
 export const PLANNER_SCROLL_DURATION = 1.1;
 const MAX_SCROLL_ATTEMPTS = 300;
 

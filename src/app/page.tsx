@@ -2,11 +2,8 @@
 
 import { Suspense, lazy } from "react";
 import { SlidingPackages } from "@/components/home/SlidingPackages";
-<<<<<<< HEAD
-=======
 import { LuxuryStatsBar } from "@/components/home/LuxuryStatsBar";
 import { DestinationMarquee } from "@/components/home/DestinationMarquee";
->>>>>>> dhaval
 import { DomesticInternationalSplit } from "@/components/home/DomesticInternationalSplit";
 
 const FeaturedDestinations = lazy(() =>
@@ -24,9 +21,6 @@ const TravelPlannerForm = lazy(() =>
 const CustomerStories = lazy(() =>
   import("@/components/home/CustomerStories").then((m) => ({ default: m.CustomerStories }))
 );
-<<<<<<< HEAD
-import { PlanMyJourneyCTA } from "@/components/home/PlanMyJourneyCTA";
-=======
 const JourneyProcess = lazy(() =>
   import("@/components/home/JourneyProcess").then((m) => ({ default: m.JourneyProcess }))
 );
@@ -35,7 +29,6 @@ const Specializations = lazy(() =>
 );
 import { PlanMyJourneyCTA } from "@/components/home/PlanMyJourneyCTA";
 import { HomePromoBanner } from "@/components/home/HomePromoBanner";
->>>>>>> dhaval
 
 function SectionFallback({ minHeight = "40vh" }: { minHeight?: string }) {
   return (
@@ -49,15 +42,10 @@ function SectionFallback({ minHeight = "40vh" }: { minHeight?: string }) {
 
 export default function HomePage() {
   return (
-<<<<<<< HEAD
-    <main>
-      <SlidingPackages />
-=======
     <main className="home-page home-3d-stage">
       <SlidingPackages />
       <LuxuryStatsBar />
       <DestinationMarquee />
->>>>>>> dhaval
 
       <Suspense fallback={<SectionFallback minHeight="50vh" />}>
         <DomesticInternationalSplit />
@@ -67,18 +55,13 @@ export default function HomePage() {
         <FeaturedDestinations />
       </Suspense>
 
-<<<<<<< HEAD
-=======
       <HomePromoBanner />
 
->>>>>>> dhaval
       <Suspense fallback={<SectionFallback minHeight="70vh" />}>
         <ExperienceShowcase />
       </Suspense>
 
       <Suspense fallback={<SectionFallback />}>
-<<<<<<< HEAD
-=======
         <JourneyProcess />
       </Suspense>
 
@@ -87,7 +70,6 @@ export default function HomePage() {
       </Suspense>
 
       <Suspense fallback={<SectionFallback />}>
->>>>>>> dhaval
         <WhyTraguin />
       </Suspense>
 

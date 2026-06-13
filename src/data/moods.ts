@@ -14,11 +14,7 @@ export const testimonials = [
     name: "Rajesh Mehta",
     destination: "Switzerland",
     tripType: "Alpine Escape",
-<<<<<<< HEAD
-    quote: "The attention to detail was extraordinary. From private transfers to hidden alpine restaurants — flawless.",
-=======
     quote: "The attention to detail was extraordinary. From private transfers to hidden alpine restaurants, flawless.",
->>>>>>> dhaval
     image: images.man1,
   },
   {

@@ -29,8 +29,6 @@ import { HotelImageSlider } from "@/components/hotels/HotelImageSlider";
 import { getHotelGalleryImages } from "@/lib/hotel-images";
 import { MagneticButton } from "@/components/ui/MagneticButton";
 import { FilterDropdown, type FilterDropdownOption } from "@/components/ui/FilterDropdown";
-<<<<<<< HEAD
-=======
 import { PageShell } from "@/components/layout/PageShell";
 import { PageHero } from "@/components/layout/PageHero";
 import { TrustBar } from "@/components/layout/TrustBar";
@@ -50,7 +48,6 @@ function parseRegionParam(value: string | null): RegionHeroFilter {
   if (value === "domestic" || value === "international") return value;
   return "all";
 }
->>>>>>> dhaval
 
 const HOTEL_FILTER_IDS = ["destination", "property-type", "price", "amenities", "sort"] as const;
 
@@ -103,12 +100,9 @@ export function HotelDiscovery() {
   const [typeFilter, setTypeFilter] = useState<string>("all");
   const [sortBy, setSortBy] = useState<SortId>("recommended");
   const [openDropdown, setOpenDropdown] = useState<string | null>(null);
-<<<<<<< HEAD
-=======
   const [regionFilter, setRegionFilter] = useState<RegionHeroFilter>(() =>
     parseRegionParam(searchParams.get("region"))
   );
->>>>>>> dhaval
 
   const activateSiblingFilter = useCallback((targetId: string) => {
     setOpenDropdown(targetId);
@@ -175,11 +169,8 @@ export function HotelDiscovery() {
       );
       setCountryFilter(match ? match.destination : destination);
     }
-<<<<<<< HEAD
-=======
 
     setRegionFilter(parseRegionParam(searchParams.get("region")));
->>>>>>> dhaval
   }, [searchParams]);
 
   const amenityKeywords =
@@ -187,10 +178,7 @@ export function HotelDiscovery() {
 
   const hasActiveFilters =
     countryFilter !== "all" ||
-<<<<<<< HEAD
-=======
     regionFilter !== "all" ||
->>>>>>> dhaval
     priceFilter !== "all" ||
     amenityFilter !== "all" ||
     typeFilter !== "all" ||
@@ -212,8 +200,6 @@ export function HotelDiscovery() {
         clear: () => setCountryFilter("all"),
       });
     }
-<<<<<<< HEAD
-=======
     if (regionFilter !== "all") {
       chips.push({
         key: "region",
@@ -221,7 +207,6 @@ export function HotelDiscovery() {
         clear: () => setRegionFilter("all"),
       });
     }
->>>>>>> dhaval
     if (typeFilter !== "all") {
       chips.push({
         key: "type",
@@ -247,19 +232,12 @@ export function HotelDiscovery() {
       });
     }
     return chips;
-<<<<<<< HEAD
-  }, [amenityFilter, countryFilter, priceFilter, searchQuery, typeFilter]);
-=======
   }, [amenityFilter, countryFilter, priceFilter, regionFilter, searchQuery, typeFilter]);
->>>>>>> dhaval
 
   const clearFilters = () => {
     setSearchQuery("");
     setCountryFilter("all");
-<<<<<<< HEAD
-=======
     setRegionFilter("all");
->>>>>>> dhaval
     setPriceFilter("all");
     setAmenityFilter("all");
     setTypeFilter("all");
@@ -275,15 +253,12 @@ export function HotelDiscovery() {
         if (!haystack.includes(query)) return false;
       }
       if (countryFilter !== "all" && h.destination !== countryFilter) return false;
-<<<<<<< HEAD
-=======
       if (regionFilter === "domestic" && !INDIAN_HOTEL_DESTINATIONS.has(h.destination)) {
         return false;
       }
       if (regionFilter === "international" && INDIAN_HOTEL_DESTINATIONS.has(h.destination)) {
         return false;
       }
->>>>>>> dhaval
       if (priceFilter === "under50" && h.price >= 50000) return false;
       if (priceFilter === "50-100" && (h.price < 50000 || h.price > 100000)) return false;
       if (priceFilter === "over100" && h.price <= 100000) return false;
@@ -314,31 +289,12 @@ export function HotelDiscovery() {
     amenityKeywords,
     countryFilter,
     priceFilter,
-<<<<<<< HEAD
-=======
     regionFilter,
->>>>>>> dhaval
     searchQuery,
     sortBy,
     typeFilter,
   ]);
 
-<<<<<<< HEAD
-  return (
-    <div className="pb-16 md:pb-20 pt-12 md:pt-8">
-      <div className="page-x-padding">
-        <div className="mx-auto max-w-7xl">
-          <p className="text-xs tracking-[0.3em] text-gold uppercase">Accommodations</p>
-          <h1 className="mt-2 font-display text-5xl text-foreground md:text-7xl">
-            Luxury Stays
-          </h1>
-          <p className="mt-4 max-w-xl text-muted">
-            Discover handpicked properties where exceptional service meets extraordinary settings.
-          </p>
-
-          <section
-            className="mt-6 rounded-3xl border border-glass-border bg-surface/80 p-4 shadow-[0_24px_60px_-32px_rgba(0,0,0,0.35)] sm:p-5"
-=======
   const heroContent = useMemo(
     () => getLuxuryStaysHeroContent(regionFilter),
     [regionFilter]
@@ -351,7 +307,6 @@ export function HotelDiscovery() {
       <PageShell noPaddingTop>
           <section
             className="page-filter-panel mt-2"
->>>>>>> dhaval
             aria-label="Filter luxury stays"
           >
             <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:gap-4">
@@ -473,11 +428,7 @@ export function HotelDiscovery() {
               )}
             </div>
           ) : (
-<<<<<<< HEAD
-            <div className="mt-12 grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
-=======
             <div className="page-content-grid mt-12 sm:grid-cols-2 lg:grid-cols-3">
->>>>>>> dhaval
               {filtered.map((hotel) => {
                 const reviewCount = getHotelReviewCount(hotel);
                 return (
@@ -574,13 +525,8 @@ export function HotelDiscovery() {
               })}
             </div>
           )}
-<<<<<<< HEAD
-        </div>
-      </div>
-=======
         <PageCTA />
       </PageShell>
->>>>>>> dhaval
 
       {selectedHotel && (
         <HotelDetailModal
@@ -589,10 +535,6 @@ export function HotelDiscovery() {
           onSelectHotel={setSelectedHotel}
         />
       )}
-<<<<<<< HEAD
-    </div>
-=======
     </>
->>>>>>> dhaval
   );
 }

@@ -74,11 +74,7 @@ export function HotelImageSlider({
         >
           <SafeImage
             src={src}
-<<<<<<< HEAD
-            alt={`${alt} — photo ${i + 1} of ${slides.length}`}
-=======
             alt={`${alt}, photo ${i + 1} of ${slides.length}`}
->>>>>>> dhaval
             className={imageClassName}
           />
         </div>

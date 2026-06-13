@@ -62,11 +62,7 @@ export function PriceDisplay({
       {showLabel ? (
         <p
           className={cn(
-<<<<<<< HEAD
-            "font-semibold tracking-wide uppercase",
-=======
             "font-semibold tracking-[0.18em] uppercase",
->>>>>>> dhaval
             labelClass[size],
             tones.label
           )}

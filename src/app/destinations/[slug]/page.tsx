@@ -21,11 +21,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   const itinerary = getItineraryByDestinationId(slug);
   if (itinerary) {
     return {
-<<<<<<< HEAD
-      title: itinerary.seo?.title ?? `${destination.name} — Luxury Itinerary`,
-=======
       title: itinerary.seo?.title ?? `${destination.name}, Luxury Itinerary`,
->>>>>>> dhaval
       description: itinerary.seo?.description ?? itinerary.overview,
       openGraph: {
         title: itinerary.title,
@@ -36,11 +32,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   }
 
   return {
-<<<<<<< HEAD
-    title: `${destination.name} — Luxury Destination`,
-=======
     title: `${destination.name}, Luxury Destination`,
->>>>>>> dhaval
     description: destination.description,
     openGraph: { images: [{ url: destination.image }] },
   };

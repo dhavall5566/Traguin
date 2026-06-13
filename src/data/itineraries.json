@@ -12,11 +12,7 @@
     "priceNote": "Per couple, private villa category",
     "heroImage": "https://images.pexels.com/photos/3608263/pexels-photo-3608263.jpeg?auto=compress&cs=tinysrgb&w=1920",
     "tagline": "Romance, wellness, and island serenity",
-<<<<<<< HEAD
-    "overview": "A carefully paced Bali journey blending private villa living, temple culture, and restorative spa rituals — designed for couples seeking intimacy without compromise.",
-=======
     "overview": "A carefully paced Bali journey blending private villa living, temple culture, and restorative spa rituals, designed for couples seeking intimacy without compromise.",
->>>>>>> dhaval
     "highlights": [
       "Private cliffside villa with infinity pool",
       "Sunrise temple ceremony with local guide",
@@ -121,11 +117,7 @@
       }
     ],
     "seo": {
-<<<<<<< HEAD
-      "title": "Bali Soul Retreat — 7 Day Luxury Itinerary",
-=======
       "title": "Bali Soul Retreat | 7 Day Luxury Itinerary",
->>>>>>> dhaval
       "description": "A 7-day luxury Bali itinerary with private villas, temple experiences, and couples wellness."
     }
   },
@@ -248,11 +240,7 @@
       }
     ],
     "seo": {
-<<<<<<< HEAD
-      "title": "Swiss Alpine Grand Tour — 8 Day Itinerary",
-=======
       "title": "Swiss Alpine Grand Tour | 8 Day Itinerary",
->>>>>>> dhaval
       "description": "Luxury 8-day Switzerland itinerary featuring Glacier Express, Zermatt, and palace hotels."
     }
   },
@@ -351,11 +339,7 @@
       }
     ],
     "seo": {
-<<<<<<< HEAD
-      "title": "Kerala Backwater Odyssey — 5 Day Itinerary",
-=======
       "title": "Kerala Backwater Odyssey | 5 Day Itinerary",
->>>>>>> dhaval
       "description": "Luxury Kerala itinerary with houseboat, Ayurveda, and tea plantations."
     }
   },
@@ -372,11 +356,7 @@
     "priceNote": "Per couple, suite category",
     "heroImage": "https://images.unsplash.com/photo-1512453979798-5ea266f8880c?ixlib=rb-4.1.0&auto=format&fit=crop&w=1920&q=80",
     "tagline": "Skyline splendor and desert adventures",
-<<<<<<< HEAD
-    "overview": "Experience Dubai at its most extravagant — iconic suites, private desert safaris, and helicopter perspectives over a city built for wonder.",
-=======
     "overview": "Experience Dubai at its most extravagant, iconic suites, private desert safaris, and helicopter perspectives over a city built for wonder.",
->>>>>>> dhaval
     "highlights": [
       "Iconic sail-shaped suite experience",
       "Private desert safari with falcon show",
@@ -450,11 +430,7 @@
       }
     ],
     "seo": {
-<<<<<<< HEAD
-      "title": "Dubai Opulence — 5 Day Luxury Itinerary",
-=======
       "title": "Dubai Opulence | 5 Day Luxury Itinerary",
->>>>>>> dhaval
       "description": "5-day Dubai luxury itinerary with Burj Al Arab, desert safari, and helicopter tour."
     }
   },
@@ -549,11 +525,7 @@
       }
     ],
     "seo": {
-<<<<<<< HEAD
-      "title": "Kashmir Paradise — 6 Day Itinerary",
-=======
       "title": "Kashmir Paradise | 6 Day Itinerary",
->>>>>>> dhaval
       "description": "6-day Kashmir luxury itinerary with Dal Lake houseboat and Gulmarg."
     }
   },
@@ -570,11 +542,7 @@
     "priceNote": "Per couple, beachfront resort category",
     "heroImage": "https://images.unsplash.com/photo-1552465011-b4e21bf6e79a?ixlib=rb-4.1.0&auto=format&fit=crop&w=1920&q=80",
     "tagline": "Golden temples, turquoise waters, island serenity",
-<<<<<<< HEAD
-    "overview": "From Bangkok's culinary artistry to Andaman shores — private island hops, hands-on Thai cooking, and beachfront luxury paced for pure relaxation.",
-=======
     "overview": "From Bangkok's culinary artistry to Andaman shores, private island hops, hands-on Thai cooking, and beachfront luxury paced for pure relaxation.",
->>>>>>> dhaval
     "highlights": [
       "Private island hopping in the Andaman Sea",
       "Thai cooking masterclass with a renowned chef",
@@ -664,19 +632,11 @@
       },
       {
         "question": "Is the island tour private?",
-<<<<<<< HEAD
-        "answer": "Yes — your boat, captain, and guide are reserved exclusively for your party."
-      }
-    ],
-    "seo": {
-      "title": "Thailand Island Escape — 6 Day Itinerary",
-=======
         "answer": "Yes, your boat, captain, and guide are reserved exclusively for your party."
       }
     ],
     "seo": {
       "title": "Thailand Island Escape | 6 Day Itinerary",
->>>>>>> dhaval
       "description": "6-day Thailand luxury itinerary with Bangkok, private islands, and beach resort."
     }
   },
@@ -759,11 +719,7 @@
       }
     ],
     "seo": {
-<<<<<<< HEAD
-      "title": "Goa Coastal Luxe — 4 Day Itinerary",
-=======
       "title": "Goa Coastal Luxe | 4 Day Itinerary",
->>>>>>> dhaval
       "description": "4-day Goa luxury itinerary with boutique beach stay, heritage walk, and private yacht."
     }
   },
@@ -873,11 +829,7 @@
       }
     ],
     "seo": {
-<<<<<<< HEAD
-      "title": "Ladakh Expedition — 7 Day Itinerary",
-=======
       "title": "Ladakh Expedition | 7 Day Itinerary",
->>>>>>> dhaval
       "description": "7-day Ladakh luxury itinerary with Pangong Lake camp, monasteries, and stargazing."
     }
   },
@@ -893,13 +845,8 @@
     "startingPrice": 24500,
     "priceNote": "Per person, MAPAI plan (HP-001 / TRG-HIM-2026-001)",
     "heroImage": "https://images.pexels.com/photos/3574440/pexels-photo-3574440.jpeg?auto=compress&cs=tinysrgb&w=1920",
-<<<<<<< HEAD
-    "tagline": "Queen of Hills — colonial heritage, alpine Kufri, and Mashobra serenity",
-    "overview": "A bespoke TRAGUIN Himachal package crafted for multi-generational families and couples. Journey from Delhi or Chandigarh into Shimla's imperial charm, Kufri's snow peaks, and Mashobra's quiet orchards — with a private Innova Crysta, lazy mornings, and our signature orchard high-tea picnic.",
-=======
     "tagline": "Queen of Hills, colonial heritage, alpine Kufri, and Mashobra serenity",
     "overview": "A bespoke TRAGUIN Himachal package crafted for multi-generational families and couples. Journey from Delhi or Chandigarh into Shimla's imperial charm, Kufri's snow peaks, and Mashobra's quiet orchards, with a private Innova Crysta, lazy mornings, and our signature orchard high-tea picnic.",
->>>>>>> dhaval
     "highlights": [
       "Viceregal Lodge & Mall Road heritage walk",
       "Kufri Mahasu Peak private horse trail",
@@ -923,11 +870,7 @@
       {
         "day": 2,
         "title": "Shimla Local Sightseeing | Colonial Heritage Exploration",
-<<<<<<< HEAD
-        "description": "Full-day colonial heritage tour with a local historian — Viceregal Lodge, The Ridge, Christ Church, Mall Road, a reserved café table, and Lakkar Bazaar woodwork.",
-=======
         "description": "Full-day colonial heritage tour with a local historian, Viceregal Lodge, The Ridge, Christ Church, Mall Road, a reserved café table, and Lakkar Bazaar woodwork.",
->>>>>>> dhaval
         "activities": [
           "Sightseeing Included: Viceregal Lodge, The Ridge, Christ Church, Mall Road, Scandal Point, Lakkar Bazaar.",
           "Optional Activities: A thrilling private ropeway ride up to the historic Jakhoo Hill Temple.",
@@ -961,11 +904,7 @@
     ],
     "hotels": [
       {
-<<<<<<< HEAD
-        "category": "Option 01 — Deluxe",
-=======
         "category": "Option 01, Deluxe",
->>>>>>> dhaval
         "hotelId": "willow-banks-shimla",
         "name": "Hotel Willow Banks / Toshali Royal Resort",
         "location": "Shimla, Himachal Pradesh",
@@ -977,11 +916,7 @@
         "stars": 4
       },
       {
-<<<<<<< HEAD
-        "category": "Option 02 — Premium",
-=======
         "category": "Option 02, Premium",
->>>>>>> dhaval
         "hotelId": "radisson-jass-shimla",
         "name": "Radisson Jass Shimla / The Gateway Resort",
         "location": "Shimla, Himachal Pradesh",
@@ -993,11 +928,7 @@
         "stars": 4
       },
       {
-<<<<<<< HEAD
-        "category": "Option 03 — Luxury",
-=======
         "category": "Option 03, Luxury",
->>>>>>> dhaval
         "hotelId": "welcomhotel-itc-shimla",
         "name": "The Orchid Hotel / Welcomhotel by ITC, Shimla",
         "location": "Shimla, Himachal Pradesh",
@@ -1009,11 +940,7 @@
         "stars": 5
       },
       {
-<<<<<<< HEAD
-        "category": "Option 04 — Ultra Luxury",
-=======
         "category": "Option 04, Ultra Luxury",
->>>>>>> dhaval
         "hotelId": "wildflower-hall-shimla",
         "name": "Wildflower Hall, An Oberoi Resort / Taj The Trees",
         "location": "Shimla & Mashobra, Himachal Pradesh",
@@ -1060,19 +987,11 @@
       },
       {
         "question": "Which hotel category is included?",
-<<<<<<< HEAD
-        "answer": "We offer Deluxe through Ultra-Luxury options including Willow Banks, Radisson Jass, Welcomhotel by ITC, and Wildflower Hall — priced per your selected tier."
-      }
-    ],
-    "seo": {
-      "title": "Shimla Delight Luxury Family Escape — 4 Day Himachal Itinerary",
-=======
         "answer": "We offer Deluxe through Ultra-Luxury options including Willow Banks, Radisson Jass, Welcomhotel by ITC, and Wildflower Hall, priced per your selected tier."
       }
     ],
     "seo": {
       "title": "Shimla Delight Luxury Family Escape | 4 Day Himachal Itinerary",
->>>>>>> dhaval
       "description": "4-day premium Himachal Pradesh itinerary with Shimla heritage, Kufri peaks, Mashobra high-tea, and luxury MAPAI stays."
     }
   },
@@ -1089,11 +1008,7 @@
     "priceNote": "Per couple, boutique & cruise category",
     "heroImage": "https://images.pexels.com/photos/3787839/pexels-photo-3787839.jpeg?auto=compress&cs=tinysrgb&w=1920",
     "tagline": "Ha Long karsts, lantern towns, Mekong rhythms",
-<<<<<<< HEAD
-    "overview": "Traverse Vietnam's most evocative landscapes — an overnight Ha Long Bay cruise, Hoi An's lantern-lit lanes, and a private Mekong Delta immersion.",
-=======
     "overview": "Traverse Vietnam's most evocative landscapes, an overnight Ha Long Bay cruise, Hoi An's lantern-lit lanes, and a private Mekong Delta immersion.",
->>>>>>> dhaval
     "highlights": [
       "Ha Long Bay luxury cruise",
       "Hoi An lantern town experience",
@@ -1193,11 +1108,7 @@
       }
     ],
     "seo": {
-<<<<<<< HEAD
-      "title": "Vietnam Heritage Trail — 8 Day Itinerary",
-=======
       "title": "Vietnam Heritage Trail | 8 Day Itinerary",
->>>>>>> dhaval
       "description": "8-day Vietnam itinerary with Ha Long Bay cruise, Hoi An, and Mekong Delta."
     }
   },
@@ -1214,11 +1125,7 @@
     "priceNote": "Per couple, Marina Bay suite category",
     "heroImage": "https://images.pexels.com/photos/259447/pexels-photo-259447.jpeg?auto=compress&cs=tinysrgb&w=1920",
     "tagline": "Garden city sophistication and culinary mastery",
-<<<<<<< HEAD
-    "overview": "Experience Singapore at its most polished — Marina Bay skyline suites, a private hawker-to-Michelin food journey, and after-hours access to Gardens by the Bay.",
-=======
     "overview": "Experience Singapore at its most polished, Marina Bay skyline suites, a private hawker-to-Michelin food journey, and after-hours access to Gardens by the Bay.",
->>>>>>> dhaval
     "highlights": [
       "Marina Bay Sands suite experience",
       "Private culinary food tour",
@@ -1284,11 +1191,7 @@
       }
     ],
     "seo": {
-<<<<<<< HEAD
-      "title": "Singapore Urban Luxe — 4 Day Itinerary",
-=======
       "title": "Singapore Urban Luxe | 4 Day Itinerary",
->>>>>>> dhaval
       "description": "4-day Singapore luxury itinerary with Marina Bay Sands, food tour, and Gardens by the Bay."
     }
   },
@@ -1305,11 +1208,7 @@
     "priceNote": "Per couple, luxury ryokan & city hotel category",
     "heroImage": "https://images.pexels.com/photos/30988649/pexels-photo-30988649.jpeg?auto=compress&cs=tinysrgb&w=1920",
     "tagline": "Temples, tradition, and Michelin artistry",
-<<<<<<< HEAD
-    "overview": "A masterfully paced Japan journey from Tokyo's contemporary pulse to Kyoto's timeless grace — private temple access, kaiseki dining, and ryokan immersion with TRAGUIN concierge throughout.",
-=======
     "overview": "A masterfully paced Japan journey from Tokyo's contemporary pulse to Kyoto's timeless grace, private temple access, kaiseki dining, and ryokan immersion with TRAGUIN concierge throughout.",
->>>>>>> dhaval
     "highlights": [
       "Private early-morning temple access in Kyoto",
       "Michelin kaiseki and omakase experiences",
@@ -1379,11 +1278,7 @@
         "name": "Aman Tokyo",
         "location": "Tokyo",
         "nights": "3 Nights",
-<<<<<<< HEAD
-        "image": "https://images.unsplash.com/photo-1540959736712-19563eedd508?ixlib=rb-4.1.0&auto=format&fit=crop&w=800&q=80",
-=======
         "image": "https://images.pexels.com/photos/402028/pexels-photo-402028.jpeg?auto=compress&cs=tinysrgb&w=800",
->>>>>>> dhaval
         "description": "Serene urban sanctuary with panoramic city views and minimalist Japanese design.",
         "stars": 5,
         "hotelId": "aman-tokyo"
@@ -1422,17 +1317,10 @@
     ],
     "gallery": [
       "https://images.pexels.com/photos/30988649/pexels-photo-30988649.jpeg?auto=compress&cs=tinysrgb&w=1200",
-<<<<<<< HEAD
-      "https://images.unsplash.com/photo-1540959736712-19563eedd508?ixlib=rb-4.1.0&auto=format&fit=crop&w=1200&q=80",
-      "https://images.unsplash.com/photo-1536098598794-41711c91d3fd?ixlib=rb-4.1.0&auto=format&fit=crop&w=1200&q=80",
-      "https://images.unsplash.com/photo-1545569341-9eb8b30979d2?ixlib=rb-4.1.0&auto=format&fit=crop&w=1200&q=80",
-      "https://images.unsplash.com/photo-1542051841853-71698feba9a4?ixlib=rb-4.1.0&auto=format&fit=crop&w=1200&q=80"
-=======
       "https://images.pexels.com/photos/402028/pexels-photo-402028.jpeg?auto=compress&cs=tinysrgb&w=1200",
       "https://images.pexels.com/photos/31604390/pexels-photo-31604390.jpeg?auto=compress&cs=tinysrgb&w=1200",
       "https://images.pexels.com/photos/16412311/pexels-photo-16412311.jpeg?auto=compress&cs=tinysrgb&w=1200",
       "https://images.pexels.com/photos/3408354/pexels-photo-3408354.jpeg?auto=compress&cs=tinysrgb&w=1200"
->>>>>>> dhaval
     ],
     "faq": [
       {
@@ -1445,11 +1333,7 @@
       }
     ],
     "seo": {
-<<<<<<< HEAD
-      "title": "Japan Cultural Grand Tour — 9 Day Itinerary",
-=======
       "title": "Japan Cultural Grand Tour | 9 Day Itinerary",
->>>>>>> dhaval
       "description": "9-day Japan luxury itinerary with Tokyo, Kyoto, ryokan onsen, and Michelin dining."
     }
   },
@@ -1466,11 +1350,7 @@
     "priceNote": "Per couple, overwater villa category",
     "heroImage": "https://images.pexels.com/photos/1287461/pexels-photo-1287461.jpeg?auto=compress&cs=tinysrgb&w=1920",
     "tagline": "Turquoise lagoons and absolute seclusion",
-<<<<<<< HEAD
-    "overview": "Five nights of uninterrupted Indian Ocean bliss — overwater villa living, private sandbank dining, and marine encounters curated for couples seeking privacy and polish.",
-=======
     "overview": "Five nights of uninterrupted Indian Ocean bliss, overwater villa living, private sandbank dining, and marine encounters curated for couples seeking privacy and polish.",
->>>>>>> dhaval
     "highlights": [
       "Overwater villa with glass floor panels",
       "Private sandbank champagne picnic",
@@ -1556,11 +1436,7 @@
       }
     ],
     "seo": {
-<<<<<<< HEAD
-      "title": "Maldives Overwater Escape — 6 Day Itinerary",
-=======
       "title": "Maldives Overwater Escape | 6 Day Itinerary",
->>>>>>> dhaval
       "description": "6-day Maldives luxury itinerary with overwater villa, sandbank picnic, and dolphin cruise."
     }
   },
@@ -1577,11 +1453,7 @@
     "priceNote": "Per couple, suite stateroom category",
     "heroImage": "https://images.pexels.com/photos/3601425/pexels-photo-3601425.jpeg?auto=compress&cs=tinysrgb&w=1920",
     "tagline": "Coastal gems and cultural ports",
-<<<<<<< HEAD
-    "overview": "Sail the Mediterranean aboard an ultra-luxury small ship — Amalfi cliffs, Santorini sunsets, and Barcelona's artistry with private shore excursions and white-glove service throughout.",
-=======
     "overview": "Sail the Mediterranean aboard an ultra-luxury small ship, Amalfi cliffs, Santorini sunsets, and Barcelona's artistry with private shore excursions and white-glove service throughout.",
->>>>>>> dhaval
     "highlights": [
       "Suite stateroom with butler service",
       "Amalfi Coast private boat excursion",
@@ -1653,11 +1525,7 @@
     ],
     "hotels": [
       {
-<<<<<<< HEAD
-        "name": "Suite Stateroom — Ultra-Luxury Liner",
-=======
         "name": "Suite Stateroom, Ultra-Luxury Liner",
->>>>>>> dhaval
         "location": "Mediterranean Sea",
         "nights": "9 Nights",
         "image": "https://images.pexels.com/photos/3601425/pexels-photo-3601425.jpeg?auto=compress&cs=tinysrgb&w=800",
@@ -1694,11 +1562,7 @@
       }
     ],
     "seo": {
-<<<<<<< HEAD
-      "title": "Mediterranean Grand Voyage — 10 Day Cruise Itinerary",
-=======
       "title": "Mediterranean Grand Voyage | 10 Day Cruise Itinerary",
->>>>>>> dhaval
       "description": "10-day Mediterranean luxury cruise with Amalfi, Santorini, and suite stateroom."
     }
   },
@@ -1715,11 +1579,7 @@
     "priceNote": "Per couple, panoramic suite category",
     "heroImage": "https://images.pexels.com/photos/3608263/pexels-photo-3608263.jpeg?auto=compress&cs=tinysrgb&w=1920",
     "tagline": "Exotic shores and expedition elegance",
-<<<<<<< HEAD
-    "overview": "An Asia Pacific voyage blending Bali's spirituality, Komodo's wild beauty, and Singapore's polish — expedition-grade shore experiences with the comfort of an ultra-luxury liner.",
-=======
     "overview": "An Asia Pacific voyage blending Bali's spirituality, Komodo's wild beauty, and Singapore's polish, expedition-grade shore experiences with the comfort of an ultra-luxury liner.",
->>>>>>> dhaval
     "highlights": [
       "Panoramic suite with wraparound views",
       "Komodo dragon private expedition",
@@ -1803,11 +1663,7 @@
     ],
     "hotels": [
       {
-<<<<<<< HEAD
-        "name": "Panoramic Suite — Expedition Liner",
-=======
         "name": "Panoramic Suite, Expedition Liner",
->>>>>>> dhaval
         "location": "Asia Pacific",
         "nights": "11 Nights",
         "image": "https://images.pexels.com/photos/3608263/pexels-photo-3608263.jpeg?auto=compress&cs=tinysrgb&w=800",
@@ -1844,11 +1700,7 @@
       }
     ],
     "seo": {
-<<<<<<< HEAD
-      "title": "Asia Pacific Explorer — 12 Day Cruise Itinerary",
-=======
       "title": "Asia Pacific Explorer | 12 Day Cruise Itinerary",
->>>>>>> dhaval
       "description": "12-day Asia Pacific luxury cruise with Bali, Komodo, and panoramic suite."
     }
   }

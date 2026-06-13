@@ -1,11 +1,5 @@
 import Link from "next/link";
 import Image from "next/image";
-<<<<<<< HEAD
-import { Share2, Globe, MessageCircle, Mail, Phone, MapPin, Clock } from "lucide-react";
-import { contactInfo } from "@/data/contact";
-import { footerExploreLinks, footerCompanyLinks } from "@/data/site";
-
-=======
 import { MessageCircle, Mail, Phone, MapPin, Clock } from "lucide-react";
 import { contactInfo } from "@/data/contact";
 import { footerExploreLinks, footerCompanyLinks } from "@/data/site";
@@ -30,17 +24,12 @@ function InstagramIcon({ size = 16 }: { size?: number }) {
   );
 }
 
->>>>>>> dhaval
 export function Footer() {
   return (
     <footer className="relative border-t border-glass-border bg-surface">
       <div className="absolute inset-0 luxury-gradient opacity-20" />
-<<<<<<< HEAD
-      <div className="section-padding relative mx-auto max-w-7xl">
-=======
       <div className="home-section relative">
       <div className="site-container">
->>>>>>> dhaval
         <div className="grid gap-10 md:grid-cols-2 lg:grid-cols-4">
           <div className="lg:col-span-1">
             <Link href="/" className="inline-block">
@@ -76,20 +65,6 @@ export function Footer() {
                 <Mail size={16} />
               </a>
               <a
-<<<<<<< HEAD
-                href="#"
-                className="flex h-10 w-10 items-center justify-center rounded-full glass transition-colors hover:border-gold/40 hover:text-gold"
-                aria-label="Website"
-              >
-                <Globe size={16} />
-              </a>
-              <a
-                href="#"
-                className="flex h-10 w-10 items-center justify-center rounded-full glass transition-colors hover:border-gold/40 hover:text-gold"
-                aria-label="Share"
-              >
-                <Share2 size={16} />
-=======
                 href={contactInfo.instagram}
                 target="_blank"
                 rel="noopener noreferrer"
@@ -97,7 +72,6 @@ export function Footer() {
                 aria-label="Instagram"
               >
                 <InstagramIcon size={16} />
->>>>>>> dhaval
               </a>
             </div>
           </div>
@@ -176,10 +150,7 @@ export function Footer() {
           </div>
         </div>
       </div>
-<<<<<<< HEAD
-=======
       </div>
->>>>>>> dhaval
     </footer>
   );
 }

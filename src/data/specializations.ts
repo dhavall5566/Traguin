@@ -42,11 +42,7 @@ export const specializations: Specialization[] = [
   {
     id: "mice",
     title: "MICE",
-<<<<<<< HEAD
-    description: "Meetings, incentives, conferences, and exhibitions — end-to-end destination management.",
-=======
     description: "Meetings, incentives, conferences, and exhibitions, end-to-end destination management.",
->>>>>>> dhaval
     icon: Building2,
   },
 ];

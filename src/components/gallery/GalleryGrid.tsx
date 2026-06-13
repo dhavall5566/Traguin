@@ -18,11 +18,7 @@ type GalleryGridProps = {
 
 type TileSpan = { colSpan: number; rowSpan: number };
 
-<<<<<<< HEAD
-/** Repeating 4-column pattern — every band sums to 4 cols × 2 rows with zero gaps */
-=======
 /** Repeating 4-column pattern, every band sums to 4 cols × 2 rows with zero gaps */
->>>>>>> dhaval
 const DESKTOP_SPANS: TileSpan[] = [
   { colSpan: 2, rowSpan: 2 },
   { colSpan: 2, rowSpan: 1 },
@@ -77,11 +73,7 @@ function GalleryTile({
       />
 
       <figcaption className="sr-only">
-<<<<<<< HEAD
-        {item.place}, {item.region} — {item.alt}
-=======
         {item.place}, {item.region}, {item.alt}
->>>>>>> dhaval
       </figcaption>
     </figure>
   );

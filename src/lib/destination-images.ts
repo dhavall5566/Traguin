@@ -2,11 +2,7 @@ import { destinationGalleries } from "@/data/destination-galleries";
 
 const GALLERY_SIZE = 5;
 
-<<<<<<< HEAD
-/** Five unique destination photos — curated gallery only (no itinerary cross-merge) */
-=======
 /** Five unique destination photos, curated gallery only (no itinerary cross-merge) */
->>>>>>> dhaval
 export function getDestinationGalleryImages(
   destinationId: string,
   fallback?: string

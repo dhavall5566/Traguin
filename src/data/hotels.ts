@@ -467,11 +467,7 @@ export const hotels: Hotel[] = [
     image: hotelImg("willow-banks-shimla", images.himachal),
     rating: 4.5,
     description:
-<<<<<<< HEAD
-      "Deluxe valley-facing rooms with warm hospitality — also available as Toshali Royal Resort under the same tier.",
-=======
       "Deluxe valley-facing rooms with warm hospitality, also available as Toshali Royal Resort under the same tier.",
->>>>>>> dhaval
     amenities: [
       "Premium valley view rooms",
       "Buffet breakfast & dinner",
@@ -497,11 +493,7 @@ export const hotels: Hotel[] = [
     image: hotelImg("radisson-jass-shimla", images.himachal),
     rating: 4.6,
     description:
-<<<<<<< HEAD
-      "Premium Himalayan-view rooms with daily breakfast and dinner — Gateway Resort available in the same category.",
-=======
       "Premium Himalayan-view rooms with daily breakfast and dinner, Gateway Resort available in the same category.",
->>>>>>> dhaval
     amenities: [
       "Deluxe Himalayan view rooms",
       "Daily breakfast & dinner",
@@ -527,11 +519,7 @@ export const hotels: Hotel[] = [
     image: hotelImg("welcomhotel-itc-shimla", images.himachal),
     rating: 4.8,
     description:
-<<<<<<< HEAD
-      "Luxury executive balcony suites with gourmet MAPAI dining — The Orchid Hotel offered in the same luxury tier.",
-=======
       "Luxury executive balcony suites with gourmet MAPAI dining, The Orchid Hotel offered in the same luxury tier.",
->>>>>>> dhaval
     amenities: [
       "Executive balcony suites",
       "Gourmet MAPAI plan",
@@ -557,11 +545,7 @@ export const hotels: Hotel[] = [
     image: hotelImg("wildflower-hall-shimla", images.himachal),
     rating: 4.9,
     description:
-<<<<<<< HEAD
-      "Ultra-luxury mountain sanctuary with premier rooms and chef's special MAPAI — Taj The Trees in the same tier.",
-=======
       "Ultra-luxury mountain sanctuary with premier rooms and chef's special MAPAI, Taj The Trees in the same tier.",
->>>>>>> dhaval
     amenities: [
       "Premier mountain view rooms",
       "Chef's special MAPAI plan",
