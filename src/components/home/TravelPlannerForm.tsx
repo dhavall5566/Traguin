@@ -6,6 +6,10 @@ import { MapPin, Calendar, Users, Wallet, Sparkles, FileText, ChevronLeft, Chevr
 import { MagneticButton } from "@/components/ui/MagneticButton";
 import { FormField, fieldInputClass } from "@/components/ui/FormField";
 import { SectionHeader } from "@/components/ui/SectionHeader";
+<<<<<<< HEAD
+=======
+import { HomeSection } from "@/components/home/HomeSection";
+>>>>>>> dhaval
 import {
   clearFieldError,
   hasErrors,
@@ -86,12 +90,18 @@ export function TravelPlannerForm() {
   };
 
   return (
+<<<<<<< HEAD
     <section
       id="planner"
       className="relative overflow-hidden bg-surface px-[clamp(1.5rem,5vw,4rem)] py-[clamp(2.5rem,6vw,4.5rem)] scroll-mt-[var(--site-header-height)]"
     >
       <div className="absolute inset-0 luxury-gradient opacity-15" />
       <div className="relative mx-auto max-w-3xl">
+=======
+    <HomeSection id="planner" tone="surface" className="relative overflow-hidden">
+      <div className="absolute inset-0 luxury-gradient opacity-15" />
+      <div className="relative">
+>>>>>>> dhaval
         <SectionHeader
           eyebrow="Your Journey Begins Here"
           title="Plan Your Extraordinary Journey"
@@ -117,7 +127,16 @@ export function TravelPlannerForm() {
           ))}
         </div>
 
+<<<<<<< HEAD
         <form onSubmit={handleSubmit} noValidate className="mt-8 glass rounded-3xl border border-glass-border p-6 md:p-10">
+=======
+        <div className="site-container--content mt-8">
+          <form
+            onSubmit={handleSubmit}
+            noValidate
+            className="glass w-full rounded-3xl border border-glass-border p-6 md:p-10"
+          >
+>>>>>>> dhaval
           {submitted ? (
             <div className="py-12 text-center">
               <Sparkles size={40} className="mx-auto text-gold" />
@@ -299,7 +318,16 @@ export function TravelPlannerForm() {
                 </motion.div>
               </AnimatePresence>
 
+<<<<<<< HEAD
               <div className="mt-8 flex flex-wrap items-center justify-between gap-4">
+=======
+              <div
+                className={cn(
+                  "mt-8",
+                  step > 0 && "flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between"
+                )}
+              >
+>>>>>>> dhaval
                 {step > 0 ? (
                   <button
                     type="button"
@@ -309,24 +337,56 @@ export function TravelPlannerForm() {
                     <ChevronLeft size={16} />
                     Back
                   </button>
+<<<<<<< HEAD
                 ) : (
                   <span />
                 )}
                 {step < steps.length - 1 ? (
                   <MagneticButton type="button" variant="primary" onClick={nextStep}>
+=======
+                ) : null}
+                {step < steps.length - 1 ? (
+                  <MagneticButton
+                    type="button"
+                    variant="primary"
+                    onClick={nextStep}
+                    className={cn(
+                      "w-full !justify-center",
+                      step > 0 && "sm:flex-1"
+                    )}
+                  >
+>>>>>>> dhaval
                     Continue
                     <ChevronRight size={16} className="ml-1 inline" />
                   </MagneticButton>
                 ) : (
+<<<<<<< HEAD
                   <MagneticButton type="submit" variant="primary">
+=======
+                  <MagneticButton
+                    type="submit"
+                    variant="primary"
+                    className={cn(
+                      "w-full !justify-center",
+                      step > 0 && "sm:flex-1"
+                    )}
+                  >
+>>>>>>> dhaval
                     Get Personalized Itinerary
                   </MagneticButton>
                 )}
               </div>
             </>
           )}
+<<<<<<< HEAD
         </form>
       </div>
     </section>
+=======
+          </form>
+        </div>
+      </div>
+    </HomeSection>
+>>>>>>> dhaval
   );
 }

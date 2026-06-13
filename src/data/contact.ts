@@ -7,6 +7,10 @@ export const contactInfo = {
   emailHref: "mailto:inquiry@traguin.com",
   inquiryEmail: "inquiry@traguin.com",
   inquiryEmailHref: "mailto:inquiry@traguin.com",
+<<<<<<< HEAD
+=======
+  instagram: "https://www.instagram.com/traguinvkation/",
+>>>>>>> dhaval
   address:
     "Shaligram Lakeview, A 401, near Vaishnodevi Temple, Ahmedabad, Gujarat 382421",
   hours: "10:00am - 7:00pm, Sunday Close",

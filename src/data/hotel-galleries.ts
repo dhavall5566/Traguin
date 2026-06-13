@@ -1,6 +1,10 @@
 /**
  * Unique hotel-property photos only (suites, lobbies, facades, on-site pools).
+<<<<<<< HEAD
  * Each URL is used once across the entire catalog — no shared destination scenery.
+=======
+ * Each URL is used once across the entire catalog, no shared destination scenery.
+>>>>>>> dhaval
  */
 const p = (id: number) =>
   `https://images.pexels.com/photos/${id}/pexels-photo-${id}.jpeg?auto=compress&cs=tinysrgb&w=1400`;
@@ -207,7 +211,11 @@ export const hotelGalleries: Record<string, readonly string[]> = {
   ],
 };
 
+<<<<<<< HEAD
 /** Primary card / thumbnail — first gallery frame */
+=======
+/** Primary card / thumbnail, first gallery frame */
+>>>>>>> dhaval
 export function getHotelPrimaryImage(hotelId: string, fallback: string): string {
   return hotelGalleries[hotelId]?.[0] ?? fallback;
 }

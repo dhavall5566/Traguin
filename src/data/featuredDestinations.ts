@@ -1,7 +1,11 @@
 import { getDestinationPrimaryImage } from "@/data/destination-galleries";
 import { images } from "@/lib/images";
 
+<<<<<<< HEAD
 /** Homepage featured cards — detail pages at /destinations/[id] */
+=======
+/** Homepage featured cards, detail pages at /destinations/[id] */
+>>>>>>> dhaval
 export const featuredDestinations = [
   {
     id: "switzerland",

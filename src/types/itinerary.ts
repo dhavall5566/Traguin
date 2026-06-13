@@ -14,7 +14,11 @@ export interface ItineraryHotel {
   stars?: number;
   /** Links to a property in the luxury stays catalog */
   hotelId?: string;
+<<<<<<< HEAD
   /** Package tier label, e.g. "Option 01 — Deluxe" */
+=======
+  /** Package tier label, e.g. "Option 01, Deluxe" */
+>>>>>>> dhaval
   category?: string;
   /** Room category from the proposal */
   roomType?: string;
@@ -31,7 +35,11 @@ export interface Itinerary {
   slug: string;
   /** Matches TravelPackage.id in packages.ts */
   packageId: string;
+<<<<<<< HEAD
   /** Links to destination id in destinationCategories — used for /destinations/[id] */
+=======
+  /** Links to destination id in destinationCategories, used for /destinations/[id] */
+>>>>>>> dhaval
   destinationId: string;
   title: string;
   destination: string;

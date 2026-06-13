@@ -155,7 +155,11 @@ export const destinations: Destination[] = [
     country: "India",
     region: "domestic",
     image: destImg("kashmir", images.kashmir),
+<<<<<<< HEAD
     description: "Paradise on earth — snow-capped peaks, shikara rides, and Mughal gardens.",
+=======
+    description: "Paradise on earth, snow-capped peaks, shikara rides, and Mughal gardens.",
+>>>>>>> dhaval
     packageCount: 18,
     hotelCount: 15,
     moods: ["romantic", "nature", "adventure", "solo", "cultural"],

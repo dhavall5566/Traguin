@@ -157,7 +157,11 @@ export function ItineraryTimeline({ days, durationDays }: ItineraryTimelineProps
 
   return (
     <section ref={sectionRef} className="section-padding bg-surface">
+<<<<<<< HEAD
       <div className="mx-auto max-w-6xl">
+=======
+      <div className="site-container">
+>>>>>>> dhaval
         <header className="text-center md:text-left">
           <p className="text-xs tracking-[0.35em] text-gold uppercase">Your Journey</p>
           <h2 className="mt-2 font-display text-3xl text-foreground md:text-4xl lg:text-5xl">
@@ -232,12 +236,20 @@ export function ItineraryTimeline({ days, durationDays }: ItineraryTimelineProps
             )}
           </nav>
 
+<<<<<<< HEAD
           {/* Detail stage — only when a day is selected */}
+=======
+          {/* Detail stage, only when a day is selected */}
+>>>>>>> dhaval
           {hasSelection && selected && (
             <div className="min-w-0 flex-1">
               <article
                 className={cn(
+<<<<<<< HEAD
                   "relative overflow-hidden rounded-3xl border border-gold/20 bg-glass shadow-[0_32px_80px_-24px_rgba(212,175,55,0.18)] [perspective:1200px]",
+=======
+                  "relative overflow-hidden rounded-3xl border border-gold/20 bg-glass shadow-[0_32px_80px_-24px_rgba(206,169,50,0.18)] [perspective:1200px]",
+>>>>>>> dhaval
                   "transition-[opacity,transform] duration-[600ms]",
                   panelOpen ? "translate-y-0 opacity-100" : "translate-y-6 opacity-0",
                   isClosing && "pointer-events-none"
@@ -325,7 +337,11 @@ export function ItineraryTimeline({ days, durationDays }: ItineraryTimelineProps
                         })}
                       </ul>
                     ) : (
+<<<<<<< HEAD
                       <p className="mt-4 text-sm text-muted">Leisure day — pace set by you.</p>
+=======
+                      <p className="mt-4 text-sm text-muted">Leisure day, pace set by you.</p>
+>>>>>>> dhaval
                     )}
                   </div>
                 </div>
@@ -356,7 +372,11 @@ function DayPill({ day, isActive, onSelect }: DayPillProps) {
       className={cn(
         "shrink-0 rounded-full border px-4 py-2.5 transition-all duration-500",
         isActive
+<<<<<<< HEAD
           ? "border-gold/50 bg-gold/15 text-gold shadow-[0_0_20px_-4px_rgba(212,175,55,0.4)]"
+=======
+          ? "border-gold/50 bg-gold/15 text-gold shadow-[0_0_20px_-4px_rgba(206,169,50,0.4)]"
+>>>>>>> dhaval
           : "border-glass-border bg-glass text-muted hover:border-gold/30 hover:text-foreground"
       )}
       style={{ transitionTimingFunction: EASE }}
@@ -386,7 +406,11 @@ function DayRailItem({ day, isActive, onSelect }: DayRailItemProps) {
         className={cn(
           "group relative flex w-full items-stretch overflow-hidden rounded-2xl border text-left transition-all duration-500",
           isActive
+<<<<<<< HEAD
             ? "border-gold/35 bg-gold/[0.08] shadow-[0_12px_32px_-20px_rgba(212,175,55,0.45)]"
+=======
+            ? "border-gold/35 bg-gold/[0.08] shadow-[0_12px_32px_-20px_rgba(206,169,50,0.45)]"
+>>>>>>> dhaval
             : "border-glass-border/80 bg-glass/40 hover:border-gold/25 hover:bg-gold/[0.04]"
         )}
         style={{ transitionTimingFunction: EASE }}
@@ -456,7 +480,11 @@ function DayBrowseCard({ day, index, onSelect }: DayBrowseCardProps) {
       <button
         type="button"
         onClick={onSelect}
+<<<<<<< HEAD
         className="group flex w-full items-center gap-5 rounded-2xl border border-glass-border bg-glass p-5 text-left transition-all duration-500 hover:border-gold/35 hover:bg-gold/[0.04] hover:shadow-[0_16px_48px_-20px_rgba(212,175,55,0.2)]"
+=======
+        className="group flex w-full items-center gap-5 rounded-2xl border border-glass-border bg-glass p-5 text-left transition-all duration-500 hover:border-gold/35 hover:bg-gold/[0.04] hover:shadow-[0_16px_48px_-20px_rgba(206,169,50,0.2)]"
+>>>>>>> dhaval
         style={{ transitionTimingFunction: EASE }}
       >
         <span className="flex h-14 w-14 shrink-0 flex-col items-center justify-center rounded-2xl border border-gold/20 bg-gold/[0.06]">

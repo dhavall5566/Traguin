@@ -15,11 +15,19 @@ export const plannerCtaBackgrounds: PlannerCtaBackground[] = [
     alt: "Sunlit mountain peaks reflected in a turquoise alpine lake",
   },
   {
+<<<<<<< HEAD
     src: unsplash4k("1555402738-d891e226a6bb"),
     alt: "Travelers on a mountain trail above dramatic peaks",
   },
   {
     src: unsplash4k("1506905925346"),
+=======
+    src: pexels4k(6720718),
+    alt: "Travelers on a mountain trail above dramatic peaks",
+  },
+  {
+    src: unsplash4k("1506905925346-21bda4d32df4"),
+>>>>>>> dhaval
     alt: "Snow-capped mountains rising above a sea of clouds",
   },
   {

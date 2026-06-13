@@ -33,7 +33,11 @@ export const experienceDetails: ExperienceDetail[] = [
     eyebrow: "Group travel",
     headline: "One group, every detail in rhythm",
     intro:
+<<<<<<< HEAD
       "Reunions, celebrations, and shared adventures — we align guides, stays, and timing so your whole circle travels without friction.",
+=======
+      "Reunions, celebrations, and shared adventures, we align guides, stays, and timing so your whole circle travels without friction.",
+>>>>>>> dhaval
     heroImage: images.experienceGroupTours,
     offers: [
       {
@@ -63,15 +67,26 @@ export const experienceDetails: ExperienceDetail[] = [
       { value: "48h", label: "First proposal" },
     ],
     quote:
+<<<<<<< HEAD
       "Every reunion deserves the same rhythm — arrivals aligned, dinners reserved, and no one chasing logistics.",
+=======
+      "Every reunion deserves the same rhythm, arrivals aligned, dinners reserved, and no one chasing logistics.",
+>>>>>>> dhaval
     process: [
       { step: "01", title: "Discovery", detail: "Dates, headcount, and the moments your group cares about most." },
       { step: "02", title: "Blueprint", detail: "A shared itinerary with stays, transfers, and reservations in sync." },
       { step: "03", title: "Confirmation", detail: "Final approvals, payments, and pre-trip brief for every guest." },
+<<<<<<< HEAD
       { step: "04", title: "On ground", detail: "Your host coordinates live — changes absorbed before anyone notices." },
     ],
     ctaTitle: "Shape your group trip",
     ctaDescription: "Share your dates and headcount — we respond within 2 working hours.",
+=======
+      { step: "04", title: "On ground", detail: "Your host coordinates live, changes absorbed before anyone notices." },
+    ],
+    ctaTitle: "Shape your group trip",
+    ctaDescription: "Share your dates and headcount, we respond within 2 working hours.",
+>>>>>>> dhaval
   },
   {
     slug: "private-luxe",
@@ -99,7 +114,11 @@ export const experienceDetails: ExperienceDetail[] = [
       {
         icon: Zap,
         title: "Instant replans",
+<<<<<<< HEAD
         description: "Swap the schedule on a whim — our team absorbs the logistics behind the scenes.",
+=======
+        description: "Swap the schedule on a whim, our team absorbs the logistics behind the scenes.",
+>>>>>>> dhaval
       },
     ],
     stats: [
@@ -108,7 +127,11 @@ export const experienceDetails: ExperienceDetail[] = [
       { value: "24/7", label: "Concierge line" },
     ],
     quote:
+<<<<<<< HEAD
       "Luxury is the freedom to change your mind — we replan the day while you stay in the moment.",
+=======
+      "Luxury is the freedom to change your mind, we replan the day while you stay in the moment.",
+>>>>>>> dhaval
     process: [
       { step: "01", title: "Listen", detail: "How you travel, what you avoid, and the experiences you chase." },
       { step: "02", title: "Design", detail: "A private route with transfers, access, and downtime built in." },
@@ -116,7 +139,11 @@ export const experienceDetails: ExperienceDetail[] = [
       { step: "04", title: "Depart", detail: "Your concierge stays on call from wheels-up through homecoming." },
     ],
     ctaTitle: "Design your private escape",
+<<<<<<< HEAD
     ctaDescription: "Tell us how you like to travel — we'll draft a route that fits your pace.",
+=======
+    ctaDescription: "Tell us how you like to travel, we'll draft a route that fits your pace.",
+>>>>>>> dhaval
   },
   {
     slug: "corporate-events",
@@ -153,7 +180,11 @@ export const experienceDetails: ExperienceDetail[] = [
       { value: "End-to-end", label: "Single ops team" },
     ],
     quote:
+<<<<<<< HEAD
       "Boardrooms and ballrooms should feel effortless — we run the logistics so leadership stays present.",
+=======
+      "Boardrooms and ballrooms should feel effortless, we run the logistics so leadership stays present.",
+>>>>>>> dhaval
     process: [
       { step: "01", title: "Brief", detail: "Objectives, audience profile, budget guardrails, and success metrics." },
       { step: "02", title: "Architecture", detail: "Venue shortlist, agenda flow, hospitality, and travel connections." },
@@ -161,7 +192,11 @@ export const experienceDetails: ExperienceDetail[] = [
       { step: "04", title: "Delivery", detail: "On-ground coordinators manage pivots without disrupting the room." },
     ],
     ctaTitle: "Plan your next corporate program",
+<<<<<<< HEAD
     ctaDescription: "Outline your objectives and team size — we'll build a proposal around them.",
+=======
+    ctaDescription: "Outline your objectives and team size, we'll build a proposal around them.",
+>>>>>>> dhaval
   },
   {
     slug: "school-trips",
@@ -198,7 +233,11 @@ export const experienceDetails: ExperienceDetail[] = [
       { value: "Live", label: "Guardian updates" },
     ],
     quote:
+<<<<<<< HEAD
       "Learning should feel adventurous and controlled — every route is vetted, every guardian kept in the loop.",
+=======
+      "Learning should feel adventurous and controlled, every route is vetted, every guardian kept in the loop.",
+>>>>>>> dhaval
     process: [
       { step: "01", title: "Consult", detail: "Curriculum goals, student count, chaperone needs, and safety requirements." },
       { step: "02", title: "Draft", detail: "Age-appropriate itinerary with audited partners and emergency protocols." },
@@ -206,7 +245,11 @@ export const experienceDetails: ExperienceDetail[] = [
       { step: "04", title: "Guide", detail: "Coordinators stay with the cohort from departure through safe return." },
     ],
     ctaTitle: "Start your school expedition",
+<<<<<<< HEAD
     ctaDescription: "Share your institution, dates, and student count — we'll take it from there.",
+=======
+    ctaDescription: "Share your institution, dates, and student count, we'll take it from there.",
+>>>>>>> dhaval
   },
 ];
 

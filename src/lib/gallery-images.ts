@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 /** Gallery-only 4K assets — not reused elsewhere on the site */
+=======
+/** Gallery-only 4K assets, not reused elsewhere on the site */
+>>>>>>> dhaval
 const pexels4k = (id: number) =>
   `https://images.pexels.com/photos/${id}/pexels-photo-${id}.jpeg?auto=compress&cs=tinysrgb&w=3840&h=2160&fit=crop`;
 

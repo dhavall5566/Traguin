@@ -1,14 +1,46 @@
 import Link from "next/link";
 import Image from "next/image";
+<<<<<<< HEAD
 import { Share2, Globe, MessageCircle, Mail, Phone, MapPin, Clock } from "lucide-react";
 import { contactInfo } from "@/data/contact";
 import { footerExploreLinks, footerCompanyLinks } from "@/data/site";
 
+=======
+import { MessageCircle, Mail, Phone, MapPin, Clock } from "lucide-react";
+import { contactInfo } from "@/data/contact";
+import { footerExploreLinks, footerCompanyLinks } from "@/data/site";
+
+function InstagramIcon({ size = 16 }: { size?: number }) {
+  return (
+    <svg
+      width={size}
+      height={size}
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden
+    >
+      <rect width="20" height="20" x="2" y="2" rx="5" ry="5" />
+      <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z" />
+      <line x1="17.5" x2="17.51" y1="6.5" y2="6.5" />
+    </svg>
+  );
+}
+
+>>>>>>> dhaval
 export function Footer() {
   return (
     <footer className="relative border-t border-glass-border bg-surface">
       <div className="absolute inset-0 luxury-gradient opacity-20" />
+<<<<<<< HEAD
       <div className="section-padding relative mx-auto max-w-7xl">
+=======
+      <div className="home-section relative">
+      <div className="site-container">
+>>>>>>> dhaval
         <div className="grid gap-10 md:grid-cols-2 lg:grid-cols-4">
           <div className="lg:col-span-1">
             <Link href="/" className="inline-block">
@@ -44,6 +76,7 @@ export function Footer() {
                 <Mail size={16} />
               </a>
               <a
+<<<<<<< HEAD
                 href="#"
                 className="flex h-10 w-10 items-center justify-center rounded-full glass transition-colors hover:border-gold/40 hover:text-gold"
                 aria-label="Website"
@@ -56,6 +89,15 @@ export function Footer() {
                 aria-label="Share"
               >
                 <Share2 size={16} />
+=======
+                href={contactInfo.instagram}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex h-10 w-10 items-center justify-center rounded-full glass transition-colors hover:border-gold/40 hover:text-gold"
+                aria-label="Instagram"
+              >
+                <InstagramIcon size={16} />
+>>>>>>> dhaval
               </a>
             </div>
           </div>
@@ -134,6 +176,10 @@ export function Footer() {
           </div>
         </div>
       </div>
+<<<<<<< HEAD
+=======
+      </div>
+>>>>>>> dhaval
     </footer>
   );
 }

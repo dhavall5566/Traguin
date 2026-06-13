@@ -3,9 +3,19 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
+<<<<<<< HEAD
 import { ChevronLeft, ChevronRight, Quote } from "lucide-react";
 import { testimonials } from "@/data/moods";
 import { SectionHeader } from "@/components/ui/SectionHeader";
+=======
+import Link from "next/link";
+import { ChevronLeft, ChevronRight, Quote, ArrowUpRight } from "lucide-react";
+import { testimonials } from "@/data/moods";
+import { SectionHeader } from "@/components/ui/SectionHeader";
+import { MagneticButton } from "@/components/ui/MagneticButton";
+import { HomeSection, HomeSectionActions } from "@/components/home/HomeSection";
+import { primaryCta } from "@/data/site";
+>>>>>>> dhaval
 import { cn } from "@/lib/utils";
 
 const AUTO_ADVANCE_MS = 4000;
@@ -118,6 +128,7 @@ export function CustomerStories() {
   );
 
   return (
+<<<<<<< HEAD
     <section className="section-padding relative overflow-hidden">
       <div className="mx-auto max-w-7xl">
         <SectionHeader
@@ -128,14 +139,31 @@ export function CustomerStories() {
 
         <div
           className="relative mt-12"
+=======
+    <HomeSection>
+      <SectionHeader
+        eyebrow="Client Stories"
+        title="Journeys That Inspire"
+        description="Real experiences from travelers who entrusted us with their most meaningful moments."
+      />
+
+      <div
+        className="relative mt-10 lg:mt-12"
+>>>>>>> dhaval
           onMouseEnter={() => setPaused(true)}
           onMouseLeave={() => setPaused(false)}
           onFocusCapture={() => setPaused(true)}
           onBlurCapture={() => setPaused(false)}
         >
+<<<<<<< HEAD
           <div className="mx-auto max-w-3xl [perspective:1400px]">
             <article
               className="glass overflow-hidden rounded-3xl border border-gold/20 shadow-[0_24px_80px_-24px_rgba(212,175,55,0.12)]"
+=======
+          <div className="site-container--content [perspective:1400px]">
+            <article
+              className="glass overflow-hidden rounded-2xl border border-gold/20 shadow-[0_16px_48px_-20px_rgba(206,169,50,0.14)]"
+>>>>>>> dhaval
               aria-live="polite"
               aria-atomic="true"
             >
@@ -193,7 +221,25 @@ export function CustomerStories() {
             </button>
           </div>
         </div>
+<<<<<<< HEAD
       </div>
     </section>
+=======
+
+      <HomeSectionActions className="site-container--content !mt-10 w-full lg:!mt-12">
+        <MagneticButton as="a" href={primaryCta.href} variant="primary" className="w-full !justify-center">
+          Plan Your Journey
+          <ArrowUpRight size={14} />
+        </MagneticButton>
+        <Link
+          href="/client-stories"
+          className="inline-flex w-full items-center justify-center gap-2 text-xs tracking-[0.18em] text-gold uppercase transition-colors hover:text-foreground sm:w-auto sm:justify-start"
+        >
+          Read All Stories
+          <ArrowUpRight size={14} />
+        </Link>
+      </HomeSectionActions>
+    </HomeSection>
+>>>>>>> dhaval
   );
 }

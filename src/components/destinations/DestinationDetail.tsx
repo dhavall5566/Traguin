@@ -48,8 +48,13 @@ export function DestinationDetail({ destination }: DestinationDetailProps) {
         <div className="absolute inset-0 z-[1] bg-gradient-to-b from-black/55 via-black/10 to-transparent" />
         <div className="absolute inset-0 z-[1] bg-gradient-to-t from-background via-background/75 to-transparent" />
 
+<<<<<<< HEAD
         <div className="pointer-events-none absolute inset-0 z-10">
           <div className="mx-auto flex h-full max-w-7xl flex-col justify-end px-4 pb-10 pt-28 sm:px-6 md:pb-14 md:pt-32">
+=======
+        <div className="page-x-padding pointer-events-none absolute inset-0 z-10">
+          <div className="site-container flex h-full flex-col justify-end pb-10 pt-28 md:pb-14 md:pt-32">
+>>>>>>> dhaval
             <div className="pointer-events-auto">
               <Link
                 href="/destinations"
@@ -86,7 +91,11 @@ export function DestinationDetail({ destination }: DestinationDetailProps) {
       </section>
 
       <section className="section-padding">
+<<<<<<< HEAD
         <div className="mx-auto max-w-3xl text-center">
+=======
+        <div className="site-container site-container--content text-center">
+>>>>>>> dhaval
           <MapPin size={32} className="mx-auto text-gold/60" />
           <h2 className="mt-4 font-display text-2xl text-foreground md:text-3xl">
             Bespoke {destination.name} Journey
@@ -103,7 +112,11 @@ export function DestinationDetail({ destination }: DestinationDetailProps) {
 
       {hotelCards.length > 0 && (
         <section className="section-padding bg-surface pt-0">
+<<<<<<< HEAD
           <div className="mx-auto max-w-7xl">
+=======
+          <div className="site-container">
+>>>>>>> dhaval
             <DestinationHotelsSlider
               destinationName={destination.name}
               hotels={hotelCards}
@@ -113,7 +126,11 @@ export function DestinationDetail({ destination }: DestinationDetailProps) {
       )}
 
       <section className="section-padding bg-surface pt-0">
+<<<<<<< HEAD
         <div className="mx-auto max-w-7xl">
+=======
+        <div className="site-container">
+>>>>>>> dhaval
           <ItineraryInquiryForm
             itineraryTitle={`${destination.name} Journey`}
             itinerarySlug={destination.id}
@@ -122,7 +139,11 @@ export function DestinationDetail({ destination }: DestinationDetailProps) {
       </section>
 
       <section className="section-padding pt-0">
+<<<<<<< HEAD
         <div className="mx-auto flex max-w-7xl justify-center">
+=======
+        <div className="site-container flex justify-center">
+>>>>>>> dhaval
           <MagneticButton as="a" href={itinerarySecondaryCta.href} variant="secondary">
             {itinerarySecondaryCta.label}
           </MagneticButton>

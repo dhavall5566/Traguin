@@ -36,7 +36,12 @@ export function ExperienceDetailContent({ experience }: ExperienceDetailContentP
         </div>
       </section>
 
+<<<<<<< HEAD
       <section className="px-[clamp(1.25rem,4vw,2.5rem)] py-[clamp(2.5rem,6vw,4rem)]">
+=======
+      <section className="page-x-padding py-[clamp(2.5rem,6vw,4rem)]">
+        <div className="site-container">
+>>>>>>> dhaval
         <h2 className="font-display text-[clamp(1.5rem,2.5vw,2.25rem)] font-semibold tracking-tight text-foreground">
           Included for you
         </h2>
@@ -55,10 +60,18 @@ export function ExperienceDetailContent({ experience }: ExperienceDetailContentP
             </div>
           ))}
         </div>
+<<<<<<< HEAD
       </section>
 
       <section className="bg-[color-mix(in_srgb,var(--bento-warm)_55%,var(--surface))] px-[clamp(1.25rem,4vw,2.5rem)] py-[clamp(2.5rem,6vw,4rem)]">
         <div className="grid gap-8 lg:grid-cols-2 lg:gap-12">
+=======
+        </div>
+      </section>
+
+      <section className="bg-[color-mix(in_srgb,var(--bento-warm)_55%,var(--surface))] page-x-padding py-[clamp(2.5rem,6vw,4rem)]">
+        <div className="site-container grid gap-8 lg:grid-cols-2 lg:gap-12">
+>>>>>>> dhaval
           <div>
             <h2 className="text-xs font-bold tracking-[0.24em] text-muted uppercase">
               Your path with Traguin

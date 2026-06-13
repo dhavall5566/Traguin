@@ -1,11 +1,23 @@
 "use client";
 
+<<<<<<< HEAD
 import { useMemo, useState } from "react";
+=======
+import { useMemo, useRef, useState } from "react";
+import Link from "next/link";
+>>>>>>> dhaval
 import { ArrowUpRight } from "lucide-react";
 import { experienceShowcase, type ExperienceShowcaseItem } from "@/data/experienceShowcase";
 import { getExperienceDetail } from "@/data/experienceDetails";
 import { ExperienceDetailModal } from "@/components/experiences/ExperienceDetailModal";
 import { SafeImage } from "@/components/ui/SafeImage";
+<<<<<<< HEAD
+=======
+import { SectionHeader } from "@/components/ui/SectionHeader";
+import { Reveal3D } from "@/components/ui/Reveal3D";
+import { HomeSection, HomeSectionActions } from "@/components/home/HomeSection";
+import { useStaggerReveal3D } from "@/hooks/useStaggerReveal3D";
+>>>>>>> dhaval
 import { cn } from "@/lib/utils";
 
 function BentoNumber({ value }: { value: string }) {
@@ -190,8 +202,14 @@ function ExperienceBentoRow({
 
   return (
     <div
+<<<<<<< HEAD
       className={cn(
         "experience-bento-row gap-4 sm:gap-5 lg:gap-6",
+=======
+      data-reveal-item
+      className={cn(
+        "experience-bento-row gap-4 [transform-style:preserve-3d] sm:gap-5 lg:gap-6",
+>>>>>>> dhaval
         widePosition === "left" ? "experience-bento-row--wide-left" : "experience-bento-row--wide-right",
         hoverInRow && hoverIndex === 0 && "experience-bento-row--hover-first",
         hoverInRow && hoverIndex === 1 && "experience-bento-row--hover-second"
@@ -215,12 +233,18 @@ export function ExperienceShowcase() {
   const [activeSlug, setActiveSlug] = useState<string | null>(null);
   const [hoveredId, setHoveredId] = useState<string | null>(null);
   const activeExperience = activeSlug ? getExperienceDetail(activeSlug) : null;
+<<<<<<< HEAD
+=======
+  const bentoRef = useRef<HTMLDivElement>(null);
+  useStaggerReveal3D(bentoRef, { variant: "left", stagger: 0.18 });
+>>>>>>> dhaval
 
   const topRow = experienceShowcase.slice(0, 2);
   const bottomRow = experienceShowcase.slice(2, 4);
 
   return (
     <>
+<<<<<<< HEAD
       <section
         id="experiences"
         className="relative scroll-mt-[var(--site-header-height)] bg-[var(--bento-section-bg)] px-[clamp(1.25rem,4vw,3.5rem)] py-[clamp(3rem,7vw,5.5rem)]"
@@ -244,6 +268,60 @@ export function ExperienceShowcase() {
           </div>
         </div>
       </section>
+=======
+      <HomeSection
+        id="experiences"
+        tone="surface"
+        className="bg-[var(--bento-section-bg)]"
+      >
+        <Reveal3D variant="up">
+          <SectionHeader
+            eyebrow="Signature Experiences"
+            title="Beyond the Ordinary"
+            description="Private journeys, corporate retreats, and curated group programs, each designed with the same white-glove attention to detail."
+          />
+        </Reveal3D>
+
+        <div
+          ref={bentoRef}
+          className="mt-10 flex flex-col gap-4 [perspective:1600px] sm:gap-5 lg:mt-12 lg:gap-6"
+        >
+          <ExperienceBentoRow
+            items={topRow}
+            hoveredId={hoveredId}
+            onHover={setHoveredId}
+            onOpen={setActiveSlug}
+            widePosition="left"
+          />
+          <ExperienceBentoRow
+            items={bottomRow}
+            hoveredId={hoveredId}
+            onHover={setHoveredId}
+            onOpen={setActiveSlug}
+            widePosition="right"
+          />
+        </div>
+
+        <Reveal3D variant="scale" delay={0.1}>
+          <HomeSectionActions>
+          <Link
+            href="/contact#consultation"
+            className="inline-flex items-center gap-2 rounded-full border border-glass-border bg-gold px-8 py-4 text-xs font-bold tracking-[0.14em] text-on-gold uppercase shadow-lg shadow-gold/20 transition-colors hover:bg-gold-light"
+          >
+            Design Your Experience
+            <ArrowUpRight size={14} />
+          </Link>
+          <Link
+            href="/travel-expert"
+            className="inline-flex items-center gap-2 rounded-full border border-glass-border glass px-8 py-4 text-xs font-bold tracking-[0.14em] text-foreground uppercase transition-colors hover:border-gold/40"
+          >
+            Travel Expert Services
+            <ArrowUpRight size={14} />
+          </Link>
+        </HomeSectionActions>
+        </Reveal3D>
+      </HomeSection>
+>>>>>>> dhaval
 
       {activeExperience && (
         <ExperienceDetailModal

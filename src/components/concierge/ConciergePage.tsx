@@ -26,12 +26,24 @@ import {
 import { contactInfo } from "@/data/contact";
 import { images } from "@/lib/images";
 import { cn } from "@/lib/utils";
+<<<<<<< HEAD
+=======
+import { PageShell } from "@/components/layout/PageShell";
+import { PageHero } from "@/components/layout/PageHero";
+import { TrustBar } from "@/components/layout/TrustBar";
+import { PageCTA } from "@/components/layout/PageCTA";
+import { pageHeroes } from "@/data/pageContent";
+>>>>>>> dhaval
 
 const services = [
   {
     icon: Sparkles,
     title: "Bespoke Journeys",
+<<<<<<< HEAD
     description: "Routes shaped around your rhythm — stays, pacing, and moments no brochure can offer.",
+=======
+    description: "Routes shaped around your rhythm, stays, pacing, and moments no brochure can offer.",
+>>>>>>> dhaval
     span: "lg:col-span-3 lg:row-span-2",
     image: images.experiencePrivateLuxe,
     number: "01",
@@ -56,7 +68,11 @@ const services = [
   {
     icon: Ship,
     title: "Yacht & Sea",
+<<<<<<< HEAD
     description: "Crewed charters across the Med, Caribbean, and Indian Ocean — horizon as your suite.",
+=======
+    description: "Crewed charters across the Med, Caribbean, and Indian Ocean, horizon as your suite.",
+>>>>>>> dhaval
     span: "lg:col-span-2",
     image: images.beach,
     number: "04",
@@ -64,7 +80,11 @@ const services = [
   {
     icon: Car,
     title: "Chauffeur Arrivals",
+<<<<<<< HEAD
     description: "From tarmac to threshold — private transfers, meet-and-greet, and city-to-city ease.",
+=======
+    description: "From tarmac to threshold, private transfers, meet-and-greet, and city-to-city ease.",
+>>>>>>> dhaval
     span: "lg:col-span-2",
     image: images.dubai,
     number: "05",
@@ -364,6 +384,7 @@ export function ConciergePage() {
   };
 
   return (
+<<<<<<< HEAD
     <div ref={sectionRef} className="travel-expert-page pb-16 pt-12 md:pb-20 md:pt-8">
       <div className="page-x-padding">
         <div className="mx-auto max-w-7xl">
@@ -382,6 +403,14 @@ export function ConciergePage() {
           </div>
 
           <div className="mt-8 grid gap-8 lg:grid-cols-12 lg:gap-10 lg:items-start">
+=======
+    <>
+      <PageHero {...pageHeroes.travelExpert} />
+      <TrustBar />
+      <div ref={sectionRef} className="travel-expert-page">
+        <PageShell noPaddingTop>
+          <div className="grid gap-8 lg:grid-cols-12 lg:gap-10 lg:items-start">
+>>>>>>> dhaval
           <div className="lg:col-span-7">
             <div
               className={cn(
@@ -410,7 +439,16 @@ export function ConciergePage() {
               "transition-all duration-700 delay-150 ease-[cubic-bezier(0.22,1,0.36,1)]"
             )}
           >
+<<<<<<< HEAD
           <form onSubmit={handleSubmit} noValidate className="travel-expert-form w-full min-w-0">
+=======
+          <form
+            id="consultation"
+            onSubmit={handleSubmit}
+            noValidate
+            className="travel-expert-form w-full min-w-0 scroll-mt-[var(--site-header-height)]"
+          >
+>>>>>>> dhaval
             <div className="w-full overflow-hidden rounded-[1.75rem] border border-glass-border bg-surface/92 shadow-[0_30px_80px_-30px_rgba(0,0,0,0.45)] backdrop-blur-xl">
               <div className="border-b border-glass-border bg-[color-mix(in_srgb,var(--gold)_7%,var(--surface))] px-6 py-5 md:px-8">
                 <p className="text-[10px] font-bold tracking-[0.28em] text-gold uppercase">
@@ -519,8 +557,15 @@ export function ConciergePage() {
           <TravelExpertDeskCard />
           </div>
           </div>
+<<<<<<< HEAD
         </div>
       </div>
     </div>
+=======
+          <PageCTA />
+        </PageShell>
+      </div>
+    </>
+>>>>>>> dhaval
   );
 }

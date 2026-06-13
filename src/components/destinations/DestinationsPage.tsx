@@ -27,6 +27,7 @@ import {
   INTERNATIONAL_COLLECTION_FILTERS,
 } from "@/lib/destinations";
 import { getItineraryByDestinationId } from "@/lib/itineraries";
+<<<<<<< HEAD
 import { SectionHeader } from "@/components/ui/SectionHeader";
 import { DestinationCard } from "@/components/ui/DestinationCard";
 import { MagneticButton } from "@/components/ui/MagneticButton";
@@ -35,13 +36,31 @@ import type { TravelMood } from "@/types";
 
 const PRICE_FILTERS = [
   { id: "all", label: "All budgets" },
+=======
+import { DestinationCard } from "@/components/ui/DestinationCard";
+import { MagneticButton } from "@/components/ui/MagneticButton";
+import { FilterDropdown } from "@/components/ui/FilterDropdown";
+import { PageShell } from "@/components/layout/PageShell";
+import { PageHero } from "@/components/layout/PageHero";
+import { TrustBar } from "@/components/layout/TrustBar";
+import { PageCTA } from "@/components/layout/PageCTA";
+import { getDestinationsHeroContent } from "@/data/pageContent";
+import type { TravelMood } from "@/types";
+
+const PRICE_FILTERS = [
+  { id: "all", label: "All price ranges" },
+>>>>>>> dhaval
   { id: "under1L", label: "Under ₹1L" },
   { id: "1L-3L", label: "₹1L – ₹3L" },
   { id: "over3L", label: "₹3L+" },
 ] as const;
 
 const REGION_FILTERS = [
+<<<<<<< HEAD
   { id: "all", label: "All regions" },
+=======
+  { id: "all", label: "All destinations" },
+>>>>>>> dhaval
   { id: "domestic", label: "India" },
   { id: "international", label: "International" },
 ] as const;
@@ -61,7 +80,11 @@ const MOOD_FILTERS: { id: TravelMood | "all"; label: string; icon: LucideIcon }[
 ];
 
 const ITINERARY_FILTERS = [
+<<<<<<< HEAD
   { id: "all", label: "All journeys" },
+=======
+  { id: "all", label: "All experiences" },
+>>>>>>> dhaval
   { id: "itinerary", label: "Full itinerary" },
   { id: "explore", label: "Destination guide" },
 ] as const;
@@ -162,6 +185,10 @@ function DestinationGrid({
     id: string;
     name: string;
     location: string;
+<<<<<<< HEAD
+=======
+    regionLabel?: string;
+>>>>>>> dhaval
     description: string;
     image: string;
     startingPrice: number;
@@ -170,7 +197,11 @@ function DestinationGrid({
   }[];
 }) {
   return (
+<<<<<<< HEAD
     <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+=======
+    <div className="page-content-grid sm:grid-cols-2 lg:grid-cols-3">
+>>>>>>> dhaval
       {destinations.map((dest) => {
         const itinerary = getItineraryByDestinationId(dest.id);
         return (
@@ -178,7 +209,12 @@ function DestinationGrid({
             key={dest.id}
             destinationId={dest.id}
             name={dest.name}
+<<<<<<< HEAD
             location={dest.location}
+=======
+            location={itinerary?.destination ?? dest.location}
+            regionLabel={dest.regionLabel}
+>>>>>>> dhaval
             description={
               itinerary ? itinerary.highlights.slice(0, 3).join(" ") : dest.description
             }
@@ -359,6 +395,7 @@ export function DestinationsPage() {
       .filter((category) => category.destinations.length > 0);
   }, [hasActiveFilters]);
 
+<<<<<<< HEAD
   return (
     <div className="pb-16 md:pb-20 pt-12 md:pt-8">
       <div className="page-x-padding">
@@ -372,6 +409,20 @@ export function DestinationsPage() {
 
           <section
             className="mt-10 rounded-3xl border border-glass-border bg-surface/80 p-4 shadow-[0_24px_60px_-32px_rgba(0,0,0,0.35)] sm:p-5"
+=======
+  const heroContent = useMemo(
+    () => getDestinationsHeroContent(regionFilter),
+    [regionFilter]
+  );
+
+  return (
+    <>
+      <PageHero {...heroContent} />
+      <TrustBar />
+      <PageShell noPaddingTop>
+          <section
+            className="page-filter-panel mt-2"
+>>>>>>> dhaval
             aria-label="Filter destinations"
           >
             <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:gap-4">
@@ -426,7 +477,11 @@ export function DestinationsPage() {
             <div className="relative z-10 mt-4 grid gap-4 overflow-visible sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6">
               <FilterDropdown
                 id="region"
+<<<<<<< HEAD
                 label="Country"
+=======
+                label="Destination"
+>>>>>>> dhaval
                 value={regionFilter}
                 options={REGION_FILTERS.map((r) => ({
                   value: r.id,
@@ -467,7 +522,11 @@ export function DestinationsPage() {
               />
               <FilterDropdown
                 id="budget"
+<<<<<<< HEAD
                 label="Budget"
+=======
+                label="Price range"
+>>>>>>> dhaval
                 value={priceFilter}
                 options={PRICE_FILTERS.map((p) => ({
                   value: p.id,
@@ -482,7 +541,11 @@ export function DestinationsPage() {
               />
               <FilterDropdown
                 id="journey-type"
+<<<<<<< HEAD
                 label="Journey type"
+=======
+                label="Experience type"
+>>>>>>> dhaval
                 value={itineraryFilter}
                 options={ITINERARY_FILTERS.map((i) => ({
                   value: i.id,
@@ -527,11 +590,16 @@ export function DestinationsPage() {
                 destinations={filteredDestinations.map((dest) => ({
                   id: dest.id,
                   name: dest.name,
+<<<<<<< HEAD
                   location:
                     dest.region === "domestic" && dest.indiaRegion
                       ? (INDIA_REGION_FILTERS.find((region) => region.id === dest.indiaRegion)?.label ??
                         dest.categoryTitle)
                       : dest.categoryTitle,
+=======
+                  location: dest.name,
+                  regionLabel: dest.region === "domestic" ? "India" : "International",
+>>>>>>> dhaval
                   description: dest.description,
                   image: dest.image,
                   startingPrice: dest.startingPrice,
@@ -550,7 +618,12 @@ export function DestinationsPage() {
                       destinations={category.destinations.map((dest) => ({
                         id: dest.id,
                         name: dest.name,
+<<<<<<< HEAD
                         location: category.title,
+=======
+                        location: dest.name,
+                        regionLabel: dest.region === "domestic" ? "India" : "International",
+>>>>>>> dhaval
                         description: dest.description,
                         image: dest.image,
                         startingPrice: dest.startingPrice,
@@ -562,8 +635,14 @@ export function DestinationsPage() {
               ))}
             </div>
           )}
+<<<<<<< HEAD
         </div>
       </div>
     </div>
+=======
+        <PageCTA />
+      </PageShell>
+    </>
+>>>>>>> dhaval
   );
 }

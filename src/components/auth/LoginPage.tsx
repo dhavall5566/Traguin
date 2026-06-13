@@ -34,7 +34,12 @@ export function LoginPage() {
 
   return (
     <div className="flex min-h-[calc(100dvh-var(--nav-offset))] items-center justify-center pb-12">
+<<<<<<< HEAD
       <div className="page-x-padding w-full max-w-md">
+=======
+      <div className="page-x-padding w-full">
+        <div className="site-container site-container--content">
+>>>>>>> dhaval
         <div className="text-center">
           <Link href="/" className="inline-block">
             <span className="font-display text-2xl tracking-[0.2em]">TRAGUIN</span>
@@ -101,6 +106,10 @@ export function LoginPage() {
             </Link>
           </p>
         </form>
+<<<<<<< HEAD
+=======
+        </div>
+>>>>>>> dhaval
       </div>
     </div>
   );
