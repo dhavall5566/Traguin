@@ -5,7 +5,12 @@ import {
   getItineraryRating,
   getItineraryReviewCount,
 } from "@/lib/itineraries";
-import type { IndiaRegion } from "@/lib/destination-listing-types";
+import type {
+  DestinationCategoryRef,
+  DestinationItineraryPreview,
+  DestinationListing,
+  IndiaRegion,
+} from "@/lib/destination-listing-types";
 import type { TravelMood } from "@/types";
 
 export type {
