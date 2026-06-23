@@ -11,6 +11,17 @@ import type { CmsDestination, CmsFaq, CmsItinerary, CmsRedirect } from "./types"
 import type { Hotel } from "@/types";
 import { loadCmsDetailContext } from "./detail-context";
 
+function uniqueGalleryUrls(urls: string[]): string[] {
+  const seen = new Set<string>();
+  const unique: string[] = [];
+  for (const url of urls) {
+    if (!url || seen.has(url)) continue;
+    seen.add(url);
+    unique.push(url);
+  }
+  return unique;
+}
+
 export type ItineraryDetailData = {
   itinerary: Itinerary;
   destinationName: string;
@@ -40,13 +51,15 @@ export function mapCmsItineraryToItinerary(
     destination.gallery_media[0]?.url ||
     images.bali;
 
-  const gallery = itinerary.gallery_media.length
-    ? itinerary.gallery_media
-        .sort((a, b) => (a.sort_order ?? 999) - (b.sort_order ?? 999))
-        .map((item) => item.url)
-    : destination.gallery_media
-        .sort((a, b) => (a.sort_order ?? 999) - (b.sort_order ?? 999))
-        .map((item) => item.url);
+  const gallery = uniqueGalleryUrls(
+    itinerary.gallery_media.length
+      ? itinerary.gallery_media
+          .sort((a, b) => (a.sort_order ?? 999) - (b.sort_order ?? 999))
+          .map((item) => item.url)
+      : destination.gallery_media
+          .sort((a, b) => (a.sort_order ?? 999) - (b.sort_order ?? 999))
+          .map((item) => item.url)
+  );
 
   const included = itinerary.inclusions
     .filter((item) => item.kind === "included")

@@ -102,7 +102,7 @@ export function ItineraryGalleryMosaic({ images, destination }: ItineraryGallery
 
           {secondary.map((src, index) => (
             <Tilt3DCard
-              key={src}
+              key={`gallery-${index}-${src}`}
               max={10}
               className={
                 index === 0 ? "md:col-span-5" : index === 1 ? "md:col-span-3" : "md:col-span-2"

@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useState } from "react";
 import Link from "next/link";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { ChevronLeft, ChevronRight, Plus, Trash2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { adminDelete, adminList, adminRelationOptions } from "@/lib/admin/api-client";
@@ -10,7 +10,6 @@ import { getEntityDef, getListColumns, getListFilters, type AdminFieldDef } from
 import { hasActiveFilters, rowMatchesFilter } from "@/lib/admin/list-filters";
 import { AdminListToolbar } from "@/components/admin/AdminListToolbar";
 import { DeleteConfirmDialog } from "@/components/admin/DeleteConfirmDialog";
-import { PackageImportModal } from "@/components/admin/PackageImportModal";
 
 const PAGE_SIZE = 20;
 
@@ -55,7 +54,6 @@ function sortRows(
 export function EntityTableView({ entityKey }: EntityTableViewProps) {
   const entity = getEntityDef(entityKey);
   const router = useRouter();
-  const searchParams = useSearchParams();
   const [items, setItems] = useState<Record<string, unknown>[]>([]);
   const [total, setTotal] = useState(0);
   const [offset, setOffset] = useState(0);
@@ -69,7 +67,6 @@ export function EntityTableView({ entityKey }: EntityTableViewProps) {
   const [relationOptions, setRelationOptions] = useState<
     Record<string, { value: string; label: string }[]>
   >({});
-  const [importOpen, setImportOpen] = useState(false);
 
   const columns = entity ? getListColumns(entity) : [];
   const listFilters = useMemo(() => (entity ? getListFilters(entity) : []), [entity]);
@@ -96,12 +93,6 @@ export function EntityTableView({ entityKey }: EntityTableViewProps) {
   useEffect(() => {
     void load();
   }, [load]);
-
-  useEffect(() => {
-    if (entityKey !== "packages" || searchParams.get("import") !== "1") return;
-    setImportOpen(true);
-    router.replace("/admin/cms/packages", { scroll: false });
-  }, [entityKey, router, searchParams]);
 
   useEffect(() => {
     setSearch("");
@@ -231,23 +222,12 @@ export function EntityTableView({ entityKey }: EntityTableViewProps) {
           </p>
         </div>
 
-        {(showCreate || entity.key === "packages") && (
+        {showCreate && (
           <div className="admin-page-header__actions">
-            {entity.key === "packages" && (
-              <button
-                type="button"
-                className="admin-btn admin-btn--secondary admin-btn--page"
-                onClick={() => setImportOpen(true)}
-              >
-                Upload PDF
-              </button>
-            )}
-            {showCreate && (
-              <Link href={`/admin/cms/${entity.key}/new`} className="admin-btn admin-btn--primary admin-btn--page">
-                <Plus aria-hidden className="admin-btn__icon" />
-                New {entity.label}
-              </Link>
-            )}
+            <Link href={`/admin/cms/${entity.key}/new`} className="admin-btn admin-btn--primary admin-btn--page">
+              <Plus aria-hidden className="admin-btn__icon" />
+              New {entity.label}
+            </Link>
           </div>
         )}
       </header>
@@ -432,17 +412,6 @@ export function EntityTableView({ entityKey }: EntityTableViewProps) {
         onCancel={() => setDeleteTarget(null)}
         onConfirm={() => void handleDelete()}
       />
-
-      {entity.key === "packages" && (
-        <PackageImportModal
-          open={importOpen}
-          onClose={() => setImportOpen(false)}
-          onCommitted={() => {
-            void load();
-            router.refresh();
-          }}
-        />
-      )}
     </div>
   );
 }
