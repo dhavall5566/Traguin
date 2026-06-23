@@ -142,6 +142,8 @@ export type CmsStatJson = {
   value?: number | string;
   suffix?: string;
   decimals?: number;
+  hero_slider_max_items?: number;
+  visible_package_ids?: string[];
 };
 
 export interface CmsHomepageRegionPanel extends CmsTimestamped {

@@ -7,6 +7,9 @@ import {
 } from "./experiences";
 import { buildItineraryByDestinationIdMap } from "./itineraries";
 import { images } from "@/lib/images";
+
+export { HERO_SLIDER_DEFAULT_MAX_ITEMS } from "@/lib/api/homepage-hero-settings";
+import { readHomepageHeroSettings } from "@/lib/api/homepage-hero-settings";
 import {
   buildMediaUrlMap,
   getHomeClientStories,
@@ -160,6 +163,32 @@ function parseStat(raw: CmsStatJson, index: number): HomeStat | null {
   return null;
 }
 
+function firstGalleryUrl(
+  items: { url: string; sort_order: number | null }[] | undefined
+): string {
+  if (!items?.length) return "";
+  return (
+    [...items]
+      .sort((a, b) => (a.sort_order ?? 999) - (b.sort_order ?? 999))[0]?.url ?? ""
+  );
+}
+
+function resolvePackageHeroImage(
+  pkg: CmsPackage,
+  destination: CmsDestination | undefined,
+  itinerary: CmsItinerary | undefined,
+  mediaMap: Map<string, string>
+): string {
+  return (
+    resolveMediaUrl(mediaMap, pkg.hero_media_id, "") ||
+    resolveMediaUrl(mediaMap, itinerary?.hero_media_id, "") ||
+    resolveMediaUrl(mediaMap, destination?.hero_media_id, "") ||
+    firstGalleryUrl(itinerary?.gallery_media) ||
+    firstGalleryUrl(destination?.gallery_media) ||
+    images.bali
+  );
+}
+
 function mapPackage(
   pkg: CmsPackage,
   destinationById: Map<string, CmsDestination>,
@@ -187,7 +216,7 @@ function mapPackage(
     region: destination?.region ?? "international",
     duration: pkg.duration_label,
     price: pkg.price,
-    image: resolveMediaUrl(mediaMap, pkg.hero_media_id, images.bali),
+    image: resolvePackageHeroImage(pkg, destination, itinerary, mediaMap),
     highlights: pkg.highlights
       .sort((a, b) => a.sort_order - b.sort_order)
       .map((h) => h.text),
@@ -307,14 +336,27 @@ export async function getHomepageData(): Promise<HomepageData> {
   );
   const itineraryByDestinationId = buildItineraryByDestinationIdMap(itineraries);
 
-  let featuredPackages = packages
+  let cmsFeatured = packages
     .filter((pkg) => pkg.is_featured)
-    .sort((a, b) => (a.featured_sort_order ?? 999) - (b.featured_sort_order ?? 999))
-    .map((pkg) => mapPackage(pkg, destinationById, itineraryByPackageId, mediaMap));
+    .sort((a, b) => (a.featured_sort_order ?? 999) - (b.featured_sort_order ?? 999));
+
+  const heroSettings = readHomepageHeroSettings(companyStats);
+  const heroSliderMaxItems = heroSettings.hero_slider_max_items;
+  const visibleIdSet = new Set(heroSettings.visible_package_ids);
+
+  if (visibleIdSet.size > 0) {
+    cmsFeatured = cmsFeatured.filter((pkg) => visibleIdSet.has(pkg.id));
+  } else if (cmsFeatured.length > 0) {
+    cmsFeatured = cmsFeatured.slice(0, heroSliderMaxItems);
+  }
+
+  let featuredPackages = cmsFeatured.map((pkg) =>
+    mapPackage(pkg, destinationById, itineraryByPackageId, mediaMap),
+  );
 
   if (featuredPackages.length === 0) {
     featuredPackages = packages
-      .slice(0, 6)
+      .slice(0, heroSliderMaxItems)
       .map((pkg) => mapPackage(pkg, destinationById, itineraryByPackageId, mediaMap));
   }
 

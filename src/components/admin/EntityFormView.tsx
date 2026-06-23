@@ -1,8 +1,9 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useId, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { X } from "lucide-react";
 import {
   adminCreate,
   adminGetOne,
@@ -18,6 +19,14 @@ import {
   getEntityDef,
   recordToFormValues,
 } from "@/lib/admin/entities";
+import {
+  adminRecordCacheKey,
+  fetchAdminRecordCached,
+  invalidateAdminListCache,
+  invalidateAdminRecordCache,
+  peekCachedAdminRecord,
+  setCachedAdminRecord,
+} from "@/lib/admin/admin-data-cache";
 import { LegalSectionsEditor } from "@/components/admin/LegalSectionsEditor";
 import { NestedListEditor } from "@/components/admin/NestedListEditor";
 import { StatListEditor } from "@/components/admin/StatListEditor";
@@ -28,6 +37,11 @@ type EntityFormViewProps = {
   entityKey: string;
   recordId?: string;
   singleton?: boolean;
+  /** When set to modal, renders a create dialog instead of a full page (create mode only). */
+  variant?: "page" | "modal";
+  open?: boolean;
+  onClose?: () => void;
+  onCreated?: () => void;
 };
 
 function FieldControl({
@@ -200,19 +214,38 @@ function FieldControl({
   );
 }
 
-export function EntityFormView({ entityKey, recordId, singleton }: EntityFormViewProps) {
+export function EntityFormView({
+  entityKey,
+  recordId,
+  singleton,
+  variant = "page",
+  open = false,
+  onClose,
+  onCreated,
+}: EntityFormViewProps) {
   const entity = getEntityDef(entityKey);
   const router = useRouter();
+  const formId = useId();
+  const isModal = variant === "modal";
   const isSingleton = singleton ?? entity?.isSingleton ?? false;
   const mode = isSingleton || recordId ? "edit" : "create";
+  const recordCacheKey =
+    entity && mode === "edit"
+      ? adminRecordCacheKey(entity.endpoint, isSingleton ? "singleton" : recordId!)
+      : null;
+  const cachedRecord = recordCacheKey ? peekCachedAdminRecord(recordCacheKey) : null;
+
   const [values, setValues] = useState<Record<string, unknown>>(() => {
     const def = getEntityDef(entityKey);
-    return def ? defaultFormValues(def) : {};
+    if (!def) return {};
+    if (cachedRecord) return recordToFormValues(def, cachedRecord);
+    return defaultFormValues(def);
   });
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
   const [formError, setFormError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
-  const [loading, setLoading] = useState(mode === "edit");
+  const [loading, setLoading] = useState(mode === "edit" && !cachedRecord);
+  const [refreshing, setRefreshing] = useState(false);
   const [saving, setSaving] = useState(false);
   const [singletonUninitialized, setSingletonUninitialized] = useState(false);
   const [relationOptions, setRelationOptions] = useState<
@@ -263,35 +296,82 @@ export function EntityFormView({ entityKey, recordId, singleton }: EntityFormVie
   }, [entity]);
 
   useEffect(() => {
-    if (!entity || mode !== "edit") return;
-    void (async () => {
-      setLoading(true);
-      const { data, error } = isSingleton
-        ? await adminGetSingleton<Record<string, unknown>>(entity.endpoint)
-        : await adminGetOne<Record<string, unknown>>(entity.endpoint, recordId!);
+    if (!isModal || !open || !entity) return;
+    setValues(defaultFormValues(entity));
+    setFieldErrors({});
+    setFormError(null);
+    setSuccess(null);
+    setSaving(false);
+  }, [entity, isModal, open]);
+
+  useEffect(() => {
+    if (!isModal || !open) return undefined;
+
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape" && !saving) {
+        onClose?.();
+      }
+    };
+
+    document.addEventListener("keydown", onKeyDown);
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+
+    return () => {
+      document.removeEventListener("keydown", onKeyDown);
+      document.body.style.overflow = previousOverflow;
+    };
+  }, [isModal, onClose, open, saving]);
+
+  useEffect(() => {
+    if (!entity || mode !== "edit" || !recordCacheKey) return;
+
+    const cached = peekCachedAdminRecord(recordCacheKey);
+    if (cached) {
+      setValues(recordToFormValues(entity, cached));
       setLoading(false);
+      setRefreshing(true);
+    }
+
+    void (async () => {
       if (isSingleton) {
+        const { data, error } = await adminGetSingleton<Record<string, unknown>>(entity.endpoint);
+        setLoading(false);
+        setRefreshing(false);
+
         if (error && error.status !== 404) {
           setFormError(error.message);
           return;
         }
+
         if (!data) {
           setSingletonUninitialized(true);
           setValues(defaultFormValues(entity));
           setFormError(null);
           return;
         }
+
         setSingletonUninitialized(false);
         setValues(recordToFormValues(entity, data));
+        setCachedAdminRecord(recordCacheKey, data);
         return;
       }
-      if (error || !data) {
-        setFormError(error?.message ?? "Record not found");
+
+      const result = await fetchAdminRecordCached(recordCacheKey, () =>
+        adminGetOne<Record<string, unknown>>(entity.endpoint, recordId!),
+      );
+
+      setLoading(false);
+      setRefreshing(false);
+
+      if ("error" in result) {
+        setFormError(result.error);
         return;
       }
-      setValues(recordToFormValues(entity, data));
+
+      setValues(recordToFormValues(entity, result.record));
     })();
-  }, [entity, isSingleton, mode, recordId]);
+  }, [entity, isSingleton, mode, recordCacheKey, recordId]);
 
   const updateField = (name: string, value: unknown) => {
     setValues((prev) => ({ ...prev, [name]: value }));
@@ -328,20 +408,38 @@ export function EntityFormView({ entityKey, recordId, singleton }: EntityFormVie
       return;
     }
 
-    if (!isSingleton && mode === "create" && result.data?.id) {
-      router.push(`/admin/cms/${entity.key}/${result.data.id}`);
-      router.refresh();
-      return;
+    if (!isSingleton && mode === "create" && result.data) {
+      invalidateAdminListCache(entity.endpoint);
+      if (isModal) {
+        onCreated?.();
+        return;
+      }
+      if (result.data.id) {
+        router.push(`/admin/cms/${entity.key}/${result.data.id}`);
+        router.refresh();
+        return;
+      }
     }
 
     if (result.data) {
       setValues(recordToFormValues(entity, result.data));
       setSingletonUninitialized(false);
+      const cacheKey = adminRecordCacheKey(
+        entity.endpoint,
+        isSingleton ? "singleton" : String(result.data.id ?? recordId),
+      );
+      setCachedAdminRecord(cacheKey, result.data);
+      invalidateAdminListCache(entity.endpoint);
+      invalidateAdminRecordCache(entity.endpoint);
     }
     setSuccess("Saved successfully.");
   };
 
-  if (loading) {
+  if (isModal && (!open || mode !== "create")) {
+    return null;
+  }
+
+  if (loading && !isModal) {
     return <div className="admin-page-state">Loading…</div>;
   }
 
@@ -349,70 +447,167 @@ export function EntityFormView({ entityKey, recordId, singleton }: EntityFormVie
     return <p className="admin-page-muted">Unknown entity.</p>;
   }
 
+  const isComplexForm = entity.fields.some(
+    (field) =>
+      field.type === "nested-list" ||
+      field.type === "legal-sections" ||
+      field.type === "stat-list",
+  );
+
+  const submitLabel =
+    saving ? "Saving…" : isSingleton || mode === "edit" ? "Save changes" : "Create";
+
+  const formFields = (
+    <>
+      {entity.fields.map((field) => (
+        <div key={field.name} className="admin-form-field">
+          {field.type !== "boolean" && (
+            <label htmlFor={field.name} className="admin-field-label">
+              {field.label}
+              {field.required && <span className="admin-field-required"> *</span>}
+            </label>
+          )}
+          <FieldControl
+            field={field}
+            value={values[field.name]}
+            error={fieldErrors[field.name]}
+            relationOptions={relationOptions[field.name] ?? []}
+            nestedRelationOptions={nestedRelationOptions}
+            onChange={(value) => updateField(field.name, value)}
+          />
+          {field.helpText && !fieldErrors[field.name] && (
+            <p className="admin-form-field__help">{field.helpText}</p>
+          )}
+          {fieldErrors[field.name] && (
+            <p className="admin-field-error">{fieldErrors[field.name]}</p>
+          )}
+        </div>
+      ))}
+    </>
+  );
+
+  if (isModal) {
+    return (
+      <div
+        className="admin-modal-backdrop"
+        role="presentation"
+        onClick={() => {
+          if (!saving) onClose?.();
+        }}
+      >
+        <div
+          className={cn(
+            "admin-modal admin-modal--form",
+            isComplexForm && "admin-modal--form-wide",
+          )}
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby={`${formId}-title`}
+          onClick={(event) => event.stopPropagation()}
+        >
+          <header className="admin-modal__head">
+            <div className="admin-modal__head-copy">
+              <p className="admin-modal__eyebrow">Create</p>
+              <h2 id={`${formId}-title`} className="admin-modal__title">
+                New {entity.label}
+              </h2>
+              <p className="admin-modal__subtitle">
+                Add a new {entity.label.toLowerCase()} to the CMS catalog.
+              </p>
+            </div>
+            <button
+              type="button"
+              className="admin-modal__close"
+              aria-label="Close"
+              disabled={saving}
+              onClick={() => onClose?.()}
+            >
+              <X aria-hidden className="admin-modal__close-icon" />
+            </button>
+          </header>
+
+          <div className="admin-modal__body">
+            {formError && (
+              <div className="admin-alert admin-alert--error admin-modal__alert">{formError}</div>
+            )}
+            <form
+              id={formId}
+              onSubmit={(event) => void handleSubmit(event)}
+              className="admin-form-panel__form admin-form-panel__form--modal"
+            >
+              {formFields}
+            </form>
+          </div>
+
+          <footer className="admin-modal__footer">
+            <button
+              type="button"
+              className="admin-btn admin-btn--secondary admin-btn--page"
+              disabled={saving}
+              onClick={() => onClose?.()}
+            >
+              Cancel
+            </button>
+            <button
+              type="submit"
+              form={formId}
+              className="admin-btn admin-btn--primary admin-btn--page"
+              disabled={saving}
+            >
+              {submitLabel}
+            </button>
+          </footer>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="admin-page admin-form-page">
-      <header className="admin-page-header">
-        <div className="admin-page-header__copy">
-          {!isSingleton && (
-            <p className="admin-form-eyebrow">{mode === "create" ? "Create" : "Edit"}</p>
-          )}
-          <h1 className="admin-page-title">
-            {isSingleton
-              ? entity.label
-              : mode === "create"
-                ? `New ${entity.label}`
-                : `Edit ${entity.label}`}
-          </h1>
-          <p className="admin-page-subtitle">
-            {isSingleton
-              ? `Manage ${entity.label.toLowerCase()} settings for the public site.`
-              : mode === "create"
-                ? `Add a new ${entity.label.toLowerCase()} to the CMS catalog.`
-                : `Update this ${entity.label.toLowerCase()} and save your changes.`}
-          </p>
-        </div>
-        {!isSingleton && (
-          <div className="admin-page-header__actions">
-            <Link href={`/admin/cms/${entity.key}`} className="admin-btn admin-btn--secondary admin-btn--page">
-              ← Back to list
-            </Link>
-          </div>
-        )}
-      </header>
-
-      <div className="admin-form-card">
-        {formError && <div className="admin-alert admin-alert--error admin-form-card__alert">{formError}</div>}
-        {success && <div className="admin-alert admin-alert--success admin-form-card__alert">{success}</div>}
-
-        <form onSubmit={(e) => void handleSubmit(e)} className="admin-form-panel__form">
-          {entity.fields.map((field) => (
-            <div key={field.name} className="admin-form-field">
-              {field.type !== "boolean" && (
-                <label htmlFor={field.name} className="admin-field-label">
-                  {field.label}
-                  {field.required && <span className="admin-field-required"> *</span>}
-                </label>
+      <div className="admin-workspace admin-workspace--narrow">
+        <div className={cn("admin-form-panel", refreshing && "admin-form-panel--refreshing")}>
+          <header className="admin-form-panel__head">
+            <div className="admin-form-panel__intro">
+              {!isSingleton && (
+                <p className="admin-workspace-eyebrow">
+                  CMS · {mode === "create" ? "Create" : "Edit"}
+                </p>
               )}
-              <FieldControl
-                field={field}
-                value={values[field.name]}
-                error={fieldErrors[field.name]}
-                relationOptions={relationOptions[field.name] ?? []}
-                nestedRelationOptions={nestedRelationOptions}
-                onChange={(v) => updateField(field.name, v)}
-              />
-              {field.helpText && !fieldErrors[field.name] && (
-                <p className="admin-form-field__help">{field.helpText}</p>
-              )}
-              {fieldErrors[field.name] && (
-                <p className="admin-field-error">{fieldErrors[field.name]}</p>
-              )}
+              {isSingleton && <p className="admin-workspace-eyebrow">CMS · Site Config</p>}
+              <h1 className="admin-form-panel__title">
+                {isSingleton
+                  ? entity.label
+                  : mode === "create"
+                    ? `New ${entity.label}`
+                    : `Edit ${entity.label}`}
+              </h1>
+              <p className="admin-form-panel__subtitle">
+                {isSingleton
+                  ? `Manage ${entity.label.toLowerCase()} settings for the public site.`
+                  : mode === "create"
+                    ? `Add a new ${entity.label.toLowerCase()} to the CMS catalog.`
+                    : `Update this ${entity.label.toLowerCase()} and save your changes.`}
+              </p>
             </div>
-          ))}
+            {!isSingleton && (
+              <div className="admin-form-panel__head-actions">
+                <Link href={`/admin/cms/${entity.key}`} className="admin-btn admin-btn--secondary admin-btn--page">
+                  ← Back to list
+                </Link>
+              </div>
+            )}
+          </header>
+
+          <div className="admin-form-panel__body">
+            {formError && <div className="admin-alert admin-alert--error admin-form-panel__alert">{formError}</div>}
+            {success && <div className="admin-alert admin-alert--success admin-form-panel__alert">{success}</div>}
+
+            <form onSubmit={(e) => void handleSubmit(e)} className="admin-form-panel__form">
+              {formFields}
 
           <div className="admin-form-panel__actions">
             <button type="submit" className="admin-btn admin-btn--primary admin-btn--page" disabled={saving}>
-              {saving ? "Saving…" : isSingleton || mode === "edit" ? "Save changes" : "Create"}
+              {submitLabel}
             </button>
             {!isSingleton && (
               <Link href={`/admin/cms/${entity.key}`} className="admin-btn admin-btn--secondary admin-btn--page">
@@ -420,7 +615,9 @@ export function EntityFormView({ entityKey, recordId, singleton }: EntityFormVie
               </Link>
             )}
           </div>
-        </form>
+            </form>
+          </div>
+        </div>
       </div>
     </div>
   );

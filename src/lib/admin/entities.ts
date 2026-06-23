@@ -100,7 +100,7 @@ const PILOT_ENTITIES: Record<string, AdminEntityDef> = {
       { name: "moods", label: "Moods", type: "tags", helpText: "Comma-separated tags" },
       { name: "is_featured", label: "Featured", type: "boolean" },
       { name: "featured_sort_order", label: "Featured sort order", type: "number" },
-      { name: "is_published", label: "Published", type: "boolean", showInList: true, listFormat: (v) => (v ? "Yes" : "No") },
+      { name: "is_published", label: "Published", type: "boolean" },
       { name: "package_count", label: "Package count", type: "number" },
       { name: "hotel_count", label: "Hotel count", type: "number" },
       { name: "meta_title", label: "Meta title", type: "text" },

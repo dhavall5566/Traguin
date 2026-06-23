@@ -57,20 +57,39 @@ export async function cmsFetchPaginated<T>(
   }
 ): Promise<T[]> {
   const limit = options?.limit ?? 100;
-  const params = new URLSearchParams({ limit: String(limit), offset: "0" });
+  const items: T[] = [];
+  let offset = 0;
+  let total = Number.POSITIVE_INFINITY;
 
-  if (options?.searchParams) {
-    for (const [key, value] of Object.entries(options.searchParams)) {
-      if (value !== undefined) {
-        params.set(key, String(value));
+  while (offset < total) {
+    const params = new URLSearchParams({
+      limit: String(limit),
+      offset: String(offset),
+    });
+
+    if (options?.searchParams) {
+      for (const [key, value] of Object.entries(options.searchParams)) {
+        if (value !== undefined) {
+          params.set(key, String(value));
+        }
       }
     }
+
+    const separator = path.includes("?") ? "&" : "?";
+    const data = await cmsFetch<PaginatedResponse<T>>(
+      `${path}${separator}${params.toString()}`,
+      { fresh: options?.fresh }
+    );
+
+    const pageItems = data?.items ?? [];
+    if (pageItems.length === 0) break;
+
+    items.push(...pageItems);
+    total = data?.total ?? items.length;
+    offset += pageItems.length;
+
+    if (pageItems.length < limit) break;
   }
 
-  const separator = path.includes("?") ? "&" : "?";
-  const data = await cmsFetch<PaginatedResponse<T>>(
-    `${path}${separator}${params.toString()}`,
-    { fresh: options?.fresh }
-  );
-  return data?.items ?? [];
+  return items;
 }

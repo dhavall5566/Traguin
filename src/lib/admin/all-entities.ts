@@ -34,9 +34,24 @@ export const ALL_ADMIN_ENTITIES: Record<string, AdminEntityDef> = {
         writeValue: (value) => formValueToNestedList("highlights", value),
       },
       { name: "moods", label: "Moods", type: "tags" },
-      { name: "is_featured", label: "Featured", type: "boolean" },
-      { name: "featured_sort_order", label: "Featured sort order", type: "number" },
-      { name: "is_published", label: "Published", type: "boolean", showInList: true, listFormat: (v) => (v ? "Yes" : "No") },
+      {
+        name: "is_featured",
+        label: "Homepage hero slider",
+        type: "boolean",
+        helpText: "When enabled, this package can appear in the homepage hero slider.",
+        showInList: true,
+        listLabel: "Hero",
+        listFormat: (v) => (v ? "Yes" : "—"),
+      },
+      {
+        name: "featured_sort_order",
+        label: "Hero slider order",
+        type: "number",
+        helpText: "Lower numbers appear first in the homepage hero slider (1 = first).",
+        showInList: true,
+        listLabel: "Hero order",
+      },
+      { name: "is_published", label: "Published", type: "boolean" },
     ],
   },
   itineraries: {
@@ -93,7 +108,7 @@ export const ALL_ADMIN_ENTITIES: Record<string, AdminEntityDef> = {
       { name: "featured_sort_order", label: "Featured sort order", type: "number" },
       { name: "seo_title", label: "SEO title", type: "text" },
       { name: "seo_description", label: "SEO description", type: "textarea" },
-      { name: "is_published", label: "Published", type: "boolean", showInList: true, listFormat: (v) => (v ? "Yes" : "No") },
+      { name: "is_published", label: "Published", type: "boolean" },
     ],
   },
   hotels: {
@@ -101,7 +116,7 @@ export const ALL_ADMIN_ENTITIES: Record<string, AdminEntityDef> = {
     fields: [
       { name: "name", label: "Name", type: "text", required: true, showInList: true },
       { name: "slug", label: "Slug", type: "slug", required: true, showInList: true },
-      { name: "destination_id", label: "Destination", type: "relation", required: true, relation: D, showInList: true },
+      { name: "destination_id", label: "Destination", type: "relation", required: true, relation: D, showInList: true, listFormat: (_v, r) => String(r.destination_name ?? "—") },
       { name: "stars", label: "Stars", type: "number", required: true, showInList: true },
       { name: "price", label: "Price", type: "number", required: true, showInList: true },
       { name: "rating", label: "Rating", type: "number" },
@@ -119,7 +134,7 @@ export const ALL_ADMIN_ENTITIES: Record<string, AdminEntityDef> = {
       },
       { name: "gallery_media_ids", label: "Gallery media", type: "relation-multi", relation: M,
         readFrom: (r) => Array.isArray(r.gallery_media) ? r.gallery_media.map((m: {id:string}) => m.id) : [] },
-      { name: "is_published", label: "Published", type: "boolean", showInList: true, listFormat: (v) => (v ? "Yes" : "No") },
+      { name: "is_published", label: "Published", type: "boolean" },
     ],
   },
   experiences: {
@@ -165,7 +180,7 @@ export const ALL_ADMIN_ENTITIES: Record<string, AdminEntityDef> = {
       },
       { name: "show_on_homepage", label: "Show on homepage", type: "boolean", showInList: true, listFormat: (v) => (v ? "Yes" : "No") },
       { name: "homepage_sort_order", label: "Homepage sort order", type: "number" },
-      { name: "is_published", label: "Published", type: "boolean", showInList: true, listFormat: (v) => (v ? "Yes" : "No") },
+      { name: "is_published", label: "Published", type: "boolean" },
     ],
   },
   media: {
@@ -202,7 +217,7 @@ export const ALL_ADMIN_ENTITIES: Record<string, AdminEntityDef> = {
       { name: "is_featured_in_gallery", label: "Featured in gallery", type: "boolean" },
       { name: "home_sort_order", label: "Home sort order", type: "number" },
       { name: "gallery_sort_order", label: "Gallery sort order", type: "number" },
-      { name: "is_published", label: "Published", type: "boolean", showInList: true, listFormat: (v) => (v ? "Yes" : "No") },
+      { name: "is_published", label: "Published", type: "boolean" },
     ],
   },
   "gallery-categories": {
@@ -226,7 +241,7 @@ export const ALL_ADMIN_ENTITIES: Record<string, AdminEntityDef> = {
         readFrom: (r) => Array.isArray(r.categories) ? r.categories.map((c: {id:string}) => c.id) : [], showInList: true,
         listFormat: (_v, r) => Array.isArray(r.categories) ? r.categories.map((c: {label:string}) => c.label).join(", ") || "—" : "—" },
       { name: "sort_order", label: "Sort order", type: "number" },
-      { name: "is_published", label: "Published", type: "boolean", showInList: true, listFormat: (v) => (v ? "Yes" : "No") },
+      { name: "is_published", label: "Published", type: "boolean" },
     ],
   },
   faqs: {
@@ -236,7 +251,7 @@ export const ALL_ADMIN_ENTITIES: Record<string, AdminEntityDef> = {
       { name: "answer", label: "Answer", type: "textarea", required: true },
       { name: "itinerary_id", label: "Itinerary", type: "relation", relation: { endpoint: "/itineraries", valueKey: "id", labelKey: "title" } },
       { name: "sort_order", label: "Sort order", type: "number", required: true, showInList: true },
-      { name: "is_published", label: "Published", type: "boolean", showInList: true, listFormat: (v) => (v ? "Yes" : "No") },
+      { name: "is_published", label: "Published", type: "boolean" },
     ],
   },
   "site-settings": {
@@ -434,7 +449,7 @@ export const ALL_ADMIN_ENTITIES: Record<string, AdminEntityDef> = {
       { name: "employment_type", label: "Employment type", type: "text", required: true, showInList: true },
       { name: "description", label: "Description", type: "textarea", required: true },
       { name: "sort_order", label: "Sort order", type: "number", required: true, showInList: true },
-      { name: "is_published", label: "Published", type: "boolean", showInList: true, listFormat: (v) => (v ? "Yes" : "No") },
+      { name: "is_published", label: "Published", type: "boolean" },
     ],
   },
   "careers-page-extras": {

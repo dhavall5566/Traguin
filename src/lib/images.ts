@@ -26,7 +26,7 @@ export const images = {
   himachal: pexels(3574440),
 
   // International, distinct verified photos
-  bali: pexels(3608263),
+  bali: pexels(4244164),
   dubai: unsplash("1512453979798-5ea266f8880c"),
   switzerland: pexels(417173),
   thailand: unsplash("1552465011-b4e21bf6e79a"),

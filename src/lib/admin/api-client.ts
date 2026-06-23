@@ -1,5 +1,11 @@
 import type { PaginatedResponse } from "@/lib/api/types";
 import { ADMIN_LOGIN_PATH } from "@/lib/admin/auth";
+import {
+  adminRelationCacheKey,
+  getCachedRelationOptions,
+  setCachedRelationOptions,
+} from "@/lib/admin/admin-data-cache";
+import { parseAdminPaginatedList } from "@/lib/admin/list-response";
 
 export type AdminApiError = {
   status: number;
@@ -137,9 +143,14 @@ export async function adminRelationOptions(
   labelKey = "title",
   labelKeys?: string[]
 ): Promise<{ value: string; label: string }[]> {
+  const cacheKey = adminRelationCacheKey(relationEndpoint, valueKey, labelKey, labelKeys);
+  const cached = getCachedRelationOptions(cacheKey);
+  if (cached) return cached;
+
   const { data } = await adminList<Record<string, unknown>>(relationEndpoint, 100, 0);
-  if (!data?.items) return [];
-  return data.items.map((item) => {
+  const { items } = parseAdminPaginatedList(data);
+  if (items.length === 0) return [];
+  const options = items.map((item) => {
     let label = "";
     if (labelKeys) {
       label = labelKeys.map((k) => String(item[k] ?? "")).filter(Boolean).join(" · ") || String(item[valueKey]);
@@ -148,4 +159,6 @@ export async function adminRelationOptions(
     }
     return { value: String(item[valueKey]), label };
   });
+  setCachedRelationOptions(cacheKey, options);
+  return options;
 }

@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
-import { Bell, ChevronDown, LogOut, Moon, Settings, Sun } from "lucide-react";
+import { ArrowLeft, Bell, ChevronDown, LogOut, Moon, Settings, Sun } from "lucide-react";
 import { useTheme } from "@/components/providers/ThemeProvider";
 import { getCrmAppUrl } from "@/lib/admin-links";
 import { prefetchCrossApp } from "@/lib/cross-app-prefetch";
@@ -210,7 +210,12 @@ export function AdminTopBar() {
 
   return (
     <header className="admin-topbar">
-      <div className="admin-topbar__section admin-topbar__section--start" aria-hidden="true" />
+      <div className="admin-topbar__section admin-topbar__section--start">
+        <Link href="/" className="admin-topbar__back-link">
+          <ArrowLeft aria-hidden className="admin-topbar__back-link-icon" />
+          Back to site
+        </Link>
+      </div>
 
       <div className="admin-topbar__section admin-topbar__section--center">
         <p className="admin-topbar__brand">Traguin Admin CMS</p>
