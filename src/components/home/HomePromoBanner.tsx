@@ -1,20 +1,18 @@
 "use client";
 
 import Link from "next/link";
-import { ArrowUpRight, BadgeCheck, CalendarCheck, Clock, Sparkles } from "lucide-react";
+import { ArrowUpRight, Sparkles } from "lucide-react";
 import { Reveal3D } from "@/components/ui/Reveal3D";
 import { MagneticButton } from "@/components/ui/MagneticButton";
 import { HomeSection } from "@/components/home/HomeSection";
 import { Tilt3DCard } from "@/components/itineraries/Tilt3DCard";
 import { primaryCta, secondaryCta } from "@/data/site";
+import { iconFromKey } from "@/lib/icons";
+import type { HomePromoData } from "@/lib/api/homepage";
 
-const assurances = [
-  { icon: Clock, label: "48-hour response" },
-  { icon: CalendarCheck, label: "15-min design call" },
-  { icon: BadgeCheck, label: "Transparent pricing" },
-] as const;
+export function HomePromoBanner({ promo }: { promo: HomePromoData | null }) {
+  if (!promo) return null;
 
-export function HomePromoBanner() {
   return (
     <HomeSection spacing="compact" tone="muted">
       <Reveal3D variant="scale">
@@ -37,27 +35,31 @@ export function HomePromoBanner() {
               <div className="max-w-2xl">
                 <p className="inline-flex items-center gap-2 rounded-full border border-gold/20 bg-gold/[0.06] px-3 py-1.5 text-[0.68rem] font-semibold tracking-[0.22em] text-gold uppercase">
                   <Sparkles size={14} aria-hidden />
-                  Complimentary Consultation
+                  {promo.eyebrow}
                 </p>
                 <h2 className="mt-5 max-w-xl font-display text-[clamp(2rem,4.4vw,3.35rem)] leading-[1.03] tracking-tight text-foreground">
-                  Your next escape, designed with intent.
+                  {promo.title}
                 </h2>
                 <p className="mt-5 max-w-lg text-sm leading-relaxed text-muted sm:text-base">
-                  Tell us the occasion, pace, and places on your mind. A TRAGUIN travel designer
-                  returns with a refined direction before you commit.
+                  {promo.description}
                 </p>
 
-                <ul className="mt-7 grid gap-3 sm:grid-cols-3">
-                  {assurances.map(({ icon: Icon, label }) => (
-                    <li
-                      key={label}
-                      className="flex items-center gap-2 rounded-2xl border border-glass-border bg-surface/55 px-3.5 py-3 text-xs font-medium text-foreground/80"
-                    >
-                      <Icon size={15} className="shrink-0 text-gold" aria-hidden />
-                      <span>{label}</span>
-                    </li>
-                  ))}
-                </ul>
+                {promo.assurances.length > 0 && (
+                  <ul className="mt-7 grid gap-3 sm:grid-cols-3">
+                    {promo.assurances.map(({ iconKey, label }) => {
+                      const Icon = iconFromKey(iconKey);
+                      return (
+                      <li
+                        key={label}
+                        className="flex items-center gap-2 rounded-2xl border border-glass-border bg-surface/55 px-3.5 py-3 text-xs font-medium text-foreground/80"
+                      >
+                        <Icon size={15} className="shrink-0 text-gold" aria-hidden />
+                        <span>{label}</span>
+                      </li>
+                      );
+                    })}
+                  </ul>
+                )}
               </div>
 
               <div className="rounded-[1.35rem] border border-glass-border bg-surface/70 p-4 shadow-[0_20px_50px_-34px_rgba(0,0,0,0.45)] backdrop-blur-xl sm:p-5">

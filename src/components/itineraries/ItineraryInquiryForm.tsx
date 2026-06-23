@@ -10,15 +10,21 @@ import {
   validateInquiryForm,
   type FieldErrors,
 } from "@/lib/form-validation";
+import { FormSubmissionError, submitFormSubmission } from "@/lib/api/form-submissions";
 import { itineraryPrimaryCta } from "@/data/site";
 import { cn } from "@/lib/utils";
 
 type ItineraryInquiryFormProps = {
   itineraryTitle: string;
   itinerarySlug: string;
+  relatedItineraryId?: string;
 };
 
-export function ItineraryInquiryForm({ itineraryTitle, itinerarySlug }: ItineraryInquiryFormProps) {
+export function ItineraryInquiryForm({
+  itineraryTitle,
+  itinerarySlug,
+  relatedItineraryId,
+}: ItineraryInquiryFormProps) {
   const [form, setForm] = useState({
     name: "",
     email: "",
@@ -29,23 +35,57 @@ export function ItineraryInquiryForm({ itineraryTitle, itinerarySlug }: Itinerar
   });
   const [errors, setErrors] = useState<FieldErrors>({});
   const [submitted, setSubmitted] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState<string | null>(null);
 
   const update = <K extends keyof typeof form>(key: K, value: (typeof form)[K]) => {
     setForm((prev) => ({ ...prev, [key]: value }));
     clearFieldError(setErrors, key);
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     const nextErrors = validateInquiryForm(form);
     setErrors(nextErrors);
     if (hasErrors(nextErrors)) return;
-    setSubmitted(true);
+
+    setSubmitting(true);
+    setSubmitError(null);
+    try {
+      await submitFormSubmission({
+        form_type: "itinerary_inquiry",
+        name: form.name.trim(),
+        email: form.email.trim().toLowerCase(),
+        phone: form.phone.trim(),
+        related_itinerary_id: relatedItineraryId ?? null,
+        payload: {
+          name: form.name.trim(),
+          email: form.email.trim().toLowerCase(),
+          phone: form.phone.trim(),
+          travelers: Number(form.travelers),
+          dates: form.dates.trim(),
+          message: form.message.trim(),
+          itinerary_slug: itinerarySlug,
+          itinerary_title: itineraryTitle,
+        },
+      });
+      setSubmitted(true);
+    } catch (error) {
+      setSubmitError(
+        error instanceof FormSubmissionError
+          ? error.message
+          : "Something went wrong. Please try again."
+      );
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   return (
     <form
       id="inquiry"
+      method="post"
+      action="#inquiry"
       className="itinerary-inquiry-form scroll-mt-28 rounded-[1.75rem] border border-glass-border p-6 md:p-8 lg:p-10"
       onSubmit={handleSubmit}
       noValidate
@@ -68,6 +108,11 @@ export function ItineraryInquiryForm({ itineraryTitle, itinerarySlug }: Itinerar
           {hasErrors(errors) && (
             <p className="rounded-xl border border-red-400/30 bg-red-400/10 px-4 py-3 text-sm text-red-400" role="alert">
               Please correct the highlighted fields before submitting.
+            </p>
+          )}
+          {submitError && (
+            <p className="rounded-xl border border-red-400/30 bg-red-400/10 px-4 py-3 text-sm text-red-400" role="alert">
+              {submitError}
             </p>
           )}
           <div className="grid gap-4 sm:grid-cols-2">
@@ -137,8 +182,8 @@ export function ItineraryInquiryForm({ itineraryTitle, itinerarySlug }: Itinerar
               aria-invalid={!!errors.message}
             />
           </FormField>
-          <MagneticButton type="submit" variant="primary" className="w-full sm:w-auto">
-            {itineraryPrimaryCta.label}
+          <MagneticButton type="submit" variant="primary" className="w-full sm:w-auto" disabled={submitting}>
+            {submitting ? "Submitting…" : itineraryPrimaryCta.label}
           </MagneticButton>
         </div>
       )}

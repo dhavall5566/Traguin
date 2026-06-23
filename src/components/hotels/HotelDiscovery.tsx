@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import {
   Heart,
   GitCompare,
@@ -19,11 +19,11 @@ import {
   Crown,
   type LucideIcon,
 } from "lucide-react";
-import { hotels } from "@/data/hotels";
+import { hotels as fallbackHotels } from "@/data/hotels";
 import type { Hotel } from "@/types";
 import { HotelDetailModal } from "@/components/hotels/HotelDetailModal";
 import { PriceDisplay } from "@/components/ui/PriceDisplay";
-import { getHotelById, getHotelReviewCount } from "@/lib/hotels";
+import { getHotelReviewCount, getHotelDestinationLabel, getHotelImageAlt } from "@/lib/hotels";
 import { cn } from "@/lib/utils";
 import { HotelImageSlider } from "@/components/hotels/HotelImageSlider";
 import { getHotelGalleryImages } from "@/lib/hotel-images";
@@ -35,19 +35,9 @@ import { TrustBar } from "@/components/layout/TrustBar";
 import { PageCTA } from "@/components/layout/PageCTA";
 import { getLuxuryStaysHeroContent, type RegionHeroFilter } from "@/data/pageContent";
 
-const INDIAN_HOTEL_DESTINATIONS = new Set([
-  "Kerala",
-  "Kashmir",
-  "Goa",
-  "Ladakh",
-  "Shimla",
-  "Mashobra",
-]);
-
-function parseRegionParam(value: string | null): RegionHeroFilter {
-  if (value === "domestic" || value === "international") return value;
-  return "all";
-}
+type HotelDiscoveryProps = {
+  hotels?: Hotel[];
+};
 
 const HOTEL_FILTER_IDS = ["destination", "property-type", "price", "amenities", "sort"] as const;
 
@@ -86,7 +76,14 @@ const SORT_OPTIONS = [
 
 type SortId = (typeof SORT_OPTIONS)[number]["id"];
 
-export function HotelDiscovery() {
+function parseRegionParam(value: string | null): RegionHeroFilter {
+  if (value === "domestic" || value === "international") return value;
+  return "all";
+}
+
+export function HotelDiscovery({ hotels: hotelsProp }: HotelDiscoveryProps) {
+  const hotels = hotelsProp && hotelsProp.length > 0 ? hotelsProp : fallbackHotels;
+  const router = useRouter();
   const searchParams = useSearchParams();
   const [wishlist, setWishlist] = useState<string[]>([]);
   const [compare, setCompare] = useState<string[]>([]);
@@ -112,8 +109,18 @@ export function HotelDiscovery() {
   }, []);
 
   const countries = useMemo(
-    () => ["all", ...[...new Set(hotels.map((h) => h.destination))].sort()],
-    []
+    () =>
+      [
+        "all",
+        ...[
+          ...new Set(
+            hotels
+              .map((h) => getHotelDestinationLabel(h))
+              .filter((name): name is string => Boolean(name))
+          ),
+        ].sort(),
+      ],
+    [hotels]
   );
 
   const destinationOptions = useMemo<FilterDropdownOption[]>(
@@ -158,20 +165,21 @@ export function HotelDiscovery() {
   useEffect(() => {
     const hotelId = searchParams.get("hotel");
     if (hotelId) {
-      const hotel = getHotelById(hotelId);
-      if (hotel) setSelectedHotel(hotel);
+      router.replace(`/luxury-stays/${encodeURIComponent(hotelId)}`);
+      return;
     }
 
     const destination = searchParams.get("destination");
     if (destination) {
-      const match = hotels.find(
-        (h) => h.destination.toLowerCase() === destination.toLowerCase()
-      );
-      setCountryFilter(match ? match.destination : destination);
+      const match = hotels.find((h) => {
+        const label = getHotelDestinationLabel(h);
+        return label?.toLowerCase() === destination.toLowerCase();
+      });
+      setCountryFilter(match ? getHotelDestinationLabel(match)! : destination);
     }
 
     setRegionFilter(parseRegionParam(searchParams.get("region")));
-  }, [searchParams]);
+  }, [hotels, router, searchParams]);
 
   const amenityKeywords =
     AMENITY_FILTERS.find((a) => a.id === amenityFilter)?.keywords ?? [];
@@ -249,16 +257,12 @@ export function HotelDiscovery() {
 
     const matches = hotels.filter((h) => {
       if (query) {
-        const haystack = `${h.name} ${h.destination} ${h.description ?? ""}`.toLowerCase();
+        const haystack = `${h.name} ${h.destination ?? ""} ${h.description ?? ""}`.toLowerCase();
         if (!haystack.includes(query)) return false;
       }
-      if (countryFilter !== "all" && h.destination !== countryFilter) return false;
-      if (regionFilter === "domestic" && !INDIAN_HOTEL_DESTINATIONS.has(h.destination)) {
-        return false;
-      }
-      if (regionFilter === "international" && INDIAN_HOTEL_DESTINATIONS.has(h.destination)) {
-        return false;
-      }
+      if (countryFilter !== "all" && getHotelDestinationLabel(h) !== countryFilter) return false;
+      if (regionFilter === "domestic" && h.region !== "domestic") return false;
+      if (regionFilter === "international" && h.region !== "international") return false;
       if (priceFilter === "under50" && h.price >= 50000) return false;
       if (priceFilter === "50-100" && (h.price < 50000 || h.price > 100000)) return false;
       if (priceFilter === "over100" && h.price <= 100000) return false;
@@ -293,6 +297,7 @@ export function HotelDiscovery() {
     searchQuery,
     sortBy,
     typeFilter,
+    hotels,
   ]);
 
   const heroContent = useMemo(
@@ -419,8 +424,16 @@ export function HotelDiscovery() {
 
           {filtered.length === 0 ? (
             <div className="mt-12 rounded-3xl border border-glass-border bg-surface/60 px-6 py-16 text-center">
-              <p className="font-display text-xl text-foreground">No properties match your filters</p>
-              <p className="mt-2 text-sm text-muted">Try adjusting destination, price, or search terms.</p>
+              <p className="font-display text-xl text-foreground">
+                {hotels.length === 0
+                  ? "Luxury stays are being curated"
+                  : "No properties match your filters"}
+              </p>
+              <p className="mt-2 text-sm text-muted">
+                {hotels.length === 0
+                  ? "Check back soon for handpicked properties from our travel experts."
+                  : "Try adjusting destination, price, or search terms."}
+              </p>
               {hasActiveFilters && (
                 <MagneticButton variant="secondary" className="mt-6" onClick={clearFilters}>
                   Clear all filters
@@ -431,6 +444,7 @@ export function HotelDiscovery() {
             <div className="page-content-grid mt-12 sm:grid-cols-2 lg:grid-cols-3">
               {filtered.map((hotel) => {
                 const reviewCount = getHotelReviewCount(hotel);
+                const destinationLabel = getHotelDestinationLabel(hotel);
                 return (
                 <article
                   key={hotel.id}
@@ -449,7 +463,7 @@ export function HotelDiscovery() {
                   <div className="relative aspect-[4/3] overflow-hidden">
                     <HotelImageSlider
                       images={getHotelGalleryImages(hotel)}
-                      alt={`${hotel.name}, ${hotel.destination}`}
+                      alt={getHotelImageAlt(hotel)}
                       className="h-full w-full"
                       showIndicators={false}
                       pauseOnHover
@@ -503,7 +517,9 @@ export function HotelDiscovery() {
                       </span>
                     </div>
                     <h3 className="mt-2 font-display text-xl text-foreground">{hotel.name}</h3>
-                    <p className="text-sm text-muted">{hotel.destination}</p>
+                    {destinationLabel && (
+                      <p className="text-sm text-muted">{destinationLabel}</p>
+                    )}
                     <div className="mt-4 flex flex-wrap gap-1">
                       {hotel.amenities.slice(0, 3).map((a) => (
                         <span key={a} className="text-[10px] text-sand">{a}</span>
@@ -531,6 +547,7 @@ export function HotelDiscovery() {
       {selectedHotel && (
         <HotelDetailModal
           hotel={selectedHotel}
+          allHotels={hotels}
           onClose={() => setSelectedHotel(null)}
           onSelectHotel={setSelectedHotel}
         />

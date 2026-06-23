@@ -231,7 +231,10 @@ export type TravelPlannerFormValues = {
   endDate: string;
   travelers: string;
   budget: string;
+  style: string;
   notes: string;
+  email: string;
+  phone: string;
 };
 
 export function validateTravelPlannerStep(
@@ -256,6 +259,8 @@ export function validateTravelPlannerStep(
     const trimmed = form.notes.trim();
     return collectErrors({
       notes: trimmed.length > 2000 ? "Notes must be 2000 characters or fewer" : undefined,
+      email: validateEmail(form.email),
+      phone: validatePhone(form.phone, true),
     });
   }
   return {};

@@ -2,7 +2,8 @@
 
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
-import type { ExperienceDetail } from "@/data/experienceDetails";
+import type { ExperienceDetail } from "@/lib/experience-types";
+import { iconFromKey } from "@/lib/icons";
 import { SafeImage } from "@/components/ui/SafeImage";
 import { secondaryCta } from "@/data/site";
 
@@ -43,18 +44,21 @@ export function ExperienceDetailContent({ experience }: ExperienceDetailContentP
         </h2>
 
         <div className="mt-8 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-          {experience.offers.map((offer) => (
+          {experience.offers.map((offer) => {
+            const OfferIcon = iconFromKey(offer.iconKey);
+            return (
             <div
               key={offer.title}
               className="bento-card bento-card--light rounded-[1.35rem] p-6 md:p-7"
             >
               <div className="flex h-11 w-11 items-center justify-center rounded-full border border-glass-border text-foreground">
-                <offer.icon size={20} strokeWidth={1.75} aria-hidden />
+                <OfferIcon size={20} strokeWidth={1.75} aria-hidden />
               </div>
               <h3 className="mt-5 text-sm font-semibold text-foreground">{offer.title}</h3>
               <p className="mt-2.5 text-sm leading-relaxed text-muted">{offer.description}</p>
             </div>
-          ))}
+            );
+          })}
         </div>
         </div>
       </section>

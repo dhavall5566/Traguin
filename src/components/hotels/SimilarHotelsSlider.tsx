@@ -1,9 +1,10 @@
 "use client";
 
+import Link from "next/link";
 import { useRef, useState } from "react";
 import { ArrowUpRight, ChevronLeft, ChevronRight, MapPin, Star } from "lucide-react";
 import type { Hotel } from "@/types";
-import { getHotelReviewCount, getSimilarHotels } from "@/lib/hotels";
+import { getHotelReviewCount, getHotelDestinationLabel, getHotelImageAlt, getSimilarHotels } from "@/lib/hotels";
 import { getHotelGalleryImages } from "@/lib/hotel-images";
 import { HotelImageSlider } from "@/components/hotels/HotelImageSlider";
 import { PriceDisplay } from "@/components/ui/PriceDisplay";
@@ -11,15 +12,24 @@ import { cn } from "@/lib/utils";
 
 type SimilarHotelsSliderProps = {
   hotel: Hotel;
-  onSelectHotel: (hotel: Hotel) => void;
+  allHotels?: Hotel[];
+  onSelectHotel?: (hotel: Hotel) => void;
+  linkMode?: "select" | "navigate";
 };
 
-export function SimilarHotelsSlider({ hotel, onSelectHotel }: SimilarHotelsSliderProps) {
+export function SimilarHotelsSlider({
+  hotel,
+  allHotels,
+  onSelectHotel,
+  linkMode = "select",
+}: SimilarHotelsSliderProps) {
   const trackRef = useRef<HTMLDivElement>(null);
   const [canScrollLeft, setCanScrollLeft] = useState(false);
   const [canScrollRight, setCanScrollRight] = useState(false);
 
-  const similarHotels = getSimilarHotels(hotel);
+  const similarHotels = getSimilarHotels(hotel, allHotels);
+  const destinationLabel = getHotelDestinationLabel(hotel);
+  const sectionDestination = destinationLabel ?? "this region";
 
   const updateScrollState = () => {
     const track = trackRef.current;
@@ -41,7 +51,7 @@ export function SimilarHotelsSlider({ hotel, onSelectHotel }: SimilarHotelsSlide
   return (
     <section
       className="glass overflow-hidden rounded-2xl border border-glass-border p-5 md:p-6"
-      aria-label={`More luxury stays in ${hotel.destination}`}
+      aria-label={`More luxury stays in ${sectionDestination}`}
     >
       <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
         <div>
@@ -49,7 +59,7 @@ export function SimilarHotelsSlider({ hotel, onSelectHotel }: SimilarHotelsSlide
             Curated for you
           </p>
           <h3 className="mt-1 font-display text-xl text-foreground md:text-2xl">
-            More stays in {hotel.destination}
+            More stays in {sectionDestination}
           </h3>
           <p className="mt-2 max-w-lg text-sm text-muted">
             Other handpicked properties our travel experts recommend while you plan this journey.
@@ -88,20 +98,13 @@ export function SimilarHotelsSlider({ hotel, onSelectHotel }: SimilarHotelsSlide
       >
         {similarHotels.map((item) => {
           const reviewCount = getHotelReviewCount(item);
-          return (
-          <article
-            key={item.id}
-            className="group w-[min(100%,19rem)] shrink-0 snap-start sm:w-[19rem]"
-          >
-            <button
-              type="button"
-              onClick={() => onSelectHotel(item)}
-              className="flex h-full w-full flex-col overflow-hidden rounded-3xl border border-glass-border bg-surface text-left transition-all duration-500 hover:border-gold/35 hover:shadow-[0_20px_48px_-16px_rgba(0,0,0,0.28)] hover:-translate-y-1"
-            >
+          const itemDestination = getHotelDestinationLabel(item);
+          const cardBody = (
+            <>
               <div className="relative aspect-[5/4] overflow-hidden">
                 <HotelImageSlider
                   images={getHotelGalleryImages(item)}
-                  alt={`${item.name}, ${item.destination}`}
+                  alt={getHotelImageAlt(item)}
                   className="h-full w-full transition-transform duration-700 group-hover:scale-[1.03]"
                   showIndicators={false}
                   pauseOnHover
@@ -124,10 +127,12 @@ export function SimilarHotelsSlider({ hotel, onSelectHotel }: SimilarHotelsSlide
                 </div>
 
                 <h4 className="mt-2 font-display text-lg leading-snug text-foreground">{item.name}</h4>
-                <p className="mt-0.5 flex items-center gap-1 text-sm text-muted">
-                  <MapPin size={12} className="shrink-0 text-gold" aria-hidden />
-                  {item.destination}
-                </p>
+                {itemDestination && (
+                  <p className="mt-0.5 flex items-center gap-1 text-sm text-muted">
+                    <MapPin size={12} className="shrink-0 text-gold" aria-hidden />
+                    {itemDestination}
+                  </p>
+                )}
 
                 {item.description && (
                   <p className="mt-2 line-clamp-2 text-xs leading-relaxed text-sand">
@@ -159,8 +164,31 @@ export function SimilarHotelsSlider({ hotel, onSelectHotel }: SimilarHotelsSlide
                   </span>
                 </div>
               </div>
-            </button>
-          </article>
+            </>
+          );
+
+          return (
+            <article
+              key={item.id}
+              className="group w-[min(100%,19rem)] shrink-0 snap-start sm:w-[19rem]"
+            >
+              {linkMode === "navigate" ? (
+                <Link
+                  href={`/luxury-stays/${encodeURIComponent(item.id)}`}
+                  className="flex h-full w-full flex-col overflow-hidden rounded-3xl border border-glass-border bg-surface text-left transition-all duration-500 hover:border-gold/35 hover:shadow-[0_20px_48px_-16px_rgba(0,0,0,0.28)] hover:-translate-y-1"
+                >
+                  {cardBody}
+                </Link>
+              ) : (
+                <button
+                  type="button"
+                  onClick={() => onSelectHotel?.(item)}
+                  className="flex h-full w-full flex-col overflow-hidden rounded-3xl border border-glass-border bg-surface text-left transition-all duration-500 hover:border-gold/35 hover:shadow-[0_20px_48px_-16px_rgba(0,0,0,0.28)] hover:-translate-y-1"
+                >
+                  {cardBody}
+                </button>
+              )}
+            </article>
           );
         })}
       </div>

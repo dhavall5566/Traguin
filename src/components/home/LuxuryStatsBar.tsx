@@ -5,15 +5,32 @@ import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { HomeSection } from "@/components/home/HomeSection";
+import type { HomeStat } from "@/lib/api/homepage";
 
 gsap.registerPlugin(ScrollTrigger);
 
-const stats = [
-  { id: "destinations", value: 15, suffix: "+", label: "Curated Destinations" },
-  { id: "stays", value: 28, suffix: "+", label: "Luxury Partner Stays" },
-  { id: "journeys", value: 250, suffix: "+", label: "Journeys Designed" },
-  { id: "rating", value: 4.9, suffix: "★", label: "Guest Satisfaction", decimals: 1 },
-] as const;
+function StatItem({
+  stat,
+  active,
+}: {
+  stat: HomeStat;
+  active: boolean;
+}) {
+  const decimals = stat.decimals ?? 0;
+  const display = useCountUp(stat.value, active, 1400, decimals);
+
+  return (
+    <div className="flex flex-col items-center gap-1 px-4 py-2 text-center sm:px-6">
+      <p className="font-display text-3xl leading-none tracking-tight text-foreground sm:text-4xl md:text-[2.75rem]">
+        {display}
+        <span className="text-gold">{stat.suffix}</span>
+      </p>
+      <p className="text-[10px] tracking-[0.22em] text-muted uppercase sm:text-[11px]">
+        {stat.label}
+      </p>
+    </div>
+  );
+}
 
 function useCountUp(
   target: number,
@@ -43,30 +60,7 @@ function useCountUp(
   return decimals > 0 ? value.toFixed(decimals) : Math.round(value).toString();
 }
 
-function StatItem({
-  stat,
-  active,
-}: {
-  stat: (typeof stats)[number];
-  active: boolean;
-}) {
-  const decimals = "decimals" in stat ? stat.decimals : 0;
-  const display = useCountUp(stat.value, active, 1400, decimals);
-
-  return (
-    <div className="flex flex-col items-center gap-1 px-4 py-2 text-center sm:px-6">
-      <p className="font-display text-3xl leading-none tracking-tight text-foreground sm:text-4xl md:text-[2.75rem]">
-        {display}
-        <span className="text-gold">{stat.suffix}</span>
-      </p>
-      <p className="text-[10px] tracking-[0.22em] text-muted uppercase sm:text-[11px]">
-        {stat.label}
-      </p>
-    </div>
-  );
-}
-
-export function LuxuryStatsBar() {
+export function LuxuryStatsBar({ stats }: { stats: HomeStat[] }) {
   const ref = useRef<HTMLDivElement>(null);
   const stripRef = useRef<HTMLDivElement>(null);
   const [active, setActive] = useState(false);
@@ -127,6 +121,8 @@ export function LuxuryStatsBar() {
     },
     { scope: ref }
   );
+
+  if (stats.length === 0) return null;
 
   return (
     <HomeSection

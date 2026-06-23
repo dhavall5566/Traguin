@@ -1,19 +1,16 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import {
-  filterGalleryItems,
-  galleryCategories,
-  galleryItems,
-  type GalleryCategoryId,
-  type GalleryItem,
-} from "@/data/gallery";
+import { filterGalleryItems } from "@/lib/gallery-types";
+import type { GalleryCategory, GalleryItem } from "@/lib/gallery-types";
 import { SafeImage } from "@/components/ui/SafeImage";
 import { cn } from "@/lib/utils";
 
 type GalleryGridProps = {
   className?: string;
   itemLimit?: number;
+  items: GalleryItem[];
+  categories: GalleryCategory[];
 };
 
 type TileSpan = { colSpan: number; rowSpan: number };
@@ -79,58 +76,72 @@ function GalleryTile({
   );
 }
 
-export function GalleryGrid({ className, itemLimit }: GalleryGridProps) {
-  const [activeCategory, setActiveCategory] = useState<GalleryCategoryId>("all");
+export function GalleryGrid({ className, itemLimit, items, categories }: GalleryGridProps) {
+  const [activeCategory, setActiveCategory] = useState("all");
 
-  const pool = itemLimit ? galleryItems.slice(0, itemLimit) : galleryItems;
+  const pool = itemLimit ? items.slice(0, itemLimit) : items;
 
   const visibleItems = useMemo(
     () => filterGalleryItems(pool, activeCategory),
     [activeCategory, pool]
   );
 
+  const filterCategories =
+    categories.length > 0 ? categories : [{ id: "all", label: "All" }];
+
   return (
     <div className={className}>
-      <div className="gallery-filters -mx-1 overflow-x-auto px-1 pb-1">
-        <div
-          className="flex w-max min-w-full flex-wrap items-center gap-2.5 sm:gap-3"
-          role="tablist"
-          aria-label="Gallery categories"
-        >
-          {galleryCategories.map((category) => {
-            const isActive = activeCategory === category.id;
+      {filterCategories.length > 1 && (
+        <div className="gallery-filters -mx-1 overflow-x-auto px-1 pb-1">
+          <div
+            className="flex w-max min-w-full flex-wrap items-center gap-2.5 sm:gap-3"
+            role="tablist"
+            aria-label="Gallery categories"
+          >
+            {filterCategories.map((category) => {
+              const isActive = activeCategory === category.id;
 
-            return (
-              <button
-                key={category.id}
-                type="button"
-                role="tab"
-                aria-selected={isActive}
-                onClick={() => setActiveCategory(category.id)}
-                className={cn(
-                  "shrink-0 rounded-full px-5 py-2.5 text-[11px] font-semibold tracking-[0.2em] uppercase transition-all duration-300",
-                  isActive
-                    ? "bg-foreground text-background shadow-[0_10px_28px_rgba(0,0,0,0.22)]"
-                    : "bg-[color-mix(in_srgb,var(--foreground)_7%,var(--surface))] text-muted hover:bg-[color-mix(in_srgb,var(--foreground)_11%,var(--surface))] hover:text-foreground"
-                )}
-              >
-                {category.label}
-              </button>
-            );
-          })}
+              return (
+                <button
+                  key={category.id}
+                  type="button"
+                  role="tab"
+                  aria-selected={isActive}
+                  onClick={() => setActiveCategory(category.id)}
+                  className={cn(
+                    "shrink-0 rounded-full px-5 py-2.5 text-[11px] font-semibold tracking-[0.2em] uppercase transition-all duration-300",
+                    isActive
+                      ? "bg-foreground text-background shadow-[0_10px_28px_rgba(0,0,0,0.22)]"
+                      : "bg-[color-mix(in_srgb,var(--foreground)_7%,var(--surface))] text-muted hover:bg-[color-mix(in_srgb,var(--foreground)_11%,var(--surface))] hover:text-foreground"
+                  )}
+                >
+                  {category.label}
+                </button>
+              );
+            })}
+          </div>
         </div>
-      </div>
+      )}
 
-      <div key={activeCategory} className="gallery-mosaic mt-8">
-        {visibleItems.map((item, index) => (
-          <GalleryTile key={item.id} item={item} index={index} />
-        ))}
-      </div>
-
-      {visibleItems.length === 0 && (
+      {items.length === 0 ? (
         <p className="mt-10 text-center text-sm text-muted">
-          No destinations in this collection yet. Try another filter.
+          Our visual archive is being curated. Check back soon for destination frames from recent
+          journeys.
         </p>
+      ) : (
+        <>
+          <div key={activeCategory} className="gallery-mosaic mt-8">
+            {visibleItems.map((item, index) => (
+              <GalleryTile key={item.id} item={item} index={index} />
+            ))}
+          </div>
+
+          {visibleItems.length === 0 && (
+            <p className="mt-10 text-center text-sm text-muted">
+              No destinations in this collection yet. Try another filter.
+            </p>
+          )}
+        </>
       )}
     </div>
   );

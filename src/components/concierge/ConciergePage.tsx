@@ -1,19 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import {
-  Sparkles,
-  FileCheck,
-  Plane,
-  Ship,
-  Car,
-  Crown,
-  Briefcase,
-  Clock,
-  Headphones,
-  MessageCircle,
-  Phone,
-} from "lucide-react";
+import { Clock, Crown, Headphones, MessageCircle, Phone } from "lucide-react";
 import { SafeImage } from "@/components/ui/SafeImage";
 import { MagneticButton } from "@/components/ui/MagneticButton";
 import { FormField, fieldInputClass } from "@/components/ui/FormField";
@@ -23,70 +11,20 @@ import {
   validateConciergeForm,
   type FieldErrors,
 } from "@/lib/form-validation";
+import { FormSubmissionError, submitFormSubmission } from "@/lib/api/form-submissions";
 import { contactInfo } from "@/data/contact";
-import { images } from "@/lib/images";
 import { cn } from "@/lib/utils";
+import { iconFromKey } from "@/lib/icons";
 import { PageShell } from "@/components/layout/PageShell";
 import { PageHero } from "@/components/layout/PageHero";
 import { TrustBar } from "@/components/layout/TrustBar";
 import { PageCTA } from "@/components/layout/PageCTA";
 import { pageHeroes } from "@/data/pageContent";
-
-const services = [
-  {
-    icon: Sparkles,
-    title: "Bespoke Journeys",
-    description: "Routes shaped around your rhythm, stays, pacing, and moments no brochure can offer.",
-    image: images.experiencePrivateLuxe,
-    number: "01",
-    featured: true,
-  },
-  {
-    icon: FileCheck,
-    title: "Visa & Documentation",
-    description: "Paperwork, appointments, and approvals cleared before you ever pack a bag.",
-    image: images.singapore,
-    number: "02",
-  },
-  {
-    icon: Plane,
-    title: "Sky & Charter",
-    description: "Jets, helicopters, and aerial transfers stitched into one seamless arrival.",
-    image: images.switzerland,
-    number: "03",
-  },
-  {
-    icon: Ship,
-    title: "Yacht & Sea",
-    description: "Crewed charters across the Med, Caribbean, and Indian Ocean.",
-    image: images.beach,
-    number: "04",
-  },
-  {
-    icon: Car,
-    title: "Chauffeur Arrivals",
-    description: "Private transfers, meet-and-greet, and city-to-city ease from tarmac to threshold.",
-    image: images.dubai,
-    number: "05",
-  },
-  {
-    icon: Crown,
-    title: "Private Access",
-    description: "After-hours entries, closed-door tables, and invitations reserved for your circle.",
-    image: images.bali,
-    number: "06",
-  },
-  {
-    icon: Briefcase,
-    title: "Corporate & MICE",
-    description: "Leadership retreats, incentive travel, and board-level programs without a single loose end.",
-    image: images.experienceCorporate,
-    number: "07",
-    wide: true,
-  },
-] as const;
-
-type ServiceItem = (typeof services)[number];
+import type {
+  TravelExpertDeskSettings,
+  TravelExpertPageData,
+  TravelExpertService,
+} from "@/lib/api/travel-expert";
 
 function ServiceCard({
   service,
@@ -95,15 +33,15 @@ function ServiceCard({
   revealed,
   index,
 }: {
-  service: ServiceItem;
+  service: TravelExpertService;
   isSelected: boolean;
   onSelect: () => void;
   revealed: boolean;
   index: number;
 }) {
-  const Icon = service.icon;
-  const isWide = "wide" in service && service.wide;
-  const isFeatured = "featured" in service && service.featured;
+  const Icon = iconFromKey(service.iconKey);
+  const isWide = service.wide;
+  const isFeatured = service.featured;
 
   return (
     <button
@@ -182,7 +120,7 @@ function ServiceCard({
   );
 }
 
-function TravelExpertDeskCard() {
+function TravelExpertDeskCard({ desk }: { desk: TravelExpertDeskSettings }) {
   return (
     <div className="travel-expert-desk-card w-full min-w-0">
       <span className="travel-expert-desk-online">
@@ -193,7 +131,7 @@ function TravelExpertDeskCard() {
       <div className="travel-expert-desk-header">
         <p className="text-[10px] font-bold tracking-[0.32em] text-gold uppercase">Travel Experts</p>
         <h3 className="mt-3 font-display text-[clamp(1.5rem,3.5vw,2rem)] font-semibold text-foreground">
-          Always here for you
+          {desk.deskHeadline}
         </h3>
         <span className="travel-expert-desk-rule" aria-hidden />
       </div>
@@ -203,8 +141,10 @@ function TravelExpertDeskCard() {
           <div className="travel-expert-desk-stat-icon">
             <Clock size={20} aria-hidden />
           </div>
-          <p className="font-display text-3xl font-semibold leading-none text-foreground">2</p>
-          <p className="mt-2 text-[10px] font-bold tracking-[0.2em] text-foreground uppercase">Working hours</p>
+          <p className="font-display text-3xl font-semibold leading-none text-foreground">{desk.hoursValue}</p>
+          <p className="mt-2 text-[10px] font-bold tracking-[0.2em] text-foreground uppercase">
+            {desk.hoursLabel}
+          </p>
           <p className="mt-1 text-xs text-muted">First expert reply</p>
         </div>
 
@@ -215,8 +155,10 @@ function TravelExpertDeskCard() {
             <Headphones size={20} aria-hidden />
             <span className="travel-expert-card-live" aria-hidden />
           </div>
-          <p className="font-display text-2xl font-semibold leading-none text-foreground">24·7·365</p>
-          <p className="mt-2 text-[10px] font-bold tracking-[0.2em] text-foreground uppercase">Live desk</p>
+          <p className="font-display text-2xl font-semibold leading-none text-foreground">{desk.liveDeskValue}</p>
+          <p className="mt-2 text-[10px] font-bold tracking-[0.2em] text-foreground uppercase">
+            {desk.liveDeskLabel}
+          </p>
           <p className="mt-1 text-xs text-muted">Experts on call now</p>
         </div>
       </div>
@@ -240,9 +182,15 @@ function TravelExpertDeskCard() {
   );
 }
 
-export function ConciergePage() {
+type ConciergePageProps = {
+  data: TravelExpertPageData;
+};
+
+export function ConciergePage({ data }: ConciergePageProps) {
+  const { services, desk } = data;
   const sectionRef = useRef<HTMLDivElement>(null);
   const [revealed, setRevealed] = useState(false);
+  const defaultService = services[0]?.title ?? "";
   const [form, setForm] = useState<{
     name: string;
     email: string;
@@ -253,11 +201,13 @@ export function ConciergePage() {
     name: "",
     email: "",
     phone: "",
-    service: services[0].title,
+    service: defaultService,
     message: "",
   });
   const [errors, setErrors] = useState<FieldErrors>({});
   const [submitted, setSubmitted] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState<string | null>(null);
 
   useEffect(() => {
     const node = sectionRef.current;
@@ -287,12 +237,38 @@ export function ConciergePage() {
     clearFieldError(setErrors, "service");
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     const nextErrors = validateConciergeForm(form);
     setErrors(nextErrors);
     if (hasErrors(nextErrors)) return;
-    setSubmitted(true);
+
+    setSubmitting(true);
+    setSubmitError(null);
+    try {
+      await submitFormSubmission({
+        form_type: "travel_expert_consultation",
+        name: form.name.trim(),
+        email: form.email.trim().toLowerCase(),
+        phone: form.phone.trim(),
+        payload: {
+          name: form.name.trim(),
+          email: form.email.trim().toLowerCase(),
+          phone: form.phone.trim(),
+          service: form.service,
+          message: form.message.trim(),
+        },
+      });
+      setSubmitted(true);
+    } catch (error) {
+      setSubmitError(
+        error instanceof FormSubmissionError
+          ? error.message
+          : "Something went wrong. Please try again."
+      );
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   return (
@@ -318,24 +294,31 @@ export function ConciergePage() {
                 </p>
               </div>
 
-              <div
-                className={cn(
-                  "travel-expert-services-grid grid grid-cols-1 gap-4 sm:grid-cols-2",
-                  revealed ? "opacity-100" : "opacity-0",
-                  "transition-opacity duration-700 delay-100"
-                )}
-              >
-                {services.map((service, index) => (
-                  <ServiceCard
-                    key={service.title}
-                    service={service}
-                    isSelected={form.service === service.title}
-                    onSelect={() => selectService(service.title)}
-                    revealed={revealed}
-                    index={index}
-                  />
-                ))}
-              </div>
+              {services.length > 0 ? (
+                <div
+                  className={cn(
+                    "travel-expert-services-grid grid grid-cols-1 gap-4 sm:grid-cols-2",
+                    revealed ? "opacity-100" : "opacity-0",
+                    "transition-opacity duration-700 delay-100"
+                  )}
+                >
+                  {services.map((service, index) => (
+                    <ServiceCard
+                      key={service.id}
+                      service={service}
+                      isSelected={form.service === service.title}
+                      onSelect={() => selectService(service.title)}
+                      revealed={revealed}
+                      index={index}
+                    />
+                  ))}
+                </div>
+              ) : (
+                <p className="glass rounded-2xl border border-glass-border p-6 text-sm leading-relaxed text-muted">
+                  Expert services are being updated. Use the request form to describe what you need and our team
+                  will respond within two working hours.
+                </p>
+              )}
             </div>
 
             <div
@@ -357,12 +340,14 @@ export function ConciergePage() {
                     <h2 className="mt-2 font-display text-xl font-semibold text-foreground md:text-2xl">
                       Start your request
                     </h2>
-                    <p className="mt-3 flex flex-wrap items-center gap-2 text-sm text-muted">
-                      Selected
-                      <span className="rounded-full border border-gold/30 bg-gold/10 px-3 py-1 text-xs font-semibold tracking-wide text-gold">
-                        {form.service}
-                      </span>
-                    </p>
+                    {form.service && (
+                      <p className="mt-3 flex flex-wrap items-center gap-2 text-sm text-muted">
+                        Selected
+                        <span className="rounded-full border border-gold/30 bg-gold/10 px-3 py-1 text-xs font-semibold tracking-wide text-gold">
+                          {form.service}
+                        </span>
+                      </p>
+                    )}
                   </div>
 
                   <div className="p-6 md:p-7">
@@ -384,6 +369,14 @@ export function ConciergePage() {
                             role="alert"
                           >
                             Please correct the highlighted fields before submitting.
+                          </p>
+                        )}
+                        {submitError && (
+                          <p
+                            className="rounded-xl border border-red-400/30 bg-red-400/10 px-4 py-3 text-sm text-red-400"
+                            role="alert"
+                          >
+                            {submitError}
                           </p>
                         )}
                         <FormField label="Full Name" htmlFor="concierge-name" error={errors.name}>
@@ -428,11 +421,15 @@ export function ConciergePage() {
                             className={fieldInputClass("service", errors)}
                             aria-invalid={!!errors.service}
                           >
-                            {services.map((s) => (
-                              <option key={s.title} value={s.title}>
-                                {s.title}
-                              </option>
-                            ))}
+                            {services.length > 0 ? (
+                              services.map((s) => (
+                                <option key={s.id} value={s.title}>
+                                  {s.title}
+                                </option>
+                              ))
+                            ) : (
+                              <option value="">General inquiry</option>
+                            )}
                           </select>
                         </FormField>
                         <FormField label="Tell us more" htmlFor="concierge-message" error={errors.message}>
@@ -446,8 +443,8 @@ export function ConciergePage() {
                             aria-invalid={!!errors.message}
                           />
                         </FormField>
-                        <MagneticButton type="submit" variant="primary" className="w-full !py-3.5">
-                          Submit to Travel Expert
+                        <MagneticButton type="submit" variant="primary" className="w-full !py-3.5" disabled={submitting}>
+                          {submitting ? "Submitting…" : "Submit to Travel Expert"}
                         </MagneticButton>
                       </div>
                     )}
@@ -455,7 +452,7 @@ export function ConciergePage() {
                 </div>
               </form>
 
-              <TravelExpertDeskCard />
+              <TravelExpertDeskCard desk={desk} />
             </div>
           </div>
 

@@ -12,8 +12,9 @@ import {
   plannerCtaBackgrounds,
 } from "@/lib/planner-cta-backgrounds";
 import { contactInfo } from "@/data/contact";
-import { defaultCountryCode } from "@/data/country-codes";
+import { defaultCountryCode, getCountryByCode } from "@/data/country-codes";
 import { collectErrors, hasErrors, validatePhone, type FieldErrors } from "@/lib/form-validation";
+import { FormSubmissionError, submitFormSubmission } from "@/lib/api/form-submissions";
 import { HomeSection } from "@/components/home/HomeSection";
 import { cn } from "@/lib/utils";
 
@@ -33,6 +34,8 @@ export function PlanMyJourneyCTA() {
   const [countryCode, setCountryCode] = useState(defaultCountryCode);
   const [errors, setErrors] = useState<FieldErrors>({});
   const [submitted, setSubmitted] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState<string | null>(null);
 
   const background = plannerCtaBackgrounds[backgroundIndex];
 
@@ -95,12 +98,36 @@ export function PlanMyJourneyCTA() {
     { scope: sectionRef }
   );
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     const next = collectErrors({ phone: validatePhone(phone, true) });
     setErrors(next);
     if (hasErrors(next)) return;
-    setSubmitted(true);
+
+    const dial = getCountryByCode(countryCode).dial;
+    const fullPhone = `${dial}${phone.replace(/\D/g, "")}`;
+    setSubmitting(true);
+    setSubmitError(null);
+    try {
+      await submitFormSubmission({
+        form_type: "plan_my_journey",
+        name: "WhatsApp Callback Request",
+        phone: fullPhone,
+        payload: {
+          phone: fullPhone,
+          country_code: dial,
+        },
+      });
+      setSubmitted(true);
+    } catch (error) {
+      setSubmitError(
+        error instanceof FormSubmissionError
+          ? error.message
+          : "Something went wrong. Please try again."
+      );
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   return (
@@ -176,9 +203,10 @@ export function PlanMyJourneyCTA() {
                     />
                     <button
                       type="submit"
-                      className="h-full shrink-0 rounded-full bg-white px-4 text-[10px] font-bold tracking-[0.12em] text-black uppercase shadow-sm transition-colors hover:bg-white/95 sm:px-6 sm:text-[11px] sm:tracking-[0.16em]"
+                      disabled={submitting}
+                      className="h-full shrink-0 rounded-full bg-white px-4 text-[10px] font-bold tracking-[0.12em] text-black uppercase shadow-sm transition-colors hover:bg-white/95 disabled:cursor-not-allowed disabled:opacity-70 sm:px-6 sm:text-[11px] sm:tracking-[0.16em]"
                     >
-                      Get Called
+                      {submitting ? "Sending…" : "Get Called"}
                     </button>
                   </div>
                 </div>
@@ -199,6 +227,11 @@ export function PlanMyJourneyCTA() {
               {errors.phone && (
                 <p id="planner-phone-error" className="mt-2 text-left text-xs text-red-300 sm:pl-2">
                   {errors.phone}
+                </p>
+              )}
+              {submitError && (
+                <p className="mt-2 text-left text-xs text-red-300 sm:pl-2" role="alert">
+                  {submitError}
                 </p>
               )}
             </form>

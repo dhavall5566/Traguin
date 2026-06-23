@@ -1,6 +1,6 @@
 "use client";
 
-import type { ExperienceDetail } from "@/data/experienceDetails";
+import type { ExperienceDetail } from "@/lib/experience-types";
 import { ExperienceDetailContent } from "@/components/experiences/ExperienceDetailContent";
 
 type ExperienceDetailPageProps = {

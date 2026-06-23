@@ -16,6 +16,7 @@ import {
   validateContactForm,
   type FieldErrors,
 } from "@/lib/form-validation";
+import { FormSubmissionError, submitFormSubmission } from "@/lib/api/form-submissions";
 import { contactInfo } from "@/data/contact";
 import { pageHeroes } from "@/data/pageContent";
 import { cn } from "@/lib/utils";
@@ -38,6 +39,8 @@ export function ContactPage() {
   const [form, setForm] = useState({ name: "", email: "", phone: "", message: "" });
   const [errors, setErrors] = useState<FieldErrors>({});
   const [submitted, setSubmitted] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState<string | null>(null);
 
   useEffect(() => {
     const scrollToForm = () => scrollToConsultationSection(lenis);
@@ -57,12 +60,37 @@ export function ContactPage() {
     clearFieldError(setErrors, key);
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     const nextErrors = validateContactForm(form);
     setErrors(nextErrors);
     if (hasErrors(nextErrors)) return;
-    setSubmitted(true);
+
+    setSubmitting(true);
+    setSubmitError(null);
+    try {
+      await submitFormSubmission({
+        form_type: "contact_consultation",
+        name: form.name.trim(),
+        email: form.email.trim().toLowerCase(),
+        phone: form.phone.trim() || null,
+        payload: {
+          name: form.name.trim(),
+          email: form.email.trim().toLowerCase(),
+          phone: form.phone.trim() || null,
+          message: form.message.trim(),
+        },
+      });
+      setSubmitted(true);
+    } catch (error) {
+      setSubmitError(
+        error instanceof FormSubmissionError
+          ? error.message
+          : "Something went wrong. Please try again."
+      );
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   return (
@@ -142,6 +170,14 @@ export function ContactPage() {
                       Please correct the highlighted fields before submitting.
                     </p>
                   )}
+                  {submitError && (
+                    <p
+                      className="rounded-xl border border-red-400/30 bg-red-400/10 px-4 py-3 text-sm text-red-400"
+                      role="alert"
+                    >
+                      {submitError}
+                    </p>
+                  )}
                   <FormField label="Full Name" htmlFor="contact-name" error={errors.name}>
                     <input
                       id="contact-name"
@@ -184,8 +220,8 @@ export function ContactPage() {
                       aria-invalid={!!errors.message}
                     />
                   </FormField>
-                  <MagneticButton type="submit" variant="primary">
-                    Connect With a Travel Expert
+                  <MagneticButton type="submit" variant="primary" disabled={submitting}>
+                    {submitting ? "Submitting…" : "Connect With a Travel Expert"}
                   </MagneticButton>
                 </div>
               )}

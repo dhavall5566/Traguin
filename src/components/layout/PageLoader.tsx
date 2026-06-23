@@ -1,12 +1,12 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import Image from "next/image";
 import { cn } from "@/lib/utils";
 
-const MIN_VISIBLE_MS = 1400;
 const EXIT_MS = 650;
 const MAX_BEFORE_LOAD = 94;
+const MAX_WAIT_MS = 8000;
 
 function TraguinPenguin() {
   return (
@@ -53,61 +53,30 @@ function TraguinPenguin() {
 
 export function PageLoader() {
   const [progress, setProgress] = useState(8);
-  const [ready, setReady] = useState(false);
   const [phase, setPhase] = useState<"loading" | "exit" | "done">("loading");
-  const progressRef = useRef(8);
-  const intervalRef = useRef<number | null>(null);
-  const startedAtRef = useRef(0);
 
   useEffect(() => {
-    startedAtRef.current = performance.now();
-    setReady(true);
     document.documentElement.classList.add("page-loader-active");
 
-    intervalRef.current = window.setInterval(() => {
-      setProgress((current) => {
-        if (current >= MAX_BEFORE_LOAD) {
-          progressRef.current = current;
-          return current;
-        }
-        const step =
-          current < 35 ? 2.4 + Math.random() * 2.6 : current < 70 ? 1.2 + Math.random() * 1.6 : 0.5 + Math.random() * 0.8;
-        const next = Math.min(MAX_BEFORE_LOAD, current + step);
-        progressRef.current = next;
-        return next;
-      });
-    }, 48);
+    const progressTimer = window.setInterval(() => {
+      setProgress((current) => Math.min(MAX_BEFORE_LOAD, current + 1.5));
+    }, 80);
 
-    const finish = () => {
-      if (intervalRef.current != null) {
-        window.clearInterval(intervalRef.current);
-        intervalRef.current = null;
-      }
-
-      const elapsed = performance.now() - startedAtRef.current;
-      const remaining = Math.max(0, MIN_VISIBLE_MS - elapsed);
-
+    const dismiss = () => {
+      window.clearInterval(progressTimer);
       setProgress(100);
-      progressRef.current = 100;
-
+      setPhase("exit");
       window.setTimeout(() => {
-        setPhase("exit");
-        window.setTimeout(() => {
-          setPhase("done");
-          document.documentElement.classList.remove("page-loader-active");
-        }, EXIT_MS);
-      }, remaining + 280);
+        setPhase("done");
+        document.documentElement.classList.remove("page-loader-active");
+      }, EXIT_MS);
     };
 
-    if (document.readyState === "complete") {
-      finish();
-    } else {
-      window.addEventListener("load", finish, { once: true });
-    }
+    const dismissTimer = window.setTimeout(dismiss, MAX_WAIT_MS);
 
     return () => {
-      if (intervalRef.current != null) window.clearInterval(intervalRef.current);
-      window.removeEventListener("load", finish);
+      window.clearInterval(progressTimer);
+      window.clearTimeout(dismissTimer);
       document.documentElement.classList.remove("page-loader-active");
     };
   }, []);
@@ -118,7 +87,7 @@ export function PageLoader() {
 
   return (
     <div
-      className={cn("page-loader", ready && "page-loader--ready", phase === "exit" && "page-loader--exit")}
+      className={cn("page-loader", phase === "exit" && "page-loader--exit")}
       role="alert"
       aria-live="polite"
       aria-busy={phase === "loading"}

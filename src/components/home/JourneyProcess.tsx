@@ -2,8 +2,7 @@
 
 import { useRef } from "react";
 import Link from "next/link";
-import { ArrowUpRight } from "lucide-react";
-import { journeySteps } from "@/data/journeyProcess";
+import { ArrowUpRight, Compass } from "lucide-react";
 import { SectionHeader } from "@/components/ui/SectionHeader";
 import { Reveal3D } from "@/components/ui/Reveal3D";
 import { MagneticButton } from "@/components/ui/MagneticButton";
@@ -11,10 +10,14 @@ import { HomeSection, HomeSectionActions } from "@/components/home/HomeSection";
 import { Tilt3DCard } from "@/components/itineraries/Tilt3DCard";
 import { useStaggerReveal3D } from "@/hooks/useStaggerReveal3D";
 import { primaryCta } from "@/data/site";
+import { iconFromKey } from "@/lib/icons";
+import type { HomeJourneyStep } from "@/lib/api/homepage";
 
-export function JourneyProcess() {
+export function JourneyProcess({ steps }: { steps: HomeJourneyStep[] }) {
   const gridRef = useRef<HTMLOListElement>(null);
   useStaggerReveal3D(gridRef, { variant: "up", stagger: 0.13 });
+
+  if (steps.length === 0) return null;
 
   return (
     <HomeSection tone="muted">
@@ -39,8 +42,8 @@ export function JourneyProcess() {
           />
 
           <ol ref={gridRef} className="home-grid sm:grid-cols-2 lg:grid-cols-4 [perspective:1400px]">
-            {journeySteps.map((step) => {
-              const Icon = step.icon;
+            {steps.map((step) => {
+              const Icon = iconFromKey(step.iconKey, Compass);
               return (
                 <li key={step.id} data-reveal-item className="list-none [transform-style:preserve-3d]">
                   <Tilt3DCard max={10}>

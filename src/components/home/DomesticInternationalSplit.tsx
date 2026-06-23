@@ -4,42 +4,17 @@ import { useRef } from "react";
 import { ArrowUpRight } from "lucide-react";
 import { SafeImage } from "@/components/ui/SafeImage";
 import { Reveal3D } from "@/components/ui/Reveal3D";
-import { images } from "@/lib/images";
 import { MagneticButton } from "@/components/ui/MagneticButton";
 import { HomeSection } from "@/components/home/HomeSection";
 import { Tilt3DCard } from "@/components/itineraries/Tilt3DCard";
 import { primaryCta } from "@/data/site";
+import type { HomeRegionPanel } from "@/lib/api/homepage";
 import { cn } from "@/lib/utils";
 
-const panels = [
-  {
-    id: "domestic",
-    label: "Domestic",
-    title: "India & Beyond",
-    description: "Heritage circuits, Himalayan escapes, and coastal retreats across the subcontinent.",
-    image: images.homeRegionDomestic,
-    imageClass: "object-cover object-[center_40%] saturate-[1.08] group-hover:saturate-[1.18]",
-    href: "/destinations?region=domestic",
-    highlights: ["Kashmir & Ladakh", "Kerala Backwaters", "Goa & Rajasthan"],
-    stat: "5 Regions",
-    mood: "warm",
-  },
-  {
-    id: "international",
-    label: "International",
-    title: "Worldwide Journeys",
-    description: "Alpine lodges, island sanctuaries, and iconic cities curated with white-glove service.",
-    image: images.homeRegionInternational,
-    imageClass: "object-cover object-center saturate-[1.06] group-hover:saturate-[1.16]",
-    href: "/destinations?region=international",
-    highlights: ["Swiss Alps", "Maldives", "Japan & Bali"],
-    stat: "10 Countries",
-    mood: "cool",
-  },
-] as const;
-
-export function DomesticInternationalSplit() {
+export function DomesticInternationalSplit({ panels }: { panels: HomeRegionPanel[] }) {
   const gridRef = useRef<HTMLDivElement>(null);
+
+  if (panels.length === 0) return null;
 
   return (
     <HomeSection id="explore-regions">
@@ -57,7 +32,6 @@ export function DomesticInternationalSplit() {
                   )}
                 />
 
-                {/* Color mood — keeps photos vivid while anchoring text */}
                 <div
                   className={cn(
                     "absolute inset-0 opacity-50 mix-blend-soft-light",
@@ -69,7 +43,6 @@ export function DomesticInternationalSplit() {
                   aria-hidden
                 />
 
-                {/* Bottom-weighted scrim — photo stays bright above the fold */}
                 <div
                   className="absolute inset-0 bg-gradient-to-t from-black/92 via-black/35 to-black/5"
                   aria-hidden

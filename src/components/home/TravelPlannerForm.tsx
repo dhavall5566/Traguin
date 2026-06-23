@@ -17,6 +17,8 @@ import {
 import type { TravelMood } from "@/types";
 import { getLocalDateIso } from "@/lib/theme";
 import { cn } from "@/lib/utils";
+import { FormSubmissionError, submitFormSubmission } from "@/lib/api/form-submissions";
+import { Mail, Phone as PhoneIcon } from "lucide-react";
 
 const travelStyles: { value: TravelMood; label: string }[] = [
   { value: "luxury", label: "Luxury" },
@@ -40,6 +42,8 @@ const steps = ["Destination", "Details", "Preferences"] as const;
 export function TravelPlannerForm() {
   const [step, setStep] = useState(0);
   const [submitted, setSubmitted] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState<string | null>(null);
   const [minDate, setMinDate] = useState("");
 
   useEffect(() => {
@@ -53,6 +57,8 @@ export function TravelPlannerForm() {
     budget: "250000",
     style: "luxury" as TravelMood,
     notes: "",
+    email: "",
+    phone: "",
   });
   const [errors, setErrors] = useState<FieldErrors>({});
 
@@ -78,12 +84,41 @@ export function TravelPlannerForm() {
     setStep((s) => Math.max(s - 1, 0));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     const next = validateTravelPlannerForm(form, minDate || getLocalDateIso());
     setErrors(next);
     if (hasErrors(next)) return;
-    setSubmitted(true);
+
+    setSubmitting(true);
+    setSubmitError(null);
+    try {
+      await submitFormSubmission({
+        form_type: "travel_planner",
+        email: form.email.trim().toLowerCase(),
+        phone: form.phone.trim(),
+        payload: {
+          destination: form.destination.trim(),
+          start_date: form.startDate,
+          end_date: form.endDate,
+          travelers: Number(form.travelers),
+          budget: Number(form.budget),
+          style: form.style,
+          notes: form.notes.trim(),
+          email: form.email.trim().toLowerCase(),
+          phone: form.phone.trim(),
+        },
+      });
+      setSubmitted(true);
+    } catch (error) {
+      setSubmitError(
+        error instanceof FormSubmissionError
+          ? error.message
+          : "Something went wrong. Please try again."
+      );
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   return (
@@ -297,6 +332,35 @@ export function TravelPlannerForm() {
                           aria-invalid={!!errors.notes}
                         />
                       </FormField>
+                      <div className="grid gap-4 sm:grid-cols-2">
+                        <FormField label="Email" htmlFor="planner-email" icon={Mail} error={errors.email}>
+                          <input
+                            id="planner-email"
+                            type="email"
+                            autoComplete="email"
+                            value={form.email}
+                            onChange={(e) => update("email", e.target.value)}
+                            className={fieldInputClass("email", errors)}
+                            aria-invalid={!!errors.email}
+                          />
+                        </FormField>
+                        <FormField label="Phone" htmlFor="planner-phone" icon={PhoneIcon} error={errors.phone}>
+                          <input
+                            id="planner-phone"
+                            type="tel"
+                            autoComplete="tel"
+                            value={form.phone}
+                            onChange={(e) => update("phone", e.target.value)}
+                            className={fieldInputClass("phone", errors)}
+                            aria-invalid={!!errors.phone}
+                          />
+                        </FormField>
+                      </div>
+                      {submitError && (
+                        <p className="rounded-xl border border-red-400/30 bg-red-400/10 px-4 py-3 text-sm text-red-400" role="alert">
+                          {submitError}
+                        </p>
+                      )}
                     </>
                   )}
                 </motion.div>
@@ -335,12 +399,13 @@ export function TravelPlannerForm() {
                   <MagneticButton
                     type="submit"
                     variant="primary"
+                    disabled={submitting}
                     className={cn(
                       "w-full !justify-center",
                       step > 0 && "sm:flex-1"
                     )}
                   >
-                    Get Personalized Itinerary
+                    {submitting ? "Submitting…" : "Get Personalized Itinerary"}
                   </MagneticButton>
                 )}
               </div>

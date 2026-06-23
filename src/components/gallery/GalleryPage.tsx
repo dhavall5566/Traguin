@@ -1,13 +1,17 @@
 import type { CSSProperties } from "react";
-import { Camera, Film, Images, Play, Sparkles } from "lucide-react";
+import { Film, Images, Play, Sparkles } from "lucide-react";
 import { PageHero } from "@/components/layout/PageHero";
 import { PageShell } from "@/components/layout/PageShell";
 import { TrustBar } from "@/components/layout/TrustBar";
 import { PageCTA } from "@/components/layout/PageCTA";
 import { GalleryGrid } from "@/components/gallery/GalleryGrid";
 import { SafeImage } from "@/components/ui/SafeImage";
-import { galleryClientWall, galleryMoments, type GalleryMoment } from "@/data/gallery";
 import { pageHeroes } from "@/data/pageContent";
+import type {
+  GalleryClientWallItem,
+  GalleryFilmMoment,
+} from "@/lib/gallery-types";
+import type { GalleryPageData } from "@/lib/api/gallery";
 
 const galleryStats = [
   { value: "250+", label: "journeys documented" },
@@ -15,9 +19,12 @@ const galleryStats = [
   { value: "4K", label: "photo-led inspiration" },
 ] as const;
 
-export function GalleryPage() {
-  const filmMoments = galleryMoments.filter((moment) => moment.type === "video");
-
+export function GalleryPage({
+  clientWall,
+  galleryItems,
+  galleryCategories,
+  filmMoments,
+}: GalleryPageData) {
   return (
     <>
       <PageHero {...pageHeroes.gallery} />
@@ -51,34 +58,43 @@ export function GalleryPage() {
               </div>
             </div>
 
-            <div className="gallery-client-collage" aria-label="Client photo wall">
-              {galleryClientWall.map((client, index) => (
-                <article
-                  key={client.id}
-                  className="gallery-hanging-photo gallery-hanging-photo--collage group"
-                  style={
-                    {
-                      "--rotate": `${client.rotate}deg`,
-                      "--index": index,
-                    } as CSSProperties
-                  }
-                >
-                  <span className="gallery-hanging-photo__pin" aria-hidden />
-                  <div className="aspect-[4/5] overflow-hidden rounded-[1.05rem] bg-background">
-                    <SafeImage
-                      src={client.image}
-                      alt={`${client.name} in ${client.destination}`}
-                      className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-[1.05]"
-                      loading="lazy"
-                    />
-                  </div>
-                  <div className="mt-3">
-                    <h3 className="font-body text-sm font-semibold text-foreground">{client.destination}</h3>
-                    <p className="mt-1 text-[0.68rem] text-muted">{client.tripType}</p>
-                  </div>
-                </article>
-              ))}
-            </div>
+            {clientWall.length > 0 ? (
+              <div className="gallery-client-collage" aria-label="Client photo wall">
+                {clientWall.map((client, index) => (
+                  <article
+                    key={client.id}
+                    className="gallery-hanging-photo gallery-hanging-photo--collage group"
+                    style={
+                      {
+                        "--rotate": `${client.rotate}deg`,
+                        "--index": index,
+                      } as CSSProperties
+                    }
+                  >
+                    <span className="gallery-hanging-photo__pin" aria-hidden />
+                    <div className="aspect-[4/5] overflow-hidden rounded-[1.05rem] bg-background">
+                      <SafeImage
+                        src={client.image}
+                        alt={`${client.name} in ${client.destination}`}
+                        className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-[1.05]"
+                        loading="lazy"
+                      />
+                    </div>
+                    <div className="mt-3">
+                      <h3 className="font-body text-sm font-semibold text-foreground">{client.destination}</h3>
+                      <p className="mt-1 text-[0.68rem] text-muted">{client.tripType}</p>
+                    </div>
+                  </article>
+                ))}
+              </div>
+            ) : (
+              <div className="rounded-[1.5rem] border border-dashed border-glass-border bg-surface/40 px-6 py-16 text-center">
+                <p className="font-display text-lg text-foreground">Client stories coming soon</p>
+                <p className="mt-2 text-sm text-muted">
+                  Portraits from recent journeys will appear here as our archive grows.
+                </p>
+              </div>
+            )}
           </div>
         </section>
 
@@ -99,7 +115,11 @@ export function GalleryPage() {
             </div>
           </div>
 
-          <GalleryGrid className="mt-8" />
+          <GalleryGrid
+            className="mt-8"
+            items={galleryItems}
+            categories={galleryCategories}
+          />
         </section>
 
         <section className="mt-16 md:mt-20">
@@ -117,11 +137,21 @@ export function GalleryPage() {
             </p>
           </div>
 
-          <div className="mt-8 grid gap-5 lg:grid-cols-2">
-            {filmMoments.map((moment) => (
-              <GalleryMomentCard key={moment.id} moment={moment} compact />
-            ))}
-          </div>
+          {filmMoments.length > 0 ? (
+            <div className="mt-8 grid gap-5 lg:grid-cols-2">
+              {filmMoments.map((moment) => (
+                <GalleryMomentCard key={moment.id} moment={moment} compact />
+              ))}
+            </div>
+          ) : (
+            <div className="mt-8 rounded-[1.5rem] border border-dashed border-glass-border bg-surface/40 px-6 py-14 text-center">
+              <p className="font-display text-lg text-foreground">Short films coming soon</p>
+              <p className="mt-2 text-sm text-muted">
+                Cinematic moments from private journeys will appear here as they are added to the
+                archive.
+              </p>
+            </div>
+          )}
         </section>
 
         <PageCTA />
@@ -130,10 +160,13 @@ export function GalleryPage() {
   );
 }
 
-function GalleryMomentCard({ moment, compact = false }: { moment: GalleryMoment; compact?: boolean }) {
-  const isVideo = moment.type === "video";
-  const image = isVideo ? moment.poster : moment.image;
-
+function GalleryMomentCard({
+  moment,
+  compact = false,
+}: {
+  moment: GalleryFilmMoment;
+  compact?: boolean;
+}) {
   return (
     <article
       className={[
@@ -141,40 +174,31 @@ function GalleryMomentCard({ moment, compact = false }: { moment: GalleryMoment;
         compact ? "min-h-[20rem]" : "min-h-[18rem]",
       ].join(" ")}
     >
-      {isVideo ? (
-        <video
-          className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-[1.03]"
-          poster={image}
-          muted
-          loop
-          playsInline
-          preload="metadata"
-          controls
-        >
-          <source src={moment.src} type="video/mp4" />
-        </video>
-      ) : (
-        <SafeImage
-          src={image}
-          alt={moment.title}
-          className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-[1.04]"
-          loading="lazy"
-        />
-      )}
+      <video
+        className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-[1.03]"
+        poster={moment.poster}
+        muted
+        loop
+        playsInline
+        preload="metadata"
+        controls
+      >
+        <source src={moment.src} type="video/mp4" />
+      </video>
 
       <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/82 via-black/18 to-transparent" />
-      {isVideo && (
-        <div className="pointer-events-none absolute top-4 right-4 flex h-11 w-11 items-center justify-center rounded-full border border-white/25 bg-black/35 text-white backdrop-blur-md">
-          <Play size={17} fill="currentColor" aria-hidden />
-        </div>
-      )}
+      <div className="pointer-events-none absolute top-4 right-4 flex h-11 w-11 items-center justify-center rounded-full border border-white/25 bg-black/35 text-white backdrop-blur-md">
+        <Play size={17} fill="currentColor" aria-hidden />
+      </div>
       <div className="absolute inset-x-0 bottom-0 p-5 text-white">
         <p className="inline-flex items-center gap-2 text-[0.68rem] tracking-[0.2em] text-gold-light uppercase">
-          {isVideo ? <Film size={13} aria-hidden /> : <Camera size={13} aria-hidden />}
+          <Film size={13} aria-hidden />
           {moment.destination}
         </p>
         <h3 className="mt-2 font-display text-2xl leading-tight">{moment.title}</h3>
-        <p className="mt-2 max-w-md text-sm leading-relaxed text-white/78">{moment.caption}</p>
+        {moment.caption && (
+          <p className="mt-2 max-w-md text-sm leading-relaxed text-white/78">{moment.caption}</p>
+        )}
       </div>
     </article>
   );

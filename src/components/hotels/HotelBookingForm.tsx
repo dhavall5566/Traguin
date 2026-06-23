@@ -10,8 +10,17 @@ import {
   validateHotelBookingForm,
   type FieldErrors,
 } from "@/lib/form-validation";
+import { FormSubmissionError, submitFormSubmission } from "@/lib/api/form-submissions";
 import { cn } from "@/lib/utils";
 import type { Hotel } from "@/types";
+import { getHotelDestinationLabel } from "@/lib/hotels";
+
+function bookingMessageForHotel(hotel: Hotel): string {
+  const destination = getHotelDestinationLabel(hotel);
+  return destination
+    ? `I would like to request a booking at ${hotel.name}, ${destination}.`
+    : `I would like to request a booking at ${hotel.name}.`;
+}
 
 type HotelBookingFormProps = {
   hotel: Hotel;
@@ -24,10 +33,12 @@ export function HotelBookingForm({ hotel }: HotelBookingFormProps) {
     phone: "",
     travelers: "2",
     dates: "",
-    message: `I would like to request a booking at ${hotel.name}, ${hotel.destination}.`,
+    message: bookingMessageForHotel(hotel),
   });
   const [errors, setErrors] = useState<FieldErrors>({});
   const [submitted, setSubmitted] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState<string | null>(null);
 
   useEffect(() => {
     setForm({
@@ -36,7 +47,7 @@ export function HotelBookingForm({ hotel }: HotelBookingFormProps) {
       phone: "",
       travelers: "2",
       dates: "",
-      message: `I would like to request a booking at ${hotel.name}, ${hotel.destination}.`,
+      message: bookingMessageForHotel(hotel),
     });
     setErrors({});
     setSubmitted(false);
@@ -47,12 +58,42 @@ export function HotelBookingForm({ hotel }: HotelBookingFormProps) {
     clearFieldError(setErrors, key);
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     const nextErrors = validateHotelBookingForm(form);
     setErrors(nextErrors);
     if (hasErrors(nextErrors)) return;
-    setSubmitted(true);
+
+    setSubmitting(true);
+    setSubmitError(null);
+    try {
+      await submitFormSubmission({
+        form_type: "hotel_booking",
+        name: form.name.trim(),
+        email: form.email.trim().toLowerCase(),
+        phone: form.phone.trim(),
+        related_hotel_id: hotel.id,
+        payload: {
+          name: form.name.trim(),
+          email: form.email.trim().toLowerCase(),
+          phone: form.phone.trim(),
+          travelers: Number(form.travelers),
+          dates: form.dates.trim(),
+          message: form.message.trim(),
+          hotel_id: hotel.id,
+          hotel_name: hotel.name,
+        },
+      });
+      setSubmitted(true);
+    } catch (error) {
+      setSubmitError(
+        error instanceof FormSubmissionError
+          ? error.message
+          : "Something went wrong. Please try again."
+      );
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   return (
@@ -83,6 +124,14 @@ export function HotelBookingForm({ hotel }: HotelBookingFormProps) {
               role="alert"
             >
               Please correct the highlighted fields before submitting.
+            </p>
+          )}
+          {submitError && (
+            <p
+              className="rounded-xl border border-red-400/30 bg-red-400/10 px-4 py-3 text-sm text-red-400"
+              role="alert"
+            >
+              {submitError}
             </p>
           )}
           <div className="grid gap-4 sm:grid-cols-2">
@@ -152,8 +201,8 @@ export function HotelBookingForm({ hotel }: HotelBookingFormProps) {
               aria-invalid={!!errors.message}
             />
           </FormField>
-          <MagneticButton type="submit" variant="primary" className="w-full sm:w-auto">
-            Submit Booking Request
+          <MagneticButton type="submit" variant="primary" className="w-full sm:w-auto" disabled={submitting}>
+            {submitting ? "Submitting…" : "Submit Booking Request"}
           </MagneticButton>
         </div>
       )}

@@ -17,6 +17,7 @@ import { MagneticButton } from "@/components/ui/MagneticButton";
 import { contactInfo } from "@/data/contact";
 import { itinerarySecondaryCta } from "@/data/site";
 import { getDestinationGalleryImages } from "@/lib/destination-images";
+import type { Hotel } from "@/types";
 import { resolveItineraryHotelCard } from "@/lib/hotels";
 import { getItineraryRating, getItineraryReviewCount } from "@/lib/itineraries";
 import { scrollToInquirySection } from "@/lib/scroll-to-inquiry";
@@ -24,17 +25,27 @@ import { scrollToInquirySection } from "@/lib/scroll-to-inquiry";
 type ItineraryDetailProps = {
   itinerary: Itinerary;
   destinationName?: string;
+  hotelsCatalog?: Hotel[];
+  backHref?: string;
+  backLabel?: string;
 };
 
-export function ItineraryDetail({ itinerary, destinationName }: ItineraryDetailProps) {
+export function ItineraryDetail({
+  itinerary,
+  destinationName,
+  hotelsCatalog,
+  backHref,
+  backLabel,
+}: ItineraryDetailProps) {
   const destinationGallery = getDestinationGalleryImages(
     itinerary.destinationId,
     itinerary.heroImage
   );
 
   const hotelCards = useMemo(
-    () => itinerary.hotels.map(resolveItineraryHotelCard),
-    [itinerary.hotels]
+    () =>
+      itinerary.hotels.map((hotel) => resolveItineraryHotelCard(hotel, hotelsCatalog)),
+    [itinerary.hotels, hotelsCatalog]
   );
 
   const hotelSubtitle = itinerary.hotels.some((h) => h.category)
@@ -63,6 +74,8 @@ export function ItineraryDetail({ itinerary, destinationName }: ItineraryDetailP
         destinationName={destinationName}
         gallery={destinationGallery}
         whatsappHref={whatsappHref}
+        backHref={backHref}
+        backLabel={backLabel}
       />
 
       <ItineraryMetaStrip itinerary={itinerary} rating={rating} reviewCount={reviewCount} />
@@ -155,7 +168,11 @@ export function ItineraryDetail({ itinerary, destinationName }: ItineraryDetailP
         <div className="site-container">
           <div className="grid items-start gap-10 lg:grid-cols-5 lg:gap-12">
             <ItineraryReveal3D variant="left" className="lg:col-span-3 lg:sticky lg:top-28 lg:self-start">
-              <ItineraryInquiryForm itineraryTitle={itinerary.title} itinerarySlug={itinerary.slug} />
+              <ItineraryInquiryForm
+                itineraryTitle={itinerary.title}
+                itinerarySlug={itinerary.slug}
+                relatedItineraryId={itinerary.cmsId}
+              />
             </ItineraryReveal3D>
 
             <ItineraryReveal3D variant="right" delay={0.06} className="lg:col-span-2">

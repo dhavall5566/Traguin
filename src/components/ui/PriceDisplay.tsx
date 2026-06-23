@@ -1,4 +1,4 @@
-import { formatPrice } from "@/lib/utils";
+import { formatPriceLabel, isPriceOnRequest } from "@/lib/utils";
 import { cn } from "@/lib/utils";
 
 export type PriceSize = "sm" | "md" | "lg";
@@ -38,6 +38,8 @@ export interface PriceDisplayProps {
   amount: number;
   /** Uppercased label above the price. Omit for amount-only. */
   label?: string | null;
+  /** When true, or when amount is 0/missing, shows "Inquire for price". */
+  onRequest?: boolean;
   suffix?: string;
   note?: string;
   size?: PriceSize;
@@ -45,9 +47,16 @@ export interface PriceDisplayProps {
   className?: string;
 }
 
+const inquireClass: Record<PriceSize, string> = {
+  sm: "text-sm",
+  md: "text-lg",
+  lg: "text-2xl",
+};
+
 export function PriceDisplay({
   amount,
   label = "From",
+  onRequest,
   suffix,
   note,
   size = "md",
@@ -56,6 +65,7 @@ export function PriceDisplay({
 }: PriceDisplayProps) {
   const showLabel = label != null && label.length > 0;
   const tones = variantStyles[variant];
+  const priceOnRequest = isPriceOnRequest(amount, onRequest);
 
   return (
     <div className={cn("font-body", className)}>
@@ -72,14 +82,14 @@ export function PriceDisplay({
       ) : null}
       <p
         className={cn(
-          "font-bold tracking-tight",
-          amountClass[size],
+          priceOnRequest ? "font-semibold tracking-tight" : "font-bold tracking-tight",
+          priceOnRequest ? inquireClass[size] : amountClass[size],
           tones.amount,
           showLabel && "mt-0.5"
         )}
       >
-        {formatPrice(amount)}
-        {suffix ? (
+        {formatPriceLabel(amount, onRequest)}
+        {!priceOnRequest && suffix ? (
           <span className={cn("ml-1 text-xs font-medium", tones.suffix)}>{suffix}</span>
         ) : null}
       </p>
@@ -93,16 +103,27 @@ export function PriceDisplay({
 /** Inline price text matching project price typography (filters, compact rows). */
 export function PriceAmount({
   amount,
+  onRequest,
   size = "md",
   className,
 }: {
   amount: number;
+  onRequest?: boolean;
   size?: PriceSize;
   className?: string;
 }) {
+  const priceOnRequest = isPriceOnRequest(amount, onRequest);
+
   return (
-    <span className={cn("font-body font-bold tracking-tight text-gold", amountClass[size], className)}>
-      {formatPrice(amount)}
+    <span
+      className={cn(
+        "font-body tracking-tight text-gold",
+        priceOnRequest ? "font-semibold" : "font-bold",
+        priceOnRequest ? inquireClass[size] : amountClass[size],
+        className
+      )}
+    >
+      {formatPriceLabel(amount, onRequest)}
     </span>
   );
 }

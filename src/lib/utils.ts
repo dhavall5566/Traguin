@@ -12,3 +12,11 @@ export function formatPrice(amount: number, currency = "INR") {
     maximumFractionDigits: 0,
   }).format(amount);
 }
+
+export function isPriceOnRequest(amount: number, onRequest?: boolean) {
+  return onRequest ?? amount <= 0;
+}
+
+export function formatPriceLabel(amount: number, onRequest?: boolean) {
+  return isPriceOnRequest(amount, onRequest) ? "Inquire for price" : formatPrice(amount);
+}

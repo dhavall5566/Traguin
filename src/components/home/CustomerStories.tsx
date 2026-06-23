@@ -4,16 +4,16 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
 import { ChevronLeft, ChevronRight, Quote, ArrowUpRight } from "lucide-react";
-import { testimonials } from "@/data/moods";
 import { SectionHeader } from "@/components/ui/SectionHeader";
 import { MagneticButton } from "@/components/ui/MagneticButton";
 import { HomeSection, HomeSectionActions } from "@/components/home/HomeSection";
 import { primaryCta } from "@/data/site";
 import { cn } from "@/lib/utils";
+import type { HomeTestimonial } from "@/lib/api/homepage";
 
 const AUTO_ADVANCE_MS = 4000;
 
-export function CustomerStories() {
+export function CustomerStories({ testimonials }: { testimonials: HomeTestimonial[] }) {
   const [index, setIndex] = useState(0);
   const [paused, setPaused] = useState(false);
   const directionRef = useRef(1);
@@ -119,6 +119,8 @@ export function CustomerStories() {
     },
     { dependencies: [index] }
   );
+
+  if (testimonials.length === 0) return null;
 
   return (
     <HomeSection>

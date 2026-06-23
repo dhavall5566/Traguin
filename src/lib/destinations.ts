@@ -5,7 +5,16 @@ import {
   getItineraryRating,
   getItineraryReviewCount,
 } from "@/lib/itineraries";
+import type { IndiaRegion } from "@/lib/destination-listing-types";
 import type { TravelMood } from "@/types";
+
+export type {
+  DestinationCategoryRef,
+  DestinationItineraryPreview,
+  DestinationListing,
+  IndiaRegion,
+} from "@/lib/destination-listing-types";
+export { INDIA_REGION_FILTERS } from "@/lib/destination-listing-types";
 
 function destinationHash(id: string) {
   let hash = 0;
@@ -30,28 +39,6 @@ export function getDestinationReviewCount(destinationId: string, rating?: number
   return 42 + (hash % 120) + Math.round(resolvedRating * 8);
 }
 
-export type DestinationCategoryRef = {
-  id: string;
-  title: string;
-};
-
-export type IndiaRegion = "north" | "east" | "south" | "west";
-
-export type DestinationListing = {
-  id: string;
-  name: string;
-  description: string;
-  image: string;
-  startingPrice: number;
-  categoryId: string;
-  categoryTitle: string;
-  categories: DestinationCategoryRef[];
-  region: "domestic" | "international";
-  indiaRegion?: IndiaRegion;
-  moods: TravelMood[];
-  hasItinerary: boolean;
-};
-
 const INDIA_REGION_BY_DESTINATION: Partial<Record<string, IndiaRegion>> = {
   kashmir: "north",
   himachal: "north",
@@ -59,14 +46,6 @@ const INDIA_REGION_BY_DESTINATION: Partial<Record<string, IndiaRegion>> = {
   kerala: "south",
   goa: "west",
 };
-
-export const INDIA_REGION_FILTERS = [
-  { id: "all", label: "All areas" },
-  { id: "north", label: "North" },
-  { id: "east", label: "East" },
-  { id: "south", label: "South" },
-  { id: "west", label: "West" },
-] as const;
 
 export const INTERNATIONAL_COLLECTION_FILTERS = destinationCategories
   .filter((category) => category.id !== "indian-escapes")

@@ -2,7 +2,8 @@
 
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
-import type { ExperienceDetail } from "@/data/experienceDetails";
+import type { ExperienceDetail } from "@/lib/experience-types";
+import { iconFromKey } from "@/lib/icons";
 import { SafeImage } from "@/components/ui/SafeImage";
 import { secondaryCta } from "@/data/site";
 
@@ -24,11 +25,13 @@ export function ExperienceDetailModalContent({ experience }: ExperienceDetailMod
           className="absolute inset-0 bg-gradient-to-t from-black/55 via-black/10 to-transparent md:bg-gradient-to-r md:from-black/35 md:via-transparent md:to-transparent"
           aria-hidden
         />
+        {experience.quote && (
         <div className="absolute inset-x-0 bottom-0 hidden p-6 md:block lg:p-8">
           <blockquote className="max-w-sm border-l-2 border-gold/80 pl-4 text-sm leading-relaxed text-white/90 italic">
             &ldquo;{experience.quote}&rdquo;
           </blockquote>
         </div>
+        )}
       </div>
 
       <div className="flex min-h-0 min-w-0 flex-col">
@@ -48,6 +51,7 @@ export function ExperienceDetailModalContent({ experience }: ExperienceDetailMod
             </p>
           </header>
 
+          {experience.stats.length > 0 && (
           <dl className="experience-modal-stats mt-6 grid grid-cols-3 gap-3 sm:mt-7 sm:gap-4">
             {experience.stats.map((stat) => (
               <div
@@ -63,29 +67,36 @@ export function ExperienceDetailModalContent({ experience }: ExperienceDetailMod
               </div>
             ))}
           </dl>
+          )}
 
+          {experience.offers.length > 0 && (
           <div className="mt-7 sm:mt-8">
             <p className="text-[10px] font-bold tracking-[0.28em] text-muted uppercase">
               What&apos;s included
             </p>
             <ul className="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4 lg:gap-4">
-              {experience.offers.map((offer) => (
+              {experience.offers.map((offer) => {
+                const OfferIcon = iconFromKey(offer.iconKey);
+                return (
                 <li
                   key={offer.title}
                   className="flex min-h-0 flex-col rounded-2xl border border-glass-border bg-[color-mix(in_srgb,var(--bento-warm)_50%,var(--surface))] p-4 lg:p-5"
                 >
                   <span className="flex h-10 w-10 items-center justify-center rounded-full border border-gold/25 bg-gold/10 text-gold">
-                    <offer.icon size={18} strokeWidth={1.75} aria-hidden />
+                    <OfferIcon size={18} strokeWidth={1.75} aria-hidden />
                   </span>
                   <h3 className="mt-4 text-sm font-semibold text-foreground">{offer.title}</h3>
                   <p className="mt-2 text-xs leading-relaxed text-muted sm:text-[13px]">
                     {offer.description}
                   </p>
                 </li>
-              ))}
+                );
+              })}
             </ul>
           </div>
+          )}
 
+          {experience.process.length > 0 && (
           <div className="experience-modal-mid mt-7 sm:mt-8">
             <p className="text-[10px] font-bold tracking-[0.28em] text-muted uppercase">
               How we work
@@ -108,12 +119,15 @@ export function ExperienceDetailModalContent({ experience }: ExperienceDetailMod
               ))}
             </ol>
           </div>
+          )}
 
+          {experience.quote && (
           <blockquote className="mt-7 rounded-2xl border border-gold/20 bg-[color-mix(in_srgb,var(--gold)_6%,var(--surface))] px-5 py-4 md:hidden">
             <p className="text-sm leading-relaxed text-muted italic">
               &ldquo;{experience.quote}&rdquo;
             </p>
           </blockquote>
+          )}
         </div>
 
         <footer className="shrink-0 border-t border-glass-border bg-[color-mix(in_srgb,var(--bento-warm)_35%,var(--surface))] px-6 py-5 sm:px-8 sm:py-6 lg:px-10">

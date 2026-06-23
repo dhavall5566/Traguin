@@ -2,7 +2,7 @@
 
 import { useEffect } from "react";
 import { X } from "lucide-react";
-import type { ExperienceDetail } from "@/data/experienceDetails";
+import type { ExperienceDetail } from "@/lib/experience-types";
 import { ExperienceDetailModalContent } from "@/components/experiences/ExperienceDetailModalContent";
 import { useModalScrollLock } from "@/lib/use-modal-scroll-lock";
 

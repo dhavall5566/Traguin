@@ -3,9 +3,6 @@
 import { useRef } from "react";
 import Link from "next/link";
 import { ArrowUpRight } from "lucide-react";
-import { featuredDestinations } from "@/data/featuredDestinations";
-import { getItineraryByDestinationId } from "@/lib/itineraries";
-import { getDestinationById } from "@/lib/destinations";
 import { SectionHeader } from "@/components/ui/SectionHeader";
 import { Reveal3D } from "@/components/ui/Reveal3D";
 import { DestinationCard } from "@/components/ui/DestinationCard";
@@ -13,10 +10,13 @@ import { MagneticButton } from "@/components/ui/MagneticButton";
 import { HomeSection, HomeSectionActions } from "@/components/home/HomeSection";
 import { useStaggerReveal3D } from "@/hooks/useStaggerReveal3D";
 import { primaryCta } from "@/data/site";
+import type { HomeFeaturedDestination } from "@/lib/api/homepage";
 
-export function FeaturedDestinations() {
+export function FeaturedDestinations({ destinations }: { destinations: HomeFeaturedDestination[] }) {
   const gridRef = useRef<HTMLDivElement>(null);
   useStaggerReveal3D(gridRef, { variant: "flip", stagger: 0.12 });
+
+  if (destinations.length === 0) return null;
 
   return (
     <HomeSection id="destinations">
@@ -28,31 +28,23 @@ export function FeaturedDestinations() {
         />
       </Reveal3D>
       <div ref={gridRef} className="home-grid mt-10 sm:grid-cols-2 lg:mt-12 lg:grid-cols-3 [perspective:1400px]">
-        {featuredDestinations.map((dest) => {
-          const itinerary = getItineraryByDestinationId(dest.id);
-          const listing = getDestinationById(dest.id);
-          const regionLabel =
-            listing?.region === "domestic" ? "India" : listing ? "International" : undefined;
-          return (
-            <div key={dest.id} data-reveal-item className="[transform-style:preserve-3d]">
-              <DestinationCard
-                destinationId={dest.id}
-                name={itinerary?.title ?? dest.name}
-                location={itinerary?.destination ?? dest.name}
-                regionLabel={regionLabel}
-                description={
-                  itinerary ? itinerary.highlights.slice(0, 3).join(" ") : dest.description
-                }
-                image={itinerary?.heroImage ?? dest.image}
-                startingPrice={itinerary?.startingPrice ?? dest.startingPrice}
-                href={`/destinations/${dest.id}`}
-                cta={itinerary ? "Discover Journey" : "View Journey"}
-                duration={itinerary?.duration}
-                tilt
-              />
-            </div>
-          );
-        })}
+        {destinations.map((dest) => (
+          <div key={dest.id} data-reveal-item className="[transform-style:preserve-3d]">
+            <DestinationCard
+              destinationId={dest.slug}
+              name={dest.name}
+              location={dest.name}
+              regionLabel={dest.regionLabel}
+              description={dest.description}
+              image={dest.image}
+              startingPrice={dest.startingPrice}
+              href={dest.href}
+              cta={dest.cta}
+              duration={dest.duration}
+              tilt
+            />
+          </div>
+        ))}
       </div>
       <Reveal3D variant="scale" delay={0.1}>
         <HomeSectionActions className="mt-10 lg:mt-12">

@@ -20,13 +20,13 @@ import {
   Route,
   type LucideIcon,
 } from "lucide-react";
-import { destinationCategories } from "@/data/destinationCategories";
-import {
-  getAllDestinations,
-  INDIA_REGION_FILTERS,
-  INTERNATIONAL_COLLECTION_FILTERS,
-} from "@/lib/destinations";
-import { getItineraryByDestinationId } from "@/lib/itineraries";
+import type {
+  DestinationItineraryPreview,
+  DestinationListing,
+  IndiaRegion,
+} from "@/lib/destination-listing-types";
+import { INDIA_REGION_FILTERS } from "@/lib/destination-listing-types";
+import type { DestinationCategoryGroup } from "@/lib/api/destinations";
 import { DestinationCard } from "@/components/ui/DestinationCard";
 import { MagneticButton } from "@/components/ui/MagneticButton";
 import { FilterDropdown } from "@/components/ui/FilterDropdown";
@@ -92,16 +92,23 @@ type MoodFilterId = (typeof MOOD_FILTERS)[number]["id"];
 type ItineraryFilterId = (typeof ITINERARY_FILTERS)[number]["id"];
 type SortId = (typeof SORT_OPTIONS)[number]["id"];
 
-const allDestinations = getAllDestinations();
+type DestinationsPageProps = {
+  destinations: DestinationListing[];
+  categories: DestinationCategoryGroup[];
+  internationalCollectionFilters: { id: string; label: string }[];
+  itineraryByDestinationSlug: Record<string, DestinationItineraryPreview>;
+};
 
-const ALL_COLLECTION_OPTIONS = [
-  { value: "all", label: "All collections", icon: Globe },
-  ...destinationCategories.map((category) => ({
-    value: category.id,
-    label: category.title,
-    icon: MapPin,
-  })),
-];
+function buildCollectionOptions(categories: DestinationCategoryGroup[]) {
+  return [
+    { value: "all", label: "All collections", icon: Globe },
+    ...categories.map((category) => ({
+      value: category.id,
+      label: category.title,
+      icon: MapPin,
+    })),
+  ];
+}
 
 const INDIA_AREA_OPTIONS = [
   { value: "all", label: "All areas", icon: Globe },
@@ -112,28 +119,36 @@ const INDIA_AREA_OPTIONS = [
   })),
 ];
 
-const INTERNATIONAL_COLLECTION_OPTIONS = [
-  { value: "all", label: "All collections", icon: Globe },
-  ...INTERNATIONAL_COLLECTION_FILTERS.map((category) => ({
-    value: category.id,
-    label: category.label,
-    icon: MapPin,
-  })),
-];
+function getInternationalCollectionOptions(
+  internationalCollectionFilters: { id: string; label: string }[]
+) {
+  return [
+    { value: "all", label: "All collections", icon: Globe },
+    ...internationalCollectionFilters.map((category) => ({
+      value: category.id,
+      label: category.label,
+      icon: MapPin,
+    })),
+  ];
+}
 
 function getSubRegionLabel(regionFilter: RegionFilterId) {
   if (regionFilter === "domestic") return "Area";
   return "Collection";
 }
 
-function getSubRegionOptions(regionFilter: RegionFilterId) {
+function getSubRegionOptions(
+  regionFilter: RegionFilterId,
+  allCollectionOptions: ReturnType<typeof buildCollectionOptions>,
+  internationalCollectionOptions: ReturnType<typeof getInternationalCollectionOptions>
+) {
   if (regionFilter === "domestic") return INDIA_AREA_OPTIONS;
-  if (regionFilter === "international") return INTERNATIONAL_COLLECTION_OPTIONS;
-  return ALL_COLLECTION_OPTIONS;
+  if (regionFilter === "international") return internationalCollectionOptions;
+  return allCollectionOptions;
 }
 
 function matchesSubRegionFilter(
-  dest: (typeof allDestinations)[number],
+  dest: DestinationListing,
   categoryFilter: string,
   regionFilter: RegionFilterId
 ) {
@@ -148,19 +163,25 @@ function matchesSubRegionFilter(
   return dest.categories.some((category) => category.id === categoryFilter);
 }
 
-function getSubRegionChipLabel(categoryFilter: string, regionFilter: RegionFilterId) {
+function getSubRegionChipLabel(
+  categoryFilter: string,
+  regionFilter: RegionFilterId,
+  categories: DestinationCategoryGroup[],
+  internationalCollectionFilters: { id: string; label: string }[]
+) {
   if (regionFilter === "domestic") {
     return INDIA_REGION_FILTERS.find((region) => region.id === categoryFilter)?.label ?? categoryFilter;
   }
   return (
-    INTERNATIONAL_COLLECTION_FILTERS.find((category) => category.id === categoryFilter)?.label ??
-    destinationCategories.find((category) => category.id === categoryFilter)?.title ??
+    internationalCollectionFilters.find((category) => category.id === categoryFilter)?.label ??
+    categories.find((category) => category.id === categoryFilter)?.title ??
     categoryFilter
   );
 }
 
 function DestinationGrid({
   destinations,
+  itineraryByDestinationSlug,
 }: {
   destinations: {
     id: string;
@@ -173,11 +194,12 @@ function DestinationGrid({
     duration?: string;
     hasItinerary: boolean;
   }[];
+  itineraryByDestinationSlug: Record<string, DestinationItineraryPreview>;
 }) {
   return (
     <div className="page-content-grid sm:grid-cols-2 lg:grid-cols-3">
       {destinations.map((dest) => {
-        const itinerary = getItineraryByDestinationId(dest.id);
+        const itinerary = itineraryByDestinationSlug[dest.id];
         return (
           <DestinationCard
             key={dest.id}
@@ -206,7 +228,12 @@ function parseRegionParam(value: string | null): RegionFilterId {
   return "all";
 }
 
-export function DestinationsPage() {
+export function DestinationsPage({
+  destinations,
+  categories,
+  internationalCollectionFilters,
+  itineraryByDestinationSlug,
+}: DestinationsPageProps) {
   const searchParams = useSearchParams();
   const [searchQuery, setSearchQuery] = useState("");
   const [categoryFilter, setCategoryFilter] = useState("all");
@@ -230,9 +257,15 @@ export function DestinationsPage() {
     });
   }, []);
 
+  const allCollectionOptions = useMemo(() => buildCollectionOptions(categories), [categories]);
+  const internationalCollectionOptions = useMemo(
+    () => getInternationalCollectionOptions(internationalCollectionFilters),
+    [internationalCollectionFilters]
+  );
+
   const subRegionOptions = useMemo(
-    () => getSubRegionOptions(regionFilter),
-    [regionFilter]
+    () => getSubRegionOptions(regionFilter, allCollectionOptions, internationalCollectionOptions),
+    [allCollectionOptions, internationalCollectionOptions, regionFilter]
   );
 
   const subRegionLabel = getSubRegionLabel(regionFilter);
@@ -254,7 +287,7 @@ export function DestinationsPage() {
   const filteredDestinations = useMemo(() => {
     const query = searchQuery.trim().toLowerCase();
 
-    const matches = allDestinations.filter((dest) => {
+    const matches = destinations.filter((dest) => {
       if (query) {
         const indiaArea =
           dest.indiaRegion &&
@@ -286,6 +319,7 @@ export function DestinationsPage() {
     });
   }, [
     categoryFilter,
+    destinations,
     itineraryFilter,
     moodFilter,
     priceFilter,
@@ -307,7 +341,12 @@ export function DestinationsPage() {
     if (categoryFilter !== "all") {
       chips.push({
         key: "category",
-        label: getSubRegionChipLabel(categoryFilter, regionFilter),
+        label: getSubRegionChipLabel(
+          categoryFilter,
+          regionFilter,
+          categories,
+          internationalCollectionFilters
+        ),
         clear: () => setCategoryFilter("all"),
       });
     }
@@ -340,7 +379,16 @@ export function DestinationsPage() {
       });
     }
     return chips;
-  }, [categoryFilter, itineraryFilter, moodFilter, priceFilter, regionFilter, searchQuery]);
+  }, [
+    categories,
+    categoryFilter,
+    internationalCollectionFilters,
+    itineraryFilter,
+    moodFilter,
+    priceFilter,
+    regionFilter,
+    searchQuery,
+  ]);
 
   const clearFilters = () => {
     setSearchQuery("");
@@ -354,16 +402,8 @@ export function DestinationsPage() {
 
   const filteredByCategory = useMemo(() => {
     if (hasActiveFilters) return [];
-
-    return destinationCategories
-      .map((category) => ({
-        ...category,
-        destinations: category.destinations
-          .map((dest) => allDestinations.find((d) => d.id === dest.id))
-          .filter((dest): dest is (typeof allDestinations)[number] => !!dest),
-      }))
-      .filter((category) => category.destinations.length > 0);
-  }, [hasActiveFilters]);
+    return categories.filter((category) => category.destinations.length > 0);
+  }, [categories, hasActiveFilters]);
 
   const heroContent = useMemo(
     () => getDestinationsHeroContent(regionFilter),
@@ -526,7 +566,7 @@ export function DestinationsPage() {
                 </MagneticButton>
               )}
             </div>
-          ) : hasActiveFilters ? (
+          ) : hasActiveFilters || filteredByCategory.length === 0 ? (
             <div className="mt-12">
               <DestinationGrid
                 destinations={filteredDestinations.map((dest) => ({
@@ -539,6 +579,7 @@ export function DestinationsPage() {
                   startingPrice: dest.startingPrice,
                   hasItinerary: dest.hasItinerary,
                 }))}
+                itineraryByDestinationSlug={itineraryByDestinationSlug}
               />
             </div>
           ) : (
@@ -559,6 +600,7 @@ export function DestinationsPage() {
                         startingPrice: dest.startingPrice,
                         hasItinerary: dest.hasItinerary,
                       }))}
+                      itineraryByDestinationSlug={itineraryByDestinationSlug}
                     />
                   </div>
                 </section>

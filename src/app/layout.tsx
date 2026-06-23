@@ -3,15 +3,7 @@ import Script from "next/script";
 import { cookies } from "next/headers";
 import { isTheme, themeInitScript, THEME_COOKIE_NAME, type Theme } from "@/lib/theme";
 import "./globals.css";
-import { DevChunkRecovery } from "@/components/providers/DevChunkRecovery";
-import { LenisProvider } from "@/components/providers/LenisProvider";
-import { PlannerScrollHandler } from "@/components/providers/PlannerScrollHandler";
-import { PageTransition } from "@/components/providers/PageTransitionProvider";
 import { ThemeProvider } from "@/components/providers/ThemeProvider";
-import { Navigation } from "@/components/layout/Navigation";
-import { Footer } from "@/components/layout/Footer";
-import { NikiAgent } from "@/components/layout/NikiAgent";
-import { PageLoader } from "@/components/layout/PageLoader";
 
 export const metadata: Metadata = {
   title: {
@@ -72,24 +64,7 @@ export default async function RootLayout({
           strategy="beforeInteractive"
           dangerouslySetInnerHTML={{ __html: themeInitScript }}
         />
-        <Script
-          id="traguin-page-loader-init"
-          strategy="beforeInteractive"
-          dangerouslySetInnerHTML={{
-            __html: `document.documentElement.classList.add("page-loader-active");`,
-          }}
-        />
-        <ThemeProvider>
-          <PageLoader />
-          <DevChunkRecovery />
-          <LenisProvider>
-            <PlannerScrollHandler />
-            <Navigation />
-            <PageTransition>{children}</PageTransition>
-            <Footer />
-          </LenisProvider>
-          <NikiAgent />
-        </ThemeProvider>
+        <ThemeProvider>{children}</ThemeProvider>
       </body>
     </html>
   );

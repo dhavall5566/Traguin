@@ -11,17 +11,20 @@ import { MagneticButton } from "@/components/ui/MagneticButton";
 import { ItineraryInquiryForm } from "@/components/itineraries/ItineraryInquiryForm";
 import { contactInfo } from "@/data/contact";
 import { itineraryPrimaryCta, itinerarySecondaryCta, primaryCta } from "@/data/site";
+import type { Hotel } from "@/types";
 import { getHotelsByDestinationName, resolveCatalogHotelCard } from "@/lib/hotels";
 import { scrollToInquirySection } from "@/lib/scroll-to-inquiry";
 
 type DestinationDetailProps = {
   destination: DestinationListing;
+  hotelsCatalog?: Hotel[];
 };
 
-export function DestinationDetail({ destination }: DestinationDetailProps) {
+export function DestinationDetail({ destination, hotelsCatalog }: DestinationDetailProps) {
   const hotelCards = useMemo(
-    () => getHotelsByDestinationName(destination.name).map(resolveCatalogHotelCard),
-    [destination.name]
+    () =>
+      getHotelsByDestinationName(destination.name, 12, hotelsCatalog).map(resolveCatalogHotelCard),
+    [destination.name, hotelsCatalog]
   );
 
   const whatsappMessage = encodeURIComponent(

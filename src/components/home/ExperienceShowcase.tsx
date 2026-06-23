@@ -3,8 +3,7 @@
 import { useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import { ArrowUpRight } from "lucide-react";
-import { experienceShowcase, type ExperienceShowcaseItem } from "@/data/experienceShowcase";
-import { getExperienceDetail } from "@/data/experienceDetails";
+import type { ExperienceShowcaseItem, ExperienceDetail } from "@/lib/experience-types";
 import { ExperienceDetailModal } from "@/components/experiences/ExperienceDetailModal";
 import { SafeImage } from "@/components/ui/SafeImage";
 import { SectionHeader } from "@/components/ui/SectionHeader";
@@ -217,15 +216,23 @@ function ExperienceBentoRow({
   );
 }
 
-export function ExperienceShowcase() {
+export function ExperienceShowcase({
+  items,
+  experienceDetailsBySlug = {},
+}: {
+  items?: ExperienceShowcaseItem[];
+  experienceDetailsBySlug?: Record<string, ExperienceDetail>;
+}) {
   const [activeSlug, setActiveSlug] = useState<string | null>(null);
   const [hoveredId, setHoveredId] = useState<string | null>(null);
-  const activeExperience = activeSlug ? getExperienceDetail(activeSlug) : null;
+  const activeExperience = activeSlug ? experienceDetailsBySlug[activeSlug] : null;
   const bentoRef = useRef<HTMLDivElement>(null);
   useStaggerReveal3D(bentoRef, { variant: "left", stagger: 0.18 });
 
-  const topRow = experienceShowcase.slice(0, 2);
-  const bottomRow = experienceShowcase.slice(2, 4);
+  if (!items || items.length === 0) return null;
+
+  const topRow = items.slice(0, 2);
+  const bottomRow = items.slice(2, 4);
 
   return (
     <>

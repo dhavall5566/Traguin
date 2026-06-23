@@ -19,6 +19,8 @@ type ItineraryHeroProps = {
   destinationName?: string;
   gallery: string[];
   whatsappHref: string;
+  backHref?: string;
+  backLabel?: string;
 };
 
 export function ItineraryHero({
@@ -26,6 +28,8 @@ export function ItineraryHero({
   destinationName,
   gallery,
   whatsappHref,
+  backHref = "/destinations",
+  backLabel = "All Destinations",
 }: ItineraryHeroProps) {
   const sectionRef = useRef<HTMLElement>(null);
   const imageWrapRef = useRef<HTMLDivElement>(null);
@@ -98,11 +102,11 @@ export function ItineraryHero({
         <div className="site-container flex flex-1 flex-col pt-28 pb-10 md:pt-32 md:pb-14">
           <Link
             ref={backRef}
-            href="/destinations"
+            href={backHref}
             className="itinerary-hero__back inline-flex w-fit items-center gap-2 rounded-full border border-white/20 bg-black/25 px-4 py-2 text-[10px] tracking-[0.16em] text-white/90 uppercase backdrop-blur-md transition-colors hover:border-white/40 hover:bg-black/35 hover:text-white"
           >
             <ArrowLeft size={13} />
-            All Destinations
+            {backLabel}
           </Link>
 
           <div className="mt-auto grid gap-8 lg:grid-cols-[1fr_auto] lg:items-end lg:gap-14">

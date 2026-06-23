@@ -12,6 +12,7 @@ interface MagneticButtonProps {
   onClick?: (e: MouseEvent<HTMLButtonElement | HTMLAnchorElement>) => void;
   type?: "button" | "submit" | "reset";
   variant?: "primary" | "secondary" | "ghost";
+  disabled?: boolean;
 }
 
 export function MagneticButton({
@@ -22,6 +23,7 @@ export function MagneticButton({
   onClick,
   type = "button",
   variant = "primary",
+  disabled = false,
 }: MagneticButtonProps) {
   const variants = {
     primary:
@@ -34,6 +36,7 @@ export function MagneticButton({
   const classes = cn(
     "relative inline-flex items-center justify-center gap-2 rounded-full px-8 py-4 text-sm font-medium tracking-wide transition-colors duration-300",
     variants[variant],
+    disabled && "pointer-events-none opacity-60",
     className
   );
 
@@ -54,7 +57,7 @@ export function MagneticButton({
   }
 
   return (
-    <button type={type} onClick={onClick} className={classes} data-cursor="pointer">
+    <button type={type} onClick={onClick} className={classes} data-cursor="pointer" disabled={disabled}>
       {children}
     </button>
   );

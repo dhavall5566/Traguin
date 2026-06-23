@@ -1,4 +1,4 @@
-import { hotels } from "@/data/hotels";
+import { hotels as fallbackHotels } from "@/data/hotels";
 import { getHotelGalleryImages } from "@/lib/hotel-images";
 import type { ItineraryHotel } from "@/types/itinerary";
 import type { Hotel } from "@/types";
@@ -10,7 +10,7 @@ const normalize = (value: string) =>
     .replace(/[^a-z0-9]+/g, " ")
     .trim();
 
-/** Itinerary hotel names → luxury stays catalog ids */
+/** Itinerary hotel names → luxury stays catalog slugs (legacy hardcoded fallback) */
 const NAME_TO_ID: Record<string, string> = {
   "amandari ubud": "amandari-ubud",
   "bulgari resort bali": "bulgari-bali",
@@ -41,8 +41,29 @@ const NAME_TO_ID: Record<string, string> = {
   "suiran kyoto": "suiran-kyoto",
 };
 
-export function getHotelById(id: string): Hotel | undefined {
-  return hotels.find((h) => h.id === id);
+function resolveCatalog(catalog?: Hotel[]): Hotel[] {
+  return catalog && catalog.length > 0 ? catalog : fallbackHotels;
+}
+
+/** Display label for destination/location; null when nothing to show */
+export function getHotelDestinationLabel(
+  hotel: Pick<Hotel, "destination">
+): string | null {
+  const label = hotel.destination?.trim();
+  return label ? label : null;
+}
+
+export function getHotelImageAlt(hotel: Pick<Hotel, "name" | "destination">): string {
+  const destination = getHotelDestinationLabel(hotel);
+  return destination ? `${hotel.name}, ${destination}` : hotel.name;
+}
+
+export function getHotelById(id: string, catalog?: Hotel[]): Hotel | undefined {
+  return resolveCatalog(catalog).find((h) => h.id === id);
+}
+
+export function getHotelByUuid(uuid: string, hotelsByUuid?: Map<string, Hotel>): Hotel | undefined {
+  return hotelsByUuid?.get(uuid);
 }
 
 /** Stable guest review count for display when not set on the hotel record */
@@ -60,18 +81,24 @@ export function getHotelReviewCount(hotel: Pick<Hotel, "id" | "rating" | "review
 }
 
 /** Properties in the same destination, then region, excludes the current hotel */
-export function getSimilarHotels(hotel: Hotel, limit = 8): Hotel[] {
+export function getSimilarHotels(hotel: Hotel, catalog?: Hotel[], limit = 8): Hotel[] {
+  const hotels = resolveCatalog(catalog);
   const others = hotels.filter((h) => h.id !== hotel.id);
 
-  const sameDestination = others.filter((h) => h.destination === hotel.destination);
+  const hotelDestination = getHotelDestinationLabel(hotel);
+  const sameDestination = hotelDestination
+    ? others.filter((h) => getHotelDestinationLabel(h) === hotelDestination)
+    : [];
   const sameRegion = others.filter(
-    (h) => h.region === hotel.region && h.destination !== hotel.destination
+    (h) =>
+      h.region === hotel.region &&
+      getHotelDestinationLabel(h) !== hotelDestination
   );
 
   const ranked = [...sameDestination, ...sameRegion].sort((a, b) => {
     const destBoost =
-      (a.destination === hotel.destination ? 1 : 0) -
-      (b.destination === hotel.destination ? 1 : 0);
+      (getHotelDestinationLabel(a) === hotelDestination ? 1 : 0) -
+      (getHotelDestinationLabel(b) === hotelDestination ? 1 : 0);
     if (destBoost !== 0) return -destBoost;
 
     const ratingDiff = b.rating - a.rating;
@@ -92,10 +119,22 @@ export function getSimilarHotels(hotel: Hotel, limit = 8): Hotel[] {
   return unique;
 }
 
-export function findHotelForItineraryHotel(itineraryHotel: ItineraryHotel): Hotel | undefined {
+export function findHotelForItineraryHotel(
+  itineraryHotel: ItineraryHotel,
+  catalog?: Hotel[],
+  hotelsByUuid?: Map<string, Hotel>
+): Hotel | undefined {
+  if (itineraryHotel.hotelId) {
+    const bySlug = getHotelById(itineraryHotel.hotelId, catalog);
+    if (bySlug) return bySlug;
+    const byUuid = getHotelByUuid(itineraryHotel.hotelId, hotelsByUuid);
+    if (byUuid) return byUuid;
+  }
+
+  const hotels = resolveCatalog(catalog);
   const key = normalize(itineraryHotel.name);
   const aliasId = NAME_TO_ID[key];
-  if (aliasId) return getHotelById(aliasId);
+  if (aliasId) return getHotelById(aliasId, hotels);
 
   return hotels.find((hotel) => {
     const hotelKey = normalize(hotel.name);
@@ -118,45 +157,63 @@ export type DestinationHotelCard = {
   category?: string;
 };
 
-export function getHotelsByDestinationName(name: string, limit = 12): Hotel[] {
+export function getHotelsByDestinationName(
+  name: string,
+  limit = 12,
+  catalog?: Hotel[]
+): Hotel[] {
   const key = normalize(name);
-  return hotels
+  return resolveCatalog(catalog)
     .filter((hotel) => {
-      const dest = normalize(hotel.destination);
-      return dest === key || dest.includes(key) || key.includes(dest);
+      const dest = getHotelDestinationLabel(hotel);
+      if (!dest) return false;
+      const destKey = normalize(dest);
+      return destKey === key || destKey.includes(key) || key.includes(destKey);
     })
     .sort((a, b) => b.rating - a.rating || a.price - b.price)
     .slice(0, limit);
 }
 
 export function getLuxuryStayHrefForHotel(hotel: Hotel): string {
-  return `/luxury-stays?hotel=${encodeURIComponent(hotel.id)}`;
+  return `/luxury-stays/${encodeURIComponent(hotel.id)}`;
 }
 
-export function resolveItineraryHotelCard(itineraryHotel: ItineraryHotel): DestinationHotelCard {
-  const catalog = findHotelForItineraryHotel(itineraryHotel);
-  const href = getLuxuryStayHrefForItineraryHotel(itineraryHotel);
+export function resolveItineraryHotelCard(
+  itineraryHotel: ItineraryHotel,
+  catalog?: Hotel[],
+  hotelsByUuid?: Map<string, Hotel>
+): DestinationHotelCard {
+  const catalogMatch = findHotelForItineraryHotel(itineraryHotel, catalog, hotelsByUuid);
+  const href = getLuxuryStayHrefForItineraryHotel(itineraryHotel, catalog, hotelsByUuid);
   const destination =
-    catalog?.destination ??
+    getHotelDestinationLabel(catalogMatch ?? {}) ??
     itineraryHotel.location.split(",").pop()?.trim() ??
     itineraryHotel.location.split("·")[0]?.trim() ??
     itineraryHotel.location;
 
-  const rating = catalog?.rating ?? 4.8;
-  const reviewSeed = catalog ?? { id: normalize(itineraryHotel.name), rating, reviewCount: undefined };
+  const rating = catalogMatch?.rating ?? 4.8;
+  const reviewSeed = catalogMatch ?? {
+    id: normalize(itineraryHotel.name),
+    rating,
+    reviewCount: undefined,
+  };
 
   return {
-    key: itineraryHotel.hotelId ?? itineraryHotel.category ?? itineraryHotel.name,
+    key:
+      itineraryHotel.hotelId ??
+      [itineraryHotel.name, itineraryHotel.category, itineraryHotel.location]
+        .filter(Boolean)
+        .join(" · "),
     href,
     name: itineraryHotel.name,
     destination,
     description: itineraryHotel.description,
-    images: catalog ? getHotelGalleryImages(catalog) : [itineraryHotel.image],
-    stars: itineraryHotel.stars ?? catalog?.stars ?? 5,
+    images: catalogMatch ? getHotelGalleryImages(catalogMatch) : [itineraryHotel.image],
+    stars: itineraryHotel.stars ?? catalogMatch?.stars ?? 5,
     rating,
     reviewCount: getHotelReviewCount(reviewSeed),
-    amenities: catalog?.amenities.slice(0, 4) ?? [],
-    price: catalog?.price,
+    amenities: catalogMatch?.amenities.slice(0, 4) ?? [],
+    price: catalogMatch?.price,
     category: itineraryHotel.category,
   };
 }
@@ -166,7 +223,7 @@ export function resolveCatalogHotelCard(hotel: Hotel): DestinationHotelCard {
     key: hotel.id,
     href: getLuxuryStayHrefForHotel(hotel),
     name: hotel.name,
-    destination: hotel.destination,
+    destination: hotel.destination ?? "",
     description: hotel.description ?? "",
     images: getHotelGalleryImages(hotel),
     stars: hotel.stars,
@@ -177,18 +234,15 @@ export function resolveCatalogHotelCard(hotel: Hotel): DestinationHotelCard {
   };
 }
 
-/** Deep link to luxury stays, opens property detail when matched */
-export function getLuxuryStayHrefForItineraryHotel(itineraryHotel: ItineraryHotel): string {
-  if (itineraryHotel.hotelId) {
-    const byId = getHotelById(itineraryHotel.hotelId);
-    if (byId) {
-      return `/luxury-stays?hotel=${encodeURIComponent(byId.id)}`;
-    }
-  }
-
-  const match = findHotelForItineraryHotel(itineraryHotel);
+/** Deep link to luxury stays detail when matched */
+export function getLuxuryStayHrefForItineraryHotel(
+  itineraryHotel: ItineraryHotel,
+  catalog?: Hotel[],
+  hotelsByUuid?: Map<string, Hotel>
+): string {
+  const match = findHotelForItineraryHotel(itineraryHotel, catalog, hotelsByUuid);
   if (match) {
-    return `/luxury-stays?hotel=${encodeURIComponent(match.id)}`;
+    return getLuxuryStayHrefForHotel(match);
   }
 
   const destination =

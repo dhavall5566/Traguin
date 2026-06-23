@@ -28,6 +28,8 @@ export interface ItineraryFaq {
 }
 
 export interface Itinerary {
+  /** CMS itinerary UUID when loaded from the API */
+  cmsId?: string;
   slug: string;
   /** Matches TravelPackage.id in packages.ts */
   packageId: string;

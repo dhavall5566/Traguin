@@ -48,11 +48,14 @@ export interface NearbyAttraction {
 export interface Hotel {
   id: string;
   name: string;
-  destination: string;
+  /** Resolved destination name; omitted when CMS destination_id is missing or unpublished */
+  destination?: string;
   region: "domestic" | "international";
   stars: number;
   price: number;
   image: string;
+  /** CMS gallery URLs; when set, overrides hardcoded hotel-galleries lookup */
+  gallery?: string[];
   amenities: string[];
   nearbyAttractions: NearbyAttraction[];
   rating: number;

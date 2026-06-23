@@ -1,11 +1,9 @@
 "use client";
 
-import { destinations } from "@/data/destinations";
+import type { HomeStat } from "@/lib/api/homepage";
 
-const marqueeItems = destinations.map((d) => d.name);
-
-function MarqueeTrack() {
-  const items = [...marqueeItems, ...marqueeItems];
+function MarqueeTrack({ names }: { names: string[] }) {
+  const items = [...names, ...names];
 
   return (
     <div className="destination-marquee-track flex w-max items-center gap-8 sm:gap-12">
@@ -21,7 +19,9 @@ function MarqueeTrack() {
   );
 }
 
-export function DestinationMarquee() {
+export function DestinationMarquee({ names }: { names: string[] }) {
+  if (names.length === 0) return null;
+
   return (
     <section
       aria-hidden
@@ -29,7 +29,7 @@ export function DestinationMarquee() {
     >
       <div className="pointer-events-none absolute inset-y-0 left-0 z-10 w-16 bg-gradient-to-r from-background to-transparent sm:w-24" />
       <div className="pointer-events-none absolute inset-y-0 right-0 z-10 w-16 bg-gradient-to-l from-background to-transparent sm:w-24" />
-      <MarqueeTrack />
+      <MarqueeTrack names={names} />
     </section>
   );
 }

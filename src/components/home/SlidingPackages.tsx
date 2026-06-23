@@ -3,12 +3,10 @@
 import { useCallback, useEffect, useRef, useState, type MouseEvent } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ChevronDown, ChevronLeft, ChevronRight, Clock, MapPin, Star } from "lucide-react";
-import { packages } from "@/data/packages";
-import type { TravelPackage } from "@/types";
+import type { HomeTravelPackage } from "@/lib/api/homepage";
 import { SafeImage } from "@/components/ui/SafeImage";
 import { formatPrice } from "@/lib/utils";
 import { MagneticButton } from "@/components/ui/MagneticButton";
-import { getPackageJourneyHref, getPackageReviewCount } from "@/lib/packages";
 import { primaryCta } from "@/data/site";
 import { cn } from "@/lib/utils";
 
@@ -22,9 +20,6 @@ const CARD_GAP = 26;
 const CARD_WIDTH_MAX = 300;
 const CARD_WIDTH_MIN = 190;
 const CARD_HEIGHT_RATIO = 4 / 3; // height = width * 4/3 (3:4 portrait)
-
-const showcasePackages = packages.filter((p) => p.featured);
-const PACKAGE_COUNT = showcasePackages.length;
 
 function getCardLayout(containerWidth: number) {
   const slots = 1 + NEXT_CARD_COUNT;
@@ -47,7 +42,7 @@ const easePremium = [0.33, 1, 0.68, 1] as const;
 const bgTransition = { duration: BG_TRANSITION_S, ease: easePremium };
 const cardTransition = { duration: CARD_TRANSITION_S, ease: easePremium };
 
-function packageBlurb(pkg: TravelPackage) {
+function packageBlurb(pkg: HomeTravelPackage) {
   return `${pkg.highlights.slice(0, 2).join(". ")}. Crafted for discerning travelers seeking ${pkg.mood[0] ?? "luxury"} experiences.`;
 }
 
@@ -57,11 +52,11 @@ const cardVanishTransition = {
 } as const;
 
 /** Active + next N cards only, never show previous packages */
-function getForwardSlots(activeIndex: number) {
+function getForwardSlots(activeIndex: number, packageCount: number) {
   const total = 1 + NEXT_CARD_COUNT;
   return Array.from({ length: total }, (_, slot) => ({
     slot,
-    pkgIndex: (activeIndex + slot) % PACKAGE_COUNT,
+    pkgIndex: (activeIndex + slot) % packageCount,
   }));
 }
 
@@ -79,9 +74,11 @@ function getSlotMotion(slot: number, isActive: boolean, slotStep: number) {
 function ShowcaseBackground({
   activeIndex,
   parallax,
+  showcasePackages,
 }: {
   activeIndex: number;
   parallax: { x: number; y: number };
+  showcasePackages: HomeTravelPackage[];
 }) {
   return (
     <div className="absolute inset-0 z-0 overflow-hidden">
@@ -112,9 +109,9 @@ function ShowcaseBackground({
   );
 }
 
-function ShowcaseContent({ pkg }: { pkg: TravelPackage }) {
-  const journeyHref = getPackageJourneyHref(pkg);
-  const reviewCount = getPackageReviewCount(pkg);
+function ShowcaseContent({ pkg }: { pkg: HomeTravelPackage }) {
+  const journeyHref = pkg.journeyHref;
+  const reviewCount = pkg.reviewCount;
   const stars = Math.min(5, Math.max(0, Math.round(pkg.rating)));
   const item = {
     hidden: { opacity: 0, y: 18 },
@@ -260,7 +257,7 @@ function PackageCard({
   onSelect,
   className,
 }: {
-  pkg: TravelPackage;
+  pkg: HomeTravelPackage;
   isActive: boolean;
   onSelect: () => void;
   className?: string;
@@ -306,14 +303,16 @@ function DesktopCardStage({
   activeIndex,
   onSelect,
   onPauseChange,
+  showcasePackages,
 }: {
   activeIndex: number;
   onSelect: (index: number) => void;
   onPauseChange: (paused: boolean) => void;
+  showcasePackages: HomeTravelPackage[];
 }) {
   const containerRef = useRef<HTMLDivElement>(null);
   const [cardLayout, setCardLayout] = useState(() => getCardLayout(808));
-  const slots = getForwardSlots(activeIndex);
+  const slots = getForwardSlots(activeIndex, showcasePackages.length);
 
   useEffect(() => {
     const el = containerRef.current;
@@ -348,7 +347,7 @@ function DesktopCardStage({
 
             return (
               <motion.div
-                key={pkg.id}
+                key={`slot-${slot}-${pkgIndex}`}
                 className="absolute top-0 left-0 overflow-hidden rounded-2xl will-change-transform"
                 style={{
                   width: cardWidth,
@@ -393,10 +392,12 @@ function MobileCardStrip({
   activeIndex,
   onSelect,
   onPauseChange,
+  showcasePackages,
 }: {
   activeIndex: number;
   onSelect: (index: number) => void;
   onPauseChange: (paused: boolean) => void;
+  showcasePackages: HomeTravelPackage[];
 }) {
   const scrollRef = useRef<HTMLDivElement>(null);
   const isScrollingRef = useRef(false);
@@ -515,35 +516,40 @@ function CarouselControls({
   );
 }
 
-export function SlidingPackages() {
+export function SlidingPackages({ packages }: { packages: HomeTravelPackage[] }) {
+  const showcasePackages = packages;
+  const packageCount = showcasePackages.length;
   const [activeIndex, setActiveIndex] = useState(0);
   const [paused, setPaused] = useState(false);
   const [parallax, setParallax] = useState({ x: 0, y: 0 });
   const active = showcasePackages[activeIndex];
 
   const goTo = useCallback((index: number) => {
-    setActiveIndex(((index % PACKAGE_COUNT) + PACKAGE_COUNT) % PACKAGE_COUNT);
-  }, []);
+    if (packageCount === 0) return;
+    setActiveIndex(((index % packageCount) + packageCount) % packageCount);
+  }, [packageCount]);
 
   const next = useCallback(() => {
-    setActiveIndex((i) => (i + 1) % PACKAGE_COUNT);
-  }, []);
+    if (packageCount === 0) return;
+    setActiveIndex((i) => (i + 1) % packageCount);
+  }, [packageCount]);
 
   const prev = useCallback(() => {
-    setActiveIndex((i) => (i - 1 + PACKAGE_COUNT) % PACKAGE_COUNT);
-  }, []);
+    if (packageCount === 0) return;
+    setActiveIndex((i) => (i - 1 + packageCount) % packageCount);
+  }, [packageCount]);
 
   const setPausedWithInteraction = useCallback((value: boolean) => {
     setPaused(value);
   }, []);
 
   useEffect(() => {
-    if (paused || PACKAGE_COUNT <= 1) return;
+    if (paused || packageCount <= 1) return;
     const timer = window.setInterval(() => {
-      setActiveIndex((i) => (i + 1) % PACKAGE_COUNT);
+      setActiveIndex((i) => (i + 1) % packageCount);
     }, AUTO_ADVANCE_MS);
     return () => window.clearInterval(timer);
-  }, [paused]);
+  }, [paused, packageCount]);
 
   const handleParallax = useCallback((e: MouseEvent<HTMLElement>) => {
     const rect = e.currentTarget.getBoundingClientRect();
@@ -551,6 +557,19 @@ export function SlidingPackages() {
     const y = ((e.clientY - rect.top) / rect.height - 0.5) * 10;
     setParallax({ x, y });
   }, []);
+
+  if (packageCount === 0) {
+    return (
+      <section
+        id="hero"
+        className="relative flex min-h-[100svh] w-full items-center justify-center bg-background"
+        aria-label="Curated travel packages showcase"
+      >
+        <h1 className="sr-only">TRAGUIN: extraordinary luxury journeys crafted for you</h1>
+        <p className="text-sm tracking-[0.18em] text-muted uppercase">Featured journeys coming soon</p>
+      </section>
+    );
+  }
 
   return (
     <section
@@ -563,7 +582,7 @@ export function SlidingPackages() {
     >
       <h1 className="sr-only">TRAGUIN: extraordinary luxury journeys crafted for you</h1>
       <div className="absolute inset-0 overflow-hidden">
-        <ShowcaseBackground activeIndex={activeIndex} parallax={parallax} />
+        <ShowcaseBackground activeIndex={activeIndex} parallax={parallax} showcasePackages={showcasePackages} />
         <div className="sliding-packages-scrim-h absolute inset-0 z-[1]" />
         <div className="sliding-packages-scrim-v absolute inset-0 z-[1]" />
         <div className="sliding-packages-overlay absolute inset-0 z-[1]" />
@@ -583,6 +602,7 @@ export function SlidingPackages() {
               activeIndex={activeIndex}
               onSelect={goTo}
               onPauseChange={setPausedWithInteraction}
+              showcasePackages={showcasePackages}
             />
             <div className="hidden w-full max-w-[940px] justify-center lg:flex">
               <CarouselControls
@@ -596,6 +616,7 @@ export function SlidingPackages() {
               activeIndex={activeIndex}
               onSelect={goTo}
               onPauseChange={setPausedWithInteraction}
+              showcasePackages={showcasePackages}
             />
             <div className="flex w-full justify-center lg:hidden">
               <CarouselControls
