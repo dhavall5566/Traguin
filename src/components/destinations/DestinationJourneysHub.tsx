@@ -22,22 +22,22 @@ export function DestinationJourneysHub({ destination, journeys }: DestinationJou
           className="absolute inset-0 z-0 h-full w-full object-cover"
           loading="eager"
         />
-        <div className="absolute inset-0 z-[1] bg-black/45" />
-        <div className="absolute inset-0 z-[1] bg-gradient-to-t from-background via-background/80 to-transparent" />
+        <div className="destination-hero__scrim pointer-events-none absolute inset-0 z-[1]" aria-hidden />
+        <div className="destination-hero__fade pointer-events-none absolute inset-x-0 bottom-0 z-[1] h-20" aria-hidden />
 
         <div className="page-x-padding relative z-10 flex min-h-[40svh] flex-col justify-end pb-10 pt-28 md:min-h-[48svh] md:pb-14 md:pt-32">
-          <div className="site-container">
+          <div className="site-container destination-hero__copy">
             <Link
               href="/destinations"
-              className="mb-6 inline-flex w-fit items-center gap-2 text-xs tracking-wide text-white/75 transition-colors hover:text-white"
+              className="destination-hero__back mb-6 inline-flex w-fit items-center gap-2 text-xs tracking-wide text-white/90 transition-colors"
             >
               <ArrowLeft size={14} />
               All Destinations
             </Link>
             <p className="text-xs tracking-[0.3em] text-gold uppercase">{destination.categoryTitle}</p>
             <h1 className="mt-2 font-display text-4xl text-white md:text-5xl">{destination.name}</h1>
-            <p className="mt-4 max-w-2xl text-white/85">{destination.description}</p>
-            <p className="mt-6 text-sm tracking-wide text-white/70">
+            <p className="mt-4 max-w-2xl text-white/90">{destination.description}</p>
+            <p className="mt-6 text-sm tracking-wide text-white/90">
               {journeys.length} curated {journeys.length === 1 ? "journey" : "journeys"} available
             </p>
           </div>

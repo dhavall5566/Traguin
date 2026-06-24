@@ -5,24 +5,28 @@ import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { ChevronLeft, ChevronRight, Plus, Trash2 } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { adminDelete, adminRelationOptions } from "@/lib/admin/api-client";
+import { adminDelete, adminRelationOptions, adminUpdate } from "@/lib/admin/api-client";
 import {
   adminListCacheKey,
   fetchAdminListCached,
   invalidateAdminListCache,
+  patchCachedAdminListItem,
   peekCachedAdminList,
   subscribeAdminListCache,
 } from "@/lib/admin/admin-data-cache";
 import {
-  ADMIN_ENTITY_GROUPS,
   getEntityDef,
+  getEntityNavSectionId,
   getListColumns,
   getListFilters,
+  getNavSectionLabel,
   type AdminFieldDef,
 } from "@/lib/admin/entities";
 import { hasActiveFilters, rowMatchesFilter } from "@/lib/admin/list-filters";
 import { formatAdminListCell } from "@/lib/admin/list-cell-format";
 import { AdminListToolbar } from "@/components/admin/AdminListToolbar";
+import { AdminListToggle } from "@/components/admin/AdminListToggle";
+import { useAdminToast } from "@/components/admin/AdminToast";
 import { DeleteConfirmDialog } from "@/components/admin/DeleteConfirmDialog";
 import { EntityFormView } from "@/components/admin/EntityFormView";
 
@@ -89,6 +93,7 @@ export function EntityTableView({ entityKey }: EntityTableViewProps) {
   const [relationOptions, setRelationOptions] = useState<
     Record<string, { value: string; label: string }[]>
   >({});
+  const { showToast } = useAdminToast();
 
   const columns = useMemo(() => (entity ? getListColumns(entity) : []), [entity]);
   const listFilters = useMemo(() => (entity ? getListFilters(entity) : []), [entity]);
@@ -317,6 +322,51 @@ export function EntityTableView({ entityKey }: EntityTableViewProps) {
     setFilterValues((current) => ({ ...current, [field]: value }));
   };
 
+  const handleListToggle = (
+    row: Record<string, unknown>,
+    field: AdminFieldDef,
+    nextValue: boolean,
+  ) => {
+    if (!entity) return;
+
+    const recordId = String(row[idField]);
+    const previousValue = Boolean(row[field.name]);
+    const patch = { [field.name]: nextValue };
+
+    setItems((current) =>
+      current.map((item) =>
+        String(item[idField]) === recordId ? { ...item, ...patch } : item,
+      ),
+    );
+    patchCachedAdminListItem(entity.endpoint, idField, recordId, patch);
+
+    const toggleLabel = field.listLabel ?? field.label;
+    showToast(
+      field.name === "is_published"
+        ? nextValue
+          ? "Story activated."
+          : "Story deactivated."
+        : nextValue
+          ? `${toggleLabel} enabled.`
+          : `${toggleLabel} disabled.`,
+    );
+
+    void adminUpdate(entity.endpoint, recordId, patch).then((result) => {
+      if (!result.error) return;
+
+      setItems((current) =>
+        current.map((item) =>
+          String(item[idField]) === recordId ? { ...item, [field.name]: previousValue } : item,
+        ),
+      );
+      patchCachedAdminListItem(entity.endpoint, idField, recordId, {
+        [field.name]: previousValue,
+      });
+      setError(result.error.message);
+      showToast(result.error.message, "error");
+    });
+  };
+
   if (!entity) {
     return <p className="admin-page-muted">Unknown entity.</p>;
   }
@@ -332,8 +382,7 @@ export function EntityTableView({ entityKey }: EntityTableViewProps) {
     { value: "name", label: "Name A–Z" },
   ];
 
-  const groupLabel =
-    ADMIN_ENTITY_GROUPS.find((group) => group.id === entity.group)?.label ?? "CMS";
+  const sectionLabel = getNavSectionLabel(getEntityNavSectionId(entity.key));
 
   return (
     <div className="admin-page admin-list-page">
@@ -341,7 +390,7 @@ export function EntityTableView({ entityKey }: EntityTableViewProps) {
         <div className="admin-list-panel">
           <header className="admin-list-panel__head">
             <div className="admin-list-panel__intro">
-              <p className="admin-workspace-eyebrow">CMS · {groupLabel}</p>
+              <p className="admin-workspace-eyebrow">CMS · {sectionLabel}</p>
               <h1 className="admin-list-panel__title">{entity.pluralLabel}</h1>
               <p className="admin-list-panel__subtitle">
                 Search, filter, and manage {entity.pluralLabel.toLowerCase()} for the public site.
@@ -440,7 +489,9 @@ export function EntityTableView({ entityKey }: EntityTableViewProps) {
                       {tableColumns.map((col) => (
                         <th
                           key={col.name}
-                          className={cn(col.name === "is_published" && "admin-table__col--status")}
+                          className={cn(
+                            (col.name === "is_published" || col.listToggle) && "admin-table__col--status",
+                          )}
                         >
                           {col.listLabel ?? col.label}
                         </th>
@@ -488,22 +539,32 @@ export function EntityTableView({ entityKey }: EntityTableViewProps) {
                               relationLabelMaps,
                             );
                             const isPublished = col.name === "is_published";
+                            const isListToggle = Boolean(col.listToggle && col.type === "boolean");
 
                             return (
                               <td
                                 key={col.name}
-                                className={cn(isPublished && "admin-table__col--status")}
+                                className={cn(
+                                  (isPublished || isListToggle) && "admin-table__col--status",
+                                )}
+                                onClick={isListToggle ? (event) => event.stopPropagation() : undefined}
                               >
-                                {isPublished ? (
+                                {isListToggle ? (
+                                  <AdminListToggle
+                                    checked={Boolean(row[col.name])}
+                                    label={title}
+                                    onChange={(next) => handleListToggle(row, col, next)}
+                                  />
+                                ) : isPublished ? (
                                   <span
                                     className={cn(
                                       "admin-status-pill",
-                                      value === "Yes"
+                                      Boolean(row[col.name])
                                         ? "admin-status-pill--published"
                                         : "admin-status-pill--draft",
                                     )}
                                   >
-                                    {value === "Yes" ? "Published" : "Draft"}
+                                    {Boolean(row[col.name]) ? "Published" : "Draft"}
                                   </span>
                                 ) : (
                                   value || "—"

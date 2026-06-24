@@ -15,8 +15,8 @@ export function getLocalDateIso(): string {
   return `${y}-${m}-${day}`;
 }
 
-/** Blocking script in <head>, runs before paint; syncs html attribute + cookie + localStorage. */
-export const themeInitScript = `(function(){try{var t=localStorage.getItem("${THEME_STORAGE_KEY}");if(t!=="light"&&t!=="dark"){t=window.matchMedia("(prefers-color-scheme: light)").matches?"light":"dark";}document.documentElement.setAttribute("data-theme",t);document.cookie="${THEME_COOKIE_NAME}="+t+";path=/;max-age=31536000;SameSite=Lax";localStorage.setItem("${THEME_STORAGE_KEY}",t);}catch(e){document.documentElement.setAttribute("data-theme","dark");}})();`;
+/** Blocking script in <head>, runs before paint; keeps SSR theme when set, else localStorage / system. */
+export const themeInitScript = `(function(){try{var el=document.documentElement;var t=el.getAttribute("data-theme");if(t!=="light"&&t!=="dark"){t=localStorage.getItem("${THEME_STORAGE_KEY}");if(t!=="light"&&t!=="dark"){t=window.matchMedia("(prefers-color-scheme: light)").matches?"light":"dark";}}el.setAttribute("data-theme",t);document.cookie="${THEME_COOKIE_NAME}="+t+";path=/;max-age=31536000;SameSite=Lax";localStorage.setItem("${THEME_STORAGE_KEY}",t);}catch(e){document.documentElement.setAttribute("data-theme","dark");}})();`;
 
 export function readThemeFromDocument(): Theme {
   if (typeof document === "undefined") return "dark";

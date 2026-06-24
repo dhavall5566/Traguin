@@ -7,6 +7,7 @@ import {
 } from "./experiences";
 import { buildItineraryByDestinationIdMap } from "./itineraries";
 import { images } from "@/lib/images";
+import { cleanPackageTitle } from "@/lib/package-title";
 
 export { HERO_SLIDER_DEFAULT_MAX_ITEMS } from "@/lib/api/homepage-hero-settings";
 import { readHomepageHeroSettings } from "@/lib/api/homepage-hero-settings";
@@ -211,7 +212,7 @@ function mapPackage(
 
   return {
     id: pkg.id,
-    title: pkg.title,
+    title: cleanPackageTitle(pkg.title),
     destination: destination?.name ?? "Destination",
     region: destination?.region ?? "international",
     duration: pkg.duration_label,
@@ -253,6 +254,33 @@ function mapFeaturedDestination(
   };
 }
 
+function resolveRegionPanelHref(panel: import("./types").CmsHomepageRegionPanel): string {
+  const href = panel.href?.trim() ?? "";
+  if (/^\/destinations\?region=(domestic|international)$/.test(href)) {
+    return href;
+  }
+
+  const key = panel.key.trim().toLowerCase();
+
+  if (key === "domestic" || key === "india" || key.includes("domestic")) {
+    return "/destinations?region=domestic";
+  }
+
+  if (key === "international" || key.includes("international")) {
+    return "/destinations?region=international";
+  }
+
+  if (panel.mood === "warm") {
+    return "/destinations?region=domestic";
+  }
+
+  if (panel.mood === "cool") {
+    return "/destinations?region=international";
+  }
+
+  return "/destinations";
+}
+
 function mapRegionPanel(
   panel: import("./types").CmsHomepageRegionPanel,
   mediaMap: Map<string, string>
@@ -272,7 +300,7 @@ function mapRegionPanel(
       mood === "warm"
         ? "object-cover object-[center_40%] saturate-[1.08] group-hover:saturate-[1.18]"
         : "object-cover object-center saturate-[1.06] group-hover:saturate-[1.16]",
-    href: panel.href,
+    href: resolveRegionPanelHref(panel),
     highlights: panel.highlights,
     stat: panel.stat_text,
     mood,

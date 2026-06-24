@@ -1,9 +1,10 @@
 "use client";
 
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { ArrowLeft, Bell, ChevronDown, LogOut, Moon, Settings, Sun } from "lucide-react";
+import { AccountSettingsModal } from "@/components/admin/AccountSettingsModal";
 import { useTheme } from "@/components/providers/ThemeProvider";
 import { getCrmAppUrl } from "@/lib/admin-links";
 import { prefetchCrossApp } from "@/lib/cross-app-prefetch";
@@ -104,7 +105,13 @@ function AdminNotificationsButton() {
   );
 }
 
-function AdminAccountMenu({ user }: { user: AdminSessionUser }) {
+function AdminAccountMenu({
+  user,
+  onOpenSettings,
+}: {
+  user: AdminSessionUser;
+  onOpenSettings: () => void;
+}) {
   const router = useRouter();
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
@@ -166,14 +173,17 @@ function AdminAccountMenu({ user }: { user: AdminSessionUser }) {
             <span className="block text-xs font-semibold">{user.name}</span>
             <span className="block text-[10px] text-[var(--muted)]">{user.email}</span>
           </div>
-          <Link
-            href="/admin/cms/account"
-            onClick={() => setOpen(false)}
+          <button
+            type="button"
+            onClick={() => {
+              setOpen(false);
+              onOpenSettings();
+            }}
             className="flex w-full items-center gap-2 px-3 py-2 text-xs transition-colors hover:bg-[color-mix(in_srgb,var(--gold)_8%,var(--surface))]"
           >
             <Settings className="h-3.5 w-3.5 text-[var(--muted)]" />
             Account settings
-          </Link>
+          </button>
           <button
             type="button"
             onClick={handleLogout}
@@ -189,7 +199,16 @@ function AdminAccountMenu({ user }: { user: AdminSessionUser }) {
 }
 
 export function AdminTopBar() {
+  const router = useRouter();
+  const searchParams = useSearchParams();
   const [user, setUser] = useState<AdminSessionUser | null>(null);
+  const [accountSettingsOpen, setAccountSettingsOpen] = useState(false);
+
+  useEffect(() => {
+    if (searchParams.get("account") !== "1") return;
+    setAccountSettingsOpen(true);
+    router.replace("/admin/cms", { scroll: false });
+  }, [router, searchParams]);
 
   useEffect(() => {
     let cancelled = false;
@@ -209,30 +228,40 @@ export function AdminTopBar() {
   }, []);
 
   return (
-    <header className="admin-topbar">
-      <div className="admin-topbar__section admin-topbar__section--start">
-        <Link href="/" className="admin-topbar__back-link">
-          <ArrowLeft aria-hidden className="admin-topbar__back-link-icon" />
-          Back to site
-        </Link>
-      </div>
+    <>
+      <header className="admin-topbar">
+        <div className="admin-topbar__section admin-topbar__section--start">
+          <Link href="/" className="admin-topbar__back-link">
+            <ArrowLeft aria-hidden className="admin-topbar__back-link-icon" />
+            Back to site
+          </Link>
+        </div>
 
-      <div className="admin-topbar__section admin-topbar__section--center">
-        <p className="admin-topbar__brand">Traguin Admin CMS</p>
-      </div>
+        <div className="admin-topbar__section admin-topbar__section--center">
+          <p className="admin-topbar__brand">Traguin Admin CMS</p>
+        </div>
 
-      <div className="admin-topbar__section admin-topbar__section--end">
-        <AdminProductSwitcher />
-        <AdminThemeToggle />
-        <AdminNotificationsButton />
-        {user ? (
-          <AdminAccountMenu user={user} />
-        ) : (
-          <span className="admin-avatar h-8 w-8 text-[11px] shrink-0" aria-hidden="true">
-            ?
-          </span>
-        )}
-      </div>
-    </header>
+        <div className="admin-topbar__section admin-topbar__section--end">
+          <AdminProductSwitcher />
+          <AdminThemeToggle />
+          <AdminNotificationsButton />
+          {user ? (
+            <AdminAccountMenu
+              user={user}
+              onOpenSettings={() => setAccountSettingsOpen(true)}
+            />
+          ) : (
+            <span className="admin-avatar h-8 w-8 text-[11px] shrink-0" aria-hidden="true">
+              ?
+            </span>
+          )}
+        </div>
+      </header>
+
+      <AccountSettingsModal
+        open={accountSettingsOpen}
+        onClose={() => setAccountSettingsOpen(false)}
+      />
+    </>
   );
 }

@@ -31,7 +31,7 @@ export function SafeImage({
       {...props}
       src={hasError ? fallbackSrc : currentSrc}
       alt={alt}
-      className={cn(className)}
+      className={cn("block max-w-full", className)}
       onError={(e) => {
         if (!hasError) {
           setHasError(true);

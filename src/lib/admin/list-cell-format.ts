@@ -29,6 +29,11 @@ export function formatAdminListCell(
     return col.listFormat(raw, row);
   }
 
+  if (col.type === "boolean") {
+    if (raw == null || raw === "") return "—";
+    return Boolean(raw) ? (col.listLabel ?? col.label) : "—";
+  }
+
   if (col.type === "relation" && raw != null && raw !== "") {
     const joinedKey = joinedLabelField(col.name);
     if (joinedKey) {

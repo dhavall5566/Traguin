@@ -4,10 +4,12 @@ import { useState } from "react";
 import { Send } from "lucide-react";
 import { MagneticButton } from "@/components/ui/MagneticButton";
 import { FormField, fieldInputClass } from "@/components/ui/FormField";
+import { FormLegalConsent } from "@/components/forms/FormLegalConsent";
 import {
   clearFieldError,
   hasErrors,
   validateInquiryForm,
+  withLegalConsent,
   type FieldErrors,
 } from "@/lib/form-validation";
 import { FormSubmissionError, submitFormSubmission } from "@/lib/api/form-submissions";
@@ -33,6 +35,7 @@ export function ItineraryInquiryForm({
     dates: "",
     message: `I'm interested in the ${itineraryTitle} itinerary.`,
   });
+  const [legalConsent, setLegalConsent] = useState(false);
   const [errors, setErrors] = useState<FieldErrors>({});
   const [submitted, setSubmitted] = useState(false);
   const [submitting, setSubmitting] = useState(false);
@@ -45,7 +48,7 @@ export function ItineraryInquiryForm({
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const nextErrors = validateInquiryForm(form);
+    const nextErrors = withLegalConsent(validateInquiryForm(form), legalConsent);
     setErrors(nextErrors);
     if (hasErrors(nextErrors)) return;
 
@@ -182,6 +185,15 @@ export function ItineraryInquiryForm({
               aria-invalid={!!errors.message}
             />
           </FormField>
+          <FormLegalConsent
+            id="inquiry-legal-consent"
+            checked={legalConsent}
+            onChange={(checked) => {
+              setLegalConsent(checked);
+              clearFieldError(setErrors, "legalConsent");
+            }}
+            error={errors.legalConsent}
+          />
           <MagneticButton type="submit" variant="primary" className="w-full sm:w-auto" disabled={submitting}>
             {submitting ? "Submitting…" : itineraryPrimaryCta.label}
           </MagneticButton>

@@ -32,16 +32,19 @@ function emitThemeChange() {
   listeners.forEach((listener) => listener());
 }
 
-function getServerThemeSnapshot(): Theme {
-  return "dark";
-}
-
 function getThemeSnapshot(): Theme {
   return readThemeFromDocument();
 }
 
-export function ThemeProvider({ children }: { children: ReactNode }) {
-  const theme = useSyncExternalStore(subscribe, getThemeSnapshot, getServerThemeSnapshot);
+export function ThemeProvider({
+  children,
+  initialTheme = "dark",
+}: {
+  children: ReactNode;
+  initialTheme?: Theme;
+}) {
+  const getServerSnapshot = useCallback(() => initialTheme, [initialTheme]);
+  const theme = useSyncExternalStore(subscribe, getThemeSnapshot, getServerSnapshot);
 
   const setTheme = useCallback((next: Theme) => {
     persistTheme(next);

@@ -3,7 +3,7 @@ import { primaryCta, secondaryCta } from "@/data/site";
 import { images } from "@/lib/images";
 
 export const nikiAgent = {
-  name: "Niki",
+  name: "Navanya",
   role: "Travel Expert",
   greeting: "How can I help you?",
   avatar: images.nikiAvatar,
@@ -19,7 +19,7 @@ export type NikiQuickReply = {
 };
 
 export const nikiWelcomeMessages = [
-  "Hi, I'm Niki, your TRAGUIN travel expert.",
+  "Hi, I'm Navanya, your TRAGUIN travel expert.",
   "We design bespoke luxury journeys across India and the world, with handpicked stays and white-glove coordination.",
   "Pick a topic below or message us on WhatsApp. I respond within 2 working hours.",
 ] as const;

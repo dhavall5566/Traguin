@@ -157,6 +157,7 @@ export interface CmsHomepageRegionPanel extends CmsTimestamped {
   mood: string | null;
   hero_media_id: string | null;
   sort_order: number;
+  is_active: boolean;
 }
 
 export interface CmsHomepagePromo {
@@ -314,9 +315,6 @@ export interface CmsClientStory extends CmsTimestamped {
   title: string | null;
   caption: string | null;
   portrait_media_id: string | null;
-  poster_media_id: string | null;
-  video_url: string | null;
-  is_film: boolean;
   show_on_home: boolean;
   show_in_gallery: boolean;
   is_featured_in_gallery: boolean;

@@ -1,6 +1,7 @@
 import { ALL_ADMIN_ENTITIES } from "@/lib/admin/all-entities";
 import { formValueToSections, sectionsToFormValue } from "@/lib/admin/legal-sections";
 import { formValueToNestedList, nestedListToFormValue } from "@/lib/admin/nested-list";
+import { coerceAdminNumberPayload, clampAdminNumber } from "@/lib/admin/number-input";
 import { formValueToStats, statsToFormValue } from "@/lib/admin/stat-list";
 import type { AdminEntityDef, AdminEntityGroup, AdminFieldDef } from "@/lib/admin/types";
 
@@ -12,6 +13,12 @@ export type {
   AdminRelationConfig,
 } from "@/lib/admin/types";
 export { ADMIN_ENTITY_GROUPS } from "@/lib/admin/types";
+export {
+  CMS_NAV_SECTIONS,
+  getCustomLinkNavSectionId,
+  getEntityNavSectionId,
+  getNavSectionLabel,
+} from "@/lib/admin/cms-nav-sections";
 
 const PILOT_ENTITIES: Record<string, AdminEntityDef> = {
   specializations: {
@@ -237,8 +244,15 @@ export function recordToFormValues(
       values[field.name] = raw ?? {};
     } else if (field.type === "select" && (field.name === "india_region" || field.options)) {
       values[field.name] = raw ?? "";
+    } else if (field.type === "number") {
+      if (raw == null || raw === "") {
+        values[field.name] = "";
+      } else {
+        const parsed = Number(raw);
+        values[field.name] = Number.isNaN(parsed) ? "" : String(clampAdminNumber(parsed));
+      }
     } else {
-      values[field.name] = raw ?? (field.type === "number" ? "" : "");
+      values[field.name] = raw ?? "";
     }
   }
   return values;
@@ -264,12 +278,8 @@ export function formValuesToPayload(
           ? value.split(",").map((s) => s.trim()).filter(Boolean)
           : [];
     } else if (field.type === "number") {
-      if (value === "" || value === null || value === undefined) {
-        if (mode === "edit") continue;
-        value = field.required ? 0 : null;
-      } else {
-        value = Number(value);
-      }
+      value = coerceAdminNumberPayload(value, mode === "create" && field.required);
+      if (value === null && mode === "edit") continue;
     } else if (field.type === "relation") {
       value = value === "" || value == null ? null : value;
     } else if (field.type === "relation-multi") {
@@ -314,5 +324,6 @@ export function defaultFormValues(entity: AdminEntityDef): Record<string, unknow
   }
   if (entity.key === "destinations") values.is_published = true;
   if (entity.key === "form-submissions") values.status = "new";
+  if (entity.key === "homepage-region-panels") values.is_active = true;
   return values;
 }

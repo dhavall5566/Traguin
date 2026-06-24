@@ -1,8 +1,10 @@
 "use client";
 
+import Image from "next/image";
 import { FormEvent, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { ADMIN_LOGIN_PATH } from "@/lib/admin/auth";
+import { traguinLogo } from "@/lib/brand/traguin-logo";
 
 export function AdminLoginForm() {
   const router = useRouter();
@@ -39,6 +41,15 @@ export function AdminLoginForm() {
 
   return (
     <div className="admin-login-card">
+      <div className="admin-login-brand">
+        <Image
+          src={traguinLogo}
+          alt="TRAGUIN"
+          className="admin-login-brand__logo"
+          priority
+        />
+      </div>
+
       <div className="mb-6">
         <p className="text-xs tracking-[0.2em] text-gold uppercase">CMS Admin</p>
         <h1 className="font-display text-2xl font-semibold text-foreground">Sign in</h1>

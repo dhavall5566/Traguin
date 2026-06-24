@@ -3,9 +3,9 @@
 /* Helvetica stack — used site-wide */
 :root {
   --font-helvetica: "Helvetica Neue", Helvetica, Arial, sans-serif;
-  /* Shared page layout — nav, home sections, footer align to these */
-  --layout-max-width: 80rem;
-  --layout-gutter-x: clamp(1.5rem, 5vw, 4rem);
+  /* Shared page layout — full-width shell with edge gutters only */
+  --layout-max-width: 100%;
+  --layout-gutter-x: clamp(1rem, 2.5vw, 2.5rem);
   --layout-section-y: clamp(3.5rem, 7vw, 5.5rem);
   --layout-section-y-compact: clamp(2rem, 4.5vw, 3.25rem);
   /* Full-width fixed header */
@@ -66,9 +66,9 @@ html {
   --shimmer-mid: rgba(206, 169, 50, 0.1);
   --showcase-scrim-h: linear-gradient(
     90deg,
-    var(--background) 0%,
-    color-mix(in srgb, var(--background) 60%, transparent) 50%,
-    transparent 100%
+    color-mix(in srgb, var(--background) 82%, transparent) 0%,
+    color-mix(in srgb, var(--background) 42%, transparent) 36%,
+    transparent 62%
   );
   --showcase-scrim-v: linear-gradient(
     to top,
@@ -154,11 +154,10 @@ html {
   /* Hero keeps a dark left scrim so white copy stays readable on photos */
   --hero-packages-scrim-h: linear-gradient(
     90deg,
-    rgba(12, 11, 10, 0.96) 0%,
-    rgba(12, 11, 10, 0.88) 28%,
-    rgba(12, 11, 10, 0.62) 48%,
-    rgba(12, 11, 10, 0.28) 62%,
-    transparent 76%
+    rgba(12, 11, 10, 0.92) 0%,
+    rgba(12, 11, 10, 0.72) 26%,
+    rgba(12, 11, 10, 0.38) 48%,
+    transparent 66%
   );
   --hero-packages-scrim-v: linear-gradient(
     to top,
@@ -483,6 +482,18 @@ body {
   border-color: #ffffff !important;
 }
 
+.site-header--hero .nav-login {
+  background: rgba(255, 255, 255, 0.1) !important;
+  border: 1px solid rgba(255, 255, 255, 0.45) !important;
+  color: #ffffff !important;
+  box-shadow: none !important;
+}
+
+.site-header--hero .nav-login:hover {
+  background: rgba(255, 255, 255, 0.18) !important;
+  border-color: rgba(255, 255, 255, 0.75) !important;
+}
+
 .site-header--hero .nav-theme-toggle {
   border: 1px solid rgba(255, 255, 255, 0.4) !important;
   background: rgba(255, 255, 255, 0.08) !important;
@@ -515,6 +526,18 @@ body {
 .site-header--solid .nav-cta:hover {
   background: #2d2824 !important;
   border-color: #2d2824 !important;
+}
+
+.site-header--solid .nav-login {
+  background: transparent !important;
+  color: #1a1612 !important;
+  border: 1px solid rgba(26, 22, 18, 0.14) !important;
+  box-shadow: none !important;
+}
+
+.site-header--solid .nav-login:hover {
+  background: rgba(26, 22, 18, 0.05) !important;
+  border-color: rgba(26, 22, 18, 0.22) !important;
 }
 
 .site-header--solid .nav-theme-toggle {
@@ -919,7 +942,8 @@ input[type="date"]::-webkit-calendar-picker-indicator {
 
 .site-container,
 .home-container {
-  width: min(100%, var(--layout-max-width));
+  width: 100%;
+  max-width: var(--layout-max-width);
   margin-inline: auto;
 }
 
@@ -931,7 +955,8 @@ input[type="date"]::-webkit-calendar-picker-indicator {
 
 .home-container--narrow,
 .site-container--narrow {
-  width: min(100%, var(--layout-max-width));
+  width: 100%;
+  max-width: var(--layout-max-width);
   margin-inline: auto;
 }
 
@@ -1269,6 +1294,42 @@ input[type="date"]::-webkit-calendar-picker-indicator {
       transparent 52%
     ),
     linear-gradient(to right, rgba(0, 0, 0, 0.62) 0%, rgba(0, 0, 0, 0.22) 55%, transparent 100%);
+}
+
+.destination-hero__scrim {
+  background:
+    linear-gradient(180deg, rgba(0, 0, 0, 0.38) 0%, transparent 42%),
+    linear-gradient(
+      to top,
+      rgba(0, 0, 0, 0.88) 0%,
+      rgba(0, 0, 0, 0.58) 24%,
+      rgba(0, 0, 0, 0.22) 50%,
+      transparent 76%
+    ),
+    rgba(0, 0, 0, 0.32);
+}
+
+.destination-hero__fade {
+  background: linear-gradient(to top, var(--background) 0%, transparent 100%);
+}
+
+.destination-hero__copy {
+  text-shadow: 0 2px 18px rgba(0, 0, 0, 0.55);
+}
+
+.destination-hero__back {
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  background: rgba(0, 0, 0, 0.32);
+  padding: 0.45rem 0.85rem;
+  border-radius: 999px;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+.destination-hero__back:hover {
+  border-color: rgba(255, 255, 255, 0.42);
+  background: rgba(0, 0, 0, 0.45);
+  color: #fff;
 }
 
 .itinerary-hero__price {
@@ -1939,7 +2000,7 @@ main > div > section {
     animation: none;
     flex-wrap: wrap;
     width: 100%;
-    max-width: 80rem;
+    max-width: 100%;
     margin-inline: auto;
     justify-content: center;
     row-gap: 0.75rem;
@@ -1952,7 +2013,7 @@ main > div > section {
     animation: none;
     flex-wrap: wrap;
     width: 100%;
-    max-width: 80rem;
+    max-width: 100%;
     margin-inline: auto;
     justify-content: center;
     padding-bottom: 0.5rem;

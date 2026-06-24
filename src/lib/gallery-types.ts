@@ -23,15 +23,6 @@ export type GalleryClientWallItem = {
   rotate: number;
 };
 
-export type GalleryFilmMoment = {
-  id: string;
-  title: string;
-  destination: string;
-  caption: string;
-  poster: string;
-  src: string;
-};
-
 export function filterGalleryItems(items: GalleryItem[], categoryId: string): GalleryItem[] {
   if (categoryId === "all") return items;
   return items.filter((item) => item.categorySlugs.includes(categoryId));

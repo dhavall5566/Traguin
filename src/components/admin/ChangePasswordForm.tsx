@@ -1,6 +1,7 @@
 "use client";
 
 import { FormEvent, useMemo, useState } from "react";
+import { useAdminToast } from "@/components/admin/AdminToast";
 import { adminChangePassword } from "@/lib/admin/api-client";
 import {
   getPasswordStrength,
@@ -11,23 +12,36 @@ import {
 } from "@/lib/password-validation";
 import { PasswordInput } from "@/components/admin/PasswordInput";
 
-export function ChangePasswordForm() {
+type ChangePasswordFormProps = {
+  onSuccess?: () => void;
+};
+
+export function ChangePasswordForm({ onSuccess }: ChangePasswordFormProps) {
+  const { showToast } = useAdminToast();
   const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
-  const [success, setSuccess] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
 
   const strength = useMemo(() => getPasswordStrength(newPassword), [newPassword]);
   const requirementsMet = useMemo(() => passwordRequirementsMet(newPassword), [newPassword]);
   const confirmMismatch =
     confirmPassword.length > 0 && newPassword !== confirmPassword;
+  const isDirty =
+    currentPassword.length > 0 || newPassword.length > 0 || confirmPassword.length > 0;
+  const canSubmit =
+    isDirty &&
+    currentPassword.length > 0 &&
+    requirementsMet &&
+    !confirmMismatch &&
+    confirmPassword.length > 0;
 
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     setError(null);
-    setSuccess(null);
+
+    if (!canSubmit) return;
 
     if (newPassword !== confirmPassword) {
       setError("New password and confirmation do not match.");
@@ -52,16 +66,16 @@ export function ChangePasswordForm() {
       return;
     }
 
-    setSuccess(result.data?.message ?? "Password updated successfully.");
+    showToast(result.data?.message ?? "Password updated successfully.");
     setCurrentPassword("");
     setNewPassword("");
     setConfirmPassword("");
+    onSuccess?.();
   };
 
   return (
     <form onSubmit={handleSubmit} className="admin-account-form space-y-4">
       {error && <div className="admin-alert admin-alert--error">{error}</div>}
-      {success && <div className="admin-alert admin-alert--success">{success}</div>}
 
       <div>
         <label htmlFor="current_password" className="admin-label">
@@ -143,7 +157,7 @@ export function ChangePasswordForm() {
       <button
         type="submit"
         className="admin-btn admin-btn--primary"
-        disabled={submitting || !requirementsMet || confirmMismatch}
+        disabled={submitting || !canSubmit}
       >
         {submitting ? "Updating…" : "Update password"}
       </button>

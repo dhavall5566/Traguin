@@ -590,7 +590,7 @@ export function SlidingPackages({ packages }: { packages: HomeTravelPackage[] })
 
       <div className="relative z-20 flex min-h-[calc(100svh-var(--site-header-height))] flex-col pt-[var(--site-header-height)] pb-8 sm:pb-10 lg:pb-12">
         <div className="home-shell flex flex-1 flex-col">
-          <div className="site-container flex flex-1 flex-col justify-center gap-6 py-5 sm:py-6 lg:flex-row lg:items-center lg:gap-8 lg:py-8 xl:gap-10">
+          <div className="flex w-full flex-1 flex-col justify-center gap-6 py-5 sm:py-6 lg:flex-row lg:items-center lg:gap-8 lg:py-8 xl:gap-10">
           <div className="w-full min-w-0 shrink lg:w-[42%] xl:w-[min(40%,34rem)]">
             <AnimatePresence mode="wait">
               {active && <ShowcaseContent key={active.id} pkg={active} />}

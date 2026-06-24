@@ -13,7 +13,8 @@ import {
 } from "@/lib/planner-cta-backgrounds";
 import { contactInfo } from "@/data/contact";
 import { defaultCountryCode, getCountryByCode } from "@/data/country-codes";
-import { collectErrors, hasErrors, validatePhone, type FieldErrors } from "@/lib/form-validation";
+import { FormLegalConsent } from "@/components/forms/FormLegalConsent";
+import { collectErrors, clearFieldError, hasErrors, validateLegalConsent, validatePhone, type FieldErrors } from "@/lib/form-validation";
 import { FormSubmissionError, submitFormSubmission } from "@/lib/api/form-submissions";
 import { HomeSection } from "@/components/home/HomeSection";
 import { cn } from "@/lib/utils";
@@ -32,6 +33,7 @@ export function PlanMyJourneyCTA() {
 
   const [phone, setPhone] = useState("");
   const [countryCode, setCountryCode] = useState(defaultCountryCode);
+  const [legalConsent, setLegalConsent] = useState(false);
   const [errors, setErrors] = useState<FieldErrors>({});
   const [submitted, setSubmitted] = useState(false);
   const [submitting, setSubmitting] = useState(false);
@@ -100,7 +102,10 @@ export function PlanMyJourneyCTA() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const next = collectErrors({ phone: validatePhone(phone, true) });
+    const next = collectErrors({
+      phone: validatePhone(phone, true),
+      legalConsent: validateLegalConsent(legalConsent),
+    });
     setErrors(next);
     if (hasErrors(next)) return;
 
@@ -224,6 +229,17 @@ export function PlanMyJourneyCTA() {
                   </svg>
                 </a>
               </div>
+              <FormLegalConsent
+                id="plan-journey-legal-consent"
+                checked={legalConsent}
+                onChange={(checked) => {
+                  setLegalConsent(checked);
+                  clearFieldError(setErrors, "legalConsent");
+                }}
+                error={errors.legalConsent}
+                variant="light"
+                className="mt-3 text-left sm:pl-2"
+              />
               {errors.phone && (
                 <p id="planner-phone-error" className="mt-2 text-left text-xs text-red-300 sm:pl-2">
                   {errors.phone}

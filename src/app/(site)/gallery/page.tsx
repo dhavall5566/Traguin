@@ -4,7 +4,7 @@ import { getGalleryPageData } from "@/lib/api/gallery";
 
 export const metadata: Metadata = {
   title: "Gallery",
-  description: "Client photo walls, travel photography, and short films from TRAGUIN journeys.",
+  description: "Client photo walls and travel photography from TRAGUIN journeys.",
 };
 
 export default async function Page() {

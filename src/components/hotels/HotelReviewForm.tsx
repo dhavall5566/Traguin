@@ -4,10 +4,12 @@ import { useEffect, useState } from "react";
 import { MessageSquare, Star } from "lucide-react";
 import { MagneticButton } from "@/components/ui/MagneticButton";
 import { FormField, fieldInputClass } from "@/components/ui/FormField";
+import { FormLegalConsent } from "@/components/forms/FormLegalConsent";
 import {
   clearFieldError,
   hasErrors,
   validateHotelReviewForm,
+  withLegalConsent,
   type FieldErrors,
 } from "@/lib/form-validation";
 import { FormSubmissionError, submitFormSubmission } from "@/lib/api/form-submissions";
@@ -26,6 +28,7 @@ export function HotelReviewForm({ hotel, compact = false }: HotelReviewFormProps
     review: "",
   });
   const [hoverRating, setHoverRating] = useState(0);
+  const [legalConsent, setLegalConsent] = useState(false);
   const [errors, setErrors] = useState<FieldErrors>({});
   const [submitted, setSubmitted] = useState(false);
   const [submitting, setSubmitting] = useState(false);
@@ -36,6 +39,7 @@ export function HotelReviewForm({ hotel, compact = false }: HotelReviewFormProps
     setHoverRating(0);
     setErrors({});
     setSubmitted(false);
+    setLegalConsent(false);
   }, [hotel.id]);
 
   const update = <K extends keyof typeof form>(key: K, value: (typeof form)[K]) => {
@@ -45,7 +49,7 @@ export function HotelReviewForm({ hotel, compact = false }: HotelReviewFormProps
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const nextErrors = validateHotelReviewForm(form);
+    const nextErrors = withLegalConsent(validateHotelReviewForm(form), legalConsent);
     setErrors(nextErrors);
     if (hasErrors(nextErrors)) return;
 
@@ -193,6 +197,16 @@ export function HotelReviewForm({ hotel, compact = false }: HotelReviewFormProps
               aria-invalid={!!errors.review}
             />
           </FormField>
+
+          <FormLegalConsent
+            id="hotel-review-legal-consent"
+            checked={legalConsent}
+            onChange={(checked) => {
+              setLegalConsent(checked);
+              clearFieldError(setErrors, "legalConsent");
+            }}
+            error={errors.legalConsent}
+          />
 
           <MagneticButton type="submit" variant="secondary" className="w-full sm:w-auto" disabled={submitting}>
             {submitting ? "Submitting…" : "Submit Review"}

@@ -7,11 +7,13 @@ import { MagneticButton } from "@/components/ui/MagneticButton";
 import { FormField, fieldInputClass } from "@/components/ui/FormField";
 import { SectionHeader } from "@/components/ui/SectionHeader";
 import { HomeSection } from "@/components/home/HomeSection";
+import { FormLegalConsent } from "@/components/forms/FormLegalConsent";
 import {
   clearFieldError,
   hasErrors,
   validateTravelPlannerForm,
   validateTravelPlannerStep,
+  withLegalConsent,
   type FieldErrors,
 } from "@/lib/form-validation";
 import type { TravelMood } from "@/types";
@@ -60,6 +62,7 @@ export function TravelPlannerForm() {
     email: "",
     phone: "",
   });
+  const [legalConsent, setLegalConsent] = useState(false);
   const [errors, setErrors] = useState<FieldErrors>({});
 
   const update = <K extends keyof typeof form>(key: K, value: (typeof form)[K]) => {
@@ -86,7 +89,10 @@ export function TravelPlannerForm() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const next = validateTravelPlannerForm(form, minDate || getLocalDateIso());
+    const next = withLegalConsent(
+      validateTravelPlannerForm(form, minDate || getLocalDateIso()),
+      legalConsent
+    );
     setErrors(next);
     if (hasErrors(next)) return;
 
@@ -365,6 +371,19 @@ export function TravelPlannerForm() {
                   )}
                 </motion.div>
               </AnimatePresence>
+
+              {step === steps.length - 1 && (
+                <FormLegalConsent
+                  id="travel-planner-legal-consent"
+                  checked={legalConsent}
+                  onChange={(checked) => {
+                    setLegalConsent(checked);
+                    clearFieldError(setErrors, "legalConsent");
+                  }}
+                  error={errors.legalConsent}
+                  className="mt-6"
+                />
+              )}
 
               <div
                 className={cn(

@@ -9,6 +9,7 @@ import {
 } from "./cms";
 import type { CmsDestination, CmsFaq, CmsItinerary, CmsRedirect } from "./types";
 import type { Hotel } from "@/types";
+import { cleanPackageTitle } from "@/lib/package-title";
 import { loadCmsDetailContext } from "./detail-context";
 
 function uniqueGalleryUrls(urls: string[]): string[] {
@@ -86,7 +87,7 @@ export function mapCmsItineraryToItinerary(
     slug: itinerary.slug,
     packageId: itinerary.package_id ?? "",
     destinationId: destination.slug,
-    title: itinerary.title,
+    title: cleanPackageTitle(itinerary.title),
     destination: destination.name,
     region: destination.region,
     duration: itinerary.duration_label || `${durationDays} days`,

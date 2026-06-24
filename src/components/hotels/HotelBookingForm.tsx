@@ -4,10 +4,12 @@ import { useEffect, useState } from "react";
 import { Send } from "lucide-react";
 import { MagneticButton } from "@/components/ui/MagneticButton";
 import { FormField, fieldInputClass } from "@/components/ui/FormField";
+import { FormLegalConsent } from "@/components/forms/FormLegalConsent";
 import {
   clearFieldError,
   hasErrors,
   validateHotelBookingForm,
+  withLegalConsent,
   type FieldErrors,
 } from "@/lib/form-validation";
 import { FormSubmissionError, submitFormSubmission } from "@/lib/api/form-submissions";
@@ -35,6 +37,7 @@ export function HotelBookingForm({ hotel }: HotelBookingFormProps) {
     dates: "",
     message: bookingMessageForHotel(hotel),
   });
+  const [legalConsent, setLegalConsent] = useState(false);
   const [errors, setErrors] = useState<FieldErrors>({});
   const [submitted, setSubmitted] = useState(false);
   const [submitting, setSubmitting] = useState(false);
@@ -51,6 +54,7 @@ export function HotelBookingForm({ hotel }: HotelBookingFormProps) {
     });
     setErrors({});
     setSubmitted(false);
+    setLegalConsent(false);
   }, [hotel.id, hotel.name, hotel.destination]);
 
   const update = <K extends keyof typeof form>(key: K, value: (typeof form)[K]) => {
@@ -60,7 +64,7 @@ export function HotelBookingForm({ hotel }: HotelBookingFormProps) {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const nextErrors = validateHotelBookingForm(form);
+    const nextErrors = withLegalConsent(validateHotelBookingForm(form), legalConsent);
     setErrors(nextErrors);
     if (hasErrors(nextErrors)) return;
 
@@ -201,6 +205,15 @@ export function HotelBookingForm({ hotel }: HotelBookingFormProps) {
               aria-invalid={!!errors.message}
             />
           </FormField>
+          <FormLegalConsent
+            id="hotel-booking-legal-consent"
+            checked={legalConsent}
+            onChange={(checked) => {
+              setLegalConsent(checked);
+              clearFieldError(setErrors, "legalConsent");
+            }}
+            error={errors.legalConsent}
+          />
           <MagneticButton type="submit" variant="primary" className="w-full sm:w-auto" disabled={submitting}>
             {submitting ? "Submitting…" : "Submit Booking Request"}
           </MagneticButton>

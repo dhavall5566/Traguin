@@ -56,6 +56,8 @@ export type AdminFieldDef = {
   writeValue?: (value: unknown) => unknown;
   showInList?: boolean;
   listLabel?: string;
+  /** Render boolean list column as an inline active/inactive toggle. */
+  listToggle?: boolean;
   listFormat?: (value: unknown, record: Record<string, unknown>) => string;
 };
 
@@ -70,6 +72,8 @@ export type AdminEntityDef = {
   isSingleton?: boolean;
   hideCreate?: boolean;
   hideDelete?: boolean;
+  /** Hide from CMS sidebar navigation without disabling the entity or API. */
+  hideFromNav?: boolean;
   /** When set, only these fields are sent on PATCH (e.g. form-submissions). */
   writableFields?: string[];
   /** Toolbar filters shown beside search on list pages. Omit to auto-derive from fields. */

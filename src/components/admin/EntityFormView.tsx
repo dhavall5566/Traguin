@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useId, useState } from "react";
+import { useEffect, useId, useMemo, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { X } from "lucide-react";
@@ -17,6 +17,8 @@ import {
   defaultFormValues,
   formValuesToPayload,
   getEntityDef,
+  getEntityNavSectionId,
+  getNavSectionLabel,
   recordToFormValues,
 } from "@/lib/admin/entities";
 import {
@@ -27,11 +29,34 @@ import {
   peekCachedAdminRecord,
   setCachedAdminRecord,
 } from "@/lib/admin/admin-data-cache";
+import { formValuesEqual } from "@/lib/admin/form-dirty";
 import { LegalSectionsEditor } from "@/components/admin/LegalSectionsEditor";
+import { AdminNumberInput } from "@/components/admin/AdminNumberInput";
 import { NestedListEditor } from "@/components/admin/NestedListEditor";
 import { StatListEditor } from "@/components/admin/StatListEditor";
+import { useAdminToast } from "@/components/admin/AdminToast";
 import { collectNestedRelations } from "@/lib/admin/nested-list";
 import { cn } from "@/lib/utils";
+
+function isFullWidthFormField(field: AdminFieldDef): boolean {
+  return (
+    field.type === "nested-list" ||
+    field.type === "textarea" ||
+    field.type === "legal-sections" ||
+    field.type === "stat-list" ||
+    (field.type === "relation" && field.relation?.endpoint === "/media") ||
+    (field.type === "boolean" && Boolean(field.helpText))
+  );
+}
+
+function formFieldClassName(field: AdminFieldDef): string {
+  return cn(
+    "admin-form-field",
+    isFullWidthFormField(field) && "admin-form-field--full",
+    field.type === "boolean" && "admin-form-field--boolean",
+    field.type === "nested-list" && "admin-form-field--nested",
+  );
+}
 
 type EntityFormViewProps = {
   entityKey: string;
@@ -119,15 +144,15 @@ function FieldControl({
 
   if (field.type === "boolean") {
     return (
-      <label className="inline-flex items-center gap-2 text-sm text-foreground">
+      <label className="admin-boolean-field inline-flex items-center gap-2.5 text-sm text-foreground">
         <input
           id={field.name}
           type="checkbox"
           checked={Boolean(value)}
           onChange={(e) => onChange(e.target.checked)}
-          className="h-4 w-4 rounded border-glass-border accent-[var(--gold)]"
+          className="admin-boolean-field__input h-4 w-4 rounded border-glass-border accent-[var(--gold)]"
         />
-        <span>{Boolean(value) ? "Yes" : "No"}</span>
+        <span className="admin-boolean-field__label">{field.label}</span>
       </label>
     );
   }
@@ -191,12 +216,11 @@ function FieldControl({
 
   if (field.type === "number") {
     return (
-      <input
+      <AdminNumberInput
         id={field.name}
-        type="number"
-        className={cn("admin-input", errorClass)}
-        value={value === "" || value == null ? "" : String(value)}
-        onChange={(e) => onChange(e.target.value)}
+        value={value}
+        onChange={onChange}
+        className={errorClass}
         placeholder={field.placeholder}
       />
     );
@@ -225,6 +249,7 @@ export function EntityFormView({
 }: EntityFormViewProps) {
   const entity = getEntityDef(entityKey);
   const router = useRouter();
+  const { showToast } = useAdminToast();
   const formId = useId();
   const isModal = variant === "modal";
   const isSingleton = singleton ?? entity?.isSingleton ?? false;
@@ -241,9 +266,14 @@ export function EntityFormView({
     if (cachedRecord) return recordToFormValues(def, cachedRecord);
     return defaultFormValues(def);
   });
+  const [baselineValues, setBaselineValues] = useState<Record<string, unknown>>(() => {
+    const def = getEntityDef(entityKey);
+    if (!def) return {};
+    if (cachedRecord) return recordToFormValues(def, cachedRecord);
+    return defaultFormValues(def);
+  });
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
   const [formError, setFormError] = useState<string | null>(null);
-  const [success, setSuccess] = useState<string | null>(null);
   const [loading, setLoading] = useState(mode === "edit" && !cachedRecord);
   const [refreshing, setRefreshing] = useState(false);
   const [saving, setSaving] = useState(false);
@@ -297,10 +327,11 @@ export function EntityFormView({
 
   useEffect(() => {
     if (!isModal || !open || !entity) return;
-    setValues(defaultFormValues(entity));
+    const defaults = defaultFormValues(entity);
+    setValues(defaults);
+    setBaselineValues(defaults);
     setFieldErrors({});
     setFormError(null);
-    setSuccess(null);
     setSaving(false);
   }, [entity, isModal, open]);
 
@@ -328,7 +359,9 @@ export function EntityFormView({
 
     const cached = peekCachedAdminRecord(recordCacheKey);
     if (cached) {
-      setValues(recordToFormValues(entity, cached));
+      const cachedValues = recordToFormValues(entity, cached);
+      setValues(cachedValues);
+      setBaselineValues(cachedValues);
       setLoading(false);
       setRefreshing(true);
     }
@@ -346,13 +379,17 @@ export function EntityFormView({
 
         if (!data) {
           setSingletonUninitialized(true);
-          setValues(defaultFormValues(entity));
+          const defaults = defaultFormValues(entity);
+          setValues(defaults);
+          setBaselineValues(defaults);
           setFormError(null);
           return;
         }
 
         setSingletonUninitialized(false);
-        setValues(recordToFormValues(entity, data));
+        const nextValues = recordToFormValues(entity, data);
+        setValues(nextValues);
+        setBaselineValues(nextValues);
         setCachedAdminRecord(recordCacheKey, data);
         return;
       }
@@ -369,9 +406,16 @@ export function EntityFormView({
         return;
       }
 
-      setValues(recordToFormValues(entity, result.record));
+      const nextValues = recordToFormValues(entity, result.record);
+      setValues(nextValues);
+      setBaselineValues(nextValues);
     })();
   }, [entity, isSingleton, mode, recordCacheKey, recordId]);
+
+  const isDirty = useMemo(
+    () => !formValuesEqual(values, baselineValues),
+    [baselineValues, values],
+  );
 
   const updateField = (name: string, value: unknown) => {
     setValues((prev) => ({ ...prev, [name]: value }));
@@ -380,15 +424,13 @@ export function EntityFormView({
       delete next[name];
       return next;
     });
-    setSuccess(null);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!entity) return;
+    if (!entity || !isDirty) return;
     setSaving(true);
     setFormError(null);
-    setSuccess(null);
     setFieldErrors({});
 
     const payloadMode = isSingleton && singletonUninitialized ? "create" : mode;
@@ -411,6 +453,7 @@ export function EntityFormView({
     if (!isSingleton && mode === "create" && result.data) {
       invalidateAdminListCache(entity.endpoint);
       if (isModal) {
+        showToast(`${entity.label} created successfully.`);
         onCreated?.();
         return;
       }
@@ -422,7 +465,9 @@ export function EntityFormView({
     }
 
     if (result.data) {
-      setValues(recordToFormValues(entity, result.data));
+      const nextValues = recordToFormValues(entity, result.data);
+      setValues(nextValues);
+      setBaselineValues(nextValues);
       setSingletonUninitialized(false);
       const cacheKey = adminRecordCacheKey(
         entity.endpoint,
@@ -432,7 +477,10 @@ export function EntityFormView({
       invalidateAdminListCache(entity.endpoint);
       invalidateAdminRecordCache(entity.endpoint);
     }
-    setSuccess("Saved successfully.");
+
+    showToast(
+      mode === "create" ? `${entity.label} created successfully.` : "Changes saved successfully.",
+    );
   };
 
   if (isModal && (!open || mode !== "create")) {
@@ -456,11 +504,13 @@ export function EntityFormView({
 
   const submitLabel =
     saving ? "Saving…" : isSingleton || mode === "edit" ? "Save changes" : "Create";
+  const saveDisabled = saving || !isDirty;
+  const sectionLabel = getNavSectionLabel(getEntityNavSectionId(entity.key));
 
   const formFields = (
     <>
       {entity.fields.map((field) => (
-        <div key={field.name} className="admin-form-field">
+        <div key={field.name} className={formFieldClassName(field)}>
           {field.type !== "boolean" && (
             <label htmlFor={field.name} className="admin-field-label">
               {field.label}
@@ -552,7 +602,7 @@ export function EntityFormView({
               type="submit"
               form={formId}
               className="admin-btn admin-btn--primary admin-btn--page"
-              disabled={saving}
+              disabled={saveDisabled}
             >
               {submitLabel}
             </button>
@@ -564,16 +614,16 @@ export function EntityFormView({
 
   return (
     <div className="admin-page admin-form-page">
-      <div className="admin-workspace admin-workspace--narrow">
+      <div className="admin-workspace">
         <div className={cn("admin-form-panel", refreshing && "admin-form-panel--refreshing")}>
           <header className="admin-form-panel__head">
             <div className="admin-form-panel__intro">
               {!isSingleton && (
                 <p className="admin-workspace-eyebrow">
-                  CMS · {mode === "create" ? "Create" : "Edit"}
+                  CMS · {sectionLabel} · {mode === "create" ? "Create" : "Edit"}
                 </p>
               )}
-              {isSingleton && <p className="admin-workspace-eyebrow">CMS · Site Config</p>}
+              {isSingleton && <p className="admin-workspace-eyebrow">CMS · {sectionLabel}</p>}
               <h1 className="admin-form-panel__title">
                 {isSingleton
                   ? entity.label
@@ -591,7 +641,10 @@ export function EntityFormView({
             </div>
             {!isSingleton && (
               <div className="admin-form-panel__head-actions">
-                <Link href={`/admin/cms/${entity.key}`} className="admin-btn admin-btn--secondary admin-btn--page">
+                <Link
+                  href={`/admin/cms/${entity.key}`}
+                  className="admin-btn admin-btn--secondary admin-btn--page admin-form-panel__back"
+                >
                   ← Back to list
                 </Link>
               </div>
@@ -600,13 +653,23 @@ export function EntityFormView({
 
           <div className="admin-form-panel__body">
             {formError && <div className="admin-alert admin-alert--error admin-form-panel__alert">{formError}</div>}
-            {success && <div className="admin-alert admin-alert--success admin-form-panel__alert">{success}</div>}
 
-            <form onSubmit={(e) => void handleSubmit(e)} className="admin-form-panel__form">
+            <form
+              id={formId}
+              onSubmit={(e) => void handleSubmit(e)}
+              className={cn("admin-form-panel__form", `admin-form-panel__form--${entity.key}`)}
+            >
               {formFields}
+            </form>
+          </div>
 
-          <div className="admin-form-panel__actions">
-            <button type="submit" className="admin-btn admin-btn--primary admin-btn--page" disabled={saving}>
+          <footer className="admin-form-panel__footer">
+            <button
+              type="submit"
+              form={formId}
+              className="admin-btn admin-btn--primary admin-btn--page"
+              disabled={saveDisabled}
+            >
               {submitLabel}
             </button>
             {!isSingleton && (
@@ -614,9 +677,7 @@ export function EntityFormView({
                 Cancel
               </Link>
             )}
-          </div>
-            </form>
-          </div>
+          </footer>
         </div>
       </div>
     </div>

@@ -64,7 +64,7 @@ export default async function RootLayout({
           strategy="beforeInteractive"
           dangerouslySetInnerHTML={{ __html: themeInitScript }}
         />
-        <ThemeProvider>{children}</ThemeProvider>
+        <ThemeProvider initialTheme={serverTheme}>{children}</ThemeProvider>
       </body>
     </html>
   );

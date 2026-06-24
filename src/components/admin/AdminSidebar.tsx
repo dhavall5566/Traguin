@@ -1,8 +1,9 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useMemo, useState } from "react";
+import { useMemo, useState, useEffect } from "react";
 import {
   ArrowRightLeft,
   BarChart3,
@@ -17,7 +18,7 @@ import {
   Globe,
   GraduationCap,
   HelpCircle,
-  Image,
+  Image as ImageIcon,
   Images,
   Inbox,
   Layers,
@@ -42,8 +43,15 @@ import {
   Zap,
   type LucideIcon,
 } from "lucide-react";
-import { ADMIN_ENTITY_GROUPS, getEnabledEntities } from "@/lib/admin/entities";
+import { getEnabledEntities } from "@/lib/admin/entities";
+import {
+  CMS_NAV_SECTIONS,
+  getCustomLinkNavSectionId,
+  getEntityNavSectionId,
+  getNavSectionLabel,
+} from "@/lib/admin/cms-nav-sections";
 import { prefetchAdminList } from "@/lib/admin/admin-data-cache";
+import { traguinLogo } from "@/lib/brand/traguin-logo";
 import type { AdminEntityDef } from "@/lib/admin/types";
 import { cn } from "@/lib/utils";
 
@@ -52,7 +60,6 @@ const CUSTOM_CMS_LINKS = [
     key: "homepage-hero-slider",
     label: "Homepage Hero Slider",
     href: "/admin/cms/homepage-hero-slider",
-    group: "site-config",
     icon: PanelTop,
   },
 ] as const;
@@ -64,7 +71,7 @@ const ENTITY_ICONS: Record<string, LucideIcon> = {
   itineraries: Route,
   hotels: Building2,
   experiences: Sparkles,
-  media: Image,
+  media: ImageIcon,
   "client-stories": MessageSquareQuote,
   "gallery-categories": LayoutGrid,
   "gallery-items": Images,
@@ -113,18 +120,19 @@ function entityIcon(entity: AdminEntityDef) {
   return ENTITY_ICONS[entity.key] ?? Folder;
 }
 
-function groupContainsPath(pathname: string, groupId: string, entityKeys: string[]) {
+function groupContainsPath(pathname: string, sectionId: string, keys: string[]) {
   if (
     CUSTOM_CMS_LINKS.some(
       (link) =>
-        link.group === groupId &&
+        getCustomLinkNavSectionId(link.key) === sectionId &&
         (pathname === link.href || pathname.startsWith(`${link.href}/`)),
     )
   ) {
     return true;
   }
-  return entityKeys.some((key) => {
-    const href = entityHref(key);
+
+  return keys.some((key) => {
+    const href = key.startsWith("/") ? key : entityHref(key);
     return pathname === href || pathname.startsWith(`${href}/`);
   });
 }
@@ -172,68 +180,70 @@ function NavLinkItem({
 
 export function AdminSidebar() {
   const pathname = usePathname();
-  const entities = getEnabledEntities();
+  const entities = getEnabledEntities().filter((entity) => !entity.hideFromNav);
   const [search, setSearch] = useState("");
-
-  const groupedEntities = useMemo(
-    () =>
-      ADMIN_ENTITY_GROUPS.map((group) => ({
-        group,
-        items: entities.filter((e) => e.group === group.id),
-      })).filter((entry) => entry.items.length > 0),
-    [entities],
-  );
 
   const navCatalog = useMemo(() => {
     const items: NavItem[] = [];
 
-    for (const { group, items: groupItems } of groupedEntities) {
-      for (const entity of groupItems) {
-        items.push({
-          key: entity.key,
-          label: entity.pluralLabel,
-          href: entityHref(entity.key),
-          groupId: group.id,
-          groupLabel: group.label,
-          icon: entityIcon(entity),
-          endpoint: entity.endpoint,
-        });
-      }
-
-      for (const link of CUSTOM_CMS_LINKS) {
-        if (link.group !== group.id) continue;
-        items.push({
-          key: link.key,
-          label: link.label,
-          href: link.href,
-          groupId: group.id,
-          groupLabel: group.label,
-          icon: link.icon,
-        });
-      }
+    for (const entity of entities) {
+      const sectionId = getEntityNavSectionId(entity.key);
+      items.push({
+        key: entity.key,
+        label: entity.pluralLabel,
+        href: entityHref(entity.key),
+        groupId: sectionId,
+        groupLabel: getNavSectionLabel(sectionId),
+        icon: entityIcon(entity),
+        endpoint: entity.endpoint,
+      });
     }
 
-    return items;
-  }, [groupedEntities]);
+    for (const link of CUSTOM_CMS_LINKS) {
+      const sectionId = getCustomLinkNavSectionId(link.key);
+      items.push({
+        key: link.key,
+        label: link.label,
+        href: link.href,
+        groupId: sectionId,
+        groupLabel: getNavSectionLabel(sectionId),
+        icon: link.icon,
+      });
+    }
+
+    return items.sort((a, b) => {
+      const sectionOrder =
+        CMS_NAV_SECTIONS.findIndex((section) => section.id === a.groupId) -
+        CMS_NAV_SECTIONS.findIndex((section) => section.id === b.groupId);
+      if (sectionOrder !== 0) return sectionOrder;
+      return a.label.localeCompare(b.label);
+    });
+  }, [entities]);
 
   const activeGroupId = useMemo(() => {
-    for (const { group, items } of groupedEntities) {
-      if (groupContainsPath(pathname, group.id, items.map((e) => e.key))) {
-        return group.id;
+    for (const section of CMS_NAV_SECTIONS) {
+      const sectionKeys = navCatalog
+        .filter((item) => item.groupId === section.id)
+        .map((item) => item.key);
+
+      if (groupContainsPath(pathname, section.id, sectionKeys)) {
+        return section.id;
       }
     }
-    return groupedEntities[0]?.group.id ?? null;
-  }, [groupedEntities, pathname]);
 
-  const [openGroups, setOpenGroups] = useState<Record<string, boolean>>({});
+    return CMS_NAV_SECTIONS[0]?.id ?? null;
+  }, [navCatalog, pathname]);
 
-  const isGroupOpen = (groupId: string) => openGroups[groupId] ?? groupId === activeGroupId;
+  const [openGroupId, setOpenGroupId] = useState<string | null>(() => activeGroupId);
+
+  useEffect(() => {
+    if (activeGroupId) setOpenGroupId(activeGroupId);
+  }, [activeGroupId]);
+
+  const isGroupOpen = (groupId: string) => openGroupId === groupId;
 
   const toggleGroup = (groupId: string) => {
-    setOpenGroups((prev) => ({
-      ...prev,
-      [groupId]: !(prev[groupId] ?? groupId === activeGroupId),
-    }));
+    setOpenGroupId((prev) => (prev === groupId ? null : groupId));
   };
 
   const searchQuery = search.trim().toLowerCase();
@@ -247,34 +257,39 @@ export function AdminSidebar() {
     });
   }, [isSearching, navCatalog, searchQuery]);
 
-  const visibleGroups = useMemo(() => {
-    if (!isSearching) return groupedEntities;
+  const visibleSections = useMemo(() => {
+    const sectionsWithItems = CMS_NAV_SECTIONS.map((section) => ({
+      section,
+      items: navCatalog.filter((item) => item.groupId === section.id),
+    })).filter((entry) => entry.items.length > 0);
 
-    const matchingGroupIds = new Set(searchResults.map((item) => item.groupId));
-    return groupedEntities.filter(({ group }) => matchingGroupIds.has(group.id));
-  }, [groupedEntities, isSearching, searchResults]);
+    if (!isSearching) return sectionsWithItems;
 
-  const groupItemsFor = (groupId: string) => {
-    const entityItems = navCatalog.filter((item) => item.groupId === groupId);
-    if (!isSearching) return entityItems;
-    return entityItems.filter((item) => {
+    const matchingSectionIds = new Set(searchResults.map((item) => item.groupId));
+    return sectionsWithItems.filter(({ section }) => matchingSectionIds.has(section.id));
+  }, [isSearching, navCatalog, searchResults]);
+
+  const sectionItemsFor = (sectionId: string) => {
+    const sectionItems = navCatalog.filter((item) => item.groupId === sectionId);
+    if (!isSearching) return sectionItems;
+    return sectionItems.filter((item) => {
       const haystack = `${item.label} ${item.groupLabel}`.toLowerCase();
       return haystack.includes(searchQuery);
     });
   };
 
-  const activeItem = navCatalog.find((item) => isNavActive(pathname, item.href));
-
   return (
     <aside className="admin-sidebar">
       <div className="admin-sidebar__header">
         <div className="admin-sidebar-brand">
-          <div className="admin-agency-mark" aria-hidden>
-            T
-          </div>
+          <Image
+            src={traguinLogo}
+            alt="Traguin"
+            className="admin-sidebar-brand__logo"
+            priority
+          />
           <div className="admin-sidebar-brand__copy">
             <span className="admin-sidebar-brand__title">Traguin CMS</span>
-            <span className="admin-sidebar-brand__plan">Content workspace</span>
           </div>
         </div>
 
@@ -302,14 +317,6 @@ export function AdminSidebar() {
       </div>
 
       <div className="admin-sidebar__scroll">
-        {activeItem && !isSearching && (
-          <div className="admin-sidebar-current" aria-label="Current page">
-            <span className="admin-sidebar-current__eyebrow">Current</span>
-            <span className="admin-sidebar-current__title">{activeItem.label}</span>
-            <span className="admin-sidebar-current__group">{activeItem.groupLabel}</span>
-          </div>
-        )}
-
         <nav aria-label="CMS entities" className="admin-sidebar-nav">
           {isSearching && searchResults.length === 0 && (
             <div className="admin-sidebar-empty">
@@ -333,16 +340,16 @@ export function AdminSidebar() {
           )}
 
           {!isSearching &&
-            visibleGroups.map(({ group }) => {
-              const groupItems = groupItemsFor(group.id);
-              if (groupItems.length === 0) return null;
+            visibleSections.map(({ section }) => {
+              const sectionItems = sectionItemsFor(section.id);
+              if (sectionItems.length === 0) return null;
 
-              const isOpen = isGroupOpen(group.id);
-              const groupActive = group.id === activeGroupId;
+              const isOpen = isGroupOpen(section.id);
+              const groupActive = section.id === activeGroupId;
 
               return (
                 <section
-                  key={group.id}
+                  key={section.id}
                   className={cn(
                     "admin-nav-group",
                     isOpen && "admin-nav-group--open",
@@ -353,11 +360,11 @@ export function AdminSidebar() {
                     type="button"
                     className="admin-nav-section-toggle"
                     aria-expanded={isOpen}
-                    onClick={() => toggleGroup(group.id)}
+                    onClick={() => toggleGroup(section.id)}
                   >
                     <span className="admin-nav-section-toggle__label">
-                      <span className="admin-nav-section-toggle__text">{group.label}</span>
-                      <span className="admin-nav-group__count">{groupItems.length}</span>
+                      <span className="admin-nav-section-toggle__text">{section.label}</span>
+                      <span className="admin-nav-group__count">{sectionItems.length}</span>
                     </span>
                     <ChevronRight
                       className={cn(
@@ -370,7 +377,7 @@ export function AdminSidebar() {
 
                   <div className="admin-nav-group-panel" hidden={!isOpen}>
                     <div className="admin-nav-group-items">
-                      {groupItems.map((item) => (
+                      {sectionItems.map((item) => (
                         <NavLinkItem key={item.key} item={item} pathname={pathname} />
                       ))}
                     </div>

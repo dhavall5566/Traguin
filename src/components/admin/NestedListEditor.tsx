@@ -5,6 +5,7 @@ import {
   type NestedListConfigId,
   type NestedSubFieldDef,
 } from "@/lib/admin/nested-list-configs";
+import { AdminNumberInput } from "@/components/admin/AdminNumberInput";
 import { cn } from "@/lib/utils";
 
 type NestedListEditorProps = {
@@ -81,11 +82,9 @@ function SubField({
   }
   if (field.type === "number") {
     return (
-      <input
-        type="number"
-        className="admin-input"
-        value={value === "" || value == null ? "" : String(value)}
-        onChange={(e) => onChange(e.target.value)}
+      <AdminNumberInput
+        value={value}
+        onChange={onChange}
       />
     );
   }
@@ -109,6 +108,7 @@ export function NestedListEditor({
 }: NestedListEditorProps) {
   const config = NESTED_LIST_CONFIGS[configId];
   const items = Array.isArray(value) ? value : [];
+  const isCompactGrid = config.layout === "compact-grid";
 
   const updateItem = (index: number, fieldName: string, fieldValue: unknown) => {
     const next = items.map((item, i) =>
@@ -137,17 +137,22 @@ export function NestedListEditor({
   };
 
   return (
-    <div id={id} className="admin-section-list">
+    <div
+      id={id}
+      className={cn("admin-section-list", isCompactGrid && "admin-section-list--compact-grid")}
+    >
       {items.length === 0 && (
-        <p className="text-sm text-muted">No {config.itemLabel.toLowerCase()}s yet.</p>
+        <p className="admin-section-list__empty text-sm text-muted">
+          No {config.itemLabel.toLowerCase()}s yet.
+        </p>
       )}
       {items.map((item, index) => (
         <div key={index} className="admin-section-card">
           <div className="admin-section-card__header">
-            <span className="text-xs font-semibold tracking-wide text-muted uppercase">
+            <span className="admin-section-card__label">
               {config.itemLabel} {index + 1}
             </span>
-            <div className="flex gap-1">
+            <div className="admin-section-card__actions">
               <button
                 type="button"
                 className="admin-btn admin-btn--secondary admin-btn--icon"
@@ -176,11 +181,22 @@ export function NestedListEditor({
               </button>
             </div>
           </div>
-          <div className="mt-3 space-y-3">
+          <div
+            className={cn(
+              "admin-section-card__fields",
+              isCompactGrid && "admin-section-card__fields--compact",
+            )}
+          >
             {config.fields.map((field) => {
               const relKey = `${configId}:${field.name}`;
               return (
-                <div key={field.name}>
+                <div
+                  key={field.name}
+                  className={cn(
+                    "admin-section-card__field",
+                    field.name === "sort_order" && "admin-section-card__field--sort",
+                  )}
+                >
                   <label className="admin-field-label">
                     {field.label}
                     {"required" in field && field.required ? (
@@ -201,7 +217,10 @@ export function NestedListEditor({
       ))}
       <button
         type="button"
-        className="admin-btn admin-btn--secondary mt-2"
+        className={cn(
+          "admin-btn admin-btn--secondary admin-section-list__add",
+          isCompactGrid && "admin-section-list__add--compact",
+        )}
         onClick={() => onChange([...items, newItem()])}
       >
         + Add {config.itemLabel.toLowerCase()}

@@ -99,6 +99,28 @@ export function invalidateAdminListCache(endpoint?: string) {
   }
 }
 
+export function patchCachedAdminListItem(
+  endpoint: string,
+  idField: string,
+  recordId: string,
+  patch: Record<string, unknown>,
+) {
+  for (const [key, entry] of listCache.entries()) {
+    if (!key.startsWith(`${endpoint}:`)) continue;
+
+    const items = entry.items.map((item) =>
+      String(item[idField]) === recordId ? { ...item, ...patch } : item,
+    );
+    setCachedAdminList(key, items, entry.total);
+  }
+
+  const recordKey = adminRecordCacheKey(endpoint, recordId);
+  const record = peekCachedAdminRecord(recordKey);
+  if (record) {
+    setCachedAdminRecord(recordKey, { ...record, ...patch });
+  }
+}
+
 export function getCachedAdminRecord(key: string): Record<string, unknown> | null {
   const entry = recordCache.get(key);
   if (!entry) return null;

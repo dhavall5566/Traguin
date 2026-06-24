@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { ArrowDown, ArrowUp, Trash2 } from "lucide-react";
 import { AdminListToolbar } from "@/components/admin/AdminListToolbar";
+import { useAdminToast } from "@/components/admin/AdminToast";
 import { adminFetch, adminList, adminUpdate } from "@/lib/admin/api-client";
 import { hasActiveFilters, rowMatchesFilter } from "@/lib/admin/list-filters";
 import { parseAdminPaginatedList } from "@/lib/admin/list-response";
@@ -155,6 +156,7 @@ function mergeFeaturedPackages(
 }
 
 export function HomeHeroSliderManager() {
+  const { showToast } = useAdminToast();
   const [packages, setPackages] = useState<PackageRow[]>([]);
   const [maxItems, setMaxItems] = useState(HERO_SLIDER_DEFAULT_MAX_ITEMS);
   const [savedMaxItems, setSavedMaxItems] = useState(HERO_SLIDER_DEFAULT_MAX_ITEMS);
@@ -166,7 +168,6 @@ export function HomeHeroSliderManager() {
   const [savingSettings, setSavingSettings] = useState(false);
   const [savingOrder, setSavingOrder] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [message, setMessage] = useState<string | null>(null);
   const syncGeneration = useRef(0);
   const orderGeneration = useRef(0);
 
@@ -236,6 +237,8 @@ export function HomeHeroSliderManager() {
   }, [featuredPackages, filterValues, search, visibleIdSet]);
 
   const filtersActive = hasActiveFilters(search, filterValues);
+  const clampedMaxItems = clampHeroSliderMaxItems(maxItems);
+  const maxItemsDirty = clampedMaxItems !== savedMaxItems;
 
   const queueSettingsSave = useCallback(
     (nextVisibleIds: string[], previousVisibleIds: string[]) => {
@@ -248,6 +251,7 @@ export function HomeHeroSliderManager() {
         .then((saved) => {
           if (generation !== syncGeneration.current) return;
           setVisiblePackageIds(saved.visible_package_ids);
+          showToast("Homepage visibility updated.");
         })
         .catch((err) => {
           if (generation !== syncGeneration.current) return;
@@ -255,13 +259,14 @@ export function HomeHeroSliderManager() {
           setError(err instanceof Error ? err.message : "Failed to update package visibility.");
         });
     },
-    [savedMaxItems],
+    [savedMaxItems, showToast],
   );
 
   const handleSaveSettings = async () => {
+    if (!maxItemsDirty) return;
+
     setSavingSettings(true);
     setError(null);
-    setMessage(null);
 
     const previousVisible = visiblePackageIds;
 
@@ -282,11 +287,11 @@ export function HomeHeroSliderManager() {
       setVisiblePackageIds(saved.visible_package_ids);
 
       if (trimmedVisible.length !== previousVisible.length) {
-        setMessage(
+        showToast(
           `Slider settings saved. ${previousVisible.length - trimmedVisible.length} package(s) were hidden because they exceeded the new maximum.`,
         );
       } else {
-        setMessage("Slider settings saved.");
+        showToast("Slider settings saved.");
       }
     } catch (err) {
       setVisiblePackageIds(previousVisible);
@@ -298,7 +303,6 @@ export function HomeHeroSliderManager() {
 
   const handleToggleVisibility = (packageId: string, makeVisible: boolean) => {
     setError(null);
-    setMessage(null);
 
     if (makeVisible) {
       if (visibleCount >= savedMaxItems) {
@@ -327,7 +331,6 @@ export function HomeHeroSliderManager() {
     if (targetIndex < 0 || targetIndex >= featuredPackages.length) return;
 
     setError(null);
-    setMessage(null);
     setSortBy("order");
 
     const nextFeatured = [...featuredPackages];
@@ -344,6 +347,7 @@ export function HomeHeroSliderManager() {
       try {
         await saveHeroSliderOrder(orderedIds);
         if (generation !== orderGeneration.current) return;
+        showToast("Slider order saved.");
       } catch (err) {
         if (generation !== orderGeneration.current) return;
         setPackages(previousPackages);
@@ -358,7 +362,6 @@ export function HomeHeroSliderManager() {
 
   const handleRemove = async (packageId: string) => {
     setError(null);
-    setMessage(null);
 
     const previousPackages = packages;
     const previousVisible = visiblePackageIds;
@@ -384,7 +387,7 @@ export function HomeHeroSliderManager() {
         hero_slider_max_items: savedMaxItems,
         visible_package_ids: nextVisible,
       });
-      setMessage("Package removed from homepage hero slider.");
+      showToast("Package removed from homepage hero slider.");
     } catch (err) {
       setPackages(previousPackages);
       setVisiblePackageIds(previousVisible);
@@ -398,7 +401,7 @@ export function HomeHeroSliderManager() {
         <div className="admin-settings-panel">
           <div className="admin-settings-panel__head">
             <div>
-              <p className="admin-workspace-eyebrow">CMS · Site Config</p>
+              <p className="admin-workspace-eyebrow">CMS · Home</p>
               <h1 className="admin-settings-panel__title">Homepage Hero Slider</h1>
               <p className="admin-settings-panel__subtitle">
                 Choose slider packages, set their order, and control homepage visibility.
@@ -420,10 +423,9 @@ export function HomeHeroSliderManager() {
             </div>
           </div>
 
-          {(error || message) && (
+          {(error) && (
             <div className="admin-settings-panel__alerts">
               {error && <div className="admin-alert admin-alert--error">{error}</div>}
-              {message && <div className="admin-alert admin-alert--success">{message}</div>}
             </div>
           )}
 
@@ -457,7 +459,7 @@ export function HomeHeroSliderManager() {
               <button
                 type="button"
                 className="admin-btn admin-btn--primary admin-btn--page"
-                disabled={initialLoading || savingSettings}
+                disabled={initialLoading || savingSettings || !maxItemsDirty}
                 onClick={() => void handleSaveSettings()}
               >
                 Save max items

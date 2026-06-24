@@ -23,8 +23,16 @@ export function getPublicCmsBaseUrl(): string {
   return (process.env.NEXT_PUBLIC_CMS_API_URL ?? "http://127.0.0.1:8001").replace(/\/$/, "");
 }
 
+/** Same-origin in the browser — avoids CORS preflight to the FastAPI host. */
+export function getPublicFormSubmissionUrl(): string {
+  if (typeof window !== "undefined") {
+    return "/api/public/form-submissions";
+  }
+  return `${getPublicCmsBaseUrl()}/api/cms/public/form-submissions`;
+}
+
 export async function submitFormSubmission(input: FormSubmissionInput): Promise<void> {
-  const url = `${getPublicCmsBaseUrl()}/api/cms/public/form-submissions`;
+  const url = getPublicFormSubmissionUrl();
   const response = await fetch(url, {
     method: "POST",
     headers: {
@@ -46,6 +54,26 @@ export async function submitFormSubmission(input: FormSubmissionInput): Promise<
     }
     throw new FormSubmissionError(detail, response.status);
   }
+}
+
+export type OptimisticFormSubmitOptions = {
+  onSuccess: () => void;
+  onError: (error: FormSubmissionError) => void;
+};
+
+/** Show success immediately; submit in the background and roll back on failure. */
+export function submitFormSubmissionOptimistic(
+  input: FormSubmissionInput,
+  { onSuccess, onError }: OptimisticFormSubmitOptions,
+): void {
+  onSuccess();
+  void submitFormSubmission(input).catch((error) => {
+    onError(
+      error instanceof FormSubmissionError
+        ? error
+        : new FormSubmissionError("Something went wrong. Please try again.")
+    );
+  });
 }
 
 /** Split a full name into first/last for CRM top-level name when only one field exists. */

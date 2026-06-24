@@ -3,6 +3,7 @@ import {
   type NestedListConfigId,
   type NestedSubFieldDef,
 } from "@/lib/admin/nested-list-configs";
+import { coerceAdminNumberPayload, clampAdminNumber } from "@/lib/admin/number-input";
 
 const META_KEYS = new Set(["id", "created_at", "updated_at"]);
 
@@ -19,7 +20,9 @@ function formifySubField(field: NestedSubFieldDef, raw: unknown): unknown {
     return Array.isArray(raw) ? (raw as string[]).join("\n") : "";
   }
   if (field.type === "number") {
-    return raw == null || raw === "" ? "" : String(raw);
+    if (raw == null || raw === "") return "";
+    const parsed = Number(raw);
+    return Number.isNaN(parsed) ? "" : String(clampAdminNumber(parsed));
   }
   if (field.type === "relation") {
     return raw == null ? "" : String(raw);
@@ -37,8 +40,7 @@ function payloadifySubField(field: NestedSubFieldDef, raw: unknown): unknown {
       : [];
   }
   if (field.type === "number") {
-    if (raw === "" || raw == null) return field.required ? 0 : null;
-    return Number(raw);
+    return coerceAdminNumberPayload(raw, field.required);
   }
   if (field.type === "relation") {
     return raw === "" || raw == null ? null : raw;

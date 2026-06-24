@@ -7,7 +7,7 @@ const D = { endpoint: "/destinations", valueKey: "id", labelKey: "name" };
 export const ALL_ADMIN_ENTITIES: Record<string, AdminEntityDef> = {
   "destination-categories": {
     key: "destination-categories", label: "Destination Category", pluralLabel: "Destination Categories",
-    group: "catalog", endpoint: "/destination-categories", nameField: "title",
+    group: "catalog", endpoint: "/destination-categories", nameField: "title", hideFromNav: true,
     fields: [
       { name: "title", label: "Title", type: "text", required: true, showInList: true },
       { name: "slug", label: "Slug", type: "slug", required: true, showInList: true },
@@ -22,9 +22,9 @@ export const ALL_ADMIN_ENTITIES: Record<string, AdminEntityDef> = {
       { name: "slug", label: "Slug", type: "slug", required: true, showInList: true },
       { name: "destination_id", label: "Destination", type: "relation", required: true, relation: D, showInList: true, listFormat: (_v, r) => String(r.destination_name ?? "—") },
       { name: "duration_label", label: "Duration label", type: "text", required: true, showInList: true },
+      { name: "rating", label: "Rating", type: "number" },
       { name: "price", label: "Price", type: "number", required: true, showInList: true, listFormat: (v) => (v === 0 || v == null ? "Inquire for price" : String(v)) },
       { name: "hero_media_id", label: "Hero media", type: "relation", relation: M },
-      { name: "rating", label: "Rating", type: "number" },
       {
         name: "highlights",
         label: "Highlights",
@@ -41,7 +41,6 @@ export const ALL_ADMIN_ENTITIES: Record<string, AdminEntityDef> = {
         helpText: "When enabled, this package can appear in the homepage hero slider.",
         showInList: true,
         listLabel: "Hero",
-        listFormat: (v) => (v ? "Yes" : "—"),
       },
       {
         name: "featured_sort_order",
@@ -178,7 +177,7 @@ export const ALL_ADMIN_ENTITIES: Record<string, AdminEntityDef> = {
         readFrom: (record) => nestedListToFormValue("experienceProcessSteps", record.process_steps),
         writeValue: (value) => formValueToNestedList("experienceProcessSteps", value),
       },
-      { name: "show_on_homepage", label: "Show on homepage", type: "boolean", showInList: true, listFormat: (v) => (v ? "Yes" : "No") },
+      { name: "show_on_homepage", label: "Show on homepage", type: "boolean", showInList: true },
       { name: "homepage_sort_order", label: "Homepage sort order", type: "number" },
       { name: "is_published", label: "Published", type: "boolean" },
     ],
@@ -203,21 +202,35 @@ export const ALL_ADMIN_ENTITIES: Record<string, AdminEntityDef> = {
       { name: "client_name", label: "Client name", type: "text", required: true, showInList: true },
       { name: "slug", label: "Slug", type: "slug", showInList: true },
       { name: "destination_id", label: "Destination", type: "relation", relation: D },
-      { name: "destination_label", label: "Destination label", type: "text" },
+      { name: "destination_label", label: "Destination label", type: "text", showInList: true },
       { name: "trip_type", label: "Trip type", type: "text", showInList: true },
-      { name: "quote", label: "Quote", type: "textarea" },
-      { name: "title", label: "Title", type: "text" },
+      {
+        name: "quote",
+        label: "Review",
+        type: "textarea",
+        showInList: true,
+        listFormat: (value) => {
+          const text = String(value ?? "").trim();
+          if (!text) return "—";
+          return text.length > 72 ? `${text.slice(0, 72)}…` : text;
+        },
+      },
+      { name: "title", label: "Title", type: "text", helpText: "Used for gallery photo captions." },
       { name: "caption", label: "Caption", type: "textarea" },
       { name: "portrait_media_id", label: "Portrait media", type: "relation", relation: M },
-      { name: "poster_media_id", label: "Poster media", type: "relation", relation: M },
-      { name: "video_url", label: "Video URL", type: "text" },
-      { name: "is_film", label: "Is film", type: "boolean" },
-      { name: "show_on_home", label: "Show on home", type: "boolean", showInList: true, listFormat: (v) => (v ? "Yes" : "No") },
-      { name: "show_in_gallery", label: "Show in gallery", type: "boolean" },
+      { name: "show_on_home", label: "Show on home", type: "boolean", showInList: true },
+      { name: "show_in_gallery", label: "Photo grid", type: "boolean", showInList: true, helpText: "Show portrait in the client stories photo grid (when Active)." },
       { name: "is_featured_in_gallery", label: "Featured in gallery", type: "boolean" },
-      { name: "home_sort_order", label: "Home sort order", type: "number" },
+      { name: "home_sort_order", label: "Home sort order", type: "number", showInList: true, listLabel: "Order" },
       { name: "gallery_sort_order", label: "Gallery sort order", type: "number" },
-      { name: "is_published", label: "Published", type: "boolean" },
+      {
+        name: "is_published",
+        label: "Active",
+        type: "boolean",
+        showInList: true,
+        listToggle: true,
+        helpText: "Inactive by default. Turn on to show photos and reviews on the client stories page.",
+      },
     ],
   },
   "gallery-categories": {
@@ -287,7 +300,7 @@ export const ALL_ADMIN_ENTITIES: Record<string, AdminEntityDef> = {
       { name: "label", label: "Label", type: "text", required: true, showInList: true },
       { name: "href", label: "Href", type: "text", required: true, showInList: true },
       { name: "sort_order", label: "Sort order", type: "number", required: true, showInList: true },
-      { name: "is_visible", label: "Visible", type: "boolean", showInList: true, listFormat: (v) => (v ? "Yes" : "No") },
+      { name: "is_visible", label: "Visible", type: "boolean", showInList: true },
     ],
   },
   "site-ctas": {
@@ -344,7 +357,7 @@ export const ALL_ADMIN_ENTITIES: Record<string, AdminEntityDef> = {
       { name: "target_type", label: "Target type", type: "text", required: true, showInList: true },
       { name: "target_id", label: "Target ID", type: "text" },
       { name: "target_path", label: "Target path", type: "text", showInList: true },
-      { name: "is_permanent", label: "Permanent", type: "boolean", showInList: true, listFormat: (v) => (v ? "Yes" : "No") },
+      { name: "is_permanent", label: "Permanent", type: "boolean", showInList: true },
     ],
   },
   "journey-process-steps": {
@@ -392,10 +405,19 @@ export const ALL_ADMIN_ENTITIES: Record<string, AdminEntityDef> = {
       { name: "description", label: "Description", type: "textarea", required: true },
       { name: "highlights", label: "Highlights", type: "tags" },
       { name: "stat_text", label: "Stat text", type: "text", required: true },
-      { name: "href", label: "Href", type: "text", required: true },
+      { name: "href", label: "Href", type: "text", helpText: "Optional override. By default, domestic/international panels link to /destinations?region=domestic or /destinations?region=international based on the panel key." },
       { name: "mood", label: "Mood", type: "text" },
       { name: "hero_media_id", label: "Hero media", type: "relation", relation: M },
       { name: "sort_order", label: "Sort order", type: "number", required: true, showInList: true },
+      {
+        name: "is_active",
+        label: "Active on site",
+        type: "boolean",
+        showInList: true,
+        listLabel: "Status",
+        listToggle: true,
+        helpText: "When off, this region panel is hidden on the homepage.",
+      },
     ],
   },
   "about-story-sections": {

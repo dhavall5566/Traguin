@@ -47,25 +47,24 @@ export function DestinationDetail({ destination, hotelsCatalog }: DestinationDet
           className="absolute inset-0 z-0 h-full w-full object-cover"
           loading="eager"
         />
-        <div className="absolute inset-0 z-[1] bg-black/40" />
-        <div className="absolute inset-0 z-[1] bg-gradient-to-b from-black/55 via-black/10 to-transparent" />
-        <div className="absolute inset-0 z-[1] bg-gradient-to-t from-background via-background/75 to-transparent" />
+        <div className="destination-hero__scrim pointer-events-none absolute inset-0 z-[1]" aria-hidden />
+        <div className="destination-hero__fade pointer-events-none absolute inset-x-0 bottom-0 z-[1] h-20" aria-hidden />
 
         <div className="page-x-padding pointer-events-none absolute inset-0 z-10">
-          <div className="site-container flex h-full flex-col justify-end pb-10 pt-28 md:pb-14 md:pt-32">
+          <div className="site-container destination-hero__copy flex h-full flex-col justify-end pb-10 pt-28 md:pb-14 md:pt-32">
             <div className="pointer-events-auto">
               <Link
                 href="/destinations"
-                className="mb-6 inline-flex w-fit items-center gap-2 text-xs tracking-wide text-white/75 transition-colors hover:text-white"
+                className="destination-hero__back mb-6 inline-flex w-fit items-center gap-2 text-xs tracking-wide text-white/90 transition-colors"
               >
                 <ArrowLeft size={14} />
                 All Destinations
               </Link>
               <p className="text-xs tracking-[0.3em] text-gold uppercase">{destination.categoryTitle}</p>
-              <h1 className="mt-2 font-display text-4xl text-white drop-shadow-[0_2px_12px_rgba(0,0,0,0.45)] md:text-6xl">
+              <h1 className="mt-2 font-display text-4xl text-white md:text-6xl">
                 {destination.name}
               </h1>
-              <p className="mt-4 max-w-2xl text-white/85">{destination.description}</p>
+              <p className="mt-4 max-w-2xl text-white/90">{destination.description}</p>
               <div className="mt-6">
                 <PriceDisplay
                   amount={destination.startingPrice}

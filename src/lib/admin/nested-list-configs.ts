@@ -20,11 +20,14 @@ export type NestedSubFieldDef = {
 export type NestedListConfig = {
   itemLabel: string;
   fields: NestedSubFieldDef[];
+  /** Compact multi-column cards for small repeated items (highlights, inclusions, etc.). */
+  layout?: "stack" | "compact-grid";
 };
 
 export const NESTED_LIST_CONFIGS: Record<string, NestedListConfig> = {
   highlights: {
     itemLabel: "Highlight",
+    layout: "compact-grid",
     fields: [
       { name: "text", label: "Text", type: "text", required: true },
       { name: "sort_order", label: "Sort order", type: "number" },

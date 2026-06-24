@@ -10,13 +10,15 @@ import { PageShell } from "@/components/layout/PageShell";
 import { PageHero } from "@/components/layout/PageHero";
 import { TrustBar } from "@/components/layout/TrustBar";
 import { PageCTA } from "@/components/layout/PageCTA";
+import { FormLegalConsent } from "@/components/forms/FormLegalConsent";
 import {
   clearFieldError,
   hasErrors,
   validateContactForm,
+  withLegalConsent,
   type FieldErrors,
 } from "@/lib/form-validation";
-import { FormSubmissionError, submitFormSubmission } from "@/lib/api/form-submissions";
+import { submitFormSubmissionOptimistic } from "@/lib/api/form-submissions";
 import { contactInfo } from "@/data/contact";
 import { pageHeroes } from "@/data/pageContent";
 import { cn } from "@/lib/utils";
@@ -37,9 +39,9 @@ const contactItems = [
 export function ContactPage() {
   const { lenis } = useLenis();
   const [form, setForm] = useState({ name: "", email: "", phone: "", message: "" });
+  const [legalConsent, setLegalConsent] = useState(false);
   const [errors, setErrors] = useState<FieldErrors>({});
   const [submitted, setSubmitted] = useState(false);
-  const [submitting, setSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
 
   useEffect(() => {
@@ -60,37 +62,33 @@ export function ContactPage() {
     clearFieldError(setErrors, key);
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    const nextErrors = validateContactForm(form);
+    const nextErrors = withLegalConsent(validateContactForm(form), legalConsent);
     setErrors(nextErrors);
     if (hasErrors(nextErrors)) return;
 
-    setSubmitting(true);
     setSubmitError(null);
-    try {
-      await submitFormSubmission({
-        form_type: "contact_consultation",
+    const payload = {
+      form_type: "contact_consultation" as const,
+      name: form.name.trim(),
+      email: form.email.trim().toLowerCase(),
+      phone: form.phone.trim() || null,
+      payload: {
         name: form.name.trim(),
         email: form.email.trim().toLowerCase(),
         phone: form.phone.trim() || null,
-        payload: {
-          name: form.name.trim(),
-          email: form.email.trim().toLowerCase(),
-          phone: form.phone.trim() || null,
-          message: form.message.trim(),
-        },
-      });
-      setSubmitted(true);
-    } catch (error) {
-      setSubmitError(
-        error instanceof FormSubmissionError
-          ? error.message
-          : "Something went wrong. Please try again."
-      );
-    } finally {
-      setSubmitting(false);
-    }
+        message: form.message.trim(),
+      },
+    };
+
+    submitFormSubmissionOptimistic(payload, {
+      onSuccess: () => setSubmitted(true),
+      onError: (error) => {
+        setSubmitted(false);
+        setSubmitError(error.message);
+      },
+    });
   };
 
   return (
@@ -220,8 +218,17 @@ export function ContactPage() {
                       aria-invalid={!!errors.message}
                     />
                   </FormField>
-                  <MagneticButton type="submit" variant="primary" disabled={submitting}>
-                    {submitting ? "Submitting…" : "Connect With a Travel Expert"}
+                  <FormLegalConsent
+                    id="contact-legal-consent"
+                    checked={legalConsent}
+                    onChange={(checked) => {
+                      setLegalConsent(checked);
+                      clearFieldError(setErrors, "legalConsent");
+                    }}
+                    error={errors.legalConsent}
+                  />
+                  <MagneticButton type="submit" variant="primary">
+                    Connect With a Travel Expert
                   </MagneticButton>
                 </div>
               )}

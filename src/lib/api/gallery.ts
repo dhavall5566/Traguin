@@ -1,8 +1,6 @@
-import { images } from "@/lib/images";
 import type {
   GalleryCategory,
   GalleryClientWallItem,
-  GalleryFilmMoment,
   GalleryItem,
 } from "@/lib/gallery-types";
 import {
@@ -19,7 +17,6 @@ export type GalleryPageData = {
   clientWall: GalleryClientWallItem[];
   galleryItems: GalleryItem[];
   galleryCategories: GalleryCategory[];
-  filmMoments: GalleryFilmMoment[];
 };
 
 const COLLAGE_ROTATIONS = [-3, 2, -1, 3, -2, 1] as const;
@@ -69,28 +66,6 @@ export function mapCmsClientStoryToWallItem(
   };
 }
 
-export function mapCmsClientStoryToFilmMoment(
-  story: CmsClientStory,
-  mediaMap: Map<string, string>
-): GalleryFilmMoment | null {
-  if (!story.video_url?.trim()) return null;
-
-  const poster = resolveMediaUrl(
-    mediaMap,
-    story.poster_media_id ?? story.portrait_media_id,
-    images.bali
-  );
-
-  return {
-    id: story.id,
-    title: story.title ?? story.client_name,
-    destination: story.destination_label ?? "Journey",
-    caption: story.caption ?? "",
-    poster,
-    src: story.video_url,
-  };
-}
-
 export function mapCmsGalleryItemToGalleryItem(
   item: CmsGalleryItem,
   mediaMap: Map<string, string>,
@@ -128,14 +103,8 @@ export async function getGalleryPageData(): Promise<GalleryPageData> {
   const galleryStories = sortGalleryStories(cmsStories.filter((story) => story.is_published));
 
   const clientWall = galleryStories
-    .filter((story) => !story.is_film)
     .map((story, index) => mapCmsClientStoryToWallItem(story, mediaMap, index))
     .filter((item): item is GalleryClientWallItem => item != null);
-
-  const filmMoments = galleryStories
-    .filter((story) => story.is_film)
-    .map((story) => mapCmsClientStoryToFilmMoment(story, mediaMap))
-    .filter((item): item is GalleryFilmMoment => item != null);
 
   const galleryItems = cmsItems
     .filter((item) => item.is_published)
@@ -157,6 +126,5 @@ export async function getGalleryPageData(): Promise<GalleryPageData> {
     clientWall,
     galleryItems,
     galleryCategories,
-    filmMoments,
   };
 }

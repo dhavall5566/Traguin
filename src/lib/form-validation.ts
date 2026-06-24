@@ -136,6 +136,19 @@ export function validateService(value: string): string | undefined {
   return undefined;
 }
 
+export function validateLegalConsent(checked: boolean): string | undefined {
+  if (!checked) {
+    return "Please agree to the Privacy Policy and Website Terms of Use to continue";
+  }
+  return undefined;
+}
+
+export function withLegalConsent(errors: FieldErrors, accepted: boolean): FieldErrors {
+  const legalConsent = validateLegalConsent(accepted);
+  if (!legalConsent) return errors;
+  return { ...errors, legalConsent };
+}
+
 export type ContactFormValues = {
   name: string;
   email: string;

@@ -1,5 +1,5 @@
 import type { CSSProperties } from "react";
-import { Film, Images, Play, Sparkles } from "lucide-react";
+import { Images, Sparkles } from "lucide-react";
 import { PageHero } from "@/components/layout/PageHero";
 import { PageShell } from "@/components/layout/PageShell";
 import { TrustBar } from "@/components/layout/TrustBar";
@@ -7,10 +7,6 @@ import { PageCTA } from "@/components/layout/PageCTA";
 import { GalleryGrid } from "@/components/gallery/GalleryGrid";
 import { SafeImage } from "@/components/ui/SafeImage";
 import { pageHeroes } from "@/data/pageContent";
-import type {
-  GalleryClientWallItem,
-  GalleryFilmMoment,
-} from "@/lib/gallery-types";
 import type { GalleryPageData } from "@/lib/api/gallery";
 
 const galleryStats = [
@@ -23,7 +19,6 @@ export function GalleryPage({
   clientWall,
   galleryItems,
   galleryCategories,
-  filmMoments,
 }: GalleryPageData) {
   return (
     <>
@@ -122,84 +117,8 @@ export function GalleryPage({
           />
         </section>
 
-        <section className="mt-16 md:mt-20">
-          <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
-            <div>
-              <p className="inline-flex items-center gap-2 text-xs tracking-[0.24em] text-gold uppercase">
-                <Film size={14} aria-hidden />
-                Short Films
-              </p>
-              <h2 className="mt-3 font-display text-3xl text-foreground md:text-5xl">Cinematic moments</h2>
-            </div>
-            <p className="max-w-lg text-sm leading-relaxed text-muted">
-              Moving postcards from private arrivals, destination tables, and the atmosphere around
-              a journey.
-            </p>
-          </div>
-
-          {filmMoments.length > 0 ? (
-            <div className="mt-8 grid gap-5 lg:grid-cols-2">
-              {filmMoments.map((moment) => (
-                <GalleryMomentCard key={moment.id} moment={moment} compact />
-              ))}
-            </div>
-          ) : (
-            <div className="mt-8 rounded-[1.5rem] border border-dashed border-glass-border bg-surface/40 px-6 py-14 text-center">
-              <p className="font-display text-lg text-foreground">Short films coming soon</p>
-              <p className="mt-2 text-sm text-muted">
-                Cinematic moments from private journeys will appear here as they are added to the
-                archive.
-              </p>
-            </div>
-          )}
-        </section>
-
         <PageCTA />
       </PageShell>
     </>
-  );
-}
-
-function GalleryMomentCard({
-  moment,
-  compact = false,
-}: {
-  moment: GalleryFilmMoment;
-  compact?: boolean;
-}) {
-  return (
-    <article
-      className={[
-        "group relative overflow-hidden rounded-[1.5rem] border border-glass-border bg-surface shadow-[0_18px_50px_-32px_rgba(0,0,0,0.45)]",
-        compact ? "min-h-[20rem]" : "min-h-[18rem]",
-      ].join(" ")}
-    >
-      <video
-        className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-[1.03]"
-        poster={moment.poster}
-        muted
-        loop
-        playsInline
-        preload="metadata"
-        controls
-      >
-        <source src={moment.src} type="video/mp4" />
-      </video>
-
-      <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/82 via-black/18 to-transparent" />
-      <div className="pointer-events-none absolute top-4 right-4 flex h-11 w-11 items-center justify-center rounded-full border border-white/25 bg-black/35 text-white backdrop-blur-md">
-        <Play size={17} fill="currentColor" aria-hidden />
-      </div>
-      <div className="absolute inset-x-0 bottom-0 p-5 text-white">
-        <p className="inline-flex items-center gap-2 text-[0.68rem] tracking-[0.2em] text-gold-light uppercase">
-          <Film size={13} aria-hidden />
-          {moment.destination}
-        </p>
-        <h3 className="mt-2 font-display text-2xl leading-tight">{moment.title}</h3>
-        {moment.caption && (
-          <p className="mt-2 max-w-md text-sm leading-relaxed text-white/78">{moment.caption}</p>
-        )}
-      </div>
-    </article>
   );
 }

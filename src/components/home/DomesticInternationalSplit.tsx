@@ -1,6 +1,7 @@
 "use client";
 
 import { useRef } from "react";
+import Link from "next/link";
 import { ArrowUpRight } from "lucide-react";
 import { SafeImage } from "@/components/ui/SafeImage";
 import { Reveal3D } from "@/components/ui/Reveal3D";
@@ -22,7 +23,12 @@ export function DomesticInternationalSplit({ panels }: { panels: HomeRegionPanel
         {panels.map((panel, index) => (
           <Reveal3D key={panel.id} variant={index === 0 ? "left" : "right"} delay={index * 0.08}>
             <Tilt3DCard max={9} scale={1.015} className="overflow-hidden rounded-2xl">
-              <article className="group relative flex min-h-[400px] flex-col overflow-hidden rounded-2xl border border-white/10 shadow-[0_12px_36px_-14px_rgba(0,0,0,0.35)] transition-[border-color,box-shadow] duration-500 hover:border-gold/30 hover:shadow-[0_18px_44px_-14px_rgba(0,0,0,0.42)] sm:min-h-[440px]">
+              <Link
+                href={panel.href}
+                aria-label={`Explore ${panel.label} destinations`}
+                className="group block focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold/70 focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+              >
+                <article className="relative flex min-h-[400px] flex-col overflow-hidden rounded-2xl border border-white/10 shadow-[0_12px_36px_-14px_rgba(0,0,0,0.35)] transition-[border-color,box-shadow] duration-500 group-hover:border-gold/30 group-hover:shadow-[0_18px_44px_-14px_rgba(0,0,0,0.42)] sm:min-h-[440px]">
                 <SafeImage
                   src={panel.image}
                   alt=""
@@ -81,18 +87,14 @@ export function DomesticInternationalSplit({ panels }: { panels: HomeRegionPanel
                     ))}
                   </ul>
                   <div className="mt-6">
-                    <MagneticButton
-                      as="a"
-                      href={panel.href}
-                      variant="secondary"
-                      className="home-region-panel__cta inline-flex items-center gap-2 !border-white/30 !bg-white/15 !text-white backdrop-blur-md hover:!border-gold/50 hover:!bg-white/22"
-                    >
+                    <span className="home-region-panel__cta inline-flex items-center gap-2 rounded-full border border-white/30 bg-white/15 px-5 py-2.5 text-[11px] font-semibold tracking-[0.12em] text-white uppercase backdrop-blur-md transition-colors group-hover:border-gold/50 group-hover:bg-white/22">
                       Explore {panel.label}
                       <ArrowUpRight size={14} />
-                    </MagneticButton>
+                    </span>
                   </div>
                 </div>
               </article>
+              </Link>
             </Tilt3DCard>
           </Reveal3D>
         ))}

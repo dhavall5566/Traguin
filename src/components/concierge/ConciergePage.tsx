@@ -5,10 +5,12 @@ import { Clock, Crown, Headphones, MessageCircle, Phone } from "lucide-react";
 import { SafeImage } from "@/components/ui/SafeImage";
 import { MagneticButton } from "@/components/ui/MagneticButton";
 import { FormField, fieldInputClass } from "@/components/ui/FormField";
+import { FormLegalConsent } from "@/components/forms/FormLegalConsent";
 import {
   clearFieldError,
   hasErrors,
   validateConciergeForm,
+  withLegalConsent,
   type FieldErrors,
 } from "@/lib/form-validation";
 import { FormSubmissionError, submitFormSubmission } from "@/lib/api/form-submissions";
@@ -204,6 +206,7 @@ export function ConciergePage({ data }: ConciergePageProps) {
     service: defaultService,
     message: "",
   });
+  const [legalConsent, setLegalConsent] = useState(false);
   const [errors, setErrors] = useState<FieldErrors>({});
   const [submitted, setSubmitted] = useState(false);
   const [submitting, setSubmitting] = useState(false);
@@ -239,7 +242,7 @@ export function ConciergePage({ data }: ConciergePageProps) {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const nextErrors = validateConciergeForm(form);
+    const nextErrors = withLegalConsent(validateConciergeForm(form), legalConsent);
     setErrors(nextErrors);
     if (hasErrors(nextErrors)) return;
 
@@ -443,6 +446,15 @@ export function ConciergePage({ data }: ConciergePageProps) {
                             aria-invalid={!!errors.message}
                           />
                         </FormField>
+                        <FormLegalConsent
+                          id="concierge-legal-consent"
+                          checked={legalConsent}
+                          onChange={(checked) => {
+                            setLegalConsent(checked);
+                            clearFieldError(setErrors, "legalConsent");
+                          }}
+                          error={errors.legalConsent}
+                        />
                         <MagneticButton type="submit" variant="primary" className="w-full !py-3.5" disabled={submitting}>
                           {submitting ? "Submitting…" : "Submit to Travel Expert"}
                         </MagneticButton>
