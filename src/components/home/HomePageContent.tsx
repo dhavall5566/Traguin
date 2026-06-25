@@ -1,19 +1,43 @@
 "use client";
 
+import dynamic from "next/dynamic";
 import { FeaturedDestinations } from "@/components/home/FeaturedDestinations";
-import { ExperienceShowcase } from "@/components/home/ExperienceShowcase";
-import { WhyTraguin } from "@/components/home/WhyTraguin";
-import { TravelPlannerForm } from "@/components/home/TravelPlannerForm";
-import { CustomerStories } from "@/components/home/CustomerStories";
-import { JourneyProcess } from "@/components/home/JourneyProcess";
-import { Specializations } from "@/components/home/Specializations";
 import { SlidingPackages } from "@/components/home/SlidingPackages";
 import { LuxuryStatsBar } from "@/components/home/LuxuryStatsBar";
 import { DestinationMarquee } from "@/components/home/DestinationMarquee";
 import { DomesticInternationalSplit } from "@/components/home/DomesticInternationalSplit";
 import { HomePromoBanner } from "@/components/home/HomePromoBanner";
-import { PlanMyJourneyCTA } from "@/components/home/PlanMyJourneyCTA";
 import type { HomepageData } from "@/lib/api/homepage";
+
+const ExperienceShowcase = dynamic(
+  () =>
+    import("@/components/home/ExperienceShowcase").then((mod) => mod.ExperienceShowcase),
+  { ssr: true }
+);
+const JourneyProcess = dynamic(
+  () => import("@/components/home/JourneyProcess").then((mod) => mod.JourneyProcess),
+  { ssr: true }
+);
+const Specializations = dynamic(
+  () => import("@/components/home/Specializations").then((mod) => mod.Specializations),
+  { ssr: true }
+);
+const WhyTraguin = dynamic(
+  () => import("@/components/home/WhyTraguin").then((mod) => mod.WhyTraguin),
+  { ssr: true }
+);
+const TravelPlannerForm = dynamic(
+  () => import("@/components/home/TravelPlannerForm").then((mod) => mod.TravelPlannerForm),
+  { ssr: true }
+);
+const CustomerStories = dynamic(
+  () => import("@/components/home/CustomerStories").then((mod) => mod.CustomerStories),
+  { ssr: true }
+);
+const PlanMyJourneyCTA = dynamic(
+  () => import("@/components/home/PlanMyJourneyCTA").then((mod) => mod.PlanMyJourneyCTA),
+  { ssr: true }
+);
 
 export function HomePageContent({ data }: { data: HomepageData }) {
   return (
@@ -24,10 +48,7 @@ export function HomePageContent({ data }: { data: HomepageData }) {
       <DomesticInternationalSplit panels={data.regionPanels} />
       <FeaturedDestinations destinations={data.featuredDestinations} />
       <HomePromoBanner promo={data.promo} />
-      <ExperienceShowcase
-        items={data.experiences}
-        experienceDetailsBySlug={data.experienceDetailsBySlug}
-      />
+      <ExperienceShowcase items={data.experiences} />
       <JourneyProcess steps={data.journeySteps} />
       <Specializations items={data.specializations} />
       <WhyTraguin items={data.valueProps} />

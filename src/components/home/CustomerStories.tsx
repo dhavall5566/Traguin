@@ -10,6 +10,7 @@ import { HomeSection, HomeSectionActions } from "@/components/home/HomeSection";
 import { primaryCta } from "@/data/site";
 import { cn } from "@/lib/utils";
 import type { HomeTestimonial } from "@/lib/api/homepage";
+import { getMotionLite } from "@/lib/motion-profile";
 
 const AUTO_ADVANCE_MS = 4000;
 
@@ -38,10 +39,10 @@ export function CustomerStories({ testimonials }: { testimonials: HomeTestimonia
   }, [goTo, index]);
 
   useEffect(() => {
-    if (paused || testimonials.length <= 1) return;
+    if (getMotionLite() || paused || testimonials.length <= 1) return;
     const timer = window.setInterval(next, AUTO_ADVANCE_MS);
     return () => window.clearInterval(timer);
-  }, [paused, next]);
+  }, [paused, next, testimonials.length]);
 
   useGSAP(
     () => {
@@ -51,6 +52,7 @@ export function CustomerStories({ testimonials }: { testimonials: HomeTestimonia
       const prefersReducedMotion =
         typeof window !== "undefined" &&
         window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      const motionLite = getMotionLite();
 
       const isFirst = prevIndexRef.current === -1;
       const isSwitch = !isFirst && prevIndexRef.current !== index;
@@ -59,7 +61,7 @@ export function CustomerStories({ testimonials }: { testimonials: HomeTestimonia
 
       gsap.killTweensOf(inner);
 
-      if (prefersReducedMotion) {
+      if (prefersReducedMotion || motionLite) {
         gsap.set(inner, { clearProps: "all", opacity: 1 });
         prevIndexRef.current = index;
         return;
@@ -145,7 +147,7 @@ export function CustomerStories({ testimonials }: { testimonials: HomeTestimonia
             >
               <div
                 ref={innerRef}
-                className="px-8 py-10 will-change-transform [transform-style:preserve-3d] md:px-12 md:py-12"
+                className="px-8 py-10 [transform-style:preserve-3d] md:px-12 md:py-12"
               >
                 <Quote size={28} className="text-gold/50" aria-hidden />
                 <blockquote className="mt-4 text-base leading-relaxed text-foreground md:text-lg">

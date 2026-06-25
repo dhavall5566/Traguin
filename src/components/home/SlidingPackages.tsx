@@ -9,6 +9,7 @@ import { formatPrice } from "@/lib/utils";
 import { MagneticButton } from "@/components/ui/MagneticButton";
 import { primaryCta } from "@/data/site";
 import { cn } from "@/lib/utils";
+import { useMotionLite } from "@/hooks/useMotionLite";
 
 const AUTO_ADVANCE_MS = 4000;
 const BG_TRANSITION_S = 1.4;
@@ -75,15 +76,32 @@ function ShowcaseBackground({
   activeIndex,
   parallax,
   showcasePackages,
+  motionLite,
 }: {
   activeIndex: number;
   parallax: { x: number; y: number };
   showcasePackages: HomeTravelPackage[];
+  motionLite: boolean;
 }) {
+  const activePkg = showcasePackages[activeIndex];
+
+  if (motionLite && activePkg) {
+    return (
+      <div className="absolute inset-0 z-0 overflow-hidden">
+        <SafeImage
+          src={activePkg.image}
+          alt=""
+          className="h-full min-h-full w-full object-cover object-center"
+        />
+      </div>
+    );
+  }
+
   return (
     <div className="absolute inset-0 z-0 overflow-hidden">
       {showcasePackages.map((pkg, i) => {
         const isActive = i === activeIndex;
+        if (motionLite && !isActive) return null;
         return (
           <motion.div
             key={pkg.id}
@@ -393,11 +411,13 @@ function MobileCardStrip({
   onSelect,
   onPauseChange,
   showcasePackages,
+  motionLite,
 }: {
   activeIndex: number;
   onSelect: (index: number) => void;
   onPauseChange: (paused: boolean) => void;
   showcasePackages: HomeTravelPackage[];
+  motionLite: boolean;
 }) {
   const scrollRef = useRef<HTMLDivElement>(null);
   const isScrollingRef = useRef(false);
@@ -460,20 +480,30 @@ function MobileCardStrip({
             key={pkg.id}
             className="aspect-[3/4] w-[min(82vw,280px)] shrink-0 snap-center"
           >
-            <motion.div
-              animate={{
-                scale: i === activeIndex ? 1 : 0.92,
-                opacity: i === activeIndex ? 1 : 0.65,
-              }}
-              transition={cardTransition}
-              className="size-full"
-            >
-              <PackageCard
-                pkg={pkg}
-                isActive={i === activeIndex}
-                onSelect={() => onSelect(i)}
-              />
-            </motion.div>
+            {motionLite ? (
+              <div className="size-full">
+                <PackageCard
+                  pkg={pkg}
+                  isActive={i === activeIndex}
+                  onSelect={() => onSelect(i)}
+                />
+              </div>
+            ) : (
+              <motion.div
+                animate={{
+                  scale: i === activeIndex ? 1 : 0.92,
+                  opacity: i === activeIndex ? 1 : 0.65,
+                }}
+                transition={cardTransition}
+                className="size-full"
+              >
+                <PackageCard
+                  pkg={pkg}
+                  isActive={i === activeIndex}
+                  onSelect={() => onSelect(i)}
+                />
+              </motion.div>
+            )}
           </div>
         ))}
       </div>
@@ -517,6 +547,7 @@ function CarouselControls({
 }
 
 export function SlidingPackages({ packages }: { packages: HomeTravelPackage[] }) {
+  const motionLite = useMotionLite();
   const showcasePackages = packages;
   const packageCount = showcasePackages.length;
   const [activeIndex, setActiveIndex] = useState(0);
@@ -544,19 +575,20 @@ export function SlidingPackages({ packages }: { packages: HomeTravelPackage[] })
   }, []);
 
   useEffect(() => {
-    if (paused || packageCount <= 1) return;
+    if (motionLite || paused || packageCount <= 1) return;
     const timer = window.setInterval(() => {
       setActiveIndex((i) => (i + 1) % packageCount);
     }, AUTO_ADVANCE_MS);
     return () => window.clearInterval(timer);
-  }, [paused, packageCount]);
+  }, [motionLite, paused, packageCount]);
 
   const handleParallax = useCallback((e: MouseEvent<HTMLElement>) => {
+    if (motionLite) return;
     const rect = e.currentTarget.getBoundingClientRect();
     const x = ((e.clientX - rect.left) / rect.width - 0.5) * 14;
     const y = ((e.clientY - rect.top) / rect.height - 0.5) * 10;
     setParallax({ x, y });
-  }, []);
+  }, [motionLite]);
 
   if (packageCount === 0) {
     return (
@@ -582,7 +614,12 @@ export function SlidingPackages({ packages }: { packages: HomeTravelPackage[] })
     >
       <h1 className="sr-only">TRAGUIN: extraordinary luxury journeys crafted for you</h1>
       <div className="absolute inset-0 overflow-hidden">
-        <ShowcaseBackground activeIndex={activeIndex} parallax={parallax} showcasePackages={showcasePackages} />
+        <ShowcaseBackground
+          activeIndex={activeIndex}
+          parallax={parallax}
+          showcasePackages={showcasePackages}
+          motionLite={motionLite}
+        />
         <div className="sliding-packages-scrim-h absolute inset-0 z-[1]" />
         <div className="sliding-packages-scrim-v absolute inset-0 z-[1]" />
         <div className="sliding-packages-overlay absolute inset-0 z-[1]" />
@@ -617,6 +654,7 @@ export function SlidingPackages({ packages }: { packages: HomeTravelPackage[] })
               onSelect={goTo}
               onPauseChange={setPausedWithInteraction}
               showcasePackages={showcasePackages}
+              motionLite={motionLite}
             />
             <div className="flex w-full justify-center lg:hidden">
               <CarouselControls

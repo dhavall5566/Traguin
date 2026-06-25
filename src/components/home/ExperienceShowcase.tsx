@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import { ArrowUpRight } from "lucide-react";
 import type { ExperienceShowcaseItem, ExperienceDetail } from "@/lib/experience-types";
@@ -10,6 +10,8 @@ import { SectionHeader } from "@/components/ui/SectionHeader";
 import { Reveal3D } from "@/components/ui/Reveal3D";
 import { HomeSection, HomeSectionActions } from "@/components/home/HomeSection";
 import { useStaggerReveal3D } from "@/hooks/useStaggerReveal3D";
+import { useMotionLite } from "@/hooks/useMotionLite";
+import { fetchExperienceDetailClient } from "@/lib/api/experience-client";
 import { cn } from "@/lib/utils";
 
 function BentoNumber({ value }: { value: string }) {
@@ -218,16 +220,38 @@ function ExperienceBentoRow({
 
 export function ExperienceShowcase({
   items,
-  experienceDetailsBySlug = {},
 }: {
   items?: ExperienceShowcaseItem[];
-  experienceDetailsBySlug?: Record<string, ExperienceDetail>;
 }) {
+  const motionLite = useMotionLite();
   const [activeSlug, setActiveSlug] = useState<string | null>(null);
+  const [activeExperience, setActiveExperience] = useState<ExperienceDetail | null>(null);
+  const [loadingDetail, setLoadingDetail] = useState(false);
   const [hoveredId, setHoveredId] = useState<string | null>(null);
-  const activeExperience = activeSlug ? experienceDetailsBySlug[activeSlug] : null;
+  const effectiveHoveredId = motionLite ? null : hoveredId;
   const bentoRef = useRef<HTMLDivElement>(null);
   useStaggerReveal3D(bentoRef, { variant: "left", stagger: 0.18 });
+
+  useEffect(() => {
+    if (!activeSlug) {
+      setActiveExperience(null);
+      return;
+    }
+
+    let cancelled = false;
+    setLoadingDetail(true);
+    fetchExperienceDetailClient(activeSlug)
+      .then((detail) => {
+        if (!cancelled) setActiveExperience(detail);
+      })
+      .finally(() => {
+        if (!cancelled) setLoadingDetail(false);
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [activeSlug]);
 
   if (!items || items.length === 0) return null;
 
@@ -255,15 +279,15 @@ export function ExperienceShowcase({
         >
           <ExperienceBentoRow
             items={topRow}
-            hoveredId={hoveredId}
-            onHover={setHoveredId}
+            hoveredId={effectiveHoveredId}
+            onHover={motionLite ? () => {} : setHoveredId}
             onOpen={setActiveSlug}
             widePosition="left"
           />
           <ExperienceBentoRow
             items={bottomRow}
-            hoveredId={hoveredId}
-            onHover={setHoveredId}
+            hoveredId={effectiveHoveredId}
+            onHover={motionLite ? () => {} : setHoveredId}
             onOpen={setActiveSlug}
             widePosition="right"
           />
@@ -289,7 +313,7 @@ export function ExperienceShowcase({
         </Reveal3D>
       </HomeSection>
 
-      {activeExperience && (
+      {activeExperience && !loadingDetail && (
         <ExperienceDetailModal
           experience={activeExperience}
           onClose={() => setActiveSlug(null)}

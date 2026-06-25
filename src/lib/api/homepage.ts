@@ -1,9 +1,7 @@
 import type { TravelMood, TravelPackage } from "@/types";
 import type { ExperienceShowcaseItem } from "@/lib/experience-types";
-import type { ExperienceDetail } from "@/lib/experience-types";
 import {
   mapCmsExperienceToShowcaseItem,
-  mapCmsExperienceToDetail,
 } from "./experiences";
 import { buildItineraryByDestinationIdMap } from "./itineraries";
 import { images } from "@/lib/images";
@@ -13,10 +11,11 @@ export { HERO_SLIDER_DEFAULT_MAX_ITEMS } from "@/lib/api/homepage-hero-settings"
 import { readHomepageHeroSettings } from "@/lib/api/homepage-hero-settings";
 import {
   buildMediaUrlMap,
-  getHomeClientStories,
   getCompanyStats,
   getDestinations,
   getExperiences,
+  getHomeClientStories,
+  getHomepageBundle,
   getHomepagePromo,
   getHomepageRegionPanels,
   getItineraries,
@@ -123,7 +122,6 @@ export type HomepageData = {
   featuredDestinations: HomeFeaturedDestination[];
   promo: HomePromoData | null;
   experiences: ExperienceShowcaseItem[];
-  experienceDetailsBySlug: Record<string, ExperienceDetail>;
   journeySteps: HomeJourneyStep[];
   specializations: HomeSpecialization[];
   valueProps: HomeValueProp[];
@@ -327,6 +325,11 @@ function mapTestimonial(story: CmsClientStory, mediaMap: Map<string, string>): H
 }
 
 export async function getHomepageData(): Promise<HomepageData> {
+  const bundle = await getHomepageBundle();
+  if (bundle) {
+    return mapHomepageBundle(bundle);
+  }
+
   const [
     packages,
     destinations,
@@ -354,6 +357,69 @@ export async function getHomepageData(): Promise<HomepageData> {
     getValuePropositions(),
     getHomeClientStories(),
   ]);
+
+  return mapHomepageSources({
+    packages,
+    destinations,
+    itineraries,
+    mediaAssets,
+    companyStats,
+    regionPanels,
+    homepagePromo,
+    experiences,
+    journeySteps,
+    specializations,
+    valuePropositions,
+    clientStories,
+  });
+}
+
+type HomepageSourceData = {
+  packages: CmsPackage[];
+  destinations: CmsDestination[];
+  itineraries: CmsItinerary[];
+  mediaAssets: import("./types").CmsMediaAsset[];
+  companyStats: import("./types").CmsCompanyStats | null;
+  regionPanels: import("./types").CmsHomepageRegionPanel[];
+  homepagePromo: import("./types").CmsHomepagePromo | null;
+  experiences: import("./types").CmsExperience[];
+  journeySteps: import("./types").CmsJourneyProcessStep[];
+  specializations: import("./types").CmsSpecialization[];
+  valuePropositions: import("./types").CmsValueProposition[];
+  clientStories: CmsClientStory[];
+};
+
+function mapHomepageBundle(bundle: import("./types").CmsHomepageBundle): HomepageData {
+  return mapHomepageSources({
+    packages: bundle.packages,
+    destinations: bundle.destinations,
+    itineraries: bundle.itineraries,
+    mediaAssets: bundle.media,
+    companyStats: bundle.company_stats,
+    regionPanels: bundle.region_panels,
+    homepagePromo: bundle.homepage_promo,
+    experiences: bundle.experiences,
+    journeySteps: bundle.journey_process_steps,
+    specializations: bundle.specializations,
+    valuePropositions: bundle.value_propositions,
+    clientStories: bundle.client_stories,
+  });
+}
+
+function mapHomepageSources({
+  packages,
+  destinations,
+  itineraries,
+  mediaAssets,
+  companyStats,
+  regionPanels,
+  homepagePromo,
+  experiences,
+  journeySteps,
+  specializations,
+  valuePropositions,
+  clientStories,
+}: HomepageSourceData): HomepageData {
 
   const mediaMap = buildMediaUrlMap(mediaAssets);
   const destinationById = new Map(destinations.map((d) => [d.id, d]));
@@ -425,12 +491,6 @@ export async function getHomepageData(): Promise<HomepageData> {
     .sort((a, b) => (a.homepage_sort_order ?? 999) - (b.homepage_sort_order ?? 999))
     .map((exp) => mapExperience(exp, mediaMap));
 
-  const experienceDetailsBySlug = Object.fromEntries(
-    experiences
-      .filter((exp) => exp.is_published)
-      .map((exp) => [exp.slug, mapCmsExperienceToDetail(exp, mediaMap)])
-  ) as Record<string, ExperienceDetail>;
-
   const mappedJourneySteps = journeySteps
     .sort((a, b) => a.sort_order - b.sort_order)
     .map((step) => ({
@@ -475,7 +535,6 @@ export async function getHomepageData(): Promise<HomepageData> {
     featuredDestinations,
     promo,
     experiences: mappedExperiences,
-    experienceDetailsBySlug,
     journeySteps: mappedJourneySteps,
     specializations: mappedSpecializations,
     valueProps: mappedValueProps,

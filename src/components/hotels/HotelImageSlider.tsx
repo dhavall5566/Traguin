@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { SafeImage } from "@/components/ui/SafeImage";
 import { cn } from "@/lib/utils";
+import { useMotionLite } from "@/hooks/useMotionLite";
 
 const SLIDE_INTERVAL_MS = 3000;
 
@@ -27,6 +28,7 @@ export function HotelImageSlider({
   indicatorsClassName,
   pauseOnHover = false,
 }: HotelImageSliderProps) {
+  const motionLite = useMotionLite();
   const slides = images.filter(Boolean);
   const [index, setIndex] = useState(0);
   const [paused, setPaused] = useState(false);
@@ -36,21 +38,23 @@ export function HotelImageSlider({
   }, [images.join("|")]);
 
   useEffect(() => {
-    if (slides.length <= 1 || (pauseOnHover && paused)) return;
+    if (motionLite || slides.length <= 1 || (pauseOnHover && paused)) return;
 
     const timer = window.setInterval(() => {
       setIndex((current) => (current + 1) % slides.length);
     }, intervalMs);
 
     return () => window.clearInterval(timer);
-  }, [slides.length, intervalMs, pauseOnHover, paused, images.join("|")]);
+  }, [motionLite, slides.length, intervalMs, pauseOnHover, paused, images.join("|")]);
 
   if (slides.length === 0) return null;
 
-  if (slides.length === 1) {
+  const displayIndex = motionLite ? 0 : index;
+
+  if (slides.length === 1 || motionLite) {
     return (
       <div className={cn("relative h-full w-full", className)}>
-        <SafeImage src={slides[0]} alt={alt} className={imageClassName} />
+        <SafeImage src={slides[0]} alt={alt} className={imageClassName} loading="lazy" />
       </div>
     );
   }
@@ -68,9 +72,9 @@ export function HotelImageSlider({
           key={`${src}-${i}`}
           className={cn(
             "absolute inset-0 transition-opacity duration-700 ease-in-out",
-            i === index ? "z-10 opacity-100" : "z-0 opacity-0"
+            i === displayIndex ? "z-10 opacity-100" : "z-0 opacity-0"
           )}
-          aria-hidden={i !== index}
+          aria-hidden={i !== displayIndex}
         >
           <SafeImage
             src={src}
@@ -95,7 +99,7 @@ export function HotelImageSlider({
               role="presentation"
               className={cn(
                 "h-1.5 rounded-full transition-all duration-300",
-                i === index ? "w-5 bg-gold" : "w-1.5 bg-foreground/50"
+                i === displayIndex ? "w-5 bg-gold" : "w-1.5 bg-foreground/50"
               )}
             />
           ))}

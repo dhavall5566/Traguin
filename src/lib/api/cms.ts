@@ -26,6 +26,10 @@ import type {
   CmsValueProposition,
 } from "./types";
 
+export function getHomepageBundle() {
+  return cmsFetch<import("./types").CmsHomepageBundle>("/api/cms/public/homepage");
+}
+
 export function getPackages() {
   return cmsFetchPaginated<CmsPackage>("/api/cms/public/packages", { limit: 100 });
 }

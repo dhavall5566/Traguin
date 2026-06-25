@@ -393,3 +393,18 @@ export interface CmsLegalPage extends CmsTimestamped {
   sections: unknown[];
   meta_title: string | null;
 }
+
+export interface CmsHomepageBundle {
+  packages: CmsPackage[];
+  destinations: CmsDestination[];
+  itineraries: CmsItinerary[];
+  media: CmsMediaAsset[];
+  company_stats: CmsCompanyStats;
+  region_panels: CmsHomepageRegionPanel[];
+  homepage_promo: CmsHomepagePromo | null;
+  experiences: CmsExperience[];
+  journey_process_steps: CmsJourneyProcessStep[];
+  specializations: CmsSpecialization[];
+  value_propositions: CmsValueProposition[];
+  client_stories: CmsClientStory[];
+}

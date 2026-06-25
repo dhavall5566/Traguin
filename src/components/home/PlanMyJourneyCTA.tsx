@@ -18,6 +18,7 @@ import { collectErrors, clearFieldError, hasErrors, validateLegalConsent, valida
 import { FormSubmissionError, submitFormSubmission } from "@/lib/api/form-submissions";
 import { HomeSection } from "@/components/home/HomeSection";
 import { cn } from "@/lib/utils";
+import { getMotionLite } from "@/lib/motion-profile";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -83,7 +84,7 @@ export function PlanMyJourneyCTA() {
       if (!bg || !section) return;
 
       const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-      if (reduced) return;
+      if (reduced || getMotionLite()) return;
 
       gsap.to(bg, {
         y: 48,
@@ -142,7 +143,7 @@ export function PlanMyJourneyCTA() {
         className="plan-journey-card relative flex min-h-[clamp(22rem,52vw,32rem)] items-center justify-center"
         aria-labelledby="plan-my-journey-heading"
       >
-        <div ref={bgRef} className="pointer-events-none absolute inset-0 overflow-hidden rounded-[inherit] will-change-transform">
+        <div ref={bgRef} className="pointer-events-none absolute inset-0 overflow-hidden rounded-[inherit]">
           <SafeImage
             key={background.src}
             src={background.src}

@@ -5,6 +5,7 @@ import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { cn } from "@/lib/utils";
+import { getMotionLite } from "@/lib/motion-profile";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -40,8 +41,10 @@ export function Reveal3D({
       const el = ref.current;
       if (!el) return;
 
-      const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-      if (reduced) return;
+      if (getMotionLite()) {
+        gsap.set(el, { opacity: 1, clearProps: "transform" });
+        return;
+      }
 
       gsap.fromTo(
         el,
@@ -72,7 +75,7 @@ export function Reveal3D({
   );
 
   return (
-    <Tag ref={ref as never} className={cn("[transform-style:preserve-3d] will-change-transform", className)}>
+    <Tag ref={ref as never} className={cn("[transform-style:preserve-3d]", className)}>
       {children}
     </Tag>
   );

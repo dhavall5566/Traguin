@@ -71,24 +71,41 @@ export function Navigation() {
     setMounted(true);
 
     const readScroll = () => lenis?.scroll ?? window.scrollY;
+    let scrollRaf: number | null = null;
 
     const onScroll = () => {
-      const y = readScroll();
-      setScrolled(y > 16);
-      const max = document.documentElement.scrollHeight - window.innerHeight;
-      setScrollProgress(max > 0 ? Math.min(1, y / max) : 0);
+      if (scrollRaf !== null) return;
+      scrollRaf = window.requestAnimationFrame(() => {
+        scrollRaf = null;
+        const y = readScroll();
+        const nextScrolled = y > 16;
+        setScrolled((prev) => (prev === nextScrolled ? prev : nextScrolled));
+        const max = document.documentElement.scrollHeight - window.innerHeight;
+        const nextProgress = max > 0 ? Math.min(1, y / max) : 0;
+        setScrollProgress((prev) =>
+          Math.abs(prev - nextProgress) < 0.002 ? prev : nextProgress
+        );
+      });
+    };
+
+    const cleanup = () => {
+      if (scrollRaf !== null) window.cancelAnimationFrame(scrollRaf);
     };
 
     onScroll();
 
     if (lenis) {
       lenis.on("scroll", onScroll);
-      return () => lenis.off("scroll", onScroll);
+      return () => {
+        lenis.off("scroll", onScroll);
+        cleanup();
+      };
     }
 
     window.addEventListener("scroll", onScroll, { passive: true });
     window.addEventListener("resize", onScroll, { passive: true });
     return () => {
+      cleanup();
       window.removeEventListener("scroll", onScroll);
       window.removeEventListener("resize", onScroll);
     };

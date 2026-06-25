@@ -5,6 +5,7 @@ import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import type { RevealVariant } from "@/components/ui/Reveal3D";
+import { getMotionLite } from "@/lib/motion-profile";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -37,11 +38,13 @@ export function useStaggerReveal3D(
       const container = containerRef.current;
       if (!container) return;
 
-      const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-      if (reduced) return;
-
       const items = container.querySelectorAll(selector);
       if (!items.length) return;
+
+      if (getMotionLite()) {
+        gsap.set(items, { opacity: 1, clearProps: "transform" });
+        return;
+      }
 
       gsap.fromTo(
         items,

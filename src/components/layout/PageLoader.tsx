@@ -6,7 +6,8 @@ import { cn } from "@/lib/utils";
 
 const EXIT_MS = 650;
 const MAX_BEFORE_LOAD = 94;
-const MAX_WAIT_MS = 8000;
+const MAX_WAIT_MS = 2500;
+const SESSION_KEY = "traguin-page-loader-seen";
 
 function TraguinPenguin() {
   return (
@@ -56,13 +57,22 @@ export function PageLoader() {
   const [phase, setPhase] = useState<"loading" | "exit" | "done">("loading");
 
   useEffect(() => {
+    if (sessionStorage.getItem(SESSION_KEY) === "1") {
+      setPhase("done");
+      return;
+    }
+
     document.documentElement.classList.add("page-loader-active");
 
     const progressTimer = window.setInterval(() => {
       setProgress((current) => Math.min(MAX_BEFORE_LOAD, current + 1.5));
     }, 80);
 
+    let dismissed = false;
     const dismiss = () => {
+      if (dismissed) return;
+      dismissed = true;
+      sessionStorage.setItem(SESSION_KEY, "1");
       window.clearInterval(progressTimer);
       setProgress(100);
       setPhase("exit");
@@ -74,9 +84,16 @@ export function PageLoader() {
 
     const dismissTimer = window.setTimeout(dismiss, MAX_WAIT_MS);
 
+    if (document.readyState === "complete") {
+      window.setTimeout(dismiss, 120);
+    } else {
+      window.addEventListener("load", dismiss, { once: true });
+    }
+
     return () => {
       window.clearInterval(progressTimer);
       window.clearTimeout(dismissTimer);
+      window.removeEventListener("load", dismiss);
       document.documentElement.classList.remove("page-loader-active");
     };
   }, []);
