@@ -13,8 +13,6 @@ import { useLenis } from "@/components/providers/LenisContext";
 import { useModalScrollLock } from "@/lib/use-modal-scroll-lock";
 import { navLinks, primaryCta } from "@/data/site";
 
-const CMS_LOGIN_HREF = "/admin/login?next=%2Fadmin%2Fcms";
-
 function isActive(pathname: string, href: string) {
   if (href === "/") return pathname === "/";
   return pathname === href || pathname.startsWith(`${href}/`);
@@ -154,14 +152,6 @@ export function Navigation() {
           <div className="nav-bar-actions relative z-10 ml-auto flex shrink-0 items-center gap-2 sm:gap-2.5">
             <MagneticButton
               as="a"
-              href={CMS_LOGIN_HREF}
-              variant="secondary"
-              className="nav-login hidden !rounded-md !px-4 !py-2.5 !text-[10px] !tracking-[0.1em] uppercase lg:inline-flex xl:!px-5 xl:!text-[11px]"
-            >
-              Login
-            </MagneticButton>
-            <MagneticButton
-              as="a"
               href={primaryCta.href}
               variant="primary"
               className="nav-cta hidden !rounded-md !px-4 !py-2.5 !text-[10px] !tracking-[0.1em] uppercase lg:inline-flex xl:!px-5 xl:!text-[11px]"
@@ -255,15 +245,6 @@ export function Navigation() {
                   transition={{ delay: 0.22, duration: 0.28 }}
                   className="mt-5 flex flex-col gap-2.5 border-t border-black/8 pt-5"
                 >
-                  <MagneticButton
-                    as="a"
-                    href={CMS_LOGIN_HREF}
-                    variant="secondary"
-                    className="nav-login w-full !rounded-md"
-                    onClick={closeMobileMenu}
-                  >
-                    Login
-                  </MagneticButton>
                   <MagneticButton
                     as="a"
                     href={primaryCta.href}
