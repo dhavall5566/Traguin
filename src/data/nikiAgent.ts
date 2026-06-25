@@ -1,5 +1,6 @@
 import { contactInfo } from "@/data/contact";
 import { primaryCta, secondaryCta } from "@/data/site";
+import { isLuxuryStaysVisible } from "@/lib/site-features";
 import { images } from "@/lib/images";
 
 export const nikiAgent = {
@@ -68,3 +69,8 @@ export const nikiQuickReplies: NikiQuickReply[] = [
     href: secondaryCta.href,
   },
 ];
+
+export function getNikiQuickReplies(): NikiQuickReply[] {
+  if (isLuxuryStaysVisible()) return nikiQuickReplies;
+  return nikiQuickReplies.filter((reply) => reply.id !== "stays");
+}

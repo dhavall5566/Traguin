@@ -1,3 +1,5 @@
+import { filterLuxuryStaysNavLinks } from "@/lib/site-features";
+
 export const primaryCta = {
   label: "Plan My Journey",
   href: "/#plan-my-journey",
@@ -19,7 +21,7 @@ export const itinerarySecondaryCta = {
   href: "/contact#consultation",
 } as const;
 
-export const navLinks = [
+const allNavLinks = [
   { href: "/", label: "Home" },
   { href: "/destinations", label: "Destinations" },
   { href: "/luxury-stays", label: "Luxury Stays" },
@@ -30,13 +32,17 @@ export const navLinks = [
   { href: "/contact", label: "Contact" },
 ] as const;
 
-export const footerExploreLinks = [
+export const navLinks = filterLuxuryStaysNavLinks(allNavLinks);
+
+const allFooterExploreLinks = [
   { href: "/", label: "Home" },
   { href: "/destinations", label: "Destinations" },
   { href: "/luxury-stays", label: "Luxury Stays" },
   { href: "/travel-expert", label: "Travel Expert" },
   { href: "/gallery", label: "Gallery" },
 ] as const;
+
+export const footerExploreLinks = filterLuxuryStaysNavLinks(allFooterExploreLinks);
 
 export const footerCompanyLinks = [
   { href: "/about", label: "About" },

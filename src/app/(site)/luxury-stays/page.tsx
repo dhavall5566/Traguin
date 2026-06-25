@@ -1,7 +1,9 @@
 import type { Metadata } from "next";
 import { Suspense } from "react";
+import { redirect } from "next/navigation";
 import { HotelDiscovery } from "@/components/hotels/HotelDiscovery";
 import { getHotelsPageData } from "@/lib/api/hotels";
+import { isLuxuryStaysVisible } from "@/lib/site-features";
 
 export const metadata: Metadata = {
   title: "Luxury Stays",
@@ -9,6 +11,10 @@ export const metadata: Metadata = {
 };
 
 export default async function Page() {
+  if (!isLuxuryStaysVisible()) {
+    redirect("/");
+  }
+
   const { hotels } = await getHotelsPageData();
 
   return (

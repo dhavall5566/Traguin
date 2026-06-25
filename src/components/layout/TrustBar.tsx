@@ -1,11 +1,20 @@
 import { trustHighlights } from "@/data/pageContent";
+import { isHotelContentVisible } from "@/lib/site-features";
 
 export function TrustBar() {
+  const highlights = isHotelContentVisible()
+    ? trustHighlights
+    : trustHighlights.filter((item) => item.label !== "Partner properties");
+
   return (
     <section aria-label="TRAGUIN credentials" className="trust-bar border-y border-glass-border">
       <div className="home-shell">
-        <div className="site-container grid grid-cols-2 divide-x divide-glass-border md:grid-cols-4">
-          {trustHighlights.map((item) => (
+        <div
+          className={`site-container grid grid-cols-2 divide-x divide-glass-border ${
+            highlights.length >= 4 ? "md:grid-cols-4" : "md:grid-cols-3"
+          }`}
+        >
+          {highlights.map((item) => (
             <div key={item.label} className="flex flex-col items-center gap-1 px-4 py-5 text-center sm:px-6">
               <p className="font-display text-xl leading-none tracking-tight text-foreground sm:text-2xl">
                 {item.value}

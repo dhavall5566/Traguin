@@ -6,7 +6,7 @@ import Link from "next/link";
 import { MessageCircle, Send, X } from "lucide-react";
 import { SafeImage } from "@/components/ui/SafeImage";
 import { contactInfo } from "@/data/contact";
-import { nikiAgent, nikiQuickReplies, nikiWelcomeMessages, type NikiQuickReply } from "@/data/nikiAgent";
+import { nikiAgent, getNikiQuickReplies, nikiWelcomeMessages, type NikiQuickReply } from "@/data/nikiAgent";
 import { cn } from "@/lib/utils";
 
 type ChatMessage = {
@@ -172,7 +172,7 @@ export function NikiAgent() {
           <div className="border-t border-glass-border px-3 py-3">
             <p className="mb-2 px-1 text-[10px] tracking-[0.18em] text-muted uppercase">Quick topics</p>
             <div className="flex flex-wrap gap-1.5">
-              {nikiQuickReplies.map((reply) => (
+              {getNikiQuickReplies().map((reply) => (
                 <button
                   key={reply.id}
                   type="button"

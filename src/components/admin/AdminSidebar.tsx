@@ -44,6 +44,7 @@ import {
   type LucideIcon,
 } from "lucide-react";
 import { getEnabledEntities } from "@/lib/admin/entities";
+import { isLuxuryStaysVisible } from "@/lib/site-features";
 import {
   CMS_NAV_SECTIONS,
   getCustomLinkNavSectionId,
@@ -180,7 +181,10 @@ function NavLinkItem({
 
 export function AdminSidebar() {
   const pathname = usePathname();
-  const entities = getEnabledEntities().filter((entity) => !entity.hideFromNav);
+  const entities = getEnabledEntities().filter(
+    (entity) =>
+      !entity.hideFromNav && (isLuxuryStaysVisible() || entity.key !== "hotels"),
+  );
   const [search, setSearch] = useState("");
 
   const navCatalog = useMemo(() => {

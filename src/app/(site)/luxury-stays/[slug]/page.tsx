@@ -1,7 +1,8 @@
 import type { Metadata } from "next";
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import { HotelDetailPage } from "@/components/hotels/HotelDetailPage";
 import { getHotelDetailData } from "@/lib/api/hotels";
+import { isLuxuryStaysVisible } from "@/lib/site-features";
 
 type PageProps = {
   params: Promise<{ slug: string }>;
@@ -28,6 +29,10 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 }
 
 export default async function HotelSlugPage({ params }: PageProps) {
+  if (!isLuxuryStaysVisible()) {
+    redirect("/");
+  }
+
   const { slug } = await params;
   const data = await getHotelDetailData(slug);
   if (!data) notFound();

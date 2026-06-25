@@ -1,5 +1,6 @@
 import type { MetadataRoute } from "next";
 import { getAllDestinationIds } from "@/lib/destinations";
+import { isLuxuryStaysVisible } from "@/lib/site-features";
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const baseUrl = "https://traguin.com";
@@ -8,7 +9,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
   const staticRoutes = [
     "",
     "/destinations",
-    "/luxury-stays",
+    ...(isLuxuryStaysVisible() ? ["/luxury-stays"] : []),
     "/travel-expert",
     "/about",
     "/client-stories",

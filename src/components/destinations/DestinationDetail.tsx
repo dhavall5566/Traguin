@@ -13,6 +13,7 @@ import { contactInfo } from "@/data/contact";
 import { itineraryPrimaryCta, itinerarySecondaryCta, primaryCta } from "@/data/site";
 import type { Hotel } from "@/types";
 import { getHotelsByDestinationName, resolveCatalogHotelCard } from "@/lib/hotels";
+import { isHotelContentVisible } from "@/lib/site-features";
 import { scrollToInquirySection } from "@/lib/scroll-to-inquiry";
 
 type DestinationDetailProps = {
@@ -103,7 +104,7 @@ export function DestinationDetail({ destination, hotelsCatalog }: DestinationDet
         </div>
       </section>
 
-      {hotelCards.length > 0 && (
+      {isHotelContentVisible() && hotelCards.length > 0 && (
         <section className="section-padding bg-surface pt-0">
           <div className="site-container">
             <DestinationHotelsSlider

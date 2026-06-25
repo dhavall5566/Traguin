@@ -10,6 +10,7 @@ import { MagneticButton } from "@/components/ui/MagneticButton";
 import { HomeSection, HomeSectionActions } from "@/components/home/HomeSection";
 import { useStaggerReveal3D } from "@/hooks/useStaggerReveal3D";
 import { primaryCta } from "@/data/site";
+import { isLuxuryStaysVisible } from "@/lib/site-features";
 import type { HomeFeaturedDestination } from "@/lib/api/homepage";
 
 export function FeaturedDestinations({ destinations }: { destinations: HomeFeaturedDestination[] }) {
@@ -55,13 +56,15 @@ export function FeaturedDestinations({ destinations }: { destinations: HomeFeatu
         <MagneticButton as="a" href="/destinations" variant="secondary">
           View All Destinations
         </MagneticButton>
-        <Link
-          href="/luxury-stays"
-          className="inline-flex items-center gap-2 text-xs tracking-[0.18em] text-gold uppercase transition-colors hover:text-foreground"
-        >
-          Explore Luxury Stays
-          <ArrowUpRight size={14} />
-        </Link>
+        {isLuxuryStaysVisible() && (
+          <Link
+            href="/luxury-stays"
+            className="inline-flex items-center gap-2 text-xs tracking-[0.18em] text-gold uppercase transition-colors hover:text-foreground"
+          >
+            Explore Luxury Stays
+            <ArrowUpRight size={14} />
+          </Link>
+        )}
       </HomeSectionActions>
       </Reveal3D>
     </HomeSection>

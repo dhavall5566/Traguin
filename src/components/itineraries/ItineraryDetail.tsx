@@ -19,6 +19,7 @@ import { itinerarySecondaryCta } from "@/data/site";
 import { getDestinationGalleryImages } from "@/lib/destination-images";
 import type { Hotel } from "@/types";
 import { resolveItineraryHotelCard } from "@/lib/hotels";
+import { isHotelContentVisible } from "@/lib/site-features";
 import { getItineraryRating, getItineraryReviewCount } from "@/lib/itineraries";
 import { scrollToInquirySection } from "@/lib/scroll-to-inquiry";
 
@@ -131,7 +132,7 @@ export function ItineraryDetail({
         <ItineraryTimeline days={itinerary.days} durationDays={itinerary.durationDays} />
       </ItineraryReveal3D>
 
-      {hotelCards.length > 0 && (
+      {isHotelContentVisible() && hotelCards.length > 0 && (
         <section className="itinerary-section itinerary-section--compact">
           <div className="site-container">
             <ItineraryReveal3D variant="up">
