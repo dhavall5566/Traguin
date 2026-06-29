@@ -13,31 +13,31 @@ import type { HomepageData } from "@/lib/api/homepage";
 const ExperienceShowcase = dynamic(
   () =>
     import("@/components/home/ExperienceShowcase").then((mod) => mod.ExperienceShowcase),
-  { ssr: false, loading: () => <div className="min-h-[28rem]" aria-hidden /> },
+  { ssr: false, loading: () => <div className="min-h-px" aria-hidden /> },
 );
 const JourneyProcess = dynamic(
   () => import("@/components/home/JourneyProcess").then((mod) => mod.JourneyProcess),
-  { ssr: false, loading: () => <div className="min-h-[24rem]" aria-hidden /> },
+  { ssr: false, loading: () => <div className="min-h-px" aria-hidden /> },
 );
 const Specializations = dynamic(
   () => import("@/components/home/Specializations").then((mod) => mod.Specializations),
-  { ssr: false, loading: () => <div className="min-h-[20rem]" aria-hidden /> },
+  { ssr: false, loading: () => <div className="min-h-px" aria-hidden /> },
 );
 const WhyTraguin = dynamic(
   () => import("@/components/home/WhyTraguin").then((mod) => mod.WhyTraguin),
-  { ssr: false, loading: () => <div className="min-h-[20rem]" aria-hidden /> },
+  { ssr: false, loading: () => <div className="min-h-px" aria-hidden /> },
 );
 const TravelPlannerForm = dynamic(
   () => import("@/components/home/TravelPlannerForm").then((mod) => mod.TravelPlannerForm),
-  { ssr: false, loading: () => <div className="min-h-[32rem]" aria-hidden /> },
+  { ssr: false, loading: () => <div className="min-h-px" aria-hidden /> },
 );
 const CustomerStories = dynamic(
   () => import("@/components/home/CustomerStories").then((mod) => mod.CustomerStories),
-  { ssr: false, loading: () => <div className="min-h-[24rem]" aria-hidden /> },
+  { ssr: false, loading: () => <div className="min-h-px" aria-hidden /> },
 );
 const PlanMyJourneyCTA = dynamic(
   () => import("@/components/home/PlanMyJourneyCTA").then((mod) => mod.PlanMyJourneyCTA),
-  { ssr: false, loading: () => <div className="min-h-[20rem]" aria-hidden /> },
+  { ssr: false, loading: () => <div className="min-h-px" aria-hidden /> },
 );
 
 export function HomePageContent({ data }: { data: HomepageData }) {
@@ -49,25 +49,27 @@ export function HomePageContent({ data }: { data: HomepageData }) {
       <DomesticInternationalSplit panels={data.regionPanels} />
       <FeaturedDestinations destinations={data.featuredDestinations} />
       <HomePromoBanner promo={data.promo} />
-      <LazyHomeSection minHeight="28rem">
+      <LazyHomeSection>
         <ExperienceShowcase items={data.experiences} />
       </LazyHomeSection>
-      <LazyHomeSection minHeight="24rem">
-        <JourneyProcess steps={data.journeySteps} />
-      </LazyHomeSection>
-      <LazyHomeSection minHeight="20rem">
+      {data.journeySteps.length > 0 ? (
+        <LazyHomeSection>
+          <JourneyProcess steps={data.journeySteps} />
+        </LazyHomeSection>
+      ) : null}
+      <LazyHomeSection>
         <Specializations items={data.specializations} />
       </LazyHomeSection>
-      <LazyHomeSection minHeight="20rem">
+      <LazyHomeSection>
         <WhyTraguin items={data.valueProps} />
       </LazyHomeSection>
-      <LazyHomeSection minHeight="32rem">
+      <LazyHomeSection>
         <TravelPlannerForm />
       </LazyHomeSection>
-      <LazyHomeSection minHeight="24rem">
+      <LazyHomeSection>
         <CustomerStories testimonials={data.testimonials} />
       </LazyHomeSection>
-      <LazyHomeSection minHeight="20rem">
+      <LazyHomeSection>
         <PlanMyJourneyCTA />
       </LazyHomeSection>
     </main>

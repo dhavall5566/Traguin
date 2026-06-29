@@ -14,7 +14,8 @@ export type PageHeroContent = {
 };
 
 export const trustHighlights = [
-  { value: "Since 2024", label: "Luxury travel studio" },
+  { value: "Bespoke", label: "Every route, yours alone" },
+  { value: "2+", label: "Years of expertise" },
   { value: "15+", label: "Curated destinations" },
   { value: "28+", label: "Partner properties" },
   { value: "2 hrs", label: "First itinerary draft" },
@@ -172,6 +173,95 @@ export function getLuxuryStaysHeroContent(region: RegionHeroFilter): PageHeroCon
 
   return base;
 }
+
+export const defaultHomepagePromo = {
+  eyebrow: "Bespoke",
+  studioLabel: "Ahmedabad luxury studio",
+  title: "Journeys shaped around you,",
+  titleAccent: "not a template.",
+  description:
+    "We listen first, then design: handpicked stays, unhurried routes, and the small details that turn a good trip into the one you talk about for years.",
+  assurances: [
+    { iconKey: "clock", label: "48-hour first draft" },
+    { iconKey: "user", label: "One dedicated expert" },
+    { iconKey: "globe", label: "India & worldwide" },
+  ],
+  consultation: {
+    badge: "Complimentary",
+    title: "Start with a planning call",
+    description:
+      "Twenty minutes to understand your dates, pace, and priorities. We follow up with a tailored first itinerary, with no obligation.",
+  },
+} as const;
+
+export const defaultSpecializations = [
+  {
+    id: "bespoke-leisure",
+    title: "Bespoke Leisure",
+    description:
+      "Custom holidays across India and abroad with handpicked stays, unhurried routes, and the details that match how you travel.",
+    iconKey: "compass",
+  },
+  {
+    id: "honeymoons-celebrations",
+    title: "Honeymoons & Celebrations",
+    description:
+      "Romantic escapes and milestone journeys with private transfers, curated dining, and moments worth remembering.",
+    iconKey: "sparkles",
+  },
+  {
+    id: "family-group-travel",
+    title: "Family & Group Travel",
+    description:
+      "Multi-generational trips planned with comfort, safety, and activities that work for every age in your group.",
+    iconKey: "users",
+  },
+  {
+    id: "corporate-mice",
+    title: "Corporate & MICE",
+    description:
+      "Leadership retreats, incentive travel, and offsites coordinated end to end, including venues, logistics, and on-ground support.",
+    iconKey: "briefcase",
+  },
+  {
+    id: "visa-documentation",
+    title: "Visa & Documentation",
+    description:
+      "Visa applications, insurance guidance, and travel paperwork handled before you pack, so there are fewer surprises at departure.",
+    iconKey: "file-check",
+  },
+] as const;
+
+export const defaultRegionPanels = [
+  {
+    id: "domestic",
+    label: "India",
+    title: "India & Beyond",
+    description:
+      "Heritage circuits, Himalayan escapes, and coastal retreats across the subcontinent. Each journey is designed from our Ahmedabad studio with white-glove attention to detail.",
+    stat: "12+ States",
+    highlights: ["Rajasthan", "Kerala", "Himalayas", "Goa"],
+    href: "/destinations?region=domestic",
+    mood: "warm" as const,
+    image: images.homeRegionDomestic,
+    imageClass:
+      "object-cover object-[center_40%] saturate-[1.08] group-hover:saturate-[1.18]",
+  },
+  {
+    id: "international",
+    label: "International",
+    title: "Worldwide Journeys",
+    description:
+      "Thailand, Bali, Singapore, Australia, Canada, and beyond. Island escapes, alpine lodges, and iconic cities planned with the same precision we bring to India.",
+    stat: "40+ Countries",
+    highlights: ["Thailand", "Bali", "Singapore", "Australia", "Canada"],
+    href: "/destinations?region=international",
+    mood: "cool" as const,
+    image: images.homeRegionInternational,
+    imageClass:
+      "object-cover object-center saturate-[1.06] group-hover:saturate-[1.16]",
+  },
+] as const;
 
 export const pageCta = {
   default: {

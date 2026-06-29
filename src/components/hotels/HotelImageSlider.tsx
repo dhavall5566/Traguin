@@ -1,6 +1,7 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 import { SafeImage } from "@/components/ui/SafeImage";
 import { cn } from "@/lib/utils";
 import { useMotionLite } from "@/hooks/useMotionLite";
@@ -14,7 +15,9 @@ type HotelImageSliderProps = {
   imageClassName?: string;
   intervalMs?: number;
   showIndicators?: boolean;
+  showArrows?: boolean;
   indicatorsClassName?: string;
+  arrowsClassName?: string;
   pauseOnHover?: boolean;
 };
 
@@ -25,13 +28,26 @@ export function HotelImageSlider({
   imageClassName = "h-full w-full object-cover",
   intervalMs = SLIDE_INTERVAL_MS,
   showIndicators = true,
+  showArrows = false,
   indicatorsClassName,
+  arrowsClassName,
   pauseOnHover = false,
 }: HotelImageSliderProps) {
   const motionLite = useMotionLite();
   const slides = images.filter(Boolean);
   const [index, setIndex] = useState(0);
   const [paused, setPaused] = useState(false);
+
+  const goTo = useCallback(
+    (next: number) => {
+      if (slides.length === 0) return;
+      setIndex(((next % slides.length) + slides.length) % slides.length);
+    },
+    [slides.length]
+  );
+
+  const goPrev = useCallback(() => goTo(index - 1), [goTo, index]);
+  const goNext = useCallback(() => goTo(index + 1), [goTo, index]);
 
   useEffect(() => {
     setIndex(0);
@@ -72,7 +88,7 @@ export function HotelImageSlider({
           key={`${src}-${i}`}
           className={cn(
             "absolute inset-0 transition-opacity duration-700 ease-in-out",
-            i === displayIndex ? "z-10 opacity-100" : "z-0 opacity-0"
+            i === displayIndex ? "opacity-100" : "opacity-0"
           )}
           aria-hidden={i !== displayIndex}
         >
@@ -84,7 +100,34 @@ export function HotelImageSlider({
         </div>
       ))}
 
-      {showIndicators && (
+      {showArrows ? (
+        <>
+          <button
+            type="button"
+            onClick={goPrev}
+            className={cn(
+              "absolute top-1/2 left-3 z-20 flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full border border-white/25 bg-black/40 text-white backdrop-blur-md transition-colors hover:border-gold/50 hover:bg-black/55 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold/60 sm:left-4",
+              arrowsClassName
+            )}
+            aria-label="Previous image"
+          >
+            <ChevronLeft size={20} />
+          </button>
+          <button
+            type="button"
+            onClick={goNext}
+            className={cn(
+              "absolute top-1/2 right-3 z-20 flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full border border-white/25 bg-black/40 text-white backdrop-blur-md transition-colors hover:border-gold/50 hover:bg-black/55 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold/60 sm:right-4",
+              arrowsClassName
+            )}
+            aria-label="Next image"
+          >
+            <ChevronRight size={20} />
+          </button>
+        </>
+      ) : null}
+
+      {showIndicators ? (
         <div
           className={cn(
             "absolute bottom-3 left-1/2 z-20 flex -translate-x-1/2 gap-1.5",
@@ -94,17 +137,21 @@ export function HotelImageSlider({
           aria-label="Gallery slides"
         >
           {slides.map((_, i) => (
-            <span
+            <button
               key={i}
-              role="presentation"
+              type="button"
+              onClick={() => goTo(i)}
+              role="tab"
+              aria-selected={i === displayIndex}
+              aria-label={`Go to slide ${i + 1}`}
               className={cn(
                 "h-1.5 rounded-full transition-all duration-300",
-                i === displayIndex ? "w-5 bg-gold" : "w-1.5 bg-foreground/50"
+                i === displayIndex ? "w-5 bg-gold" : "w-1.5 bg-white/50 hover:bg-white/70"
               )}
             />
           ))}
         </div>
-      )}
+      ) : null}
     </div>
   );
 }

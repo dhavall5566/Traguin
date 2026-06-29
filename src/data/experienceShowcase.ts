@@ -22,7 +22,7 @@ export const experienceShowcase: ExperienceShowcaseItem[] = [
     description:
       "Expertly curated group journeys with seamless logistics, private guides, and experiences designed for families, friends, and milestone celebrations.",
     image: images.experienceGroupTours,
-    href: "/experiences/group-tours",
+    href: "/contact#consultation",
     layout: "wide-split-right",
     variant: "warm",
   },
@@ -35,7 +35,7 @@ export const experienceShowcase: ExperienceShowcaseItem[] = [
     image: images.experiencePrivateLuxe,
     imageCaption:
       "Private villas, personal guides, and unhurried luxury across the world's finest destinations.",
-    href: "/experiences/private-luxe",
+    href: "/contact#consultation",
     layout: "tall-stack",
     variant: "light",
   },
@@ -48,7 +48,7 @@ export const experienceShowcase: ExperienceShowcaseItem[] = [
     image: images.experienceCorporate,
     imageCaption:
       "Boardroom to beach, seamless corporate travel and event management worldwide.",
-    href: "/experiences/corporate-events",
+    href: "/contact#consultation",
     layout: "tall-stack",
     variant: "light",
   },
@@ -59,7 +59,7 @@ export const experienceShowcase: ExperienceShowcaseItem[] = [
     description:
       "Educational and adventure programs for student groups with safety-first planning, enriching itineraries, and dedicated travel experts.",
     image: images.experienceSchool,
-    href: "/experiences/school-trips",
+    href: "/contact#consultation",
     layout: "wide-split-left",
     variant: "warm",
   },

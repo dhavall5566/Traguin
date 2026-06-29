@@ -23,7 +23,7 @@ export function WhyTraguin({ items }: { items: HomeValueProp[] }) {
       <Reveal3D variant="up">
         <SectionHeader
           title="WHY TRAGUIN"
-          description="Crafting extraordinary journeys since 2024, with the polish of a global brand and the intimacy of a private studio."
+          description="Crafting extraordinary journeys with the polish of a global brand and the intimacy of a private studio."
         />
       </Reveal3D>
 

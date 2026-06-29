@@ -70,7 +70,7 @@ export function CareersPage({ data }: CareersPageProps) {
           ) : (
             <p className="glass rounded-2xl border border-glass-border p-6 text-sm leading-relaxed text-muted md:p-8">
               No open positions are posted right now. We&apos;re always interested in meeting exceptional
-              travel professionals — use the form below to introduce yourself.
+              travel professionals. Use the form below to introduce yourself.
             </p>
           )}
         </div>

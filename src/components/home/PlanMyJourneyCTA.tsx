@@ -140,7 +140,7 @@ export function PlanMyJourneyCTA() {
     <HomeSection id="plan-my-journey" spacing="default" className="!pb-[clamp(3.5rem,8vw,6rem)]">
       <div
         ref={sectionRef}
-        className="plan-journey-card relative flex min-h-[clamp(22rem,52vw,32rem)] items-center justify-center"
+        className="plan-journey-card relative flex min-h-0 items-center justify-center sm:min-h-[clamp(22rem,52vw,32rem)]"
         aria-labelledby="plan-my-journey-heading"
       >
         <div ref={bgRef} className="pointer-events-none absolute inset-0 overflow-hidden rounded-[inherit]">
@@ -154,56 +154,54 @@ export function PlanMyJourneyCTA() {
             )}
             loading="lazy"
           />
-          <div className="absolute inset-0 bg-black/55" />
-          <div className="absolute inset-0 bg-gradient-to-r from-black/65 via-black/45 to-black/30" />
+          <div className="absolute inset-0 bg-black/50 sm:bg-black/55" />
+          <div className="absolute inset-0 bg-gradient-to-b from-black/30 via-black/55 to-black/78 sm:bg-gradient-to-r sm:from-black/65 sm:via-black/45 sm:to-black/30" />
         </div>
 
-        <Reveal3D variant="scale" className="relative z-10 site-container--content overflow-visible px-6 py-[clamp(3rem,8vw,5rem)] text-center sm:px-10">
+        <Reveal3D variant="scale" className="plan-journey-card__content relative z-10 w-full text-center">
+          <p className="text-[0.65rem] font-semibold tracking-[0.24em] text-gold uppercase sm:text-xs">
+            Plan with us
+          </p>
           <h2
             id="plan-my-journey-heading"
-            className="font-display text-[clamp(1.75rem,4.5vw,3.25rem)] leading-[1.15] tracking-tight text-white"
+            className="mt-3 font-display text-[clamp(1.5rem,6.4vw,3.25rem)] leading-[1.08] tracking-tight text-white text-balance"
           >
-            Your Story Begins at TRAGUIN
+            <span className="block">Your Story Begins</span>
+            <span className="mt-1 block text-white/95 sm:mt-0 sm:inline"> at TRAGUIN</span>
           </h2>
-          <p className="mx-auto mt-4 max-w-xl text-sm leading-relaxed text-white/85 sm:mt-5 sm:text-base">
+          <p className="mx-auto mt-4 max-w-xl px-1 text-sm leading-relaxed text-white/85 sm:mt-5 sm:px-0 sm:text-base">
             Speak with our travel designers for priority access to curated luxury journeys, bespoke
             itineraries, and member-only expertise.
           </p>
 
           {submitted ? (
-            <p className="mx-auto mt-8 max-w-md rounded-2xl border border-white/20 bg-white/10 px-6 py-4 text-sm text-white backdrop-blur-sm sm:text-base">
+            <p className="mx-auto mt-8 max-w-md rounded-2xl border border-white/20 bg-white/10 px-5 py-4 text-sm text-white backdrop-blur-sm sm:px-6 sm:text-base">
               Thank you. A travel designer will call you within 2 working hours.
             </p>
           ) : (
-            <form
-              onSubmit={handleSubmit}
-              className="mx-auto mt-8 w-full max-w-3xl sm:mt-10"
-            >
-              <div className="flex items-stretch gap-2 sm:gap-3">
-                <div className="min-w-0 flex-1">
-                  <PhoneInput
-                    id="planner-phone"
-                    variant="hero"
-                    countryCode={countryCode}
-                    onCountryCodeChange={setCountryCode}
-                    value={phone}
-                    onChange={(value) => {
-                      setPhone(value);
-                      if (errors.phone) setErrors({});
-                    }}
-                    invalid={!!errors.phone}
-                    placeholder="Enter your phone number"
-                    trailing={
-                      <button
-                        type="submit"
-                        disabled={submitting}
-                        className="h-full shrink-0 rounded-full bg-white px-4 text-[10px] font-bold tracking-[0.12em] text-black uppercase shadow-sm transition-colors hover:bg-white/95 disabled:cursor-not-allowed disabled:opacity-70 sm:px-6 sm:text-[11px] sm:tracking-[0.16em]"
-                      >
-                        {submitting ? "Sending…" : "Get Called"}
-                      </button>
-                    }
-                  />
-                </div>
+            <form onSubmit={handleSubmit} className="plan-journey-card__form mx-auto mt-7 w-full sm:mt-10">
+              <PhoneInput
+                id="planner-phone"
+                variant="hero"
+                countryCode={countryCode}
+                onCountryCodeChange={setCountryCode}
+                value={phone}
+                onChange={(value) => {
+                  setPhone(value);
+                  if (errors.phone) setErrors({});
+                }}
+                invalid={!!errors.phone}
+                placeholder="Your phone number"
+              />
+
+              <div className="mt-3 flex items-stretch gap-2 sm:gap-3">
+                <button
+                  type="submit"
+                  disabled={submitting}
+                  className="inline-flex h-12 min-h-12 flex-1 items-center justify-center rounded-full bg-white px-4 text-[0.68rem] font-bold tracking-[0.14em] text-black uppercase shadow-sm transition-colors hover:bg-white/95 disabled:cursor-not-allowed disabled:opacity-70 sm:px-6 sm:text-[11px] sm:tracking-[0.16em]"
+                >
+                  {submitting ? "Sending…" : "Get Called"}
+                </button>
 
                 <a
                   href={contactInfo.whatsappHref}
@@ -218,6 +216,7 @@ export function PlanMyJourneyCTA() {
                   </svg>
                 </a>
               </div>
+
               <FormLegalConsent
                 id="plan-journey-legal-consent"
                 checked={legalConsent}
@@ -227,15 +226,15 @@ export function PlanMyJourneyCTA() {
                 }}
                 error={errors.legalConsent}
                 variant="light"
-                className="mt-3 text-left sm:pl-2"
+                className="mt-3 text-left"
               />
               {errors.phone && (
-                <p id="planner-phone-error" className="mt-2 text-left text-xs text-red-300 sm:pl-2">
+                <p id="planner-phone-error" className="mt-2 text-left text-xs text-red-300">
                   {errors.phone}
                 </p>
               )}
               {submitError && (
-                <p className="mt-2 text-left text-xs text-red-300 sm:pl-2" role="alert">
+                <p className="mt-2 text-left text-xs text-red-300" role="alert">
                   {submitError}
                 </p>
               )}

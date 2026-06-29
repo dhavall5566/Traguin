@@ -18,10 +18,10 @@ const CARD_FADE_S = 1.35;
 const CONTENT_STAGGER = 0.07;
 const CARD_VANISH_S = 1.05;
 const NEXT_CARD_COUNT = 2;
-const CARD_GAP = 26;
-const CARD_WIDTH_MAX = 300;
-const CARD_WIDTH_MIN = 190;
-const CARD_HEIGHT_RATIO = 4 / 3; // height = width * 4/3 (3:4 portrait)
+const CARD_GAP = 22;
+const CARD_WIDTH_MAX = 340;
+const CARD_WIDTH_MIN = 220;
+const CARD_HEIGHT_RATIO = 4 / 3;
 
 function getCardLayout(containerWidth: number) {
   const slots = 1 + NEXT_CARD_COUNT;
@@ -73,11 +73,11 @@ function getForwardSlots(activeIndex: number, packageCount: number) {
 
 function getSlotMotion(slot: number, isActive: boolean, slotStep: number) {
   return {
-    scale: isActive ? 1 : 0.92,
-    opacity: isActive ? 1 : Math.max(0.28, 0.58 - slot * 0.14),
+    scale: isActive ? 1 : 0.96 - slot * 0.02,
+    opacity: 1,
     x: slot * slotStep,
-    rotateY: slot === 0 ? 0 : -4 - slot * 1.5,
-    z: isActive ? 40 : -slot * 16,
+    rotateY: 0,
+    z: isActive ? 40 : -slot * 10,
     zIndex: 30 - slot,
   };
 }
@@ -301,11 +301,11 @@ function PackageCard({
       type="button"
       onClick={onSelect}
       className={cn(
-        "relative block h-full w-full overflow-hidden rounded-2xl text-left [transform:translateZ(0)]",
-        "border transition-[border-color,box-shadow,opacity] duration-700 ease-[cubic-bezier(0.22,1,0.36,1)]",
+        "hero-package-card group relative block h-full w-full overflow-hidden rounded-[1.35rem] text-left [transform:translateZ(0)]",
+        "border bg-black/20 transition-[border-color,box-shadow,transform] duration-500 ease-[cubic-bezier(0.22,1,0.36,1)]",
         isActive
-          ? "border-gold/50 shadow-[0_16px_40px_-12px_rgba(0,0,0,0.55)]"
-          : "border-white/12 shadow-[0_10px_28px_-10px_rgba(0,0,0,0.42)] hover:border-white/25 hover:shadow-[0_14px_34px_-12px_rgba(0,0,0,0.48)]",
+          ? "border-gold/55 shadow-[0_20px_50px_-16px_rgba(0,0,0,0.65)]"
+          : "border-white/20 shadow-[0_14px_36px_-14px_rgba(0,0,0,0.55)] hover:border-white/35 hover:shadow-[0_18px_42px_-14px_rgba(0,0,0,0.6)]",
         className
       )}
       aria-label={`Show ${pkg.title}`}
@@ -314,13 +314,22 @@ function PackageCard({
       <SafeImage
         src={pkg.image}
         alt=""
-        className="absolute inset-0 size-full object-cover object-center"
+        className={cn(
+          "absolute inset-0 size-full object-cover object-center transition-transform duration-700 ease-out",
+          isActive ? "scale-100" : "scale-[1.03] group-hover:scale-105"
+        )}
       />
-      <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/30 to-transparent" />
-      <div className="absolute inset-x-0 bottom-0 border-t border-white/10 bg-black/40 px-4 py-3.5 backdrop-blur-sm sm:px-4 sm:py-4">
-        <p className="text-[10px] font-semibold tracking-[0.18em] text-white/70 uppercase sm:text-[11px] sm:tracking-[0.2em]">
+      {!isActive ? (
+        <div
+          className="pointer-events-none absolute inset-0 z-[1] bg-black/20 transition-colors duration-500 group-hover:bg-black/12"
+          aria-hidden
+        />
+      ) : null}
+      <div className="absolute inset-0 z-[2] bg-gradient-to-t from-black/88 via-black/20 to-black/5" />
+      <div className="absolute inset-x-0 bottom-0 z-[3] px-4 py-3.5 sm:px-4 sm:py-4">
+        <p className="text-[10px] font-semibold tracking-[0.18em] text-white/85 uppercase sm:text-[11px] sm:tracking-[0.2em]">
           {pkg.destination}
-          <span className="text-white/45">
+          <span className="text-white/55">
             {" · "}
             {pkg.region === "domestic" ? "India" : "International"}
           </span>
@@ -372,8 +381,8 @@ function DesktopCardStage({
   return (
     <div
       ref={containerRef}
-      className="relative hidden w-full min-w-0 items-center justify-center lg:flex"
-      style={{ height: cardHeight, perspective: "1400px" }}
+      className="hero-package-stage relative hidden w-full min-w-0 items-center justify-center lg:flex"
+      style={{ height: cardHeight }}
       onMouseEnter={() => onPauseChange(true)}
       onMouseLeave={() => onPauseChange(false)}
     >
@@ -387,11 +396,10 @@ function DesktopCardStage({
             return (
               <motion.div
                 key={`slot-${slot}-${pkgIndex}`}
-                className="absolute top-0 left-0 overflow-hidden rounded-2xl will-change-[transform,opacity]"
+                className="absolute top-0 left-0 overflow-visible rounded-[1.35rem] will-change-transform"
                 style={{
                   width: cardWidth,
                   height: cardHeight,
-                  transformStyle: "preserve-3d",
                   zIndex: motionState.zIndex,
                 }}
                 transition={cardMotionTransition}
@@ -521,11 +529,9 @@ function MobileCardStrip({
             ) : (
               <motion.div
                 animate={{
-                  scale: i === activeIndex ? 1 : 0.94,
-                  opacity: i === activeIndex ? 1 : 0.52,
+                  scale: i === activeIndex ? 1 : 0.97,
                 }}
                 transition={{
-                  opacity: cardFadeTransition,
                   scale: cardTransition,
                 }}
                 className="size-full"

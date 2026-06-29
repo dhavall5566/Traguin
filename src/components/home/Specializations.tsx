@@ -22,9 +22,9 @@ export function Specializations({ items }: { items: HomeSpecialization[] }) {
     <HomeSection>
       <Reveal3D variant="left">
         <SectionHeader
-          eyebrow="Our Expertise"
+          eyebrow="What We Design"
           title="Specializations"
-          description="Beyond leisure travel, bespoke programs for every kind of journey you lead."
+          description="From private holidays to corporate retreats, every program is built around your purpose, pace, and people."
         />
       </Reveal3D>
       <div ref={gridRef} className="home-grid mt-10 sm:grid-cols-2 lg:mt-12 lg:grid-cols-3 xl:grid-cols-5 [perspective:1400px]">

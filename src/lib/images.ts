@@ -33,11 +33,14 @@ export const images = {
   vietnam: pexels(3787839),
   singapore: pexels(259447),
 
+  australia: unsplash("1523483405985-81fa17fd9aae", 1400),
+  canada: unsplash("1519832979-8f9939d45f06", 1400),
+
   beach: pexels(1450360),
 
-  // Experience showcase bento grid
-  experienceGroupTours: pexels(3184339, 1400),
-  experiencePrivateLuxe: pexels(7061662, 1400),
+  // Experience showcase cards (local, real TRAGUIN photos)
+  experienceGroupTours: "/experiences/group-tours.png",
+  experiencePrivateLuxe: "/experiences/private-luxe.png",
   experienceCorporate: pexels(1181677, 1400),
   experienceSchool: pexels(8199572, 1400),
 

@@ -16,7 +16,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   const { hotel } = data;
   const destination = hotel.destination?.trim();
   return {
-    title: `${hotel.name} — Luxury Stay`,
+    title: `${hotel.name} | Luxury Stay`,
     description:
       hotel.description ??
       (destination ? `Luxury stay in ${destination}.` : `Luxury stay at ${hotel.name}.`),

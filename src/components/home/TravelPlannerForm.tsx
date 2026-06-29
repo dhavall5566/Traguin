@@ -2,7 +2,19 @@
 
 import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { MapPin, Calendar, Users, Wallet, Sparkles, FileText, ChevronLeft, ChevronRight } from "lucide-react";
+import {
+  MapPin,
+  Calendar,
+  Users,
+  Wallet,
+  Sparkles,
+  FileText,
+  ChevronLeft,
+  ChevronRight,
+  Check,
+  Mail,
+  Phone as PhoneIcon,
+} from "lucide-react";
 import { MagneticButton } from "@/components/ui/MagneticButton";
 import { FormField, fieldInputClass } from "@/components/ui/FormField";
 import { PhoneInput } from "@/components/ui/PhoneInput";
@@ -24,7 +36,6 @@ import { cn } from "@/lib/utils";
 import { FormSubmissionError, submitFormSubmission } from "@/lib/api/form-submissions";
 import { defaultCountryCode } from "@/data/country-codes";
 import { formatFullPhone } from "@/lib/phone-input";
-import { Mail, Phone as PhoneIcon } from "lucide-react";
 
 const travelStyles: { value: TravelMood; label: string }[] = [
   { value: "luxury", label: "Luxury" },
@@ -43,7 +54,34 @@ const budgetRanges = [
   { value: "1000001", label: "₹10L+" },
 ];
 
-const steps = ["Destination", "Details", "Preferences"] as const;
+const travelerOptions = [
+  ...Array.from({ length: 12 }, (_, index) => ({
+    value: String(index + 1),
+    label: index + 1 === 1 ? "1 traveler" : `${index + 1} travelers`,
+  })),
+  { value: "13", label: "13+ travelers" },
+];
+
+const steps = [
+  {
+    id: "destination",
+    label: "Destination",
+    title: "Where & when",
+    description: "Share your dream destination and preferred travel dates.",
+  },
+  {
+    id: "details",
+    label: "Details",
+    title: "Trip details",
+    description: "Tell us who's travelling and the budget range that feels right.",
+  },
+  {
+    id: "preferences",
+    label: "Preferences",
+    title: "Your preferences",
+    description: "Pick a travel style, add notes, and leave your contact details.",
+  },
+] as const;
 
 export function TravelPlannerForm() {
   const [step, setStep] = useState(0);
@@ -55,12 +93,13 @@ export function TravelPlannerForm() {
   useEffect(() => {
     setMinDate(getLocalDateIso());
   }, []);
+
   const [form, setForm] = useState({
     destination: "",
     startDate: "",
     endDate: "",
     travelers: "2",
-    budget: "250000",
+    budget: "500000",
     style: "luxury" as TravelMood,
     notes: "",
     email: "",
@@ -69,6 +108,9 @@ export function TravelPlannerForm() {
   const [legalConsent, setLegalConsent] = useState(false);
   const [phoneCountryCode, setPhoneCountryCode] = useState(defaultCountryCode);
   const [errors, setErrors] = useState<FieldErrors>({});
+
+  const currentStep = steps[step];
+  const progress = ((step + 1) / steps.length) * 100;
 
   const update = <K extends keyof typeof form>(key: K, value: (typeof form)[K]) => {
     setForm((prev) => ({ ...prev, [key]: value }));
@@ -84,12 +126,12 @@ export function TravelPlannerForm() {
 
   const nextStep = () => {
     if (!validateStep()) return;
-    setStep((s) => Math.min(s + 1, steps.length - 1));
+    setStep((value) => Math.min(value + 1, steps.length - 1));
   };
 
   const prevStep = () => {
     setErrors({});
-    setStep((s) => Math.max(s - 1, 0));
+    setStep((value) => Math.max(value - 1, 0));
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -135,304 +177,344 @@ export function TravelPlannerForm() {
 
   return (
     <HomeSection id="planner" tone="surface" className="relative overflow-hidden">
-      <div className="absolute inset-0 luxury-gradient opacity-15" />
+      <div className="absolute inset-0 luxury-gradient opacity-15" aria-hidden />
       <div className="relative">
         <SectionHeader
           eyebrow="Your Journey Begins Here"
           title="Plan Your Extraordinary Journey"
-          titleClassName="text-[clamp(1.35rem,4.2vw,3.25rem)] whitespace-nowrap md:text-[clamp(1.75rem,4.2vw,3.25rem)] lg:text-[clamp(2rem,4.2vw,3.25rem)]"
+          description="Three quick steps. We respond with a tailored first draft, usually within 48 hours."
         />
 
-        <div className="mt-6 flex justify-center gap-2">
-          {steps.map((label, i) => (
-            <div key={label} className="flex items-center gap-2">
-              <span
-                className={cn(
-                  "flex h-8 w-8 items-center justify-center rounded-full text-xs font-medium transition-colors",
-                  i <= step ? "bg-gold text-on-gold" : "glass text-muted"
-                )}
-              >
-                {i + 1}
-              </span>
-              <span className={cn("hidden text-xs sm:inline", i <= step ? "text-foreground" : "text-muted")}>
-                {label}
-              </span>
-              {i < steps.length - 1 && <span className="mx-1 h-px w-6 bg-glass-border sm:w-10" />}
-            </div>
-          ))}
-        </div>
+        <div className="mx-auto mt-8 w-full max-w-3xl px-4 sm:px-6">
+          <div className="planner-wizard__progress" aria-hidden>
+            <span className="planner-wizard__progress-fill" style={{ width: `${progress}%` }} />
+          </div>
 
-        <div className="site-container--content mt-8">
+          <ol className="planner-wizard__steps" aria-label="Form progress">
+            {steps.map((item, index) => {
+              const isComplete = index < step;
+              const isActive = index === step;
+              return (
+                <li
+                  key={item.id}
+                  className={cn(
+                    "planner-wizard__step",
+                    isComplete && "is-complete",
+                    isActive && "is-active"
+                  )}
+                  aria-current={isActive ? "step" : undefined}
+                >
+                  <span className="planner-wizard__step-dot">
+                    {isComplete ? <Check size={14} strokeWidth={2.5} aria-hidden /> : index + 1}
+                  </span>
+                  <span className="planner-wizard__step-label">{item.label}</span>
+                </li>
+              );
+            })}
+          </ol>
+
           <form
             onSubmit={handleSubmit}
             noValidate
-            className="glass w-full rounded-3xl border border-glass-border p-6 md:p-10"
+            className="planner-wizard__card glass mt-6 w-full rounded-3xl border border-glass-border p-5 sm:p-7 md:p-8"
           >
-          {submitted ? (
-            <div className="py-12 text-center">
-              <Sparkles size={40} className="mx-auto text-gold" />
-              <h3 className="mt-4 font-display text-2xl">Request Received</h3>
-              <p className="mt-2 text-muted">
-                A travel designer will contact you shortly with your personalized itinerary.
-              </p>
-            </div>
-          ) : (
-            <>
-              <AnimatePresence mode="wait">
-                <motion.div
-                  key={step}
-                  initial={{ opacity: 0, x: 12 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  exit={{ opacity: 0, x: -12 }}
-                  transition={{ duration: 0.25 }}
-                  className="space-y-5"
-                >
-                  {hasErrors(errors) && (
-                    <p className="rounded-xl border border-red-400/30 bg-red-400/10 px-4 py-3 text-sm text-red-400" role="alert">
-                      Please correct the highlighted fields to continue.
-                    </p>
-                  )}
-                  {step === 0 && (
-                    <>
-                      <FormField
-                        label="Destination"
-                        htmlFor="planner-destination"
-                        icon={MapPin}
-                        error={errors.destination}
-                      >
-                        <input
-                          id="planner-destination"
-                          value={form.destination}
-                          onChange={(e) => update("destination", e.target.value)}
-                          className={fieldInputClass("destination", errors)}
-                          aria-invalid={!!errors.destination}
-                        />
-                      </FormField>
-                      <div className="grid gap-4 sm:grid-cols-2">
-                        <FormField
-                          label="Start Date"
-                          htmlFor="planner-start-date"
-                          icon={Calendar}
-                          error={errors.startDate}
-                        >
-                          <DatePickerInput
-                            id="planner-start-date"
-                            min={minDate || undefined}
-                            value={form.startDate}
-                            suppressHydrationWarning
-                            onChange={(e) => {
-                              const startDate = e.target.value;
-                              setForm((prev) => {
-                                const next = {
-                                  ...prev,
-                                  startDate,
-                                  endDate:
-                                    prev.endDate && startDate && prev.endDate < startDate
-                                      ? startDate
-                                      : prev.endDate,
-                                };
-                                return next;
-                              });
-                              clearFieldError(setErrors, "startDate");
-                              if (form.endDate && startDate && form.endDate < startDate) {
-                                clearFieldError(setErrors, "endDate");
-                              }
-                            }}
-                            inputClassName={fieldInputClass("startDate", errors)}
-                            aria-invalid={!!errors.startDate}
-                          />
-                        </FormField>
-                        <FormField
-                          label="End Date"
-                          htmlFor="planner-end-date"
-                          icon={Calendar}
-                          error={errors.endDate}
-                        >
-                          <DatePickerInput
-                            id="planner-end-date"
-                            min={form.startDate || minDate || undefined}
-                            value={form.endDate}
-                            onChange={(e) => update("endDate", e.target.value)}
-                            disabled={!form.startDate || !minDate}
-                            suppressHydrationWarning
-                            inputClassName={cn(
-                              fieldInputClass("endDate", errors),
-                              !form.startDate && "cursor-not-allowed opacity-50"
-                            )}
-                            aria-invalid={!!errors.endDate}
-                          />
-                        </FormField>
-                      </div>
-                    </>
-                  )}
-                  {step === 1 && (
-                    <>
-                      <FormField
-                        label="Travelers"
-                        htmlFor="planner-travelers"
-                        icon={Users}
-                        error={errors.travelers}
-                      >
-                        <input
-                          id="planner-travelers"
-                          type="number"
-                          min={1}
-                          max={50}
-                          value={form.travelers}
-                          onChange={(e) => update("travelers", e.target.value)}
-                          className={fieldInputClass("travelers", errors)}
-                          aria-invalid={!!errors.travelers}
-                        />
-                      </FormField>
-                      <FormField
-                        label="Budget Range"
-                        htmlFor="planner-budget"
-                        icon={Wallet}
-                        error={errors.budget}
-                      >
-                        <select
-                          id="planner-budget"
-                          value={form.budget}
-                          onChange={(e) => update("budget", e.target.value)}
-                          className={fieldInputClass("budget", errors)}
-                          aria-invalid={!!errors.budget}
-                        >
-                          {budgetRanges.map((b) => (
-                            <option key={b.value} value={b.value}>
-                              {b.label}
-                            </option>
-                          ))}
-                        </select>
-                      </FormField>
-                    </>
-                  )}
-                  {step === 2 && (
-                    <>
-                      <FormField label="Travel Style" htmlFor="planner-style" icon={Sparkles}>
-                        <div
-                          id="planner-style"
-                          className="flex flex-wrap gap-2"
-                          role="group"
-                          aria-label="Travel style"
-                        >
-                          {travelStyles.map((s) => (
-                            <button
-                              key={s.value}
-                              type="button"
-                              onClick={() => setForm({ ...form, style: s.value })}
-                              className={cn(
-                                "rounded-full px-4 py-2 text-xs capitalize transition-all",
-                                form.style === s.value
-                                  ? "bg-gold text-on-gold"
-                                  : "glass text-muted hover:border-gold/30"
-                              )}
-                            >
-                              {s.label}
-                            </button>
-                          ))}
-                        </div>
-                      </FormField>
-                      <FormField label="Notes" htmlFor="planner-notes" icon={FileText} error={errors.notes}>
-                        <textarea
-                          id="planner-notes"
-                          rows={4}
-                          value={form.notes}
-                          onChange={(e) => update("notes", e.target.value)}
-                          className={cn(fieldInputClass("notes", errors), "resize-none")}
-                          aria-invalid={!!errors.notes}
-                        />
-                      </FormField>
-                      <div className="grid gap-4 sm:grid-cols-2">
-                        <FormField label="Email" htmlFor="planner-email" icon={Mail} error={errors.email}>
-                          <input
-                            id="planner-email"
-                            type="email"
-                            autoComplete="email"
-                            value={form.email}
-                            onChange={(e) => update("email", e.target.value)}
-                            className={fieldInputClass("email", errors)}
-                            aria-invalid={!!errors.email}
-                          />
-                        </FormField>
-                        <FormField label="Phone" htmlFor="planner-phone" icon={PhoneIcon} error={errors.phone}>
-                          <PhoneInput
-                            id="planner-phone"
-                            countryCode={phoneCountryCode}
-                            onCountryCodeChange={setPhoneCountryCode}
-                            value={form.phone}
-                            onChange={(value) => update("phone", value)}
-                            invalid={!!errors.phone}
-                          />
-                        </FormField>
-                      </div>
-                      {submitError && (
-                        <p className="rounded-xl border border-red-400/30 bg-red-400/10 px-4 py-3 text-sm text-red-400" role="alert">
-                          {submitError}
-                        </p>
-                      )}
-                    </>
-                  )}
-                </motion.div>
-              </AnimatePresence>
-
-              {step === steps.length - 1 && (
-                <FormLegalConsent
-                  id="travel-planner-legal-consent"
-                  checked={legalConsent}
-                  onChange={(checked) => {
-                    setLegalConsent(checked);
-                    clearFieldError(setErrors, "legalConsent");
-                  }}
-                  error={errors.legalConsent}
-                  className="mt-6"
-                />
-              )}
-
-              <div
-                className={cn(
-                  "mt-8",
-                  step > 0 && "flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between"
-                )}
-              >
-                {step > 0 ? (
-                  <button
-                    type="button"
-                    onClick={prevStep}
-                    className="inline-flex items-center gap-2 text-sm text-muted transition-colors hover:text-foreground"
-                  >
-                    <ChevronLeft size={16} />
-                    Back
-                  </button>
-                ) : null}
-                {step < steps.length - 1 ? (
-                  <MagneticButton
-                    type="button"
-                    variant="primary"
-                    onClick={nextStep}
-                    className={cn(
-                      "w-full !justify-center",
-                      step > 0 && "sm:flex-1"
-                    )}
-                  >
-                    Continue
-                    <ChevronRight size={16} className="ml-1 inline" />
-                  </MagneticButton>
-                ) : (
-                  <MagneticButton
-                    type="submit"
-                    variant="primary"
-                    disabled={submitting}
-                    className={cn(
-                      "w-full !justify-center",
-                      step > 0 && "sm:flex-1"
-                    )}
-                  >
-                    {submitting ? "Submitting…" : "Get Personalized Itinerary"}
-                  </MagneticButton>
-                )}
+            {submitted ? (
+              <div className="py-10 text-center sm:py-12">
+                <Sparkles size={40} className="mx-auto text-gold" />
+                <h3 className="mt-4 font-display text-2xl text-foreground">Request Received</h3>
+                <p className="mx-auto mt-2 max-w-md text-sm leading-relaxed text-muted sm:text-base">
+                  A travel designer will contact you shortly with your personalized itinerary.
+                </p>
               </div>
-            </>
-          )}
+            ) : (
+              <>
+                <div className="planner-wizard__step-intro">
+                  <p className="text-[0.65rem] font-semibold tracking-[0.22em] text-gold uppercase">
+                    Step {step + 1} of {steps.length}
+                  </p>
+                  <h3 className="mt-2 font-display text-2xl leading-tight text-foreground sm:text-[1.75rem]">
+                    {currentStep.title}
+                  </h3>
+                  <p className="mt-2 text-sm leading-relaxed text-muted">{currentStep.description}</p>
+                </div>
+
+                <AnimatePresence mode="wait">
+                  <motion.div
+                    key={step}
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -8 }}
+                    transition={{ duration: 0.22 }}
+                    className="mt-6 space-y-5"
+                  >
+                    {hasErrors(errors) && (
+                      <p
+                        className="rounded-xl border border-red-400/30 bg-red-400/10 px-4 py-3 text-sm text-red-400"
+                        role="alert"
+                      >
+                        Please correct the highlighted fields to continue.
+                      </p>
+                    )}
+
+                    {step === 0 && (
+                      <>
+                        <FormField
+                          label="Destination"
+                          htmlFor="planner-destination"
+                          icon={MapPin}
+                          error={errors.destination}
+                        >
+                          <input
+                            id="planner-destination"
+                            value={form.destination}
+                            onChange={(e) => update("destination", e.target.value)}
+                            placeholder="e.g. Kerala, Switzerland, or surprise me"
+                            className={fieldInputClass("destination", errors)}
+                            aria-invalid={!!errors.destination}
+                          />
+                        </FormField>
+                        <div className="grid gap-4 sm:grid-cols-2">
+                          <FormField
+                            label="Start Date"
+                            htmlFor="planner-start-date"
+                            icon={Calendar}
+                            error={errors.startDate}
+                          >
+                            <DatePickerInput
+                              id="planner-start-date"
+                              min={minDate || undefined}
+                              value={form.startDate}
+                              suppressHydrationWarning
+                              onChange={(e) => {
+                                const startDate = e.target.value;
+                                setForm((prev) => {
+                                  const next = {
+                                    ...prev,
+                                    startDate,
+                                    endDate:
+                                      prev.endDate && startDate && prev.endDate < startDate
+                                        ? startDate
+                                        : prev.endDate,
+                                  };
+                                  return next;
+                                });
+                                clearFieldError(setErrors, "startDate");
+                                if (form.endDate && startDate && form.endDate < startDate) {
+                                  clearFieldError(setErrors, "endDate");
+                                }
+                              }}
+                              inputClassName={fieldInputClass("startDate", errors)}
+                              aria-invalid={!!errors.startDate}
+                            />
+                          </FormField>
+                          <FormField
+                            label="End Date"
+                            htmlFor="planner-end-date"
+                            icon={Calendar}
+                            error={errors.endDate}
+                          >
+                            <DatePickerInput
+                              id="planner-end-date"
+                              min={form.startDate || minDate || undefined}
+                              value={form.endDate}
+                              onChange={(e) => update("endDate", e.target.value)}
+                              disabled={!form.startDate || !minDate}
+                              suppressHydrationWarning
+                              inputClassName={cn(
+                                fieldInputClass("endDate", errors),
+                                !form.startDate && "cursor-not-allowed opacity-50"
+                              )}
+                              aria-invalid={!!errors.endDate}
+                            />
+                          </FormField>
+                        </div>
+                      </>
+                    )}
+
+                    {step === 1 && (
+                      <div className="grid gap-5 sm:grid-cols-2">
+                        <FormField
+                          label="Travelers"
+                          htmlFor="planner-travelers"
+                          icon={Users}
+                          error={errors.travelers}
+                        >
+                          <select
+                            id="planner-travelers"
+                            value={form.travelers}
+                            onChange={(e) => update("travelers", e.target.value)}
+                            className={cn(fieldInputClass("travelers", errors), "planner-wizard__select")}
+                            aria-invalid={!!errors.travelers}
+                          >
+                            {travelerOptions.map((option) => (
+                              <option key={option.value} value={option.value}>
+                                {option.label}
+                              </option>
+                            ))}
+                          </select>
+                        </FormField>
+                        <FormField
+                          label="Budget Range"
+                          htmlFor="planner-budget"
+                          icon={Wallet}
+                          error={errors.budget}
+                        >
+                          <select
+                            id="planner-budget"
+                            value={form.budget}
+                            onChange={(e) => update("budget", e.target.value)}
+                            className={cn(fieldInputClass("budget", errors), "planner-wizard__select")}
+                            aria-invalid={!!errors.budget}
+                          >
+                            {budgetRanges.map((option) => (
+                              <option key={option.value} value={option.value}>
+                                {option.label}
+                              </option>
+                            ))}
+                          </select>
+                        </FormField>
+                      </div>
+                    )}
+
+                    {step === 2 && (
+                      <>
+                        <FormField label="Travel Style" htmlFor="planner-style" icon={Sparkles}>
+                          <div
+                            id="planner-style"
+                            className="flex flex-wrap gap-2"
+                            role="group"
+                            aria-label="Travel style"
+                          >
+                            {travelStyles.map((style) => (
+                              <button
+                                key={style.value}
+                                type="button"
+                                onClick={() => update("style", style.value)}
+                                className={cn(
+                                  "rounded-full border px-4 py-2 text-xs font-medium capitalize transition-all",
+                                  form.style === style.value
+                                    ? "border-gold/40 bg-gold text-on-gold"
+                                    : "border-glass-border bg-surface/60 text-muted hover:border-gold/30 hover:text-foreground"
+                                )}
+                              >
+                                {style.label}
+                              </button>
+                            ))}
+                          </div>
+                        </FormField>
+                        <FormField
+                          label="Notes"
+                          htmlFor="planner-notes"
+                          icon={FileText}
+                          error={errors.notes}
+                        >
+                          <textarea
+                            id="planner-notes"
+                            rows={4}
+                            value={form.notes}
+                            onChange={(e) => update("notes", e.target.value)}
+                            placeholder="Special occasions, must-see places, dietary needs, pace preferences…"
+                            className={cn(fieldInputClass("notes", errors), "resize-none")}
+                            aria-invalid={!!errors.notes}
+                          />
+                        </FormField>
+                        <div className="grid gap-4 sm:grid-cols-2">
+                          <FormField
+                            label="Email"
+                            htmlFor="planner-email"
+                            icon={Mail}
+                            error={errors.email}
+                          >
+                            <input
+                              id="planner-email"
+                              type="email"
+                              autoComplete="email"
+                              value={form.email}
+                              onChange={(e) => update("email", e.target.value)}
+                              placeholder="you@example.com"
+                              className={fieldInputClass("email", errors)}
+                              aria-invalid={!!errors.email}
+                            />
+                          </FormField>
+                          <FormField
+                            label="Phone"
+                            htmlFor="planner-phone"
+                            icon={PhoneIcon}
+                            error={errors.phone}
+                          >
+                            <PhoneInput
+                              id="planner-phone"
+                              countryCode={phoneCountryCode}
+                              onCountryCodeChange={setPhoneCountryCode}
+                              value={form.phone}
+                              onChange={(value) => update("phone", value)}
+                              invalid={!!errors.phone}
+                            />
+                          </FormField>
+                        </div>
+                        {submitError && (
+                          <p
+                            className="rounded-xl border border-red-400/30 bg-red-400/10 px-4 py-3 text-sm text-red-400"
+                            role="alert"
+                          >
+                            {submitError}
+                          </p>
+                        )}
+                      </>
+                    )}
+                  </motion.div>
+                </AnimatePresence>
+
+                {step === steps.length - 1 && (
+                  <FormLegalConsent
+                    id="travel-planner-legal-consent"
+                    checked={legalConsent}
+                    onChange={(checked) => {
+                      setLegalConsent(checked);
+                      clearFieldError(setErrors, "legalConsent");
+                    }}
+                    error={errors.legalConsent}
+                    className="mt-6"
+                  />
+                )}
+
+                <div className="planner-wizard__actions mt-8 border-t border-glass-border pt-5">
+                  {step > 0 ? (
+                    <button
+                      type="button"
+                      onClick={prevStep}
+                      className="inline-flex items-center gap-2 text-sm font-medium text-muted transition-colors hover:text-foreground"
+                    >
+                      <ChevronLeft size={16} aria-hidden />
+                      Back
+                    </button>
+                  ) : (
+                    <span aria-hidden />
+                  )}
+
+                  {step < steps.length - 1 ? (
+                    <MagneticButton
+                      type="button"
+                      variant="primary"
+                      onClick={nextStep}
+                      className="w-full !justify-center sm:w-auto sm:min-w-[11rem]"
+                    >
+                      Continue
+                      <ChevronRight size={16} aria-hidden />
+                    </MagneticButton>
+                  ) : (
+                    <MagneticButton
+                      type="submit"
+                      variant="primary"
+                      disabled={submitting}
+                      className="w-full !justify-center sm:w-auto sm:min-w-[14rem]"
+                    >
+                      {submitting ? "Submitting…" : "Get Personalized Itinerary"}
+                    </MagneticButton>
+                  )}
+                </div>
+              </>
+            )}
           </form>
         </div>
       </div>

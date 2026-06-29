@@ -4,10 +4,9 @@ import { useEffect, useRef, useState, type ReactNode } from "react";
 
 type LazyHomeSectionProps = {
   children: ReactNode;
-  minHeight?: string;
 };
 
-export function LazyHomeSection({ children, minHeight = "1px" }: LazyHomeSectionProps) {
+export function LazyHomeSection({ children }: LazyHomeSectionProps) {
   const ref = useRef<HTMLDivElement>(null);
   const [visible, setVisible] = useState(false);
 
@@ -29,7 +28,7 @@ export function LazyHomeSection({ children, minHeight = "1px" }: LazyHomeSection
   }, []);
 
   return (
-    <div ref={ref} style={visible ? undefined : { minHeight }}>
+    <div ref={ref} className="min-h-px">
       {visible ? children : null}
     </div>
   );

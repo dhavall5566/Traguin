@@ -151,7 +151,7 @@ export function buildDestinationDisplaySections(
       sections.push({
         id: "domestic",
         title: "India",
-        description: "Diverse landscapes woven into singular luxury journeys — explore by region.",
+        description: "Diverse landscapes woven into singular luxury journeys. Explore by region.",
         subgroups,
       });
     }
@@ -166,7 +166,7 @@ export function buildDestinationDisplaySections(
       sections.push({
         id: "international",
         title: "International",
-        description: "Curated journeys across the world — browse by country.",
+        description: "Curated journeys across the world. Browse by country.",
         subgroups,
       });
     }

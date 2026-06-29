@@ -11,6 +11,18 @@ import {
   resolveMediaUrl,
 } from "./cms";
 import type { CmsExperience } from "./types";
+import { humanizeCopy } from "@/lib/copy";
+
+const SHOWCASE_IMAGE_BY_SLUG: Record<string, string> = {
+  "group-tours": images.experienceGroupTours,
+  "private-luxe": images.experiencePrivateLuxe,
+  "corporate-events": images.experienceCorporate,
+  "school-trips": images.experienceSchool,
+};
+
+function showcaseImageForSlug(slug: string): string {
+  return SHOWCASE_IMAGE_BY_SLUG[slug] ?? images.experienceGroupTours;
+}
 
 export function mapCmsExperienceToShowcaseItem(
   exp: CmsExperience,
@@ -22,11 +34,11 @@ export function mapCmsExperienceToShowcaseItem(
   return {
     id: exp.slug,
     number: exp.card_number ?? "01",
-    title: exp.card_title ?? exp.headline,
-    description: exp.card_description ?? exp.intro,
-    image: resolveMediaUrl(mediaMap, exp.hero_media_id, images.experienceGroupTours),
-    imageCaption: exp.image_caption ?? undefined,
-    href: `/experiences/${exp.slug}`,
+    title: humanizeCopy(exp.card_title ?? exp.headline),
+    description: humanizeCopy(exp.card_description ?? exp.intro),
+    image: showcaseImageForSlug(exp.slug),
+    imageCaption: exp.image_caption ? humanizeCopy(exp.image_caption) : undefined,
+    href: "/contact#consultation",
     layout,
     variant,
   };

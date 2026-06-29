@@ -1,9 +1,8 @@
 "use client";
 
-import { useEffect, useId, useState } from "react";
-import { X } from "lucide-react";
-import { FORM_LEGAL_DISCLOSURE_TEXT } from "@/lib/form-legal-consent";
-import { useModalScrollLock } from "@/lib/use-modal-scroll-lock";
+import { useId, useState } from "react";
+import { privacyPolicy, termsOfService } from "@/data/legal";
+import { LegalDocumentModal } from "@/components/legal/LegalDocumentModal";
 import { cn } from "@/lib/utils";
 
 type DisclosureKind = "privacy" | "terms";
@@ -17,72 +16,16 @@ type FormLegalConsentProps = {
   className?: string;
 };
 
-function FormLegalDisclosureModal({
-  open,
-  kind,
-  onClose,
-}: {
-  open: boolean;
-  kind: DisclosureKind | null;
-  onClose: () => void;
-}) {
-  useModalScrollLock(open);
-
-  useEffect(() => {
-    if (!open) return;
-    const onKey = (e: KeyboardEvent) => {
-      if (e.key === "Escape") onClose();
-    };
-    window.addEventListener("keydown", onKey);
-    return () => window.removeEventListener("keydown", onKey);
-  }, [open, onClose]);
-
-  if (!open || !kind) return null;
-
-  const title = kind === "privacy" ? "Privacy Policy" : "Website Terms of Use";
-
-  return (
-    <div
-      className="fixed inset-0 z-[110] flex items-end justify-center overflow-hidden bg-background/90 p-0 backdrop-blur-md sm:items-center sm:p-4 md:p-6"
-      onClick={onClose}
-      role="dialog"
-      aria-modal="true"
-      aria-labelledby="form-legal-disclosure-title"
-      data-lenis-prevent
-    >
-      <div
-        className="relative w-full max-w-lg rounded-t-3xl border border-gold/20 bg-surface p-6 shadow-2xl sm:rounded-3xl sm:p-8"
-        onClick={(e) => e.stopPropagation()}
-        data-lenis-prevent
-      >
-        <button
-          type="button"
-          onClick={onClose}
-          className="absolute top-4 right-4 rounded-full p-2 glass transition-colors hover:text-gold"
-          aria-label="Close"
-        >
-          <X size={20} />
-        </button>
-        <h2
-          id="form-legal-disclosure-title"
-          className="pr-10 font-display text-xl text-foreground sm:text-2xl"
-        >
-          {title}
-        </h2>
-        <p className="mt-4 text-sm leading-relaxed text-foreground/80 sm:text-base">
-          {FORM_LEGAL_DISCLOSURE_TEXT}
-        </p>
-        <button
-          type="button"
-          onClick={onClose}
-          className="mt-6 w-full rounded-full border border-gold/30 bg-gold/10 px-4 py-2.5 text-sm font-medium text-gold transition-colors hover:bg-gold/20"
-        >
-          Close
-        </button>
-      </div>
-    </div>
-  );
-}
+const LEGAL_DOCUMENTS = {
+  privacy: {
+    content: privacyPolicy,
+    href: "/privacy-policy",
+  },
+  terms: {
+    content: termsOfService,
+    href: "/terms-of-service",
+  },
+} as const;
 
 export function FormLegalConsent({
   id,
@@ -98,10 +41,11 @@ export function FormLegalConsent({
   const [disclosure, setDisclosure] = useState<DisclosureKind | null>(null);
 
   const isLight = variant === "light";
+  const activeDocument = disclosure ? LEGAL_DOCUMENTS[disclosure] : null;
 
-  const openDisclosure = (kind: DisclosureKind) => (e: React.MouseEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
+  const openDisclosure = (kind: DisclosureKind) => (event: React.MouseEvent) => {
+    event.preventDefault();
+    event.stopPropagation();
     setDisclosure(kind);
   };
 
@@ -119,7 +63,7 @@ export function FormLegalConsent({
             id={checkboxId}
             type="checkbox"
             checked={checked}
-            onChange={(e) => onChange(e.target.checked)}
+            onChange={(event) => onChange(event.target.checked)}
             className={cn(
               "mt-0.5 size-4 shrink-0 cursor-pointer rounded border accent-gold",
               isLight ? "border-white/40 bg-white/10" : "border-glass-border bg-surface",
@@ -129,7 +73,7 @@ export function FormLegalConsent({
             aria-describedby={error ? errorId : undefined}
           />
           <span className="text-xs leading-relaxed sm:text-sm">
-            By Submitting the form, I agree to the{" "}
+            I agree to TRAGUIN&apos;s{" "}
             <button
               type="button"
               onClick={openDisclosure("privacy")}
@@ -148,11 +92,12 @@ export function FormLegalConsent({
                   : "text-sky-600 decoration-sky-600/40 hover:text-sky-700"
               )}
             >
-              Website Terms of Use
+              Terms of Service
             </button>
+            , and consent to being contacted about my inquiry.
           </span>
         </label>
-        {error && (
+        {error ? (
           <p
             id={errorId}
             className={cn("text-xs", isLight ? "text-red-300" : "text-red-400")}
@@ -160,12 +105,13 @@ export function FormLegalConsent({
           >
             {error}
           </p>
-        )}
+        ) : null}
       </div>
 
-      <FormLegalDisclosureModal
+      <LegalDocumentModal
         open={disclosure !== null}
-        kind={disclosure}
+        content={activeDocument?.content ?? null}
+        pageHref={activeDocument?.href ?? "/privacy-policy"}
         onClose={() => setDisclosure(null)}
       />
     </>

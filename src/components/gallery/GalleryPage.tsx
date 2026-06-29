@@ -67,7 +67,7 @@ export function GalleryPage({
                         "--index": index,
                       } as CSSProperties
                     }
-                    aria-label={`View client stories — ${client.name}, ${client.destination}`}
+                    aria-label={`View client stories, ${client.name}, ${client.destination}`}
                   >
                     <span className="gallery-hanging-photo__pin" aria-hidden />
                     <div className="aspect-[4/5] overflow-hidden rounded-[1.05rem] bg-background">

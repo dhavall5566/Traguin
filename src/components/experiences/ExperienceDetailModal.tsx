@@ -24,7 +24,7 @@ export function ExperienceDetailModal({ experience, onClose }: ExperienceDetailM
 
   return (
     <div
-      className="fixed inset-0 z-[100] flex items-center justify-center overflow-hidden bg-black/55 p-2 backdrop-blur-[10px] sm:p-3 md:p-4"
+      className="fixed inset-0 z-[100] flex items-center justify-center overflow-hidden bg-black/55 p-3 backdrop-blur-[10px] sm:p-4 md:p-6"
       onClick={onClose}
       role="dialog"
       aria-modal="true"
@@ -32,7 +32,7 @@ export function ExperienceDetailModal({ experience, onClose }: ExperienceDetailM
       data-lenis-prevent
     >
       <div
-        className="relative flex h-[min(96dvh,100%)] w-full max-w-[min(96vw,90rem)] flex-col overflow-hidden rounded-[1.25rem] border border-glass-border bg-surface shadow-[0_40px_100px_rgba(0,0,0,0.35)] sm:rounded-[1.5rem] md:rounded-[1.75rem]"
+        className="relative flex h-[min(92dvh,860px)] w-full max-w-[68rem] flex-col overflow-hidden rounded-[1.25rem] border border-glass-border bg-surface shadow-[0_40px_100px_rgba(0,0,0,0.35)] sm:rounded-[1.5rem] md:rounded-[1.75rem]"
         onClick={(e) => e.stopPropagation()}
         data-lenis-prevent
       >

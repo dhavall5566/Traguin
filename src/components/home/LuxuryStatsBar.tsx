@@ -17,13 +17,14 @@ function StatItem({
   active: boolean;
 }) {
   const decimals = stat.decimals ?? 0;
-  const display = useCountUp(stat.value, active, 1400, decimals);
+  const animated = useCountUp(stat.value, active && !stat.textValue, 1400, decimals);
+  const display = stat.textValue ?? animated;
 
   return (
     <div className="flex flex-col items-center gap-1 px-4 py-2 text-center sm:px-6">
       <p className="font-display text-3xl leading-none tracking-tight text-foreground sm:text-4xl md:text-[2.75rem]">
         {display}
-        <span className="text-gold">{stat.suffix}</span>
+        {stat.suffix ? <span className="text-gold">{stat.suffix}</span> : null}
       </p>
       <p className="text-[10px] tracking-[0.22em] text-muted uppercase sm:text-[11px]">
         {stat.label}
@@ -124,6 +125,13 @@ export function LuxuryStatsBar({ stats }: { stats: HomeStat[] }) {
 
   if (stats.length === 0) return null;
 
+  const gridCols =
+    stats.length >= 5
+      ? "grid-cols-2 sm:grid-cols-3 lg:grid-cols-5"
+      : stats.length === 4
+        ? "grid-cols-2 md:grid-cols-4"
+        : "grid-cols-2 md:grid-cols-3";
+
   return (
     <HomeSection
       spacing="compact"
@@ -132,9 +140,17 @@ export function LuxuryStatsBar({ stats }: { stats: HomeStat[] }) {
       aria-label="TRAGUIN at a glance"
     >
       <div ref={ref} className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-gold/35 to-transparent" />
+      <div className="mb-6 text-center">
+        <p className="text-[10px] font-semibold tracking-[0.28em] text-gold uppercase sm:text-[11px]">
+          The TRAGUIN Standard
+        </p>
+        <p className="mt-2 text-sm text-muted sm:text-base">
+          Bespoke itineraries, handpicked stays, and one dedicated expert from first call to homecoming.
+        </p>
+      </div>
       <div
         ref={stripRef}
-        className="grid grid-cols-2 divide-x divide-glass-border [transform-style:preserve-3d] md:grid-cols-4"
+        className={`grid divide-x divide-glass-border [transform-style:preserve-3d] ${gridCols}`}
       >
         {stats.map((stat) => (
           <div key={stat.id} data-stat-cell className="[transform-style:preserve-3d]">

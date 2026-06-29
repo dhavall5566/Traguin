@@ -56,13 +56,18 @@ export async function getLegalPageData(slug: string): Promise<LegalPageContent |
   if (!cmsPage) return fallback;
 
   const mediaMap = buildMediaUrlMap(mediaAssets);
-  const sections = cmsPage.sections
+  const mappedSections = cmsPage.sections
     .map(mapCmsLegalSection)
     .filter((section): section is LegalSection => section !== null);
 
-  if (sections.length === 0 && fallback) {
-    return fallback;
-  }
+  const useFallbackSections =
+    Boolean(fallback) &&
+    (mappedSections.length === 0 ||
+      mappedSections.length < Math.min(8, (fallback?.sections.length ?? 0) / 2));
+
+  const sections = useFallbackSections
+    ? (fallback?.sections ?? mappedSections)
+    : mappedSections;
 
   const heroImage =
     resolveMediaUrl(mediaMap, cmsPage.hero_media_id, "") ||
@@ -70,10 +75,13 @@ export async function getLegalPageData(slug: string): Promise<LegalPageContent |
     images.travel;
 
   return {
-    eyebrow: cmsPage.eyebrow,
-    title: cmsPage.title,
-    description: cmsPage.description,
-    effectiveDate: cmsPage.effective_date,
+    eyebrow: cmsPage.eyebrow || fallback?.eyebrow || "Legal",
+    title: cmsPage.title || fallback?.title || "Legal",
+    description:
+      useFallbackSections && fallback?.description
+        ? fallback.description
+        : cmsPage.description || fallback?.description || "",
+    effectiveDate: cmsPage.effective_date || fallback?.effectiveDate || "",
     heroImage,
     heroImageAlt: cmsPage.hero_image_alt ?? fallback?.heroImageAlt ?? cmsPage.title,
     sections: sections.length > 0 ? sections : (fallback?.sections ?? []),

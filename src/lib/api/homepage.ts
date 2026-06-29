@@ -10,6 +10,8 @@ import type { IndiaRegion } from "@/lib/destination-listing-types";
 import { resolveDestinationHeroImage } from "@/lib/destination-images";
 import { images } from "@/lib/images";
 import { cleanPackageTitle } from "@/lib/package-title";
+import { defaultHomepagePromo, defaultRegionPanels, defaultSpecializations } from "@/data/pageContent";
+import { humanizeCopy, humanizeCopyList } from "@/lib/copy";
 
 export { HERO_SLIDER_DEFAULT_MAX_ITEMS } from "@/lib/api/homepage-hero-settings";
 import { readHomepageHeroSettings } from "@/lib/api/homepage-hero-settings";
@@ -44,7 +46,26 @@ export type HomeStat = {
   suffix: string;
   label: string;
   decimals?: number;
+  /** Non-numeric headline, e.g. "Since 2024" */
+  textValue?: string;
 };
+
+const DEFAULT_HOMEPAGE_STATS: HomeStat[] = [
+  { id: "bespoke", textValue: "Bespoke", value: 0, suffix: "", label: "Every route, yours alone" },
+  { id: "years-active", value: 2, suffix: "+", label: "Years crafting journeys" },
+  { id: "trips", value: 500, suffix: "+", label: "Trips designed" },
+  { id: "destinations", value: 15, suffix: "+", label: "Curated destinations" },
+  { id: "draft-time", textValue: "48 hrs", value: 0, suffix: "", label: "First itinerary draft" },
+];
+
+function uniqueById<T extends { id: string }>(items: T[]): T[] {
+  const seen = new Set<string>();
+  return items.filter((item) => {
+    if (seen.has(item.id)) return false;
+    seen.add(item.id);
+    return true;
+  });
+}
 
 export type HomeRegionPanel = {
   id: string;
@@ -89,10 +110,77 @@ export type HomeTestimonial = {
 
 export type HomePromoData = {
   eyebrow: string;
+  studioLabel: string;
   title: string;
+  titleAccent: string;
   description: string;
   assurances: { iconKey: string; label: string }[];
+  consultation: {
+    badge: string;
+    title: string;
+    description: string;
+  };
 };
+
+const PROMO_PLACEHOLDER_PATTERNS = [
+  /homepage promo title/i,
+  /homepate promo title/i,
+  /verified eyebrow/i,
+  /tailor-made journeys/i,
+  /your world, perfectly planned/i,
+  /since 2024/i,
+  /created via admin ui/i,
+  /lorem ipsum/i,
+  /^test$/i,
+  /^placeholder$/i,
+];
+
+function isPromoPlaceholder(text: string | null | undefined): boolean {
+  const value = text?.trim() ?? "";
+  if (!value) return true;
+  return PROMO_PLACEHOLDER_PATTERNS.some((pattern) => pattern.test(value));
+}
+
+function resolveHomePromo(
+  homepagePromo: import("./types").CmsHomepagePromo | null
+): HomePromoData {
+  if (!homepagePromo) {
+    return { ...defaultHomepagePromo, assurances: [...defaultHomepagePromo.assurances] };
+  }
+
+  const cmsAssurances = (homepagePromo.assurances ?? [])
+    .map((item) => ({
+      iconKey: item.icon_key ?? "sparkles",
+      label: item.label?.trim() ?? "",
+    }))
+    .filter((item) => item.label && !isPromoPlaceholder(item.label));
+
+  const useDefaultTitle = isPromoPlaceholder(homepagePromo.title);
+
+  return {
+    eyebrow: humanizeCopy(
+      isPromoPlaceholder(homepagePromo.eyebrow) || /since 2024/i.test(homepagePromo.eyebrow)
+        ? defaultHomepagePromo.eyebrow
+        : homepagePromo.eyebrow
+    ),
+    studioLabel: defaultHomepagePromo.studioLabel,
+    title: humanizeCopy(useDefaultTitle ? defaultHomepagePromo.title : homepagePromo.title),
+    titleAccent: useDefaultTitle ? defaultHomepagePromo.titleAccent : "",
+    description: humanizeCopy(
+      isPromoPlaceholder(homepagePromo.description)
+        ? defaultHomepagePromo.description
+        : homepagePromo.description
+    ),
+    assurances:
+      cmsAssurances.length > 0
+        ? cmsAssurances.map((item) => ({ ...item, label: humanizeCopy(item.label) }))
+        : [...defaultHomepagePromo.assurances],
+    consultation: {
+      ...defaultHomepagePromo.consultation,
+      description: humanizeCopy(defaultHomepagePromo.consultation.description),
+    },
+  };
+}
 
 export type HomeJourneyStep = {
   id: string;
@@ -109,6 +197,205 @@ export type HomeSpecialization = {
   description: string;
   iconKey: string;
 };
+
+const SPECIALIZATION_PLACEHOLDER_PATTERNS = [
+  /^specialization\s*\d+$/i,
+  /^spec\s*\d+$/i,
+  /lorem ipsum/i,
+  /^test$/i,
+  /^placeholder$/i,
+  /^description\s*\d+$/i,
+];
+
+function isSpecializationPlaceholder(title: string, description: string): boolean {
+  const trimmedTitle = title.trim();
+  const trimmedDescription = description.trim();
+  if (!trimmedTitle || !trimmedDescription) return true;
+  return SPECIALIZATION_PLACEHOLDER_PATTERNS.some(
+    (pattern) => pattern.test(trimmedTitle) || pattern.test(trimmedDescription)
+  );
+}
+
+function resolveSpecializations(
+  specializations: import("./types").CmsSpecialization[]
+): HomeSpecialization[] {
+  const mapped = specializations
+    .sort((a, b) => a.sort_order - b.sort_order)
+    .map((item) => ({
+      id: item.id,
+      title: humanizeCopy(item.title.trim()),
+      description: humanizeCopy(item.description.trim()),
+      iconKey: item.icon_key || "compass",
+    }))
+    .filter((item) => !isSpecializationPlaceholder(item.title, item.description));
+
+  if (mapped.length >= 4) {
+    return mapped;
+  }
+
+  return defaultSpecializations.map((item) => ({ ...item }));
+}
+
+const REGION_PLACEHOLDER_PATTERNS = [
+  /^india\s*description$/i,
+  /^international\s*description$/i,
+  /stat\s*text/i,
+  /^description$/i,
+  /^title$/i,
+  /^placeholder$/i,
+  /^lorem ipsum/i,
+  /^test$/i,
+];
+
+function isRegionFieldPlaceholder(value: string): boolean {
+  const trimmed = value.trim();
+  if (!trimmed) return true;
+  return REGION_PLACEHOLDER_PATTERNS.some((pattern) => pattern.test(trimmed));
+}
+
+function isRegionPanelPlaceholder(panel: HomeRegionPanel): boolean {
+  if (isRegionFieldPlaceholder(panel.title)) return true;
+  if (isRegionFieldPlaceholder(panel.description)) return true;
+  if (isRegionFieldPlaceholder(panel.stat)) return true;
+  if (panel.title.trim().toLowerCase() === panel.label.trim().toLowerCase()) return true;
+
+  const validHighlights = panel.highlights.filter(
+    (item) => item.trim() && !isRegionFieldPlaceholder(item) && item.trim().toLowerCase() !== panel.label.trim().toLowerCase()
+  );
+  return validHighlights.length < 2;
+}
+
+function inferRegionMoodFromCms(panel: import("./types").CmsHomepageRegionPanel): "warm" | "cool" {
+  const key = panel.key.trim().toLowerCase();
+  const label = panel.label.trim().toLowerCase();
+  const href = panel.href?.trim().toLowerCase() ?? "";
+
+  if (
+    key === "international" ||
+    key.includes("international") ||
+    label.includes("international") ||
+    href.includes("region=international")
+  ) {
+    return "cool";
+  }
+
+  if (
+    key === "domestic" ||
+    key === "india" ||
+    key.includes("domestic") ||
+    label.includes("india") ||
+    href.includes("region=domestic")
+  ) {
+    return "warm";
+  }
+
+  return panel.mood === "cool" ? "cool" : "warm";
+}
+
+function inferRegionKind(panel: HomeRegionPanel): "domestic" | "international" {
+  const label = panel.label.trim().toLowerCase();
+  const href = panel.href.trim().toLowerCase();
+
+  if (label.includes("international") || href.includes("region=international")) {
+    return "international";
+  }
+
+  if (label.includes("india") || href.includes("region=domestic")) {
+    return "domestic";
+  }
+
+  return panel.mood === "cool" ? "international" : "domestic";
+}
+
+function defaultRegionForPanel(panel: HomeRegionPanel): (typeof defaultRegionPanels)[number] {
+  const kind = inferRegionKind(panel);
+  return (
+    defaultRegionPanels.find((item) => item.id === kind) ??
+    (kind === "international" ? defaultRegionPanels[1] : defaultRegionPanels[0])
+  );
+}
+
+function mergeRegionPanel(panel: HomeRegionPanel): HomeRegionPanel {
+  const kind = inferRegionKind(panel);
+  const fallback = defaultRegionForPanel(panel);
+  const highlights = panel.highlights.filter(
+    (item) =>
+      item.trim() &&
+      !isRegionFieldPlaceholder(item) &&
+      item.trim().toLowerCase() !== panel.label.trim().toLowerCase()
+  );
+
+  const usesDomesticDefaults =
+    kind === "international" &&
+    (panel.title === defaultRegionPanels[0].title ||
+      panel.highlights.some((item) =>
+        defaultRegionPanels[0].highlights.some(
+          (domestic) => domestic.toLowerCase() === item.trim().toLowerCase()
+        )
+      ));
+
+  const shouldUseFallbackContent =
+    isRegionPanelPlaceholder(panel) || usesDomesticDefaults;
+
+  const merged: HomeRegionPanel = {
+    ...panel,
+    label: isRegionFieldPlaceholder(panel.label) ? fallback.label : panel.label,
+    title:
+      shouldUseFallbackContent ||
+      isRegionFieldPlaceholder(panel.title) ||
+      panel.title.trim().toLowerCase() === panel.label.trim().toLowerCase()
+        ? fallback.title
+        : panel.title,
+    description:
+      shouldUseFallbackContent ||
+      isRegionFieldPlaceholder(panel.description) ||
+      panel.description.trim().toLowerCase() === panel.label.trim().toLowerCase()
+        ? fallback.description
+        : panel.description,
+    stat:
+      shouldUseFallbackContent ||
+      isRegionFieldPlaceholder(panel.stat) ||
+      panel.stat.trim().toLowerCase() === panel.label.trim().toLowerCase()
+        ? fallback.stat
+        : panel.stat,
+    highlights:
+      shouldUseFallbackContent || highlights.length < 2 ? [...fallback.highlights] : highlights,
+    href: panel.href || fallback.href,
+    image: shouldUseFallbackContent || isRegionPanelPlaceholder(panel) ? fallback.image : panel.image,
+    imageClass: panel.imageClass || fallback.imageClass,
+    mood: kind === "international" ? "cool" : "warm",
+  };
+
+  return {
+    ...merged,
+    label: humanizeCopy(merged.label),
+    title: humanizeCopy(merged.title),
+    description: humanizeCopy(merged.description),
+    stat: humanizeCopy(merged.stat),
+    highlights: humanizeCopyList(merged.highlights),
+  };
+}
+
+function resolveRegionPanels(
+  regionPanels: import("./types").CmsHomepageRegionPanel[],
+  mediaMap: Map<string, string>
+): HomeRegionPanel[] {
+  const mapped = regionPanels
+    .filter((panel) => panel.is_active)
+    .sort((a, b) => a.sort_order - b.sort_order)
+    .map((panel) => mapRegionPanel(panel, mediaMap))
+    .map((panel) => mergeRegionPanel(panel));
+
+  if (mapped.length >= 2) {
+    return mapped;
+  }
+
+  return defaultRegionPanels.map((item) => ({
+    ...item,
+    id: item.id,
+    highlights: [...item.highlights],
+  }));
+}
 
 export type HomeValueProp = {
   id: string;
@@ -148,7 +435,8 @@ function parseStat(raw: CmsStatJson, index: number): HomeStat | null {
   }
 
   if (typeof raw.value === "string") {
-    const match = raw.value.trim().match(/^([\d.]+)\s*(.*)$/);
+    const trimmed = raw.value.trim();
+    const match = trimmed.match(/^([\d.]+)\s*(.*)$/);
     if (match) {
       const numeric = Number(match[1]);
       if (!Number.isNaN(numeric)) {
@@ -162,9 +450,48 @@ function parseStat(raw: CmsStatJson, index: number): HomeStat | null {
         };
       }
     }
+
+    if (trimmed) {
+      return {
+        id: raw.id ?? `stat-${index}`,
+        value: 0,
+        textValue: trimmed,
+        suffix: raw.suffix ?? "",
+        label,
+      };
+    }
   }
 
   return null;
+}
+
+function mergeHomeStats(stats: HomeStat[]): HomeStat[] {
+  const cleaned = stats.filter(
+    (item) => !item.textValue?.toLowerCase().includes("since 2024")
+  );
+
+  if (cleaned.length === 0) {
+    return DEFAULT_HOMEPAGE_STATS;
+  }
+
+  const labelKey = (stat: HomeStat) => stat.label.trim().toLowerCase();
+  const founding: HomeStat[] = [];
+
+  const hasStudioHighlight = cleaned.some(
+    (item) =>
+      item.textValue?.toLowerCase().includes("bespoke") === true ||
+      labelKey(item).includes("yours alone") ||
+      labelKey(item).includes("luxury travel studio")
+  );
+
+  const hasYears = cleaned.some(
+    (item) => labelKey(item).includes("year") || (item.value === 2 && item.suffix === "+")
+  );
+
+  if (!hasStudioHighlight) founding.push(DEFAULT_HOMEPAGE_STATS[0]);
+  if (!hasYears) founding.push(DEFAULT_HOMEPAGE_STATS[1]);
+
+  return [...founding, ...cleaned].slice(0, 5);
 }
 
 function firstGalleryUrl(
@@ -263,7 +590,7 @@ function mapFeaturedDestination(
     id: dest.id,
     slug: dest.slug,
     name: dest.name,
-    description: dest.description,
+    description: humanizeCopy(dest.description),
     image,
     startingPrice: isHub
       ? (minItineraryPrice ?? dest.starting_price)
@@ -307,7 +634,7 @@ function mapRegionPanel(
   panel: import("./types").CmsHomepageRegionPanel,
   mediaMap: Map<string, string>
 ): HomeRegionPanel {
-  const mood = panel.mood === "cool" ? "cool" : "warm";
+  const mood = inferRegionMoodFromCms(panel);
   return {
     id: panel.id,
     label: panel.label,
@@ -342,7 +669,7 @@ function mapTestimonial(story: CmsClientStory, mediaMap: Map<string, string>): H
     id: story.id,
     name: story.client_name,
     destination: story.destination_name?.trim() || null,
-    quote: story.quote,
+    quote: humanizeCopy(story.quote),
     image: resolveMediaUrl(mediaMap, story.portrait_media_id, images.couple1),
   };
 }
@@ -469,14 +796,18 @@ function mapHomepageSources({
     cmsFeatured = cmsFeatured.slice(0, heroSliderMaxItems);
   }
 
-  let featuredPackages = cmsFeatured.map((pkg) =>
-    mapPackage(pkg, destinationById, itineraryByPackageId, mediaMap),
+  let featuredPackages = uniqueById(
+    cmsFeatured.map((pkg) =>
+      mapPackage(pkg, destinationById, itineraryByPackageId, mediaMap),
+    )
   );
 
   if (featuredPackages.length === 0) {
-    featuredPackages = packages
-      .slice(0, heroSliderMaxItems)
-      .map((pkg) => mapPackage(pkg, destinationById, itineraryByPackageId, mediaMap));
+    featuredPackages = uniqueById(
+      packages
+        .slice(0, heroSliderMaxItems)
+        .map((pkg) => mapPackage(pkg, destinationById, itineraryByPackageId, mediaMap))
+    );
   }
 
   const statsSource =
@@ -484,81 +815,74 @@ function mapHomepageSources({
       ? companyStats.trust_bar_stats
       : companyStats?.homepage_stats ?? [];
 
-  const stats = statsSource
-    .map((raw, index) => parseStat(raw as CmsStatJson, index))
-    .filter((item): item is HomeStat => item !== null);
+  const stats = mergeHomeStats(
+    statsSource
+      .map((raw, index) => parseStat(raw as CmsStatJson, index))
+      .filter((item): item is HomeStat => item !== null)
+  );
 
   const marqueeNames = destinations.map((d) => d.name);
 
-  const mappedRegionPanels = regionPanels
-    .sort((a, b) => a.sort_order - b.sort_order)
-    .map((panel) => mapRegionPanel(panel, mediaMap));
+  const mappedRegionPanels = uniqueById(resolveRegionPanels(regionPanels, mediaMap));
 
-  const featuredDestinations = destinations
-    .filter((d) => d.is_featured)
-    .sort((a, b) => (a.featured_sort_order ?? 999) - (b.featured_sort_order ?? 999))
-    .map((dest) =>
-      mapFeaturedDestination(
-        dest,
-        itineraryByDestinationId.get(dest.id),
-        mediaMap,
-        itineraryCounts.get(dest.id) ?? 0,
-        minItineraryPrices.get(dest.id)
+  const featuredDestinations = uniqueById(
+    destinations
+      .filter((d) => d.is_featured)
+      .sort((a, b) => (a.featured_sort_order ?? 999) - (b.featured_sort_order ?? 999))
+      .map((dest) =>
+        mapFeaturedDestination(
+          dest,
+          itineraryByDestinationId.get(dest.id),
+          mediaMap,
+          itineraryCounts.get(dest.id) ?? 0,
+          minItineraryPrices.get(dest.id)
+        )
       )
-    );
+  );
 
-  const promo: HomePromoData | null = homepagePromo
-    ? {
-        eyebrow: homepagePromo.eyebrow,
-        title: homepagePromo.title,
-        description: homepagePromo.description,
-        assurances: (homepagePromo.assurances ?? []).map((item) => ({
-          iconKey: item.icon_key ?? "sparkles",
-          label: item.label ?? "",
-        })).filter((a) => a.label),
-      }
-    : null;
+  const promo = resolveHomePromo(homepagePromo);
 
-  const mappedExperiences = experiences
-    .filter((exp) => exp.is_published && exp.show_on_homepage)
-    .sort((a, b) => (a.homepage_sort_order ?? 999) - (b.homepage_sort_order ?? 999))
-    .map((exp) => mapExperience(exp, mediaMap));
+  const mappedExperiences = uniqueById(
+    experiences
+      .filter((exp) => exp.is_published && exp.show_on_homepage)
+      .sort((a, b) => (a.homepage_sort_order ?? 999) - (b.homepage_sort_order ?? 999))
+      .map((exp) => mapExperience(exp, mediaMap))
+  );
 
-  const mappedJourneySteps = journeySteps
-    .sort((a, b) => a.sort_order - b.sort_order)
-    .map((step) => ({
-      id: step.id,
-      step: step.step_label,
-      title: step.title,
-      description: step.description,
-      detail: step.detail,
-      iconKey: step.icon_key || "compass",
-    }));
+  const mappedJourneySteps = uniqueById(
+    journeySteps
+      .sort((a, b) => a.sort_order - b.sort_order)
+      .map((step) => ({
+        id: step.id,
+        step: humanizeCopy(step.step_label),
+        title: humanizeCopy(step.title),
+        description: humanizeCopy(step.description),
+        detail: humanizeCopy(step.detail),
+        iconKey: step.icon_key || "compass",
+      }))
+  );
 
-  const mappedSpecializations = specializations
-    .sort((a, b) => a.sort_order - b.sort_order)
-    .map((item) => ({
-      id: item.id,
-      title: item.title,
-      description: item.description,
-      iconKey: item.icon_key || "user",
-    }));
+  const mappedSpecializations = uniqueById(resolveSpecializations(specializations));
 
-  const mappedValueProps = valuePropositions
-    .sort((a, b) => a.sort_order - b.sort_order)
-    .map((item) => ({
-      id: item.id,
-      step: item.step_label,
-      title: item.title,
-      description: item.description,
-      highlight: item.highlight,
-      iconKey: item.icon_key || "sparkles",
-    }));
+  const mappedValueProps = uniqueById(
+    valuePropositions
+      .sort((a, b) => a.sort_order - b.sort_order)
+      .map((item) => ({
+        id: item.id,
+        step: humanizeCopy(item.step_label),
+        title: humanizeCopy(item.title),
+        description: humanizeCopy(item.description),
+        highlight: humanizeCopy(item.highlight),
+        iconKey: item.icon_key || "sparkles",
+      }))
+  );
 
-  const testimonials = clientStories
-    .sort((a, b) => (a.home_sort_order ?? 999) - (b.home_sort_order ?? 999))
-    .map((story) => mapTestimonial(story, mediaMap))
-    .filter((item): item is HomeTestimonial => item !== null);
+  const testimonials = uniqueById(
+    clientStories
+      .sort((a, b) => (a.home_sort_order ?? 999) - (b.home_sort_order ?? 999))
+      .map((story) => mapTestimonial(story, mediaMap))
+      .filter((item): item is HomeTestimonial => item !== null)
+  );
 
   return {
     featuredPackages,
