@@ -5,92 +5,161 @@ import { ArrowLeft, ArrowRight, CalendarDays, MapPin } from "lucide-react";
 import type { DestinationListing } from "@/lib/destination-listing-types";
 import type { Itinerary } from "@/types/itinerary";
 import { SafeImage } from "@/components/ui/SafeImage";
-import { PriceDisplay } from "@/components/ui/PriceDisplay";
+import { formatPriceLabel, isPriceOnRequest } from "@/lib/utils";
 
 type DestinationJourneysHubProps = {
   destination: DestinationListing;
   journeys: Itinerary[];
 };
 
-export function DestinationJourneysHub({ destination, journeys }: DestinationJourneysHubProps) {
+function destinationRegionLabel(destination: DestinationListing): string {
+  if (destination.region === "domestic") {
+    return destination.country ?? "India";
+  }
+  return destination.country ?? "International";
+}
+
+function JourneyCard({
+  journey,
+  destinationName,
+  destinationId,
+}: {
+  journey: Itinerary;
+  destinationName: string;
+  destinationId: string;
+}) {
+  const priceOnRequest = isPriceOnRequest(journey.startingPrice);
+
   return (
-    <article>
-      <section className="relative min-h-[40svh] w-full md:min-h-[48svh]">
+    <Link
+      href={`/destinations/${destinationId}?journey=${encodeURIComponent(journey.slug)}`}
+      className="journey-card group flex h-full flex-col"
+    >
+      <div className="journey-card__media">
+        <SafeImage
+          src={journey.heroImage}
+          alt={journey.title}
+          className="journey-card__image"
+        />
+        <span className="journey-card__duration">{journey.duration}</span>
+      </div>
+
+      <div className="journey-card__body">
+        <h2 className="journey-card__title">{journey.title}</h2>
+        <p className="journey-card__tagline">{journey.tagline}</p>
+
+        <ul className="journey-card__facts" aria-label="Journey details">
+          <li>
+            <CalendarDays size={12} aria-hidden />
+            {journey.days.length} days
+          </li>
+          <li>
+            <MapPin size={12} aria-hidden />
+            {destinationName}
+          </li>
+        </ul>
+
+        <div className="journey-card__action">
+          <div className="journey-card__price">
+            <span className="journey-card__price-label">Onwards</span>
+            <span
+              className={
+                priceOnRequest ? "journey-card__price-inquire" : "journey-card__price-value"
+              }
+            >
+              {formatPriceLabel(journey.startingPrice)}
+            </span>
+          </div>
+          <span className="journey-card__cta">
+            Explore journey
+            <ArrowRight size={14} aria-hidden />
+          </span>
+        </div>
+      </div>
+    </Link>
+  );
+}
+
+export function DestinationJourneysHub({ destination, journeys }: DestinationJourneysHubProps) {
+  const regionLabel = destinationRegionLabel(destination);
+
+  return (
+    <article className="journeys-hub">
+      <section className="journeys-hub__hero">
         <SafeImage
           src={destination.image}
           alt={destination.name}
-          className="absolute inset-0 z-0 h-full w-full object-cover"
+          className="journeys-hub__hero-image"
           loading="eager"
         />
-        <div className="destination-hero__scrim pointer-events-none absolute inset-0 z-[1]" aria-hidden />
-        <div className="destination-hero__fade pointer-events-none absolute inset-x-0 bottom-0 z-[1] h-20" aria-hidden />
+        <div className="journeys-hub__hero-scrim" aria-hidden />
 
-        <div className="page-x-padding relative z-10 flex min-h-[40svh] flex-col justify-end pb-10 pt-28 md:min-h-[48svh] md:pb-14 md:pt-32">
-          <div className="site-container destination-hero__copy">
-            <Link
-              href="/destinations"
-              className="destination-hero__back mb-6 inline-flex w-fit items-center gap-2 text-xs tracking-wide text-white/90 transition-colors"
-            >
-              <ArrowLeft size={14} />
-              All Destinations
-            </Link>
-            <p className="text-xs tracking-[0.3em] text-gold uppercase">{destination.categoryTitle}</p>
-            <h1 className="mt-2 font-display text-4xl text-white md:text-5xl">{destination.name}</h1>
-            <p className="mt-4 max-w-2xl text-white/90">{destination.description}</p>
-            <p className="mt-6 text-sm tracking-wide text-white/90">
-              {journeys.length} curated {journeys.length === 1 ? "journey" : "journeys"} available
-            </p>
+        <div className="journeys-hub__hero-inner page-x-padding">
+          <div className="site-container">
+            <p className="journeys-hub__eyebrow">{destination.categoryTitle}</p>
+            <h1 className="journeys-hub__title">{destination.name}</h1>
+            <p className="journeys-hub__description">{destination.description}</p>
+
+            <dl className="journeys-hub__stats">
+              <div className="journeys-hub__stat">
+                <dt className="journeys-hub__stat-label">Available journeys</dt>
+                <dd className="journeys-hub__stat-value">{journeys.length}</dd>
+              </div>
+              <div className="journeys-hub__stat">
+                <dt className="journeys-hub__stat-label">Region</dt>
+                <dd className="journeys-hub__stat-value">{regionLabel}</dd>
+              </div>
+              <div className="journeys-hub__stat">
+                <dt className="journeys-hub__stat-label">Collection</dt>
+                <dd className="journeys-hub__stat-value">Curated</dd>
+              </div>
+            </dl>
           </div>
         </div>
       </section>
 
-      <section className="page-x-padding py-14 md:py-20">
+      <div className="journeys-hub__toolbar-wrap page-x-padding">
         <div className="site-container">
-          <div className="grid gap-6 md:grid-cols-2">
-            {journeys.map((journey) => (
-              <Link
-                key={journey.slug}
-                href={`/destinations/${destination.id}?journey=${encodeURIComponent(journey.slug)}`}
-                className="group overflow-hidden rounded-2xl border border-border/60 bg-card transition-all hover:border-gold/35 hover:shadow-[0_24px_60px_-32px_rgba(0,0,0,0.45)]"
-              >
-                <div className="relative aspect-[16/10] overflow-hidden">
-                  <SafeImage
-                    src={journey.heroImage}
-                    alt={journey.title}
-                    className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent" />
-                  <div className="absolute bottom-4 left-4 right-4">
-                    <p className="text-[10px] tracking-[0.22em] text-gold-light uppercase">
-                      {journey.duration}
-                    </p>
-                    <h2 className="mt-1 font-display text-2xl text-white">{journey.title}</h2>
-                  </div>
-                </div>
-
-                <div className="space-y-4 p-6">
-                  <p className="text-sm leading-relaxed text-muted-foreground">{journey.tagline}</p>
-
-                  <div className="flex flex-wrap items-center gap-4 text-xs text-muted-foreground">
-                    <span className="inline-flex items-center gap-1.5">
-                      <CalendarDays size={14} aria-hidden />
-                      {journey.days.length} days
-                    </span>
-                    <span className="inline-flex items-center gap-1.5">
-                      <MapPin size={14} aria-hidden />
-                      {destination.name}
-                    </span>
-                  </div>
-
-                  <div className="flex items-end justify-between gap-4 border-t border-border/50 pt-4">
-                    <PriceDisplay amount={journey.startingPrice} label="From" size="sm" />
-                    <span className="inline-flex items-center gap-1.5 text-xs tracking-[0.16em] text-gold uppercase transition-transform group-hover:translate-x-0.5">
-                      View journey
-                      <ArrowRight size={14} aria-hidden />
-                    </span>
-                  </div>
-                </div>
+          <nav className="journeys-hub__toolbar" aria-label="Destination navigation">
+            <div className="journeys-hub__breadcrumb">
+              <Link href="/destinations" className="journeys-hub__breadcrumb-link">
+                <ArrowLeft size={14} aria-hidden />
+                All Destinations
               </Link>
+              <span className="journeys-hub__breadcrumb-separator" aria-hidden>
+                /
+              </span>
+              <span className="journeys-hub__breadcrumb-current">{destination.name}</span>
+            </div>
+            <p className="journeys-hub__toolbar-meta">
+              {journeys.length} {journeys.length === 1 ? "itinerary" : "itineraries"}
+            </p>
+          </nav>
+        </div>
+      </div>
+
+      <section className="journeys-hub__catalog page-x-padding" aria-labelledby="journeys-catalog-heading">
+        <div className="site-container">
+          <header className="journeys-hub__catalog-header">
+            <div>
+              <p className="journeys-hub__catalog-eyebrow">Itinerary catalog</p>
+              <h2 id="journeys-catalog-heading" className="journeys-hub__catalog-title">
+                Select your journey
+              </h2>
+            </div>
+            <p className="journeys-hub__catalog-note">
+              Each itinerary is independently curated with distinct pacing, stays, and experiences.
+            </p>
+          </header>
+
+          <div className="journeys-hub__grid">
+            {journeys.map((journey) => (
+              <JourneyCard
+                key={journey.slug}
+                journey={journey}
+                destinationName={destination.name}
+                destinationId={destination.id}
+              />
             ))}
           </div>
         </div>

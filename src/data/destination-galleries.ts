@@ -3,11 +3,26 @@
  * Every photo ID appears exactly once across this file, no shared beach/mountain stock.
  * Matterhorn (417173) is reserved for Switzerland only.
  */
+import type { IndiaRegion } from "@/lib/destination-listing-types";
+import { FALLBACK_IMAGE, images } from "@/lib/images";
+
 const p = (id: number) =>
   `https://images.pexels.com/photos/${id}/pexels-photo-${id}.jpeg?auto=compress&cs=tinysrgb&w=1400`;
 
 const u = (id: string) =>
   `https://images.unsplash.com/photo-${id}?ixlib=rb-4.1.0&auto=format&fit=crop&w=1400&q=80`;
+
+/** CMS slug aliases → curated gallery key */
+const SLUG_ALIASES: Record<string, string> = {
+  "jammu-kashmir": "kashmir",
+};
+
+const INDIA_REGION_HERO: Record<IndiaRegion, string> = {
+  north: images.himachal,
+  south: images.kerala,
+  west: images.rajasthan,
+  east: p(1693441),
+};
 
 export const destinationGalleries: Record<string, readonly string[]> = {
   switzerland: [
@@ -53,11 +68,40 @@ export const destinationGalleries: Record<string, readonly string[]> = {
     u("1657894736581-ccc35d62d9e2"),
     p(261181),
   ],
+  gujarat: [p(631317), p(1179229), p(2367253), p(752042), p(1121111)],
+  rajasthan: [p(1271619), p(3278215), p(358532), p(6231570), p(4606211)],
   mediterranean: [p(3601425), p(1018698), p(1486975), p(2835562), p(3153803)],
   "asia-pacific": [p(7653644), p(6480707), p(3581365), p(1252869), p(2373713)],
 };
 
 /** Primary thumbnail / hero, first curated frame for a destination */
 export function getDestinationPrimaryImage(destinationId: string, fallback = ""): string {
-  return destinationGalleries[destinationId]?.[0] ?? fallback;
+  const slug = SLUG_ALIASES[destinationId] ?? destinationId;
+  return destinationGalleries[slug]?.[0] ?? fallback;
+}
+
+export function resolveDestinationHeroImage(
+  destinationSlug: string,
+  options?: {
+    cmsImage?: string;
+    indiaRegion?: IndiaRegion;
+    region?: "domestic" | "international";
+  }
+): string {
+  const slug = SLUG_ALIASES[destinationSlug] ?? destinationSlug;
+
+  const curated = destinationGalleries[slug]?.[0];
+  if (curated) return curated;
+
+  const catalogImage = images[slug as keyof typeof images];
+  if (typeof catalogImage === "string") return catalogImage;
+
+  if (options?.region === "domestic" && options.indiaRegion) {
+    return INDIA_REGION_HERO[options.indiaRegion];
+  }
+
+  const cmsImage = options?.cmsImage?.trim();
+  if (cmsImage) return cmsImage;
+
+  return FALLBACK_IMAGE;
 }

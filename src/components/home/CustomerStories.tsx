@@ -155,10 +155,9 @@ export function CustomerStories({ testimonials }: { testimonials: HomeTestimonia
                 </blockquote>
                 <footer className="mt-8 border-t border-glass-border pt-6">
                   <p className="font-medium text-foreground">{story.name}</p>
-                  <p className="mt-1 text-sm text-gold">{story.destination}</p>
-                  <p className="mt-1 text-xs tracking-wide text-muted uppercase">
-                    {story.tripType}
-                  </p>
+                  {story.destination ? (
+                    <p className="mt-1 text-sm text-gold">{story.destination}</p>
+                  ) : null}
                 </footer>
               </div>
             </article>

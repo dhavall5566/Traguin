@@ -156,7 +156,7 @@ function mergeFeaturedPackages(
 }
 
 export function HomeHeroSliderManager() {
-  const { showToast } = useAdminToast();
+  const { showUpdatedToast, showDeletedToast, showErrorToast } = useAdminToast();
   const [packages, setPackages] = useState<PackageRow[]>([]);
   const [maxItems, setMaxItems] = useState(HERO_SLIDER_DEFAULT_MAX_ITEMS);
   const [savedMaxItems, setSavedMaxItems] = useState(HERO_SLIDER_DEFAULT_MAX_ITEMS);
@@ -251,7 +251,7 @@ export function HomeHeroSliderManager() {
         .then((saved) => {
           if (generation !== syncGeneration.current) return;
           setVisiblePackageIds(saved.visible_package_ids);
-          showToast("Homepage visibility updated.");
+          showUpdatedToast("Homepage visibility updated.");
         })
         .catch((err) => {
           if (generation !== syncGeneration.current) return;
@@ -259,7 +259,7 @@ export function HomeHeroSliderManager() {
           setError(err instanceof Error ? err.message : "Failed to update package visibility.");
         });
     },
-    [savedMaxItems, showToast],
+    [savedMaxItems, showUpdatedToast],
   );
 
   const handleSaveSettings = async () => {
@@ -287,11 +287,11 @@ export function HomeHeroSliderManager() {
       setVisiblePackageIds(saved.visible_package_ids);
 
       if (trimmedVisible.length !== previousVisible.length) {
-        showToast(
+        showUpdatedToast(
           `Slider settings saved. ${previousVisible.length - trimmedVisible.length} package(s) were hidden because they exceeded the new maximum.`,
         );
       } else {
-        showToast("Slider settings saved.");
+        showUpdatedToast("Slider settings saved.");
       }
     } catch (err) {
       setVisiblePackageIds(previousVisible);
@@ -347,7 +347,7 @@ export function HomeHeroSliderManager() {
       try {
         await saveHeroSliderOrder(orderedIds);
         if (generation !== orderGeneration.current) return;
-        showToast("Slider order saved.");
+        showUpdatedToast("Slider order saved.");
       } catch (err) {
         if (generation !== orderGeneration.current) return;
         setPackages(previousPackages);
@@ -387,7 +387,7 @@ export function HomeHeroSliderManager() {
         hero_slider_max_items: savedMaxItems,
         visible_package_ids: nextVisible,
       });
-      showToast("Package removed from homepage hero slider.");
+      showDeletedToast("Package removed from homepage hero slider.");
     } catch (err) {
       setPackages(previousPackages);
       setVisiblePackageIds(previousVisible);

@@ -1,7 +1,8 @@
 "use client";
 
 import { useEffect, useMemo } from "react";
-import { Check, MessageCircle, X } from "lucide-react";
+import Link from "next/link";
+import { ArrowLeft, Check, MessageCircle, X } from "lucide-react";
 import type { Itinerary } from "@/types/itinerary";
 import { DestinationHotelsSlider } from "@/components/hotels/DestinationHotelsSlider";
 import { ItineraryGalleryMosaic } from "@/components/itineraries/ItineraryGalleryMosaic";
@@ -70,13 +71,25 @@ export function ItineraryDetail({
 
   return (
     <article className="itinerary-page">
+      <div className="itinerary-page__back-bar page-x-padding">
+        <div className="site-container">
+          <div className="itinerary-hero__back-sticky">
+            <Link
+              href={backHref ?? "/destinations"}
+              className="destination-hero__back destination-hero__back--compact"
+            >
+              <ArrowLeft size={12} aria-hidden />
+              {backLabel ?? "All Destinations"}
+            </Link>
+          </div>
+        </div>
+      </div>
+
       <ItineraryHero
         itinerary={itinerary}
         destinationName={destinationName}
         gallery={destinationGallery}
         whatsappHref={whatsappHref}
-        backHref={backHref}
-        backLabel={backLabel}
       />
 
       <ItineraryMetaStrip itinerary={itinerary} rating={rating} reviewCount={reviewCount} />

@@ -25,7 +25,7 @@ export const journeySteps: JourneyStep[] = [
     title: "Receive Your Blueprint",
     description:
       "We craft a day-by-day itinerary with handpicked stays, private transfers, and curated experiences.",
-    detail: "First draft delivered within 48 hours of your consultation.",
+    detail: "First draft delivered within 2 hrs of your consultation.",
     icon: PenLine,
   },
   {

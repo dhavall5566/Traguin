@@ -76,7 +76,6 @@ export function getItineraryByDestinationSlug(destinationSlug: string) {
 export function getItinerariesForDestinationSlug(destinationSlug: string) {
   return cmsFetch<CmsItinerary[]>(
     `/api/cms/public/itineraries/by-destination/slug/${encodeURIComponent(destinationSlug)}/all`,
-    { fresh: true }
   );
 }
 

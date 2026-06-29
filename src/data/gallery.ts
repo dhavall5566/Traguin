@@ -7,7 +7,6 @@ export const galleryClientWall = testimonials.map((client, index) => ({
   id: client.id,
   name: client.name,
   destination: client.destination,
-  tripType: client.tripType,
   image: client.image,
   rotate: [-3, 2, -1, 3, -2, 1][index % 6],
 }));

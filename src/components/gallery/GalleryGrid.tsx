@@ -13,64 +13,22 @@ type GalleryGridProps = {
   categories: GalleryCategory[];
 };
 
-type TileSpan = { colSpan: number; rowSpan: number };
-
-/** Repeating 4-column pattern, every band sums to 4 cols × 2 rows with zero gaps */
-const DESKTOP_SPANS: TileSpan[] = [
-  { colSpan: 2, rowSpan: 2 },
-  { colSpan: 2, rowSpan: 1 },
-  { colSpan: 2, rowSpan: 1 },
-  { colSpan: 1, rowSpan: 1 },
-  { colSpan: 1, rowSpan: 1 },
-  { colSpan: 1, rowSpan: 1 },
-  { colSpan: 1, rowSpan: 1 },
-  { colSpan: 2, rowSpan: 1 },
-  { colSpan: 2, rowSpan: 1 },
-];
-
-const MOBILE_SPANS: TileSpan[] = [
-  { colSpan: 2, rowSpan: 1 },
-  { colSpan: 1, rowSpan: 1 },
-  { colSpan: 1, rowSpan: 1 },
-  { colSpan: 1, rowSpan: 1 },
-  { colSpan: 1, rowSpan: 1 },
-];
-
-function tileSpan(index: number, variant: "desktop" | "mobile"): TileSpan {
-  const pattern = variant === "desktop" ? DESKTOP_SPANS : MOBILE_SPANS;
-  return pattern[index % pattern.length];
-}
-
-function GalleryTile({
-  item,
-  index,
-}: {
-  item: GalleryItem;
-  index: number;
-}) {
-  const desktop = tileSpan(index, "desktop");
-  const mobile = tileSpan(index, "mobile");
-
+function GalleryTile({ item, index }: { item: GalleryItem; index: number }) {
   return (
     <figure
-      className="gallery-tile group"
-      style={{
-        animationDelay: `${index * 35}ms`,
-        ["--gallery-col-span-mobile" as string]: mobile.colSpan,
-        ["--gallery-row-span-mobile" as string]: mobile.rowSpan,
-        ["--gallery-col-span-desktop" as string]: desktop.colSpan,
-        ["--gallery-row-span-desktop" as string]: desktop.rowSpan,
-      }}
+      className="gallery-tile-natural group"
+      style={{ animationDelay: `${index * 35}ms` }}
     >
-      <SafeImage
-        src={item.image}
-        alt={item.alt}
-        className="absolute inset-0 h-full w-full object-cover transition-transform duration-[900ms] ease-out group-hover:scale-[1.04]"
-        loading="lazy"
-      />
-
-      <figcaption className="sr-only">
-        {item.place}, {item.region}, {item.alt}
+      <div className="gallery-tile-natural__media">
+        <SafeImage
+          src={item.image}
+          alt={item.alt || item.place}
+          className="gallery-tile-natural__img transition-transform duration-[700ms] ease-out group-hover:scale-[1.015]"
+          loading="lazy"
+        />
+      </div>
+      <figcaption className="gallery-tile-natural__caption">
+        <span className="gallery-tile-natural__label">{item.place}</span>
       </figcaption>
     </figure>
   );
@@ -83,7 +41,7 @@ export function GalleryGrid({ className, itemLimit, items, categories }: Gallery
 
   const visibleItems = useMemo(
     () => filterGalleryItems(pool, activeCategory),
-    [activeCategory, pool]
+    [activeCategory, pool],
   );
 
   const filterCategories =
@@ -112,7 +70,7 @@ export function GalleryGrid({ className, itemLimit, items, categories }: Gallery
                     "shrink-0 rounded-full px-5 py-2.5 text-[11px] font-semibold tracking-[0.2em] uppercase transition-all duration-300",
                     isActive
                       ? "bg-foreground text-background shadow-[0_10px_28px_rgba(0,0,0,0.22)]"
-                      : "bg-[color-mix(in_srgb,var(--foreground)_7%,var(--surface))] text-muted hover:bg-[color-mix(in_srgb,var(--foreground)_11%,var(--surface))] hover:text-foreground"
+                      : "bg-[color-mix(in_srgb,var(--foreground)_7%,var(--surface))] text-muted hover:bg-[color-mix(in_srgb,var(--foreground)_11%,var(--surface))] hover:text-foreground",
                   )}
                 >
                   {category.label}
@@ -130,7 +88,7 @@ export function GalleryGrid({ className, itemLimit, items, categories }: Gallery
         </p>
       ) : (
         <>
-          <div key={activeCategory} className="gallery-mosaic mt-8">
+          <div key={activeCategory} className="gallery-intrinsic-grid mt-8">
             {visibleItems.map((item, index) => (
               <GalleryTile key={item.id} item={item} index={index} />
             ))}

@@ -86,6 +86,7 @@ export function getAllDestinations(): DestinationListing[] {
         indiaRegion: INDIA_REGION_BY_DESTINATION[dest.id],
         moods: meta?.moods ?? [],
         hasItinerary: !!getItineraryByDestinationId(dest.id),
+        journeyCount: getItineraryByDestinationId(dest.id) ? 1 : 0,
       });
     }
   }

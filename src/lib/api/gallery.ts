@@ -59,35 +59,44 @@ export function mapCmsClientStoryToWallItem(
   return {
     id: story.id,
     name: story.client_name,
-    destination: story.destination_label ?? "Journey",
-    tripType: story.trip_type ?? "Luxury Travel",
+    destination: story.destination_name?.trim() || story.client_name,
     image,
     rotate: COLLAGE_ROTATIONS[index % COLLAGE_ROTATIONS.length],
   };
 }
 
-export function mapCmsGalleryItemToGalleryItem(
+export function mapCmsGalleryItemToGalleryItems(
   item: CmsGalleryItem,
   mediaMap: Map<string, string>,
   altMap: Map<string, string>
-): GalleryItem | null {
-  const image = resolveMediaUrl(mediaMap, item.media_id, "");
-  if (!image) return null;
+): GalleryItem[] {
+  const mediaEntries =
+    item.media.length > 0
+      ? [...item.media].sort((a, b) => (a.sort_order ?? 0) - (b.sort_order ?? 0))
+      : item.media_id
+        ? [{ id: item.media_id, url: "", alt_text: null, sort_order: 0 }]
+        : [];
 
-  const alt =
-    resolveMediaAlt(altMap, item.media_id, "") ||
-    `${item.place}, ${item.region_label}`;
+  return mediaEntries
+    .map((media) => {
+      const image = media.url || resolveMediaUrl(mediaMap, media.id, "");
+      if (!image) return null;
 
-  return {
-    id: item.slug,
-    place: item.place,
-    region: item.region_label,
-    image,
-    alt,
-    categorySlugs: item.categories.map((category) => category.slug),
-    layout: item.layout,
-    labelStyle: item.label_style,
-  };
+      const alt =
+        resolveMediaAlt(altMap, media.id, "") || `${item.place}, ${item.region_label}`;
+
+      return {
+        id: `${item.slug}-${media.id}`,
+        place: item.place,
+        region: item.region_label,
+        image,
+        alt,
+        categorySlugs: item.categories.map((category) => category.slug),
+        layout: item.layout,
+        labelStyle: item.label_style,
+      };
+    })
+    .filter((entry): entry is GalleryItem => entry != null);
 }
 
 export async function getGalleryPageData(): Promise<GalleryPageData> {
@@ -112,8 +121,7 @@ export async function getGalleryPageData(): Promise<GalleryPageData> {
       (a, b) =>
         (a.sort_order ?? 999) - (b.sort_order ?? 999) || a.place.localeCompare(b.place)
     )
-    .map((item) => mapCmsGalleryItemToGalleryItem(item, mediaMap, altMap))
-    .filter((item): item is GalleryItem => item != null);
+    .flatMap((item) => mapCmsGalleryItemToGalleryItems(item, mediaMap, altMap));
 
   const galleryCategories: GalleryCategory[] = [
     { id: "all", label: "All" },

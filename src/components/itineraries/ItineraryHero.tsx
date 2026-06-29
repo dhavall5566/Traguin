@@ -1,11 +1,10 @@
 "use client";
 
-import Link from "next/link";
 import { useRef } from "react";
 import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
-import { ArrowLeft, MessageCircle, Sparkles } from "lucide-react";
+import { MessageCircle, Sparkles } from "lucide-react";
 import type { Itinerary } from "@/types/itinerary";
 import { HotelImageSlider } from "@/components/hotels/HotelImageSlider";
 import { PriceDisplay } from "@/components/ui/PriceDisplay";
@@ -19,8 +18,6 @@ type ItineraryHeroProps = {
   destinationName?: string;
   gallery: string[];
   whatsappHref: string;
-  backHref?: string;
-  backLabel?: string;
 };
 
 export function ItineraryHero({
@@ -28,12 +25,9 @@ export function ItineraryHero({
   destinationName,
   gallery,
   whatsappHref,
-  backHref = "/destinations",
-  backLabel = "All Destinations",
 }: ItineraryHeroProps) {
   const sectionRef = useRef<HTMLElement>(null);
   const imageWrapRef = useRef<HTMLDivElement>(null);
-  const backRef = useRef<HTMLAnchorElement>(null);
   const copyRef = useRef<HTMLDivElement>(null);
   const priceRef = useRef<HTMLDivElement>(null);
 
@@ -45,15 +39,9 @@ export function ItineraryHero({
       const tl = gsap.timeline({ defaults: { ease: "power3.out" } });
 
       tl.fromTo(
-        backRef.current,
-        { y: -16, opacity: 0, rotateX: 20 },
-        { y: 0, opacity: 1, rotateX: 0, duration: 0.7, transformPerspective: 1200 }
-      )
-        .fromTo(
           copyRef.current,
           { y: 56, opacity: 0, rotateX: 14 },
-          { y: 0, opacity: 1, rotateX: 0, duration: 1.05, transformPerspective: 1400 },
-          "-=0.35"
+          { y: 0, opacity: 1, rotateX: 0, duration: 1.05, transformPerspective: 1400 }
         )
         .fromTo(
           priceRef.current,
@@ -99,17 +87,8 @@ export function ItineraryHero({
       <div className="itinerary-hero__scrim pointer-events-none absolute inset-0 z-[1]" aria-hidden />
 
       <div className="page-x-padding relative z-10 flex min-h-[78svh] flex-col md:min-h-[88svh]">
-        <div className="site-container flex flex-1 flex-col pt-28 pb-10 md:pt-32 md:pb-14">
-          <Link
-            ref={backRef}
-            href={backHref}
-            className="itinerary-hero__back inline-flex w-fit items-center gap-2 rounded-full border border-white/20 bg-black/25 px-4 py-2 text-[10px] tracking-[0.16em] text-white/90 uppercase backdrop-blur-md transition-colors hover:border-white/40 hover:bg-black/35 hover:text-white"
-          >
-            <ArrowLeft size={13} />
-            {backLabel}
-          </Link>
-
-          <div className="mt-auto grid gap-8 lg:grid-cols-[1fr_auto] lg:items-end lg:gap-14">
+        <div className="site-container flex flex-1 flex-col justify-end pb-10 pt-28 md:pb-14 md:pt-32">
+          <div className="grid gap-8 lg:grid-cols-[1fr_auto] lg:items-end lg:gap-14">
             <div ref={copyRef} className="max-w-3xl">
               <div className="flex flex-wrap items-center gap-2.5">
                 <p className="text-xs tracking-[0.28em] text-gold-light uppercase">

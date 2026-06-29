@@ -5,7 +5,7 @@ import Link from "next/link";
 import { ArrowUpRight } from "lucide-react";
 import { SectionHeader } from "@/components/ui/SectionHeader";
 import { Reveal3D } from "@/components/ui/Reveal3D";
-import { DestinationCard } from "@/components/ui/DestinationCard";
+import { DestinationListingCard } from "@/components/ui/DestinationListingCard";
 import { MagneticButton } from "@/components/ui/MagneticButton";
 import { HomeSection, HomeSectionActions } from "@/components/home/HomeSection";
 import { useStaggerReveal3D } from "@/hooks/useStaggerReveal3D";
@@ -31,7 +31,7 @@ export function FeaturedDestinations({ destinations }: { destinations: HomeFeatu
       <div ref={gridRef} className="home-grid mt-10 sm:grid-cols-2 lg:mt-12 lg:grid-cols-3 [perspective:1400px]">
         {destinations.map((dest) => (
           <div key={dest.id} data-reveal-item className="[transform-style:preserve-3d]">
-            <DestinationCard
+            <DestinationListingCard
               destinationId={dest.slug}
               name={dest.name}
               location={dest.name}
@@ -42,6 +42,7 @@ export function FeaturedDestinations({ destinations }: { destinations: HomeFeatu
               href={dest.href}
               cta={dest.cta}
               duration={dest.duration}
+              journeyCount={dest.journeyCount}
               tilt
             />
           </div>

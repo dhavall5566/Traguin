@@ -170,16 +170,18 @@ export type InquiryFormValues = {
   email: string;
   phone: string;
   travelers: string;
-  dates: string;
+  startDate: string;
+  endDate: string;
   message: string;
 };
 
-export function validateInquiryForm(form: InquiryFormValues): FieldErrors {
+export function validateInquiryForm(form: InquiryFormValues, minDate: string): FieldErrors {
   return collectErrors({
     name: validateName(form.name),
     email: validateEmail(form.email),
     phone: validatePhone(form.phone, true),
-    dates: validateTravelDates(form.dates),
+    startDate: validateStartDate(form.startDate, minDate),
+    endDate: validateEndDate(form.endDate, form.startDate, minDate),
     travelers: validateTravelers(form.travelers),
     message: validateMessage(form.message),
   });
@@ -187,8 +189,8 @@ export function validateInquiryForm(form: InquiryFormValues): FieldErrors {
 
 export type HotelBookingFormValues = InquiryFormValues;
 
-export function validateHotelBookingForm(form: HotelBookingFormValues): FieldErrors {
-  return validateInquiryForm(form);
+export function validateHotelBookingForm(form: HotelBookingFormValues, minDate: string): FieldErrors {
+  return validateInquiryForm(form, minDate);
 }
 
 export type HotelReviewFormValues = {

@@ -1,4 +1,10 @@
-import { destinationGalleries } from "@/data/destination-galleries";
+import {
+  destinationGalleries,
+  getDestinationPrimaryImage,
+  resolveDestinationHeroImage,
+} from "@/data/destination-galleries";
+
+export { getDestinationPrimaryImage, resolveDestinationHeroImage };
 
 const GALLERY_SIZE = 5;
 

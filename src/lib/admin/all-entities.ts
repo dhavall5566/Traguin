@@ -185,7 +185,7 @@ export const ALL_ADMIN_ENTITIES: Record<string, AdminEntityDef> = {
   media: {
     key: "media", label: "Media Asset", pluralLabel: "Media Assets", group: "catalog", endpoint: "/media", nameField: "slug",
     fields: [
-      { name: "url", label: "URL", type: "text", required: true, showInList: true, helpText: "External image URL (no file upload)." },
+      { name: "url", label: "URL", type: "text", required: true, showInList: true, helpText: "External image URL, or upload via the Media picker on related forms." },
       { name: "slug", label: "Slug", type: "slug", showInList: true },
       { name: "alt_text", label: "Alt text", type: "text", showInList: true },
       { name: "mime_type", label: "MIME type", type: "text" },
@@ -198,12 +198,33 @@ export const ALL_ADMIN_ENTITIES: Record<string, AdminEntityDef> = {
   },
   "client-stories": {
     key: "client-stories", label: "Client Story", pluralLabel: "Client Stories", group: "content", endpoint: "/client-stories", nameField: "client_name",
+    formFields: [
+      "client_name",
+      "destination_id",
+      "quote",
+      "portrait_media_id",
+      "show_on_home",
+      "show_in_gallery",
+      "is_featured_in_gallery",
+      "home_sort_order",
+      "gallery_sort_order",
+      "is_published",
+    ],
+    writableFields: [
+      "client_name",
+      "destination_id",
+      "quote",
+      "portrait_media_id",
+      "show_on_home",
+      "show_in_gallery",
+      "is_featured_in_gallery",
+      "home_sort_order",
+      "gallery_sort_order",
+      "is_published",
+    ],
     fields: [
       { name: "client_name", label: "Client name", type: "text", required: true, showInList: true },
-      { name: "slug", label: "Slug", type: "slug", showInList: true },
       { name: "destination_id", label: "Destination", type: "relation", relation: D },
-      { name: "destination_label", label: "Destination label", type: "text", showInList: true },
-      { name: "trip_type", label: "Trip type", type: "text", showInList: true },
       {
         name: "quote",
         label: "Review",
@@ -215,9 +236,7 @@ export const ALL_ADMIN_ENTITIES: Record<string, AdminEntityDef> = {
           return text.length > 72 ? `${text.slice(0, 72)}…` : text;
         },
       },
-      { name: "title", label: "Title", type: "text", helpText: "Used for gallery photo captions." },
-      { name: "caption", label: "Caption", type: "textarea" },
-      { name: "portrait_media_id", label: "Portrait media", type: "relation", relation: M },
+      { name: "portrait_media_id", label: "Media", type: "relation", relation: M, mediaUploadOnly: true },
       { name: "show_on_home", label: "Show on home", type: "boolean", showInList: true },
       { name: "show_in_gallery", label: "Photo grid", type: "boolean", showInList: true, helpText: "Show portrait in the client stories photo grid (when Active)." },
       { name: "is_featured_in_gallery", label: "Featured in gallery", type: "boolean" },
@@ -243,13 +262,23 @@ export const ALL_ADMIN_ENTITIES: Record<string, AdminEntityDef> = {
   },
   "gallery-items": {
     key: "gallery-items", label: "Gallery Item", pluralLabel: "Gallery Items", group: "content", endpoint: "/gallery-items", nameField: "place",
+    writableFields: ["place", "media_ids", "category_ids", "sort_order", "is_published"],
     fields: [
-      { name: "place", label: "Place", type: "text", required: true, showInList: true },
-      { name: "slug", label: "Slug", type: "slug", required: true, showInList: true },
-      { name: "region_label", label: "Region label", type: "text", required: true, showInList: true },
-      { name: "media_id", label: "Media", type: "relation", required: true, relation: M },
-      { name: "layout", label: "Layout", type: "text", required: true },
-      { name: "label_style", label: "Label style", type: "text", required: true },
+      { name: "place", label: "Name", type: "text", required: true, showInList: true },
+      {
+        name: "media_ids",
+        label: "Media",
+        type: "relation-multi",
+        required: true,
+        relation: M,
+        mediaUploadOnly: true,
+        readFrom: (r) =>
+          Array.isArray(r.media)
+            ? r.media.map((m: { id: string }) => m.id)
+            : r.media_id
+              ? [String(r.media_id)]
+              : [],
+      },
       { name: "category_ids", label: "Categories", type: "relation-multi", relation: { endpoint: "/gallery-categories", valueKey: "id", labelKey: "label" },
         readFrom: (r) => Array.isArray(r.categories) ? r.categories.map((c: {id:string}) => c.id) : [], showInList: true,
         listFormat: (_v, r) => Array.isArray(r.categories) ? r.categories.map((c: {label:string}) => c.label).join(", ") || "—" : "—" },

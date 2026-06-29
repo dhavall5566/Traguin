@@ -17,7 +17,7 @@ export const trustHighlights = [
   { value: "Since 2024", label: "Luxury travel studio" },
   { value: "15+", label: "Curated destinations" },
   { value: "28+", label: "Partner properties" },
-  { value: "48 hrs", label: "First itinerary draft" },
+  { value: "2 hrs", label: "First itinerary draft" },
 ] as const;
 
 export const pageHeroes = {

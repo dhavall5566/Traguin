@@ -69,7 +69,7 @@ export function ItineraryStickyBar({ itinerary, whatsappHref }: ItineraryStickyB
             <div className="min-w-0">
               <p className="truncate font-display text-sm text-foreground sm:text-base">{itinerary.title}</p>
               <div className="mt-0.5 hidden sm:block">
-                <PriceDisplay amount={itinerary.startingPrice} label="From" size="sm" />
+                <PriceDisplay amount={itinerary.startingPrice} label="Onwards" size="sm" />
               </div>
             </div>
             <div className="flex shrink-0 gap-2">

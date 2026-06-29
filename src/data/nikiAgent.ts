@@ -43,7 +43,7 @@ export const nikiQuickReplies: NikiQuickReply[] = [
     id: "plan",
     label: "Plan my journey",
     response:
-      "Share your dates, style, and budget. Our designers draft a bespoke itinerary within 48 hours. Consultation is complimentary.",
+      "Share your dates, style, and budget. Our designers draft a bespoke itinerary within 2 hrs. Consultation is complimentary.",
     href: primaryCta.href,
   },
   {

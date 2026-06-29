@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { ChevronLeft, ChevronRight, Plus, Trash2 } from "lucide-react";
@@ -12,6 +12,9 @@ import {
   invalidateAdminListCache,
   patchCachedAdminListItem,
   peekCachedAdminList,
+  prependCachedAdminListItem,
+  removeCachedAdminListItem,
+  revalidateAdminListInBackground,
   subscribeAdminListCache,
 } from "@/lib/admin/admin-data-cache";
 import {
@@ -29,6 +32,8 @@ import { AdminListToggle } from "@/components/admin/AdminListToggle";
 import { useAdminToast } from "@/components/admin/AdminToast";
 import { DeleteConfirmDialog } from "@/components/admin/DeleteConfirmDialog";
 import { EntityFormView } from "@/components/admin/EntityFormView";
+import { GalleryFolderUploadButton, type FolderUploadStatus } from "@/components/admin/GalleryFolderUploadButton";
+import { GalleryFolderUploadBanner } from "@/components/admin/GalleryFolderUploadBanner";
 
 const PAGE_SIZE = 20;
 
@@ -90,10 +95,11 @@ export function EntityTableView({ entityKey }: EntityTableViewProps) {
   const [search, setSearch] = useState("");
   const [sortBy, setSortBy] = useState<SortMode>("date");
   const [filterValues, setFilterValues] = useState<Record<string, string>>({});
+  const [folderUploadStatus, setFolderUploadStatus] = useState<FolderUploadStatus | null>(null);
   const [relationOptions, setRelationOptions] = useState<
     Record<string, { value: string; label: string }[]>
   >({});
-  const { showToast } = useAdminToast();
+  const { showUpdatedToast, showDeletedToast, showErrorToast } = useAdminToast();
 
   const columns = useMemo(() => (entity ? getListColumns(entity) : []), [entity]);
   const listFilters = useMemo(() => (entity ? getListFilters(entity) : []), [entity]);
@@ -102,6 +108,8 @@ export function EntityTableView({ entityKey }: EntityTableViewProps) {
     [columns],
   );
   const idField = entity?.idField ?? "id";
+  const itemsRef = useRef(items);
+  itemsRef.current = items;
 
   const load = useCallback(async () => {
     if (!entity) return;
@@ -113,25 +121,26 @@ export function EntityTableView({ entityKey }: EntityTableViewProps) {
       setItems(cached.items ?? []);
       setTotal(cached.total ?? 0);
       setInitialLoading(false);
-      setRefreshing(true);
+      setRefreshing(false);
     } else {
-      setInitialLoading((current) => current && items.length === 0);
-      setRefreshing(items.length > 0);
+      setInitialLoading(itemsRef.current.length === 0);
+      setRefreshing(itemsRef.current.length > 0);
     }
 
     setError(null);
     const result = await fetchAdminListCached(entity.endpoint, PAGE_SIZE, offset);
     setInitialLoading(false);
-    setRefreshing(false);
 
     if ("error" in result) {
       if (!cached) setError(result.error);
+      setRefreshing(false);
       return;
     }
 
     setItems(result.items ?? []);
     setTotal(result.total ?? 0);
-  }, [entity, offset, items.length]);
+    setRefreshing(false);
+  }, [entity, offset]);
 
   useEffect(() => {
     if (searchParams.get("create") !== "1") return;
@@ -139,27 +148,37 @@ export function EntityTableView({ entityKey }: EntityTableViewProps) {
     router.replace(`/admin/cms/${entityKey}`, { scroll: false });
   }, [entityKey, router, searchParams]);
 
-  const handleCreated = useCallback(async () => {
-    setCreateOpen(false);
-    if (!entity) return;
+  const handleCreated = useCallback(
+    (record: Record<string, unknown>) => {
+      setCreateOpen(false);
+      if (!entity) return;
 
-    invalidateAdminListCache(entity.endpoint);
-    setOffset(0);
-    setError(null);
-    setRefreshing(true);
+      setOffset(0);
+      setSearch("");
+      setFilterValues({});
+      setError(null);
 
-    const result = await fetchAdminListCached(entity.endpoint, PAGE_SIZE, 0, { force: true });
-    setInitialLoading(false);
-    setRefreshing(false);
+      const idField = entity.idField ?? "id";
+      prependCachedAdminListItem(entity.endpoint, record, idField);
 
-    if ("error" in result) {
-      setError(result.error);
-      return;
-    }
-
-    setItems(result.items ?? []);
-    setTotal(result.total ?? 0);
-  }, [entity]);
+      void (async () => {
+        invalidateAdminListCache(entity.endpoint);
+        const result = await fetchAdminListCached(entity.endpoint, PAGE_SIZE, 0, { force: true });
+        if ("error" in result) {
+          const cacheKey = adminListCacheKey(entity.endpoint, PAGE_SIZE, 0);
+          const cached = peekCachedAdminList(cacheKey);
+          if (cached) {
+            setItems(cached.items);
+            setTotal(cached.total);
+          }
+          return;
+        }
+        setItems(result.items ?? []);
+        setTotal(result.total ?? 0);
+      })();
+    },
+    [entity],
+  );
 
   useEffect(() => {
     void load();
@@ -256,7 +275,9 @@ export function EntityTableView({ entityKey }: EntityTableViewProps) {
   const handleDelete = async () => {
     if (!deleteTarget || !entity) return;
 
-    const deletedId = String(deleteTarget[idField]);
+    const deletedRecord = deleteTarget;
+    const deletedId = String(deletedRecord[idField]);
+    const deletedName = String(deletedRecord[nameField] ?? entity.label);
     const previousItems = items;
     const previousTotal = total;
 
@@ -264,6 +285,8 @@ export function EntityTableView({ entityKey }: EntityTableViewProps) {
     setDeleteTarget(null);
     setItems((current) => current.filter((row) => String(row[idField]) !== deletedId));
     setTotal((current) => Math.max(0, current - 1));
+    removeCachedAdminListItem(entity.endpoint, idField, deletedId);
+    showDeletedToast(`${deletedName} deleted.`);
 
     const { error: apiError } = await adminDelete(entity.endpoint, deletedId);
     setDeleting(false);
@@ -271,12 +294,13 @@ export function EntityTableView({ entityKey }: EntityTableViewProps) {
     if (apiError) {
       setItems(previousItems);
       setTotal(previousTotal);
+      prependCachedAdminListItem(entity.endpoint, deletedRecord, idField);
       setError(apiError.message);
+      showErrorToast(apiError.message);
       return;
     }
 
-    invalidateAdminListCache(entity.endpoint);
-    router.refresh();
+    revalidateAdminListInBackground(entity.endpoint, PAGE_SIZE, offset);
   };
 
   const page = Math.floor(offset / PAGE_SIZE) + 1;
@@ -341,7 +365,7 @@ export function EntityTableView({ entityKey }: EntityTableViewProps) {
     patchCachedAdminListItem(entity.endpoint, idField, recordId, patch);
 
     const toggleLabel = field.listLabel ?? field.label;
-    showToast(
+    showUpdatedToast(
       field.name === "is_published"
         ? nextValue
           ? "Story activated."
@@ -352,7 +376,10 @@ export function EntityTableView({ entityKey }: EntityTableViewProps) {
     );
 
     void adminUpdate(entity.endpoint, recordId, patch).then((result) => {
-      if (!result.error) return;
+      if (!result.error) {
+        revalidateAdminListInBackground(entity.endpoint, PAGE_SIZE, offset);
+        return;
+      }
 
       setItems((current) =>
         current.map((item) =>
@@ -363,7 +390,7 @@ export function EntityTableView({ entityKey }: EntityTableViewProps) {
         [field.name]: previousValue,
       });
       setError(result.error.message);
-      showToast(result.error.message, "error");
+      showErrorToast(result.error.message);
     });
   };
 
@@ -413,6 +440,17 @@ export function EntityTableView({ entityKey }: EntityTableViewProps) {
 
             {showCreate && (
               <div className="admin-list-panel__head-actions">
+                {entityKey === "gallery-items" && (
+                  <GalleryFolderUploadButton
+                    onCreated={handleCreated}
+                    onStatusChange={setFolderUploadStatus}
+                    disabled={
+                      folderUploadStatus !== null
+                      && folderUploadStatus.phase !== "done"
+                      && folderUploadStatus.phase !== "error"
+                    }
+                  />
+                )}
                 <button
                   type="button"
                   className="admin-btn admin-btn--primary admin-btn--add"
@@ -424,6 +462,13 @@ export function EntityTableView({ entityKey }: EntityTableViewProps) {
               </div>
             )}
           </header>
+
+          {folderUploadStatus && (
+            <GalleryFolderUploadBanner
+              status={folderUploadStatus}
+              onDismiss={() => setFolderUploadStatus(null)}
+            />
+          )}
 
           <div className="admin-list-panel__toolbar">
             <AdminListToolbar
@@ -653,7 +698,7 @@ export function EntityTableView({ entityKey }: EntityTableViewProps) {
         onConfirm={() => void handleDelete()}
       />
 
-      {showCreate && (
+      {showCreate && createOpen ? (
         <EntityFormView
           entityKey={entityKey}
           variant="modal"
@@ -661,7 +706,7 @@ export function EntityTableView({ entityKey }: EntityTableViewProps) {
           onClose={() => setCreateOpen(false)}
           onCreated={handleCreated}
         />
-      )}
+      ) : null}
     </div>
   );
 }

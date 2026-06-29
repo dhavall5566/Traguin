@@ -1,4 +1,5 @@
 import type { CSSProperties } from "react";
+import Link from "next/link";
 import { Images, Sparkles } from "lucide-react";
 import { PageHero } from "@/components/layout/PageHero";
 import { PageShell } from "@/components/layout/PageShell";
@@ -56,8 +57,9 @@ export function GalleryPage({
             {clientWall.length > 0 ? (
               <div className="gallery-client-collage" aria-label="Client photo wall">
                 {clientWall.map((client, index) => (
-                  <article
+                  <Link
                     key={client.id}
+                    href="/client-stories"
                     className="gallery-hanging-photo gallery-hanging-photo--collage group"
                     style={
                       {
@@ -65,6 +67,7 @@ export function GalleryPage({
                         "--index": index,
                       } as CSSProperties
                     }
+                    aria-label={`View client stories — ${client.name}, ${client.destination}`}
                   >
                     <span className="gallery-hanging-photo__pin" aria-hidden />
                     <div className="aspect-[4/5] overflow-hidden rounded-[1.05rem] bg-background">
@@ -76,10 +79,9 @@ export function GalleryPage({
                       />
                     </div>
                     <div className="mt-3">
-                      <h3 className="font-body text-sm font-semibold text-foreground">{client.destination}</h3>
-                      <p className="mt-1 text-[0.68rem] text-muted">{client.tripType}</p>
+                      <h3 className="font-body text-sm font-semibold text-foreground">{client.name}</h3>
                     </div>
-                  </article>
+                  </Link>
                 ))}
               </div>
             ) : (

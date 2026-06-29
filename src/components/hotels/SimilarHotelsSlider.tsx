@@ -152,7 +152,7 @@ export function SimilarHotelsSlider({
                 </div>
 
                 <div className="mt-auto flex items-end justify-between gap-3 pt-5">
-                  <PriceDisplay amount={item.price} label="From" size="sm" suffix="/night" />
+                  <PriceDisplay amount={item.price} label="Onwards" size="sm" suffix="/night" />
                   <span
                     className={cn(
                       "inline-flex shrink-0 items-center gap-1 rounded-full border border-glass-border px-3 py-1.5 text-[11px] font-medium tracking-wide text-foreground",

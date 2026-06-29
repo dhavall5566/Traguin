@@ -4,6 +4,8 @@ import { useEffect, useState } from "react";
 import { Send } from "lucide-react";
 import { MagneticButton } from "@/components/ui/MagneticButton";
 import { FormField, fieldInputClass } from "@/components/ui/FormField";
+import { PhoneInput } from "@/components/ui/PhoneInput";
+import { DatePickerInput } from "@/components/ui/DatePickerInput";
 import { FormLegalConsent } from "@/components/forms/FormLegalConsent";
 import {
   clearFieldError,
@@ -13,6 +15,9 @@ import {
   type FieldErrors,
 } from "@/lib/form-validation";
 import { FormSubmissionError, submitFormSubmission } from "@/lib/api/form-submissions";
+import { formatDateRangeForPayload, getLocalDateIso } from "@/lib/date-input";
+import { defaultCountryCode } from "@/data/country-codes";
+import { formatFullPhone } from "@/lib/phone-input";
 import { cn } from "@/lib/utils";
 import type { Hotel } from "@/types";
 import { getHotelDestinationLabel } from "@/lib/hotels";
@@ -29,19 +34,26 @@ type HotelBookingFormProps = {
 };
 
 export function HotelBookingForm({ hotel }: HotelBookingFormProps) {
+  const [minDate, setMinDate] = useState("");
   const [form, setForm] = useState({
     name: "",
     email: "",
     phone: "",
     travelers: "2",
-    dates: "",
+    startDate: "",
+    endDate: "",
     message: bookingMessageForHotel(hotel),
   });
   const [legalConsent, setLegalConsent] = useState(false);
+  const [phoneCountryCode, setPhoneCountryCode] = useState(defaultCountryCode);
   const [errors, setErrors] = useState<FieldErrors>({});
   const [submitted, setSubmitted] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
+
+  useEffect(() => {
+    setMinDate(getLocalDateIso());
+  }, []);
 
   useEffect(() => {
     setForm({
@@ -49,7 +61,8 @@ export function HotelBookingForm({ hotel }: HotelBookingFormProps) {
       email: "",
       phone: "",
       travelers: "2",
-      dates: "",
+      startDate: "",
+      endDate: "",
       message: bookingMessageForHotel(hotel),
     });
     setErrors({});
@@ -64,25 +77,26 @@ export function HotelBookingForm({ hotel }: HotelBookingFormProps) {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const nextErrors = withLegalConsent(validateHotelBookingForm(form), legalConsent);
+    const nextErrors = withLegalConsent(validateHotelBookingForm(form, minDate), legalConsent);
     setErrors(nextErrors);
     if (hasErrors(nextErrors)) return;
 
     setSubmitting(true);
     setSubmitError(null);
+    const fullPhone = formatFullPhone(phoneCountryCode, form.phone);
     try {
       await submitFormSubmission({
         form_type: "hotel_booking",
         name: form.name.trim(),
         email: form.email.trim().toLowerCase(),
-        phone: form.phone.trim(),
+        phone: fullPhone,
         related_hotel_id: hotel.id,
         payload: {
           name: form.name.trim(),
           email: form.email.trim().toLowerCase(),
-          phone: form.phone.trim(),
+          phone: fullPhone,
           travelers: Number(form.travelers),
-          dates: form.dates.trim(),
+          dates: formatDateRangeForPayload(form.startDate, form.endDate),
           message: form.message.trim(),
           hotel_id: hotel.id,
           hotel_name: hotel.name,
@@ -163,14 +177,13 @@ export function HotelBookingForm({ hotel }: HotelBookingFormProps) {
           </div>
           <div className="grid gap-4 sm:grid-cols-2">
             <FormField label="Phone" htmlFor="hotel-booking-phone" error={errors.phone}>
-              <input
+              <PhoneInput
                 id="hotel-booking-phone"
-                type="tel"
-                autoComplete="tel"
+                countryCode={phoneCountryCode}
+                onCountryCodeChange={setPhoneCountryCode}
                 value={form.phone}
-                onChange={(e) => update("phone", e.target.value)}
-                className={fieldInputClass("phone", errors)}
-                aria-invalid={!!errors.phone}
+                onChange={(value) => update("phone", value)}
+                invalid={!!errors.phone}
               />
             </FormField>
             <FormField label="Guests" htmlFor="hotel-booking-travelers" error={errors.travelers}>
@@ -186,15 +199,48 @@ export function HotelBookingForm({ hotel }: HotelBookingFormProps) {
               />
             </FormField>
           </div>
-          <FormField label="Check-in / Stay Dates" htmlFor="hotel-booking-dates" error={errors.dates}>
-            <input
-              id="hotel-booking-dates"
-              value={form.dates}
-              onChange={(e) => update("dates", e.target.value)}
-              className={fieldInputClass("dates", errors)}
-              aria-invalid={!!errors.dates}
-            />
-          </FormField>
+          <div className="grid gap-4 sm:grid-cols-2">
+            <FormField label="Check-in Date" htmlFor="hotel-booking-start-date" error={errors.startDate}>
+              <DatePickerInput
+                id="hotel-booking-start-date"
+                min={minDate || undefined}
+                value={form.startDate}
+                suppressHydrationWarning
+                onChange={(e) => {
+                  const startDate = e.target.value;
+                  setForm((prev) => ({
+                    ...prev,
+                    startDate,
+                    endDate:
+                      prev.endDate && startDate && prev.endDate < startDate
+                        ? startDate
+                        : prev.endDate,
+                  }));
+                  clearFieldError(setErrors, "startDate");
+                  if (form.endDate && startDate && form.endDate < startDate) {
+                    clearFieldError(setErrors, "endDate");
+                  }
+                }}
+                inputClassName={fieldInputClass("startDate", errors)}
+                aria-invalid={!!errors.startDate}
+              />
+            </FormField>
+            <FormField label="Check-out Date" htmlFor="hotel-booking-end-date" error={errors.endDate}>
+              <DatePickerInput
+                id="hotel-booking-end-date"
+                min={form.startDate || minDate || undefined}
+                value={form.endDate}
+                suppressHydrationWarning
+                disabled={!form.startDate || !minDate}
+                onChange={(e) => update("endDate", e.target.value)}
+                inputClassName={cn(
+                  fieldInputClass("endDate", errors),
+                  !form.startDate && "cursor-not-allowed opacity-50"
+                )}
+                aria-invalid={!!errors.endDate}
+              />
+            </FormField>
+          </div>
           <FormField label="Message" htmlFor="hotel-booking-message" error={errors.message}>
             <textarea
               id="hotel-booking-message"

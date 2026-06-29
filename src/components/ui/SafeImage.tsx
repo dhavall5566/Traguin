@@ -16,6 +16,8 @@ export function SafeImage({
   fallbackSrc = FALLBACK_IMAGE,
   className,
   onError,
+  loading = "lazy",
+  decoding = "async",
   ...props
 }: SafeImageProps) {
   const [currentSrc, setCurrentSrc] = useState(src);
@@ -31,6 +33,8 @@ export function SafeImage({
       {...props}
       src={hasError ? fallbackSrc : currentSrc}
       alt={alt}
+      loading={loading}
+      decoding={decoding}
       className={cn("block max-w-full", className)}
       onError={(e) => {
         if (!hasError) {

@@ -1,8 +1,8 @@
 import { parseAdminPaginatedList } from "@/lib/admin/list-response";
 
-const LIST_CACHE_TTL_MS = 60_000;
-const RECORD_CACHE_TTL_MS = 60_000;
-const RELATION_CACHE_TTL_MS = 120_000;
+const LIST_CACHE_TTL_MS = 120_000;
+const RECORD_CACHE_TTL_MS = 120_000;
+const RELATION_CACHE_TTL_MS = 300_000;
 
 type ListCacheEntry = {
   items: Record<string, unknown>[];
@@ -119,6 +119,96 @@ export function patchCachedAdminListItem(
   if (record) {
     setCachedAdminRecord(recordKey, { ...record, ...patch });
   }
+}
+
+export function prependCachedAdminListItem(
+  endpoint: string,
+  item: Record<string, unknown>,
+  idField = "id",
+) {
+  const itemId = String(item[idField] ?? "");
+  let touched = false;
+
+  for (const [key, entry] of listCache.entries()) {
+    if (!key.startsWith(`${endpoint}:`)) continue;
+
+    const parts = key.split(":");
+    const offset = Number(parts[parts.length - 1] ?? 0);
+    if (offset !== 0) continue;
+
+    const limit = Number(parts[parts.length - 2] ?? entry.items.length);
+    const withoutDup = entry.items.filter((row) => String(row[idField] ?? "") !== itemId);
+    const items = [item, ...withoutDup].slice(0, limit > 0 ? limit : withoutDup.length + 1);
+    const total = entry.items.some((row) => String(row[idField] ?? "") === itemId)
+      ? entry.total
+      : entry.total + 1;
+    setCachedAdminList(key, items, total);
+    touched = true;
+  }
+
+  if (!touched) {
+    setCachedAdminList(`${endpoint}:20:0`, [item], 1);
+  }
+
+  if (itemId) {
+    setCachedAdminRecord(adminRecordCacheKey(endpoint, itemId), item);
+  }
+}
+
+export function upsertCachedAdminListItem(
+  endpoint: string,
+  idField: string,
+  record: Record<string, unknown>,
+) {
+  const recordId = String(record[idField] ?? "");
+  if (!recordId) return;
+
+  let found = false;
+  for (const entry of listCache.values()) {
+    if (entry.items.some((item) => String(item[idField] ?? "") === recordId)) {
+      found = true;
+      break;
+    }
+  }
+
+  if (found) {
+    patchCachedAdminListItem(endpoint, idField, recordId, record);
+  } else {
+    prependCachedAdminListItem(endpoint, record, idField);
+  }
+
+  setCachedAdminRecord(adminRecordCacheKey(endpoint, recordId), record);
+}
+
+export function removeCachedAdminListItem(
+  endpoint: string,
+  idField: string,
+  recordId: string,
+) {
+  let removed = false;
+
+  for (const [key, entry] of listCache.entries()) {
+    if (!key.startsWith(`${endpoint}:`)) continue;
+
+    const items = entry.items.filter((item) => String(item[idField] ?? "") !== recordId);
+    if (items.length === entry.items.length) continue;
+
+    removed = true;
+    setCachedAdminList(key, items, Math.max(0, entry.total - 1));
+  }
+
+  recordCache.delete(adminRecordCacheKey(endpoint, recordId));
+
+  return removed;
+}
+
+export function revalidateAdminListInBackground(
+  endpoint: string,
+  limit: number,
+  offset: number,
+) {
+  const key = adminListCacheKey(endpoint, limit, offset);
+  void refreshAdminListInBackground(endpoint, limit, offset, key);
 }
 
 export function getCachedAdminRecord(key: string): Record<string, unknown> | null {

@@ -15,8 +15,7 @@ export default async function Page() {
     <Suspense fallback={<div className="min-h-screen pt-24" aria-hidden />}>
       <DestinationsPage
         destinations={data.destinations}
-        categories={data.categories}
-        internationalCollectionFilters={data.internationalCollectionFilters}
+        internationalCountryFilters={data.internationalCountryFilters}
         itineraryByDestinationSlug={Object.fromEntries(data.itineraryByDestinationSlug)}
       />
     </Suspense>

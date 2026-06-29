@@ -152,7 +152,7 @@ export function DestinationHotelsSlider({
 
                 <div className="mt-auto flex items-end justify-between gap-3 pt-5">
                   {item.price != null ? (
-                    <PriceDisplay amount={item.price} label="From" size="sm" suffix="/night" />
+                    <PriceDisplay amount={item.price} label="Onwards" size="sm" suffix="/night" />
                   ) : (
                     <span className="text-xs tracking-wide text-muted uppercase">View property</span>
                   )}

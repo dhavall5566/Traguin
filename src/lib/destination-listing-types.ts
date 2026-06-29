@@ -17,9 +17,13 @@ export type DestinationListing = {
   categoryTitle: string;
   categories: DestinationCategoryRef[];
   region: "domestic" | "international";
+  /** ISO-style country name from CMS (e.g. India, Indonesia). */
+  country?: string;
   indiaRegion?: IndiaRegion;
   moods: TravelMood[];
   hasItinerary: boolean;
+  /** Published itinerary count for this destination (0 if none). */
+  journeyCount: number;
 };
 
 /** Card-level itinerary fields for the destinations listing (not full detail). */

@@ -47,14 +47,16 @@ export async function adminFetch<T>(
   init?: RequestInit
 ): Promise<{ data: T | null; error: AdminApiError | null }> {
   const url = `/api/admin${path.startsWith("/") ? path : `/${path}`}`;
+  const headers = new Headers(init?.headers);
+  headers.set("Accept", "application/json");
+  if (!headers.has("Content-Type") && init?.body && !(init.body instanceof FormData)) {
+    headers.set("Content-Type", "application/json");
+  }
+
   const response = await fetch(url, {
     ...init,
     credentials: "include",
-    headers: {
-      Accept: "application/json",
-      "Content-Type": "application/json",
-      ...init?.headers,
-    },
+    headers,
   });
 
   if (response.status === 401 && typeof window !== "undefined") {
@@ -96,6 +98,26 @@ export async function adminCreate<T>(
   payload: Record<string, unknown>
 ): Promise<{ data: T | null; error: AdminApiError | null }> {
   return adminFetch<T>(endpoint, { method: "POST", body: JSON.stringify(payload) });
+}
+
+export type AdminMediaAsset = {
+  id: string;
+  slug: string | null;
+  url: string;
+  alt_text: string | null;
+  mime_type: string | null;
+  source: string;
+  usage: string | null;
+};
+
+export async function adminUploadMedia(
+  file: File,
+  altText?: string
+): Promise<{ data: AdminMediaAsset | null; error: AdminApiError | null }> {
+  const form = new FormData();
+  form.append("file", file);
+  if (altText?.trim()) form.append("alt_text", altText.trim());
+  return adminFetch<AdminMediaAsset>("/media/upload", { method: "POST", body: form });
 }
 
 export async function adminUpdate<T>(

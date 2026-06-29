@@ -5,6 +5,7 @@ export type AdminFieldType =
   | "textarea"
   | "slug"
   | "number"
+  | "date"
   | "boolean"
   | "select"
   | "tags"
@@ -49,6 +50,8 @@ export type AdminFieldDef = {
   readOnly?: boolean;
   placeholder?: string;
   helpText?: string;
+  /** Media relation: show upload + preview only (no existing-asset dropdown). */
+  mediaUploadOnly?: boolean;
   options?: { value: string; label: string }[];
   relation?: AdminRelationConfig;
   nestedList?: NestedListConfigId;
@@ -76,6 +79,8 @@ export type AdminEntityDef = {
   hideFromNav?: boolean;
   /** When set, only these fields are sent on PATCH (e.g. form-submissions). */
   writableFields?: string[];
+  /** When set, only these fields appear on create/edit forms (list columns unchanged). */
+  formFields?: string[];
   /** Toolbar filters shown beside search on list pages. Omit to auto-derive from fields. */
   listFilters?: AdminListFilterDef[];
   fields: AdminFieldDef[];

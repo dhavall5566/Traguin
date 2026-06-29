@@ -17,7 +17,7 @@ type ChangePasswordFormProps = {
 };
 
 export function ChangePasswordForm({ onSuccess }: ChangePasswordFormProps) {
-  const { showToast } = useAdminToast();
+  const { showUpdatedToast } = useAdminToast();
   const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -66,7 +66,7 @@ export function ChangePasswordForm({ onSuccess }: ChangePasswordFormProps) {
       return;
     }
 
-    showToast(result.data?.message ?? "Password updated successfully.");
+    showUpdatedToast(result.data?.message ?? "Password updated successfully.");
     setCurrentPassword("");
     setNewPassword("");
     setConfirmPassword("");

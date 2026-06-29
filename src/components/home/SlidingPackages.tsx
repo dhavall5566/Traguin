@@ -11,11 +11,12 @@ import { primaryCta } from "@/data/site";
 import { cn } from "@/lib/utils";
 import { useMotionLite } from "@/hooks/useMotionLite";
 
-const AUTO_ADVANCE_MS = 4000;
-const BG_TRANSITION_S = 1.4;
-const CARD_TRANSITION_S = 0.85;
+const AUTO_ADVANCE_MS = 4500;
+const BG_TRANSITION_S = 1.6;
+const CARD_TRANSITION_S = 1.15;
+const CARD_FADE_S = 1.35;
 const CONTENT_STAGGER = 0.07;
-const CARD_VANISH_S = 0.55;
+const CARD_VANISH_S = 1.05;
 const NEXT_CARD_COUNT = 2;
 const CARD_GAP = 26;
 const CARD_WIDTH_MAX = 300;
@@ -40,16 +41,25 @@ function getCardLayout(containerWidth: number) {
 }
 
 const easePremium = [0.33, 1, 0.68, 1] as const;
-const bgTransition = { duration: BG_TRANSITION_S, ease: easePremium };
-const cardTransition = { duration: CARD_TRANSITION_S, ease: easePremium };
+const easeRelax = [0.22, 1, 0.36, 1] as const;
+const easeFade = [0.4, 0, 0.15, 1] as const;
+const bgTransition = { duration: BG_TRANSITION_S, ease: easeRelax };
+const cardTransition = { duration: CARD_TRANSITION_S, ease: easeRelax };
+const cardFadeTransition = { duration: CARD_FADE_S, ease: easeFade };
+const cardMotionTransition = {
+  opacity: cardFadeTransition,
+  scale: cardTransition,
+  x: cardTransition,
+  rotateY: cardTransition,
+};
 
 function packageBlurb(pkg: HomeTravelPackage) {
   return `${pkg.highlights.slice(0, 2).join(". ")}. Crafted for discerning travelers seeking ${pkg.mood[0] ?? "luxury"} experiences.`;
 }
 
 const cardVanishTransition = {
-  duration: CARD_VANISH_S,
-  ease: easePremium,
+  opacity: { duration: CARD_VANISH_S, ease: easeFade },
+  scale: { duration: CARD_VANISH_S, ease: easeRelax },
 } as const;
 
 /** Active + next N cards only, never show previous packages */
@@ -63,11 +73,11 @@ function getForwardSlots(activeIndex: number, packageCount: number) {
 
 function getSlotMotion(slot: number, isActive: boolean, slotStep: number) {
   return {
-    scale: isActive ? 1 : 0.85,
-    opacity: isActive ? 1 : Math.max(0.5, 0.72 - slot * 0.1),
+    scale: isActive ? 1 : 0.92,
+    opacity: isActive ? 1 : Math.max(0.28, 0.58 - slot * 0.14),
     x: slot * slotStep,
-    rotateY: slot === 0 ? 0 : -8 - slot * 2,
-    z: isActive ? 40 : -slot * 20,
+    rotateY: slot === 0 ? 0 : -4 - slot * 1.5,
+    z: isActive ? 40 : -slot * 16,
     zIndex: 30 - slot,
   };
 }
@@ -191,8 +201,8 @@ function ShowcaseContent({ pkg }: { pkg: HomeTravelPackage }) {
       <motion.div
         custom={2}
         variants={item}
-        className="mt-3 flex flex-wrap items-center gap-1.5 lg:mt-2.5"
-        aria-label={`${pkg.rating.toFixed(1)} out of 5 from ${reviewCount} guest reviews`}
+        className="mt-3 flex flex-wrap items-center gap-x-1.5 gap-y-1 lg:mt-2.5"
+        aria-label={`${pkg.rating.toFixed(1)} out of 5 from ${reviewCount} guest reviews, ${pkg.soldLastMonth} plus sold in the last month`}
       >
         {Array.from({ length: stars }).map((_, i) => (
           <Star key={i} size={14} className="fill-gold text-gold" aria-hidden />
@@ -200,6 +210,12 @@ function ShowcaseContent({ pkg }: { pkg: HomeTravelPackage }) {
         <span className="text-sm font-medium text-white">{pkg.rating.toFixed(1)}</span>
         <span className="text-sm text-white/65">
           ({reviewCount} {reviewCount === 1 ? "review" : "reviews"})
+        </span>
+        <span className="text-sm text-white/50" aria-hidden>
+          ·
+        </span>
+        <span className="text-sm text-white/65">
+          {pkg.soldLastMonth}+ Sold in the last month
         </span>
       </motion.div>
 
@@ -239,7 +255,7 @@ function ShowcaseContent({ pkg }: { pkg: HomeTravelPackage }) {
 
       <motion.div custom={6} variants={item} className="mt-4 lg:mt-3">
         <p className="text-[10px] font-bold tracking-[0.22em] text-white/60 uppercase">
-          From
+          Onwards
         </p>
         <p className="mt-0.5 text-xl font-bold tracking-tight text-gold md:text-2xl lg:text-xl xl:text-2xl">
           {formatPrice(pkg.price)}
@@ -286,7 +302,7 @@ function PackageCard({
       onClick={onSelect}
       className={cn(
         "relative block h-full w-full overflow-hidden rounded-2xl text-left [transform:translateZ(0)]",
-        "border transition-[border-color,box-shadow,transform] duration-500 ease-[cubic-bezier(0.33,1,0.68,1)]",
+        "border transition-[border-color,box-shadow,opacity] duration-700 ease-[cubic-bezier(0.22,1,0.36,1)]",
         isActive
           ? "border-gold/50 shadow-[0_16px_40px_-12px_rgba(0,0,0,0.55)]"
           : "border-white/12 shadow-[0_10px_28px_-10px_rgba(0,0,0,0.42)] hover:border-white/25 hover:shadow-[0_14px_34px_-12px_rgba(0,0,0,0.48)]",
@@ -329,8 +345,13 @@ function DesktopCardStage({
   showcasePackages: HomeTravelPackage[];
 }) {
   const containerRef = useRef<HTMLDivElement>(null);
+  const isFirstPaint = useRef(true);
   const [cardLayout, setCardLayout] = useState(() => getCardLayout(808));
   const slots = getForwardSlots(activeIndex, showcasePackages.length);
+
+  useEffect(() => {
+    isFirstPaint.current = false;
+  }, []);
 
   useEffect(() => {
     const el = containerRef.current;
@@ -357,7 +378,7 @@ function DesktopCardStage({
       onMouseLeave={() => onPauseChange(false)}
     >
       <div className="relative mx-auto" style={{ width: trackWidth, height: cardHeight }}>
-        <AnimatePresence initial={false} mode="popLayout">
+        <AnimatePresence initial={false}>
           {slots.map(({ slot, pkgIndex }) => {
             const pkg = showcasePackages[pkgIndex];
             const isActive = slot === 0;
@@ -366,29 +387,38 @@ function DesktopCardStage({
             return (
               <motion.div
                 key={`slot-${slot}-${pkgIndex}`}
-                className="absolute top-0 left-0 overflow-hidden rounded-2xl will-change-transform"
+                className="absolute top-0 left-0 overflow-hidden rounded-2xl will-change-[transform,opacity]"
                 style={{
                   width: cardWidth,
                   height: cardHeight,
                   transformStyle: "preserve-3d",
                   zIndex: motionState.zIndex,
                 }}
-                transition={{
-                  ...cardTransition,
-                  opacity: cardTransition,
-                  x: cardTransition,
-                  scale: cardTransition,
-                }}
+                transition={cardMotionTransition}
                 animate={motionState}
-                initial={slot > 0 ? { opacity: 0, x: motionState.x + 24 } : false}
+                initial={
+                  isFirstPaint.current && isActive
+                    ? false
+                    : slot > 0
+                      ? { opacity: 0, scale: 0.96, x: motionState.x + 12 }
+                      : { opacity: 0, scale: 0.98 }
+                }
                 exit={
                   slot === 0
                     ? {
                         opacity: 0,
-                        scale: 0.9,
+                        scale: 0.97,
+                        x: -18,
                         transition: cardVanishTransition,
                       }
-                    : { opacity: 0, transition: { duration: 0.35 } }
+                    : {
+                        opacity: 0,
+                        scale: 0.95,
+                        transition: {
+                          opacity: { duration: 0.95, ease: easeFade },
+                          scale: { duration: 0.95, ease: easeRelax },
+                        },
+                      }
                 }
               >
                 <PackageCard
@@ -491,10 +521,13 @@ function MobileCardStrip({
             ) : (
               <motion.div
                 animate={{
-                  scale: i === activeIndex ? 1 : 0.92,
-                  opacity: i === activeIndex ? 1 : 0.65,
+                  scale: i === activeIndex ? 1 : 0.94,
+                  opacity: i === activeIndex ? 1 : 0.52,
                 }}
-                transition={cardTransition}
+                transition={{
+                  opacity: cardFadeTransition,
+                  scale: cardTransition,
+                }}
                 className="size-full"
               >
                 <PackageCard

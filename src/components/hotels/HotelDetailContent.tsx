@@ -58,7 +58,7 @@ export function HotelDetailContent({
             )}
           </div>
           <div className="flex shrink-0 flex-wrap items-end gap-6 sm:flex-col sm:items-end">
-            <PriceDisplay amount={hotel.price} label="From" size="lg" suffix="/night" />
+            <PriceDisplay amount={hotel.price} label="Onwards" size="lg" suffix="/night" />
             <div className="flex flex-col items-start gap-1 sm:items-end">
               <div className="flex items-center gap-1" aria-label={`${hotel.stars} star property`}>
                 {[...Array(hotel.stars)].map((_, i) => (

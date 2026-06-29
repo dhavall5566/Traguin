@@ -1,8 +1,8 @@
-import { unstable_noStore as noStore } from "next/cache";
+import { cache } from "react";
 import { images } from "@/lib/images";
 import {
   buildMediaUrlMap,
-  getMediaAssetsFresh,
+  getMediaAssets,
   resolveMediaUrl,
 } from "@/lib/api/cms";
 import { cmsFetchPaginated } from "@/lib/api/client";
@@ -13,8 +13,7 @@ import { mapCmsClientStoryToWallItem } from "@/lib/api/gallery";
 export type ClientStoryReview = {
   id: string;
   name: string;
-  destination: string;
-  tripType: string;
+  destination: string | null;
   quote: string;
   image: string;
 };
@@ -43,22 +42,18 @@ function mapReview(
   return {
     id: story.id,
     name: story.client_name,
-    destination: story.destination_label ?? "Journey",
-    tripType: story.trip_type ?? "Luxury Travel",
+    destination: story.destination_name?.trim() || null,
     quote,
     image: resolveMediaUrl(mediaMap, story.portrait_media_id, images.couple1),
   };
 }
 
-export async function getClientStoriesPageData(): Promise<ClientStoriesPageData> {
-  noStore();
-
+export const getClientStoriesPageData = cache(async function getClientStoriesPageData(): Promise<ClientStoriesPageData> {
   const [stories, mediaAssets] = await Promise.all([
     cmsFetchPaginated<CmsClientStory>("/api/cms/public/client-stories", {
       limit: 100,
-      fresh: true,
     }),
-    getMediaAssetsFresh(),
+    getMediaAssets(),
   ]);
 
   const mediaMap = buildMediaUrlMap(mediaAssets);
@@ -67,17 +62,7 @@ export async function getClientStoriesPageData(): Promise<ClientStoriesPageData>
   let photoIndex = 0;
   const photos = published
     .filter((story) => story.show_in_gallery)
-    .map((story) => {
-      const item = mapCmsClientStoryToWallItem(story, mediaMap, photoIndex++);
-      if (!item) return null;
-      if (!story.trip_type?.trim()) {
-        return {
-          ...item,
-          tripType: story.title?.trim() || story.caption?.trim() || item.tripType,
-        };
-      }
-      return item;
-    })
+    .map((story) => mapCmsClientStoryToWallItem(story, mediaMap, photoIndex++))
     .filter((item): item is GalleryClientWallItem => item != null);
 
   const reviews = published
@@ -85,4 +70,4 @@ export async function getClientStoriesPageData(): Promise<ClientStoriesPageData>
     .filter((item): item is ClientStoryReview => item != null);
 
   return { photos, reviews };
-}
+});

@@ -62,7 +62,7 @@ export function DestinationCard({
       ref={tilt ? tiltRef : undefined}
       href={href}
       className={cn(
-        "destination-card group flex h-full flex-col overflow-hidden rounded-2xl border border-glass-border bg-surface transition-all duration-500",
+        "destination-card group flex h-full flex-col overflow-hidden rounded-xl border border-glass-border bg-surface transition-all duration-500",
         "shadow-[0_8px_28px_-12px_rgba(0,0,0,0.18)] hover:border-gold/30 hover:shadow-[0_16px_40px_-14px_rgba(0,0,0,0.22)]",
         !tilt && "hover:-translate-y-0.5",
         tilt && "[transform-style:preserve-3d] will-change-transform",
@@ -70,7 +70,7 @@ export function DestinationCard({
         className
       )}
     >
-      <div className="relative aspect-[4/3] overflow-hidden">
+      <div className="relative aspect-[16/10] overflow-hidden">
         <HotelImageSlider
           images={galleryImages}
           alt={name}
@@ -80,16 +80,16 @@ export function DestinationCard({
           pauseOnHover
         />
         {duration && (
-          <span className="absolute top-4 left-4 z-20 inline-flex items-center gap-1.5 rounded-full border border-glass-border bg-surface/95 px-3 py-1 text-[10px] font-bold tracking-[0.16em] text-foreground uppercase shadow-sm backdrop-blur-sm">
-            <Clock size={11} className="text-gold" aria-hidden />
+          <span className="absolute top-3 left-3 z-20 inline-flex items-center gap-1 rounded-full border border-glass-border bg-surface/95 px-2.5 py-0.5 text-[9px] font-bold tracking-[0.14em] text-foreground uppercase shadow-sm backdrop-blur-sm">
+            <Clock size={10} className="text-gold" aria-hidden />
             {duration}
           </span>
         )}
       </div>
 
-      <div className="flex flex-1 flex-col p-5 md:p-6">
+      <div className="flex flex-1 flex-col p-4">
         {(location || regionLabel) && (
-          <p className="text-[10px] font-semibold tracking-[0.2em] text-gold uppercase">
+          <p className="text-[9px] font-semibold tracking-[0.18em] text-gold uppercase">
             {location}
             {location && regionLabel && (
               <span className="text-muted"> · {regionLabel}</span>
@@ -98,38 +98,38 @@ export function DestinationCard({
           </p>
         )}
 
-        <h3 className="mt-1.5 font-display text-xl leading-snug text-foreground md:text-[1.35rem]">
+        <h3 className="mt-1 line-clamp-2 font-display text-lg leading-snug text-foreground">
           {name}
         </h3>
 
         {stars > 0 && (
           <div
-            className="mt-2 flex flex-wrap items-center gap-1.5"
+            className="mt-1.5 flex flex-wrap items-center gap-1"
             aria-label={`${displayRating.toFixed(1)} out of 5 from ${displayReviewCount} guest reviews`}
           >
             {Array.from({ length: stars }).map((_, i) => (
-              <Star key={i} size={12} className="fill-gold text-gold" aria-hidden />
+              <Star key={i} size={11} className="fill-gold text-gold" aria-hidden />
             ))}
-            <span className="text-xs font-medium text-foreground">{displayRating.toFixed(1)}</span>
-            <span className="text-xs text-muted">
+            <span className="text-[11px] font-medium text-foreground">{displayRating.toFixed(1)}</span>
+            <span className="text-[11px] text-muted">
               ({displayReviewCount} {displayReviewCount === 1 ? "review" : "reviews"})
             </span>
           </div>
         )}
 
-        <p className="mt-3 line-clamp-2 text-[11px] leading-relaxed text-sand md:text-xs">
+        <p className="mt-2 line-clamp-2 text-[11px] leading-relaxed text-sand">
           {description}
         </p>
 
-        <div className="mt-auto flex items-end justify-between gap-3 pt-5">
+        <div className="mt-auto flex items-end justify-between gap-2 pt-3.5">
           {startingPrice != null ? (
-            <PriceDisplay amount={startingPrice} label="From" size="md" />
+            <PriceDisplay amount={startingPrice} label="Onwards" size="sm" />
           ) : (
             <span />
           )}
           <span
             className={cn(
-              "shrink-0 rounded-full border border-glass-border bg-surface px-4 py-2 text-[10px] font-bold tracking-[0.14em] text-foreground uppercase",
+              "shrink-0 rounded-full border border-glass-border bg-surface px-3 py-1.5 text-[9px] font-bold tracking-[0.12em] text-foreground uppercase",
               "shadow-sm transition-colors group-hover:border-gold/40"
             )}
           >

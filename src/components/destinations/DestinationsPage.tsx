@@ -23,11 +23,17 @@ import {
 import type {
   DestinationItineraryPreview,
   DestinationListing,
-  IndiaRegion,
 } from "@/lib/destination-listing-types";
 import { INDIA_REGION_FILTERS } from "@/lib/destination-listing-types";
-import type { DestinationCategoryGroup } from "@/lib/api/destinations";
-import { DestinationCard } from "@/components/ui/DestinationCard";
+import {
+  buildDestinationDisplaySections,
+  destinationCountryLabel,
+  isIndiaSubregionFilter,
+  matchesDestinationSubregion,
+  totalPackagesInDestinations,
+} from "@/lib/destination-grouping";
+import { DestinationRegionAccordion } from "@/components/destinations/DestinationRegionAccordion";
+import { DestinationListingCard } from "@/components/ui/DestinationListingCard";
 import { MagneticButton } from "@/components/ui/MagneticButton";
 import { FilterDropdown } from "@/components/ui/FilterDropdown";
 import { PageShell } from "@/components/layout/PageShell";
@@ -94,24 +100,25 @@ type SortId = (typeof SORT_OPTIONS)[number]["id"];
 
 type DestinationsPageProps = {
   destinations: DestinationListing[];
-  categories: DestinationCategoryGroup[];
-  internationalCollectionFilters: { id: string; label: string }[];
+  internationalCountryFilters: { id: string; label: string }[];
   itineraryByDestinationSlug: Record<string, DestinationItineraryPreview>;
 };
 
-function buildCollectionOptions(categories: DestinationCategoryGroup[]) {
+function buildInternationalCountryOptions(
+  internationalCountryFilters: { id: string; label: string }[]
+) {
   return [
-    { value: "all", label: "All collections", icon: Globe },
-    ...categories.map((category) => ({
-      value: category.id,
-      label: category.title,
+    { value: "all", label: "All countries", icon: Globe },
+    ...internationalCountryFilters.map((country) => ({
+      value: country.id,
+      label: country.label,
       icon: MapPin,
     })),
   ];
 }
 
-const INDIA_AREA_OPTIONS = [
-  { value: "all", label: "All areas", icon: Globe },
+const INDIA_REGION_OPTIONS = [
+  { value: "all", label: "All regions", icon: Globe },
   ...INDIA_REGION_FILTERS.filter((region) => region.id !== "all").map((region) => ({
     value: region.id,
     label: region.label,
@@ -119,32 +126,23 @@ const INDIA_AREA_OPTIONS = [
   })),
 ];
 
-function getInternationalCollectionOptions(
-  internationalCollectionFilters: { id: string; label: string }[]
-) {
-  return [
-    { value: "all", label: "All collections", icon: Globe },
-    ...internationalCollectionFilters.map((category) => ({
-      value: category.id,
-      label: category.label,
-      icon: MapPin,
-    })),
-  ];
-}
+const ALL_REGIONS_PLACEHOLDER = [
+  { value: "all", label: "Select India or International", icon: Globe },
+];
 
 function getSubRegionLabel(regionFilter: RegionFilterId) {
-  if (regionFilter === "domestic") return "Area";
-  return "Collection";
+  if (regionFilter === "domestic") return "Region";
+  if (regionFilter === "international") return "Country";
+  return "Region / Country";
 }
 
 function getSubRegionOptions(
   regionFilter: RegionFilterId,
-  allCollectionOptions: ReturnType<typeof buildCollectionOptions>,
-  internationalCollectionOptions: ReturnType<typeof getInternationalCollectionOptions>
+  internationalCountryOptions: ReturnType<typeof buildInternationalCountryOptions>
 ) {
-  if (regionFilter === "domestic") return INDIA_AREA_OPTIONS;
-  if (regionFilter === "international") return internationalCollectionOptions;
-  return allCollectionOptions;
+  if (regionFilter === "domestic") return INDIA_REGION_OPTIONS;
+  if (regionFilter === "international") return internationalCountryOptions;
+  return ALL_REGIONS_PLACEHOLDER;
 }
 
 function matchesSubRegionFilter(
@@ -153,29 +151,87 @@ function matchesSubRegionFilter(
   regionFilter: RegionFilterId
 ) {
   if (categoryFilter === "all") return true;
-
-  const isIndiaArea = INDIA_REGION_FILTERS.some((region) => region.id === categoryFilter);
-
-  if (regionFilter === "domestic" || (regionFilter === "all" && isIndiaArea)) {
-    return dest.indiaRegion === categoryFilter;
+  if (regionFilter === "all") {
+    return matchesDestinationSubregion(dest, categoryFilter, regionFilter);
   }
-
-  return dest.categories.some((category) => category.id === categoryFilter);
+  return matchesDestinationSubregion(dest, categoryFilter, regionFilter);
 }
 
 function getSubRegionChipLabel(
   categoryFilter: string,
   regionFilter: RegionFilterId,
-  categories: DestinationCategoryGroup[],
-  internationalCollectionFilters: { id: string; label: string }[]
+  internationalCountryFilters: { id: string; label: string }[]
 ) {
-  if (regionFilter === "domestic") {
+  if (isIndiaSubregionFilter(categoryFilter)) {
+    if (categoryFilter === "other") return "Other Regions";
     return INDIA_REGION_FILTERS.find((region) => region.id === categoryFilter)?.label ?? categoryFilter;
   }
   return (
-    internationalCollectionFilters.find((category) => category.id === categoryFilter)?.label ??
-    categories.find((category) => category.id === categoryFilter)?.title ??
+    internationalCountryFilters.find((country) => country.id === categoryFilter)?.label ??
     categoryFilter
+  );
+}
+
+function listingRegionLabel(dest: DestinationListing): string {
+  if (dest.region === "domestic") {
+    const region = dest.indiaRegion
+      ? INDIA_REGION_FILTERS.find((item) => item.id === dest.indiaRegion)?.label
+      : undefined;
+    return region ? `${region} · India` : "India";
+  }
+  return destinationCountryLabel(dest) ?? "International";
+}
+
+function toGridDestination(dest: DestinationListing) {
+  return {
+    id: dest.id,
+    name: dest.name,
+    location: dest.name,
+    regionLabel: listingRegionLabel(dest),
+    description: dest.description,
+    image: dest.image,
+    startingPrice: dest.startingPrice,
+    hasItinerary: dest.hasItinerary,
+    journeyCount: dest.journeyCount,
+  };
+}
+
+function DestinationGroupedSections({
+  sections,
+  itineraryByDestinationSlug,
+}: {
+  sections: ReturnType<typeof buildDestinationDisplaySections>;
+  itineraryByDestinationSlug: Record<string, DestinationItineraryPreview>;
+}) {
+  return (
+    <div className="mt-16 space-y-24">
+      {sections.map((section) => (
+        <section key={section.id} id={`destinations-${section.id}`} className="scroll-mt-28">
+          <div className="max-w-3xl">
+            <p className="text-xs font-semibold tracking-[0.22em] text-gold uppercase">
+              {section.id === "domestic" ? "Indian packages" : "International packages"}
+            </p>
+            <h2 className="mt-2 font-display text-3xl text-foreground md:text-4xl">{section.title}</h2>
+            <p className="mt-3 text-muted">{section.description}</p>
+          </div>
+
+          <DestinationRegionAccordion
+            sectionId={section.id}
+            items={section.subgroups.map((subgroup) => ({
+              id: subgroup.id,
+              title: subgroup.title,
+              packageCount: totalPackagesInDestinations(subgroup.destinations),
+              content: (
+                <DestinationGrid
+                  destinations={subgroup.destinations.map(toGridDestination)}
+                  itineraryByDestinationSlug={itineraryByDestinationSlug}
+                />
+              ),
+            }))}
+          />
+        </section>
+      ))}
+    </div>
   );
 }
 
@@ -183,39 +239,42 @@ function DestinationGrid({
   destinations,
   itineraryByDestinationSlug,
 }: {
-  destinations: {
-    id: string;
-    name: string;
-    location: string;
-    regionLabel?: string;
-    description: string;
-    image: string;
-    startingPrice: number;
-    duration?: string;
-    hasItinerary: boolean;
-  }[];
+  destinations: ReturnType<typeof toGridDestination>[];
   itineraryByDestinationSlug: Record<string, DestinationItineraryPreview>;
 }) {
   return (
-    <div className="page-content-grid sm:grid-cols-2 lg:grid-cols-3">
+    <div className="destination-grid grid grid-cols-1 gap-5 sm:grid-cols-2 sm:gap-6 lg:grid-cols-3 lg:gap-x-6 lg:gap-y-8">
       {destinations.map((dest) => {
-        const itinerary = itineraryByDestinationSlug[dest.id];
+        const isHub = dest.journeyCount > 1;
+        const itinerary = !isHub ? itineraryByDestinationSlug[dest.id] : undefined;
+
         return (
-          <DestinationCard
+          <DestinationListingCard
             key={dest.id}
             destinationId={dest.id}
             name={dest.name}
             location={itinerary?.destination ?? dest.location}
             regionLabel={dest.regionLabel}
             description={
-              itinerary ? itinerary.highlights.slice(0, 3).join(" ") : dest.description
+              isHub
+                ? dest.description
+                : itinerary
+                  ? itinerary.highlights.slice(0, 3).join(" ")
+                  : dest.description
             }
-            image={itinerary?.heroImage ?? dest.image}
-            startingPrice={itinerary?.startingPrice ?? dest.startingPrice}
+            image={isHub ? dest.image : (itinerary?.heroImage ?? dest.image)}
+            startingPrice={isHub ? dest.startingPrice : (itinerary?.startingPrice ?? dest.startingPrice)}
             href={`/destinations/${dest.id}`}
-            cta={dest.hasItinerary ? "View Itinerary" : "View Destination"}
-            duration={itinerary?.duration}
-            rating={dest.hasItinerary ? 5 : 4}
+            cta={
+              isHub
+                ? "Browse journeys"
+                : dest.hasItinerary
+                  ? "View Itinerary"
+                  : "View Destination"
+            }
+            duration={isHub ? undefined : itinerary?.duration}
+            rating={dest.hasItinerary && !isHub ? 5 : 4}
+            journeyCount={dest.journeyCount}
           />
         );
       })}
@@ -230,8 +289,7 @@ function parseRegionParam(value: string | null): RegionFilterId {
 
 export function DestinationsPage({
   destinations,
-  categories,
-  internationalCollectionFilters,
+  internationalCountryFilters,
   itineraryByDestinationSlug,
 }: DestinationsPageProps) {
   const searchParams = useSearchParams();
@@ -257,15 +315,14 @@ export function DestinationsPage({
     });
   }, []);
 
-  const allCollectionOptions = useMemo(() => buildCollectionOptions(categories), [categories]);
-  const internationalCollectionOptions = useMemo(
-    () => getInternationalCollectionOptions(internationalCollectionFilters),
-    [internationalCollectionFilters]
+  const internationalCountryOptions = useMemo(
+    () => buildInternationalCountryOptions(internationalCountryFilters),
+    [internationalCountryFilters]
   );
 
   const subRegionOptions = useMemo(
-    () => getSubRegionOptions(regionFilter, allCollectionOptions, internationalCollectionOptions),
-    [allCollectionOptions, internationalCollectionOptions, regionFilter]
+    () => getSubRegionOptions(regionFilter, internationalCountryOptions),
+    [internationalCountryOptions, regionFilter]
   );
 
   const subRegionLabel = getSubRegionLabel(regionFilter);
@@ -274,6 +331,13 @@ export function DestinationsPage({
     setRegionFilter(value);
     setCategoryFilter("all");
   };
+
+  const prefersGroupedLayout =
+    !searchQuery.trim() &&
+    moodFilter === "all" &&
+    priceFilter === "all" &&
+    itineraryFilter === "all" &&
+    sortBy === "recommended";
 
   const hasActiveFilters =
     searchQuery.trim().length > 0 ||
@@ -292,7 +356,8 @@ export function DestinationsPage({
         const indiaArea =
           dest.indiaRegion &&
           INDIA_REGION_FILTERS.find((region) => region.id === dest.indiaRegion)?.label;
-        const haystack = `${dest.name} ${dest.description} ${dest.categoryTitle} ${indiaArea ?? ""} ${dest.categories
+        const country = destinationCountryLabel(dest);
+        const haystack = `${dest.name} ${dest.description} ${dest.categoryTitle} ${indiaArea ?? ""} ${country ?? ""} ${dest.categories
           .map((c) => c.title)
           .join(" ")}`.toLowerCase();
         if (!haystack.includes(query)) return false;
@@ -341,12 +406,7 @@ export function DestinationsPage({
     if (categoryFilter !== "all") {
       chips.push({
         key: "category",
-        label: getSubRegionChipLabel(
-          categoryFilter,
-          regionFilter,
-          categories,
-          internationalCollectionFilters
-        ),
+        label: getSubRegionChipLabel(categoryFilter, regionFilter, internationalCountryFilters),
         clear: () => setCategoryFilter("all"),
       });
     }
@@ -380,9 +440,8 @@ export function DestinationsPage({
     }
     return chips;
   }, [
-    categories,
     categoryFilter,
-    internationalCollectionFilters,
+    internationalCountryFilters,
     itineraryFilter,
     moodFilter,
     priceFilter,
@@ -400,10 +459,13 @@ export function DestinationsPage({
     setSortBy("recommended");
   };
 
-  const filteredByCategory = useMemo(() => {
-    if (hasActiveFilters) return [];
-    return categories.filter((category) => category.destinations.length > 0);
-  }, [categories, hasActiveFilters]);
+  const displaySections = useMemo(() => {
+    if (!prefersGroupedLayout || filteredDestinations.length === 0) return [];
+    return buildDestinationDisplaySections(filteredDestinations, {
+      region: regionFilter,
+      subregionId: categoryFilter !== "all" ? categoryFilter : undefined,
+    });
+  }, [categoryFilter, filteredDestinations, prefersGroupedLayout, regionFilter]);
 
   const heroContent = useMemo(
     () => getDestinationsHeroContent(regionFilter),
@@ -558,7 +620,7 @@ export function DestinationsPage({
             <div className="mt-12 rounded-3xl border border-glass-border bg-surface/60 px-6 py-16 text-center">
               <p className="font-display text-xl text-foreground">No destinations match your filters</p>
               <p className="mt-2 text-sm text-muted">
-                Try a different collection, region, or travel style.
+                Try a different region, country, or travel style.
               </p>
               {hasActiveFilters && (
                 <MagneticButton variant="secondary" className="mt-6" onClick={clearFilters}>
@@ -566,45 +628,17 @@ export function DestinationsPage({
                 </MagneticButton>
               )}
             </div>
-          ) : hasActiveFilters || filteredByCategory.length === 0 ? (
+          ) : prefersGroupedLayout && displaySections.length > 0 ? (
+            <DestinationGroupedSections
+              sections={displaySections}
+              itineraryByDestinationSlug={itineraryByDestinationSlug}
+            />
+          ) : (
             <div className="mt-12">
               <DestinationGrid
-                destinations={filteredDestinations.map((dest) => ({
-                  id: dest.id,
-                  name: dest.name,
-                  location: dest.name,
-                  regionLabel: dest.region === "domestic" ? "India" : "International",
-                  description: dest.description,
-                  image: dest.image,
-                  startingPrice: dest.startingPrice,
-                  hasItinerary: dest.hasItinerary,
-                }))}
+                destinations={filteredDestinations.map(toGridDestination)}
                 itineraryByDestinationSlug={itineraryByDestinationSlug}
               />
-            </div>
-          ) : (
-            <div className="mt-16 space-y-20">
-              {filteredByCategory.map((category) => (
-                <section key={category.id} id={category.id} className="scroll-mt-28">
-                  <h2 className="font-display text-3xl text-foreground md:text-4xl">{category.title}</h2>
-                  <p className="mt-2 max-w-2xl text-muted">{category.description}</p>
-                  <div className="mt-8">
-                    <DestinationGrid
-                      destinations={category.destinations.map((dest) => ({
-                        id: dest.id,
-                        name: dest.name,
-                        location: dest.name,
-                        regionLabel: dest.region === "domestic" ? "India" : "International",
-                        description: dest.description,
-                        image: dest.image,
-                        startingPrice: dest.startingPrice,
-                        hasItinerary: dest.hasItinerary,
-                      }))}
-                      itineraryByDestinationSlug={itineraryByDestinationSlug}
-                    />
-                  </div>
-                </section>
-              ))}
             </div>
           )}
         <PageCTA />

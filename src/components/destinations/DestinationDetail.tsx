@@ -51,16 +51,18 @@ export function DestinationDetail({ destination, hotelsCatalog }: DestinationDet
         <div className="destination-hero__scrim pointer-events-none absolute inset-0 z-[1]" aria-hidden />
         <div className="destination-hero__fade pointer-events-none absolute inset-x-0 bottom-0 z-[1] h-20" aria-hidden />
 
+        <div className="destination-hero__back-bar page-x-padding pointer-events-none absolute inset-x-0 top-0 z-20 pt-28 md:pt-32">
+          <div className="site-container">
+            <Link href="/destinations" className="destination-hero__back pointer-events-auto">
+              <ArrowLeft size={14} aria-hidden />
+              All Destinations
+            </Link>
+          </div>
+        </div>
+
         <div className="page-x-padding pointer-events-none absolute inset-0 z-10">
           <div className="site-container destination-hero__copy flex h-full flex-col justify-end pb-10 pt-28 md:pb-14 md:pt-32">
             <div className="pointer-events-auto">
-              <Link
-                href="/destinations"
-                className="destination-hero__back mb-6 inline-flex w-fit items-center gap-2 text-xs tracking-wide text-white/90 transition-colors"
-              >
-                <ArrowLeft size={14} />
-                All Destinations
-              </Link>
               <p className="text-xs tracking-[0.3em] text-gold uppercase">{destination.categoryTitle}</p>
               <h1 className="mt-2 font-display text-4xl text-white md:text-6xl">
                 {destination.name}
@@ -69,7 +71,7 @@ export function DestinationDetail({ destination, hotelsCatalog }: DestinationDet
               <div className="mt-6">
                 <PriceDisplay
                   amount={destination.startingPrice}
-                  label="From"
+                  label="Onwards"
                   size="lg"
                   variant="overlay"
                 />

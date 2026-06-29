@@ -1,8 +1,9 @@
 import { cache } from "react";
-import { images } from "@/lib/images";
 import type { DestinationListing, DestinationItineraryPreview, IndiaRegion, DestinationCategoryRef } from "@/lib/destination-listing-types";
+import { buildInternationalCountryFilters } from "@/lib/destination-grouping";
+import { resolveDestinationHeroImage } from "@/lib/destination-images";
 import type { Itinerary } from "@/types/itinerary";
-import type { TravelMood } from "@/types";
+import { normalizeTravelMoods } from "@/lib/travel-moods";
 import {
   buildMediaUrlMap,
   getDestinationBySlug,
@@ -16,8 +17,9 @@ import {
 } from "./cms";
 import { loadCmsDetailContext } from "./detail-context";
 import {
-  buildItineraryByDestinationIdMap,
   buildItineraryLookupByDestinationSlug,
+  buildMinStartingPriceByDestinationId,
+  buildPublishedItineraryCountsByDestinationId,
   mapCmsItineraryToItinerary,
 } from "./itineraries";
 import { buildHotelsByUuidMap } from "./hotels";
@@ -34,7 +36,7 @@ export type DestinationCategoryGroup = {
 export type DestinationsPageData = {
   destinations: DestinationListing[];
   categories: DestinationCategoryGroup[];
-  internationalCollectionFilters: { id: string; label: string }[];
+  internationalCountryFilters: { id: string; label: string }[];
   itineraryByDestinationSlug: Map<string, DestinationItineraryPreview>;
 };
 
@@ -120,6 +122,7 @@ export function buildDestinationCategoriesFromListings(
   return Array.from(categoryMap.values()).sort((a, b) => a.title.localeCompare(b.title));
 }
 
+/** Legacy CMS collection filters — prefer country filters for international destinations. */
 export function buildInternationalCollectionFilters(
   categories: DestinationCategoryGroup[]
 ): { id: string; label: string }[] {
@@ -131,12 +134,19 @@ export function buildInternationalCollectionFilters(
 export function mapCmsDestinationToListing(
   dest: CmsDestination,
   mediaMap: Map<string, string>,
-  hasItinerary: boolean
+  hasItinerary: boolean,
+  journeyCount = hasItinerary ? 1 : 0
 ): DestinationListing {
-  const image =
+  const cmsImage =
     resolveMediaUrl(mediaMap, dest.hero_media_id, "") ||
     dest.gallery_media[0]?.url ||
-    images.bali;
+    "";
+
+  const image = resolveDestinationHeroImage(dest.slug, {
+    cmsImage,
+    indiaRegion: (dest.india_region as IndiaRegion | null) ?? undefined,
+    region: dest.region,
+  });
 
   const categories = categoriesForListing(dest);
 
@@ -152,9 +162,11 @@ export function mapCmsDestinationToListing(
     categoryTitle: primaryCategory?.title ?? "Destinations",
     categories,
     region: dest.region,
+    country: dest.country?.trim() || (dest.region === "domestic" ? "India" : undefined),
     indiaRegion: (dest.india_region as IndiaRegion | null) ?? undefined,
-    moods: (dest.moods.length ? dest.moods : []) as TravelMood[],
+    moods: normalizeTravelMoods(dest.moods),
     hasItinerary,
+    journeyCount,
   };
 }
 
@@ -169,16 +181,28 @@ export async function getDestinationsPageData(): Promise<DestinationsPageData> {
 
   const mediaMap = buildMediaUrlMap(mediaAssets);
   const hotelsByUuid = buildHotelsByUuidMap(cmsHotels, cmsDestinations, mediaMap);
-  const itineraryByDestinationId = buildItineraryByDestinationIdMap(cmsItineraries);
+  const itineraryCounts = buildPublishedItineraryCountsByDestinationId(cmsItineraries);
+  const minItineraryPrices = buildMinStartingPriceByDestinationId(cmsItineraries);
 
   const destinations = cmsDestinations
     .filter((dest) => dest.is_published)
-    .map((dest) =>
-      mapCmsDestinationToListing(dest, mediaMap, itineraryByDestinationId.has(dest.id))
-    );
+    .map((dest) => {
+      const journeyCount = itineraryCounts.get(dest.id) ?? 0;
+      const listing = mapCmsDestinationToListing(
+        dest,
+        mediaMap,
+        journeyCount > 0,
+        journeyCount
+      );
+      if (journeyCount > 1) {
+        const minPrice = minItineraryPrices.get(dest.id);
+        if (minPrice != null) listing.startingPrice = minPrice;
+      }
+      return listing;
+    });
 
   const categories = buildDestinationCategoriesFromListings(destinations);
-  const internationalCollectionFilters = buildInternationalCollectionFilters(categories);
+  const internationalCountryFilters = buildInternationalCountryFilters(destinations);
   const itineraryByDestinationSlug = await buildItineraryLookupByDestinationSlug(
     cmsDestinations,
     cmsItineraries,
@@ -195,7 +219,7 @@ export async function getDestinationsPageData(): Promise<DestinationsPageData> {
   return {
     destinations,
     categories,
-    internationalCollectionFilters,
+    internationalCountryFilters,
     itineraryByDestinationSlug: itineraryPreviews,
   };
 }
@@ -237,6 +261,7 @@ export const getDestinationDetailData = cache(async (
       destination,
       context.mediaMap,
       journeys.length > 0,
+      journeys.length,
     ),
     itinerary,
     journeys,

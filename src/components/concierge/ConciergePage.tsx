@@ -5,6 +5,7 @@ import { Clock, Crown, Headphones, MessageCircle, Phone } from "lucide-react";
 import { SafeImage } from "@/components/ui/SafeImage";
 import { MagneticButton } from "@/components/ui/MagneticButton";
 import { FormField, fieldInputClass } from "@/components/ui/FormField";
+import { PhoneInput } from "@/components/ui/PhoneInput";
 import { FormLegalConsent } from "@/components/forms/FormLegalConsent";
 import {
   clearFieldError,
@@ -15,6 +16,8 @@ import {
 } from "@/lib/form-validation";
 import { FormSubmissionError, submitFormSubmission } from "@/lib/api/form-submissions";
 import { contactInfo } from "@/data/contact";
+import { defaultCountryCode } from "@/data/country-codes";
+import { formatFullPhone } from "@/lib/phone-input";
 import { cn } from "@/lib/utils";
 import { iconFromKey } from "@/lib/icons";
 import { PageShell } from "@/components/layout/PageShell";
@@ -207,6 +210,7 @@ export function ConciergePage({ data }: ConciergePageProps) {
     message: "",
   });
   const [legalConsent, setLegalConsent] = useState(false);
+  const [phoneCountryCode, setPhoneCountryCode] = useState(defaultCountryCode);
   const [errors, setErrors] = useState<FieldErrors>({});
   const [submitted, setSubmitted] = useState(false);
   const [submitting, setSubmitting] = useState(false);
@@ -248,16 +252,17 @@ export function ConciergePage({ data }: ConciergePageProps) {
 
     setSubmitting(true);
     setSubmitError(null);
+    const fullPhone = formatFullPhone(phoneCountryCode, form.phone);
     try {
       await submitFormSubmission({
         form_type: "travel_expert_consultation",
         name: form.name.trim(),
         email: form.email.trim().toLowerCase(),
-        phone: form.phone.trim(),
+        phone: fullPhone,
         payload: {
           name: form.name.trim(),
           email: form.email.trim().toLowerCase(),
-          phone: form.phone.trim(),
+          phone: fullPhone,
           service: form.service,
           message: form.message.trim(),
         },
@@ -405,14 +410,13 @@ export function ConciergePage({ data }: ConciergePageProps) {
                             />
                           </FormField>
                           <FormField label="Phone" htmlFor="concierge-phone" error={errors.phone}>
-                            <input
+                            <PhoneInput
                               id="concierge-phone"
-                              type="tel"
-                              autoComplete="tel"
+                              countryCode={phoneCountryCode}
+                              onCountryCodeChange={setPhoneCountryCode}
                               value={form.phone}
-                              onChange={(e) => update("phone", e.target.value)}
-                              className={fieldInputClass("phone", errors)}
-                              aria-invalid={!!errors.phone}
+                              onChange={(value) => update("phone", value)}
+                              invalid={!!errors.phone}
                             />
                           </FormField>
                         </div>

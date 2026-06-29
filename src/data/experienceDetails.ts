@@ -60,7 +60,7 @@ export const experienceDetails: ExperienceDetail[] = [
     stats: [
       { value: "50+", label: "Groups each year" },
       { value: "2–120", label: "Travelers per trip" },
-      { value: "48h", label: "First proposal" },
+      { value: "2 hrs", label: "First proposal" },
     ],
     quote:
       "Every reunion deserves the same rhythm, arrivals aligned, dinners reserved, and no one chasing logistics.",

@@ -6,13 +6,14 @@ import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { SafeImage } from "@/components/ui/SafeImage";
 import { Reveal3D } from "@/components/ui/Reveal3D";
-import { PhoneCountrySelect } from "@/components/ui/PhoneCountrySelect";
+import { PhoneInput } from "@/components/ui/PhoneInput";
 import {
   pickPlannerCtaBackground,
   plannerCtaBackgrounds,
 } from "@/lib/planner-cta-backgrounds";
 import { contactInfo } from "@/data/contact";
 import { defaultCountryCode, getCountryByCode } from "@/data/country-codes";
+import { formatFullPhone } from "@/lib/phone-input";
 import { FormLegalConsent } from "@/components/forms/FormLegalConsent";
 import { collectErrors, clearFieldError, hasErrors, validateLegalConsent, validatePhone, type FieldErrors } from "@/lib/form-validation";
 import { FormSubmissionError, submitFormSubmission } from "@/lib/api/form-submissions";
@@ -110,8 +111,7 @@ export function PlanMyJourneyCTA() {
     setErrors(next);
     if (hasErrors(next)) return;
 
-    const dial = getCountryByCode(countryCode).dial;
-    const fullPhone = `${dial}${phone.replace(/\D/g, "")}`;
+    const fullPhone = formatFullPhone(countryCode, phone);
     setSubmitting(true);
     setSubmitError(null);
     try {
@@ -121,7 +121,7 @@ export function PlanMyJourneyCTA() {
         phone: fullPhone,
         payload: {
           phone: fullPhone,
-          country_code: dial,
+          country_code: getCountryByCode(countryCode).dial,
         },
       });
       setSubmitted(true);
@@ -181,40 +181,28 @@ export function PlanMyJourneyCTA() {
             >
               <div className="flex items-stretch gap-2 sm:gap-3">
                 <div className="min-w-0 flex-1">
-                  <div
-                    className={cn(
-                      "grid h-12 w-full grid-cols-[auto_1px_minmax(0,1fr)_auto] items-center gap-x-2 rounded-full border-2 border-white/55 bg-white/16 py-1 pr-1 pl-2 shadow-[0_16px_48px_rgba(0,0,0,0.45)] ring-1 ring-white/25 backdrop-blur-xl sm:gap-x-3 sm:pl-3",
-                      errors.phone && "border-red-400/70"
-                    )}
-                  >
-                    <PhoneCountrySelect value={countryCode} onChange={setCountryCode} />
-                    <span className="h-6 w-px bg-white/35" aria-hidden />
-                    <label htmlFor="planner-phone" className="sr-only">
-                      Phone number
-                    </label>
-                    <input
-                      id="planner-phone"
-                      type="tel"
-                      inputMode="tel"
-                      autoComplete="tel"
-                      placeholder="Enter your phone number"
-                      value={phone}
-                      onChange={(e) => {
-                        setPhone(e.target.value);
-                        if (errors.phone) setErrors({});
-                      }}
-                      className="min-w-0 h-full w-full border-0 bg-transparent py-0 text-sm text-white outline-none placeholder:text-white/75 sm:text-base"
-                      aria-invalid={!!errors.phone}
-                      aria-describedby={errors.phone ? "planner-phone-error" : undefined}
-                    />
-                    <button
-                      type="submit"
-                      disabled={submitting}
-                      className="h-full shrink-0 rounded-full bg-white px-4 text-[10px] font-bold tracking-[0.12em] text-black uppercase shadow-sm transition-colors hover:bg-white/95 disabled:cursor-not-allowed disabled:opacity-70 sm:px-6 sm:text-[11px] sm:tracking-[0.16em]"
-                    >
-                      {submitting ? "Sending…" : "Get Called"}
-                    </button>
-                  </div>
+                  <PhoneInput
+                    id="planner-phone"
+                    variant="hero"
+                    countryCode={countryCode}
+                    onCountryCodeChange={setCountryCode}
+                    value={phone}
+                    onChange={(value) => {
+                      setPhone(value);
+                      if (errors.phone) setErrors({});
+                    }}
+                    invalid={!!errors.phone}
+                    placeholder="Enter your phone number"
+                    trailing={
+                      <button
+                        type="submit"
+                        disabled={submitting}
+                        className="h-full shrink-0 rounded-full bg-white px-4 text-[10px] font-bold tracking-[0.12em] text-black uppercase shadow-sm transition-colors hover:bg-white/95 disabled:cursor-not-allowed disabled:opacity-70 sm:px-6 sm:text-[11px] sm:tracking-[0.16em]"
+                      >
+                        {submitting ? "Sending…" : "Get Called"}
+                      </button>
+                    }
+                  />
                 </div>
 
                 <a

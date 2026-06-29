@@ -2,6 +2,9 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   allowedDevOrigins: ["127.0.0.1"],
+  experimental: {
+    optimizePackageImports: ["lucide-react", "framer-motion", "gsap"],
+  },
   async redirects() {
     return [
       { source: "/hotels", destination: "/luxury-stays", permanent: true },
@@ -15,6 +18,7 @@ const nextConfig: NextConfig = {
     ];
   },
   images: {
+    formats: ["image/avif", "image/webp"],
     remotePatterns: [
       { protocol: "https", hostname: "images.unsplash.com" },
       { protocol: "https", hostname: "images.pexels.com" },

@@ -43,8 +43,7 @@ export function ClientStoriesPage({ photos, reviews }: ClientStoriesPageProps) {
                     />
                     <div className="pointer-events-none absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-black/75 via-black/25 to-transparent" />
                     <div className="absolute inset-x-0 bottom-0 z-[1] flex flex-col justify-end p-3">
-                      <p className="text-xs font-medium text-white">{photo.destination}</p>
-                      <p className="text-[10px] text-white/70">{photo.tripType}</p>
+                      <p className="text-xs font-medium text-white">{photo.name}</p>
                     </div>
                   </div>
                 ))}
@@ -85,9 +84,9 @@ function ReviewCard({ story }: { story: ClientStoryReview }) {
         </div>
         <div>
           <p className="font-medium text-foreground">{story.name}</p>
-          <p className="text-xs text-gold">
-            {story.destination} · {story.tripType}
-          </p>
+          {story.destination ? (
+            <p className="text-xs text-gold">{story.destination}</p>
+          ) : null}
         </div>
       </footer>
     </article>

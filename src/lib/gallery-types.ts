@@ -18,7 +18,6 @@ export type GalleryClientWallItem = {
   id: string;
   name: string;
   destination: string;
-  tripType: string;
   image: string;
   rotate: number;
 };

@@ -1,9 +1,11 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Send } from "lucide-react";
 import { MagneticButton } from "@/components/ui/MagneticButton";
 import { FormField, fieldInputClass } from "@/components/ui/FormField";
+import { PhoneInput } from "@/components/ui/PhoneInput";
+import { DatePickerInput } from "@/components/ui/DatePickerInput";
 import { FormLegalConsent } from "@/components/forms/FormLegalConsent";
 import {
   clearFieldError,
@@ -14,6 +16,9 @@ import {
 } from "@/lib/form-validation";
 import { FormSubmissionError, submitFormSubmission } from "@/lib/api/form-submissions";
 import { itineraryPrimaryCta } from "@/data/site";
+import { formatDateRangeForPayload, getLocalDateIso } from "@/lib/date-input";
+import { defaultCountryCode } from "@/data/country-codes";
+import { formatFullPhone } from "@/lib/phone-input";
 import { cn } from "@/lib/utils";
 
 type ItineraryInquiryFormProps = {
@@ -27,15 +32,22 @@ export function ItineraryInquiryForm({
   itinerarySlug,
   relatedItineraryId,
 }: ItineraryInquiryFormProps) {
+  const [minDate, setMinDate] = useState("");
   const [form, setForm] = useState({
     name: "",
     email: "",
     phone: "",
     travelers: "2",
-    dates: "",
+    startDate: "",
+    endDate: "",
     message: `I'm interested in the ${itineraryTitle} itinerary.`,
   });
+
+  useEffect(() => {
+    setMinDate(getLocalDateIso());
+  }, []);
   const [legalConsent, setLegalConsent] = useState(false);
+  const [phoneCountryCode, setPhoneCountryCode] = useState(defaultCountryCode);
   const [errors, setErrors] = useState<FieldErrors>({});
   const [submitted, setSubmitted] = useState(false);
   const [submitting, setSubmitting] = useState(false);
@@ -48,25 +60,26 @@ export function ItineraryInquiryForm({
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const nextErrors = withLegalConsent(validateInquiryForm(form), legalConsent);
+    const nextErrors = withLegalConsent(validateInquiryForm(form, minDate), legalConsent);
     setErrors(nextErrors);
     if (hasErrors(nextErrors)) return;
 
     setSubmitting(true);
     setSubmitError(null);
+    const fullPhone = formatFullPhone(phoneCountryCode, form.phone);
     try {
       await submitFormSubmission({
         form_type: "itinerary_inquiry",
         name: form.name.trim(),
         email: form.email.trim().toLowerCase(),
-        phone: form.phone.trim(),
+        phone: fullPhone,
         related_itinerary_id: relatedItineraryId ?? null,
         payload: {
           name: form.name.trim(),
           email: form.email.trim().toLowerCase(),
-          phone: form.phone.trim(),
+          phone: fullPhone,
           travelers: Number(form.travelers),
-          dates: form.dates.trim(),
+          dates: formatDateRangeForPayload(form.startDate, form.endDate),
           message: form.message.trim(),
           itinerary_slug: itinerarySlug,
           itinerary_title: itineraryTitle,
@@ -143,38 +156,70 @@ export function ItineraryInquiryForm({
           </div>
           <div className="grid gap-4 sm:grid-cols-2">
             <FormField label="Phone" htmlFor="inquiry-phone" error={errors.phone}>
-              <input
+              <PhoneInput
                 id="inquiry-phone"
-                type="tel"
-                autoComplete="tel"
+                countryCode={phoneCountryCode}
+                onCountryCodeChange={setPhoneCountryCode}
                 value={form.phone}
-                onChange={(e) => update("phone", e.target.value)}
-                className={fieldInputClass("phone", errors)}
-                aria-invalid={!!errors.phone}
+                onChange={(value) => update("phone", value)}
+                invalid={!!errors.phone}
               />
             </FormField>
-            <FormField label="Preferred Travel Dates" htmlFor="inquiry-dates" error={errors.dates}>
+            <FormField label="Number of Travelers" htmlFor="inquiry-travelers" error={errors.travelers}>
               <input
-                id="inquiry-dates"
-                value={form.dates}
-                onChange={(e) => update("dates", e.target.value)}
-                className={fieldInputClass("dates", errors)}
-                aria-invalid={!!errors.dates}
+                id="inquiry-travelers"
+                type="number"
+                min={1}
+                max={50}
+                value={form.travelers}
+                onChange={(e) => update("travelers", e.target.value)}
+                className={fieldInputClass("travelers", errors)}
+                aria-invalid={!!errors.travelers}
               />
             </FormField>
           </div>
-          <FormField label="Number of Travelers" htmlFor="inquiry-travelers" error={errors.travelers}>
-            <input
-              id="inquiry-travelers"
-              type="number"
-              min={1}
-              max={50}
-              value={form.travelers}
-              onChange={(e) => update("travelers", e.target.value)}
-              className={fieldInputClass("travelers", errors)}
-              aria-invalid={!!errors.travelers}
-            />
-          </FormField>
+          <div className="grid gap-4 sm:grid-cols-2">
+            <FormField label="Start Date" htmlFor="inquiry-start-date" error={errors.startDate}>
+              <DatePickerInput
+                id="inquiry-start-date"
+                min={minDate || undefined}
+                value={form.startDate}
+                suppressHydrationWarning
+                onChange={(e) => {
+                  const startDate = e.target.value;
+                  setForm((prev) => ({
+                    ...prev,
+                    startDate,
+                    endDate:
+                      prev.endDate && startDate && prev.endDate < startDate
+                        ? startDate
+                        : prev.endDate,
+                  }));
+                  clearFieldError(setErrors, "startDate");
+                  if (form.endDate && startDate && form.endDate < startDate) {
+                    clearFieldError(setErrors, "endDate");
+                  }
+                }}
+                inputClassName={fieldInputClass("startDate", errors)}
+                aria-invalid={!!errors.startDate}
+              />
+            </FormField>
+            <FormField label="End Date" htmlFor="inquiry-end-date" error={errors.endDate}>
+              <DatePickerInput
+                id="inquiry-end-date"
+                min={form.startDate || minDate || undefined}
+                value={form.endDate}
+                suppressHydrationWarning
+                disabled={!form.startDate || !minDate}
+                onChange={(e) => update("endDate", e.target.value)}
+                inputClassName={cn(
+                  fieldInputClass("endDate", errors),
+                  !form.startDate && "cursor-not-allowed opacity-50"
+                )}
+                aria-invalid={!!errors.endDate}
+              />
+            </FormField>
+          </div>
           <FormField label="Message" htmlFor="inquiry-message" error={errors.message}>
             <textarea
               id="inquiry-message"

@@ -1,9 +1,13 @@
+import { cache } from "react";
 import type { TravelMood, TravelPackage } from "@/types";
+import { normalizeTravelMoods } from "@/lib/travel-moods";
 import type { ExperienceShowcaseItem } from "@/lib/experience-types";
 import {
   mapCmsExperienceToShowcaseItem,
 } from "./experiences";
-import { buildItineraryByDestinationIdMap } from "./itineraries";
+import { buildItineraryByDestinationIdMap, buildMinStartingPriceByDestinationId, buildPublishedItineraryCountsByDestinationId } from "./itineraries";
+import type { IndiaRegion } from "@/lib/destination-listing-types";
+import { resolveDestinationHeroImage } from "@/lib/destination-images";
 import { images } from "@/lib/images";
 import { cleanPackageTitle } from "@/lib/package-title";
 
@@ -66,18 +70,19 @@ export type HomeFeaturedDestination = {
   regionLabel?: string;
   href: string;
   cta: string;
+  journeyCount: number;
 };
 
 export type HomeTravelPackage = TravelPackage & {
   journeyHref: string;
   reviewCount: number;
+  soldLastMonth: number;
 };
 
 export type HomeTestimonial = {
   id: string;
   name: string;
-  destination: string;
-  tripType: string;
+  destination: string | null;
   quote: string;
   image: string;
 };
@@ -188,6 +193,12 @@ function resolvePackageHeroImage(
   );
 }
 
+function getSoldLastMonthCount(packageId: string): number {
+  const seed =
+    packageId.split("").reduce((sum, char, index) => sum + char.charCodeAt(0) * (index + 3), 0);
+  return 5 + (seed % 15);
+}
+
 function mapPackage(
   pkg: CmsPackage,
   destinationById: Map<string, CmsDestination>,
@@ -219,24 +230,34 @@ function mapPackage(
     highlights: pkg.highlights
       .sort((a, b) => a.sort_order - b.sort_order)
       .map((h) => h.text),
-    mood: (pkg.moods.length ? pkg.moods : ["luxury"]) as TravelMood[],
+    mood: normalizeTravelMoods(pkg.moods.length ? pkg.moods : ["luxury"]),
     rating,
     featured: pkg.is_featured,
     journeyHref,
     reviewCount,
+    soldLastMonth: getSoldLastMonthCount(pkg.id),
   };
 }
 
 function mapFeaturedDestination(
   dest: CmsDestination,
   itinerary: CmsItinerary | undefined,
-  mediaMap: Map<string, string>
+  mediaMap: Map<string, string>,
+  journeyCount: number,
+  minItineraryPrice?: number
 ): HomeFeaturedDestination {
-  const image =
-    resolveMediaUrl(mediaMap, itinerary?.hero_media_id, "") ||
+  const isHub = journeyCount > 1;
+  const cmsImage =
+    resolveMediaUrl(mediaMap, isHub ? dest.hero_media_id : itinerary?.hero_media_id, "") ||
     resolveMediaUrl(mediaMap, dest.hero_media_id, "") ||
     dest.gallery_media[0]?.url ||
-    images.bali;
+    "";
+
+  const image = resolveDestinationHeroImage(dest.slug, {
+    cmsImage,
+    indiaRegion: (dest.india_region as IndiaRegion | null) ?? undefined,
+    region: dest.region,
+  });
 
   return {
     id: dest.id,
@@ -244,11 +265,14 @@ function mapFeaturedDestination(
     name: dest.name,
     description: dest.description,
     image,
-    startingPrice: itinerary?.starting_price ?? dest.starting_price,
-    duration: itinerary?.duration_label,
+    startingPrice: isHub
+      ? (minItineraryPrice ?? dest.starting_price)
+      : (itinerary?.starting_price ?? dest.starting_price),
+    duration: isHub ? undefined : itinerary?.duration_label,
     regionLabel: dest.region === "domestic" ? "India" : "International",
     href: `/destinations/${dest.slug}`,
-    cta: itinerary ? "Discover Journey" : "View Journey",
+    cta: isHub ? "Browse journeys" : itinerary ? "Discover Journey" : "View Journey",
+    journeyCount,
   };
 }
 
@@ -317,14 +341,13 @@ function mapTestimonial(story: CmsClientStory, mediaMap: Map<string, string>): H
   return {
     id: story.id,
     name: story.client_name,
-    destination: story.destination_label ?? "Journey",
-    tripType: story.trip_type ?? "Luxury Travel",
+    destination: story.destination_name?.trim() || null,
     quote: story.quote,
     image: resolveMediaUrl(mediaMap, story.portrait_media_id, images.couple1),
   };
 }
 
-export async function getHomepageData(): Promise<HomepageData> {
+export const getHomepageData = cache(async function getHomepageData(): Promise<HomepageData> {
   const bundle = await getHomepageBundle();
   if (bundle) {
     return mapHomepageBundle(bundle);
@@ -372,7 +395,7 @@ export async function getHomepageData(): Promise<HomepageData> {
     valuePropositions,
     clientStories,
   });
-}
+});
 
 type HomepageSourceData = {
   packages: CmsPackage[];
@@ -429,6 +452,8 @@ function mapHomepageSources({
       .map((itinerary) => [itinerary.package_id as string, itinerary])
   );
   const itineraryByDestinationId = buildItineraryByDestinationIdMap(itineraries);
+  const itineraryCounts = buildPublishedItineraryCountsByDestinationId(itineraries);
+  const minItineraryPrices = buildMinStartingPriceByDestinationId(itineraries);
 
   let cmsFeatured = packages
     .filter((pkg) => pkg.is_featured)
@@ -472,7 +497,15 @@ function mapHomepageSources({
   const featuredDestinations = destinations
     .filter((d) => d.is_featured)
     .sort((a, b) => (a.featured_sort_order ?? 999) - (b.featured_sort_order ?? 999))
-    .map((dest) => mapFeaturedDestination(dest, itineraryByDestinationId.get(dest.id), mediaMap));
+    .map((dest) =>
+      mapFeaturedDestination(
+        dest,
+        itineraryByDestinationId.get(dest.id),
+        mediaMap,
+        itineraryCounts.get(dest.id) ?? 0,
+        minItineraryPrices.get(dest.id)
+      )
+    );
 
   const promo: HomePromoData | null = homepagePromo
     ? {

@@ -6,6 +6,7 @@ import {
   type NestedSubFieldDef,
 } from "@/lib/admin/nested-list-configs";
 import { AdminNumberInput } from "@/components/admin/AdminNumberInput";
+import { AdminMediaField } from "@/components/admin/AdminMediaField";
 import { cn } from "@/lib/utils";
 
 type NestedListEditorProps = {
@@ -65,6 +66,16 @@ function SubField({
     );
   }
   if (field.type === "relation") {
+    if (field.relation?.endpoint === "/media") {
+      return (
+        <AdminMediaField
+          value={String(value ?? "")}
+          relationOptions={relationOptions}
+          onChange={(next) => onChange(next || null)}
+          compact
+        />
+      );
+    }
     return (
       <select
         className="admin-select"

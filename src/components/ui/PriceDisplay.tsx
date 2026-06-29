@@ -55,7 +55,7 @@ const inquireClass: Record<PriceSize, string> = {
 
 export function PriceDisplay({
   amount,
-  label = "From",
+  label = "Onwards",
   onRequest,
   suffix,
   note,

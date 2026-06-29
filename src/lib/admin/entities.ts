@@ -5,6 +5,32 @@ import { coerceAdminNumberPayload, clampAdminNumber } from "@/lib/admin/number-i
 import { formValueToStats, statsToFormValue } from "@/lib/admin/stat-list";
 import type { AdminEntityDef, AdminEntityGroup, AdminFieldDef } from "@/lib/admin/types";
 
+function slugifyGalleryName(value: string): string {
+  const slug = value
+    .trim()
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "")
+    .slice(0, 128);
+  return slug || `gallery-item-${Date.now()}`;
+}
+
+function enrichGalleryItemPayload(
+  payload: Record<string, unknown>,
+  mode: "create" | "edit"
+): Record<string, unknown> {
+  if (mode !== "create") return payload;
+
+  const name = String(payload.place ?? "").trim();
+  return {
+    ...payload,
+    slug: slugifyGalleryName(name),
+    region_label: name,
+    layout: "card",
+    label_style: "stack",
+  };
+}
+
 export type {
   AdminEntityDef,
   AdminEntityGroup,
@@ -158,7 +184,7 @@ const PILOT_ENTITIES: Record<string, AdminEntityDef> = {
       { name: "eyebrow", label: "Eyebrow", type: "text", required: true },
       { name: "title", label: "Title", type: "text", required: true, showInList: true },
       { name: "description", label: "Description", type: "textarea", required: true },
-      { name: "effective_date", label: "Effective date", type: "text", required: true, showInList: true },
+      { name: "effective_date", label: "Effective date", type: "date", required: true, showInList: true },
       {
         name: "hero_media_id",
         label: "Hero media",
@@ -207,6 +233,13 @@ export function getPilotEntities(): AdminEntityDef[] {
 
 export function getEntityDef(key: string): AdminEntityDef | undefined {
   return ADMIN_ENTITIES[key];
+}
+
+export function getFormFields(entity: AdminEntityDef): AdminFieldDef[] {
+  const allowed = entity.formFields ?? entity.writableFields;
+  if (!allowed) return entity.fields;
+  const names = new Set(allowed);
+  return entity.fields.filter((field) => names.has(field.name));
 }
 
 export function getListColumns(entity: AdminEntityDef) {
@@ -305,6 +338,11 @@ export function formValuesToPayload(
     }
     payload[field.name] = value;
   }
+
+  if (entity.key === "gallery-items") {
+    return enrichGalleryItemPayload(payload, mode);
+  }
+
   return payload;
 }
 

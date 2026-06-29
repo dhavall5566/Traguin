@@ -526,7 +526,7 @@ export function HotelDiscovery({ hotels: hotelsProp }: HotelDiscoveryProps) {
                       ))}
                     </div>
                     <div className="mt-4 flex items-center justify-between">
-                      <PriceDisplay amount={hotel.price} label="From" size="md" suffix="/night" />
+                      <PriceDisplay amount={hotel.price} label="Onwards" size="md" suffix="/night" />
                       <MagneticButton
                         variant="secondary"
                         className="!px-4 !py-2 !text-xs"

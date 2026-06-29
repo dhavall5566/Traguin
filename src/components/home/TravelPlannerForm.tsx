@@ -5,6 +5,8 @@ import { motion, AnimatePresence } from "framer-motion";
 import { MapPin, Calendar, Users, Wallet, Sparkles, FileText, ChevronLeft, ChevronRight } from "lucide-react";
 import { MagneticButton } from "@/components/ui/MagneticButton";
 import { FormField, fieldInputClass } from "@/components/ui/FormField";
+import { PhoneInput } from "@/components/ui/PhoneInput";
+import { DatePickerInput } from "@/components/ui/DatePickerInput";
 import { SectionHeader } from "@/components/ui/SectionHeader";
 import { HomeSection } from "@/components/home/HomeSection";
 import { FormLegalConsent } from "@/components/forms/FormLegalConsent";
@@ -20,6 +22,8 @@ import type { TravelMood } from "@/types";
 import { getLocalDateIso } from "@/lib/theme";
 import { cn } from "@/lib/utils";
 import { FormSubmissionError, submitFormSubmission } from "@/lib/api/form-submissions";
+import { defaultCountryCode } from "@/data/country-codes";
+import { formatFullPhone } from "@/lib/phone-input";
 import { Mail, Phone as PhoneIcon } from "lucide-react";
 
 const travelStyles: { value: TravelMood; label: string }[] = [
@@ -63,6 +67,7 @@ export function TravelPlannerForm() {
     phone: "",
   });
   const [legalConsent, setLegalConsent] = useState(false);
+  const [phoneCountryCode, setPhoneCountryCode] = useState(defaultCountryCode);
   const [errors, setErrors] = useState<FieldErrors>({});
 
   const update = <K extends keyof typeof form>(key: K, value: (typeof form)[K]) => {
@@ -98,11 +103,12 @@ export function TravelPlannerForm() {
 
     setSubmitting(true);
     setSubmitError(null);
+    const fullPhone = formatFullPhone(phoneCountryCode, form.phone);
     try {
       await submitFormSubmission({
         form_type: "travel_planner",
         email: form.email.trim().toLowerCase(),
-        phone: form.phone.trim(),
+        phone: fullPhone,
         payload: {
           destination: form.destination.trim(),
           start_date: form.startDate,
@@ -112,7 +118,7 @@ export function TravelPlannerForm() {
           style: form.style,
           notes: form.notes.trim(),
           email: form.email.trim().toLowerCase(),
-          phone: form.phone.trim(),
+          phone: fullPhone,
         },
       });
       setSubmitted(true);
@@ -209,9 +215,8 @@ export function TravelPlannerForm() {
                           icon={Calendar}
                           error={errors.startDate}
                         >
-                          <input
+                          <DatePickerInput
                             id="planner-start-date"
-                            type="date"
                             min={minDate || undefined}
                             value={form.startDate}
                             suppressHydrationWarning
@@ -233,7 +238,7 @@ export function TravelPlannerForm() {
                                 clearFieldError(setErrors, "endDate");
                               }
                             }}
-                            className={fieldInputClass("startDate", errors)}
+                            inputClassName={fieldInputClass("startDate", errors)}
                             aria-invalid={!!errors.startDate}
                           />
                         </FormField>
@@ -243,15 +248,14 @@ export function TravelPlannerForm() {
                           icon={Calendar}
                           error={errors.endDate}
                         >
-                          <input
+                          <DatePickerInput
                             id="planner-end-date"
-                            type="date"
                             min={form.startDate || minDate || undefined}
                             value={form.endDate}
                             onChange={(e) => update("endDate", e.target.value)}
                             disabled={!form.startDate || !minDate}
                             suppressHydrationWarning
-                            className={cn(
+                            inputClassName={cn(
                               fieldInputClass("endDate", errors),
                               !form.startDate && "cursor-not-allowed opacity-50"
                             )}
@@ -351,14 +355,13 @@ export function TravelPlannerForm() {
                           />
                         </FormField>
                         <FormField label="Phone" htmlFor="planner-phone" icon={PhoneIcon} error={errors.phone}>
-                          <input
+                          <PhoneInput
                             id="planner-phone"
-                            type="tel"
-                            autoComplete="tel"
+                            countryCode={phoneCountryCode}
+                            onCountryCodeChange={setPhoneCountryCode}
                             value={form.phone}
-                            onChange={(e) => update("phone", e.target.value)}
-                            className={fieldInputClass("phone", errors)}
-                            aria-invalid={!!errors.phone}
+                            onChange={(value) => update("phone", value)}
+                            invalid={!!errors.phone}
                           />
                         </FormField>
                       </div>

@@ -245,6 +245,36 @@ function pickPrimaryItineraryPerDestination(itineraries: CmsItinerary[]): Map<st
   return map;
 }
 
+export function buildPublishedItineraryCountsByDestinationId(
+  itineraries: CmsItinerary[]
+): Map<string, number> {
+  const counts = new Map<string, number>();
+  for (const itinerary of itineraries) {
+    if (!itinerary.is_published) continue;
+    counts.set(
+      itinerary.destination_id,
+      (counts.get(itinerary.destination_id) ?? 0) + 1
+    );
+  }
+  return counts;
+}
+
+export function buildMinStartingPriceByDestinationId(
+  itineraries: CmsItinerary[]
+): Map<string, number> {
+  const mins = new Map<string, number>();
+  for (const itinerary of itineraries) {
+    if (!itinerary.is_published) continue;
+    const price = itinerary.starting_price;
+    if (price == null) continue;
+    const existing = mins.get(itinerary.destination_id);
+    if (existing == null || price < existing) {
+      mins.set(itinerary.destination_id, price);
+    }
+  }
+  return mins;
+}
+
 export function buildItineraryByDestinationIdMap(
   itineraries: CmsItinerary[]
 ): Map<string, CmsItinerary> {

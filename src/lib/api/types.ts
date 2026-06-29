@@ -306,14 +306,10 @@ export interface CmsRedirect extends CmsTimestamped {
 }
 
 export interface CmsClientStory extends CmsTimestamped {
-  slug: string | null;
   client_name: string;
   destination_id: string | null;
-  destination_label: string | null;
-  trip_type: string | null;
+  destination_name: string | null;
   quote: string | null;
-  title: string | null;
-  caption: string | null;
   portrait_media_id: string | null;
   show_on_home: boolean;
   show_in_gallery: boolean;
@@ -339,7 +335,8 @@ export interface CmsGalleryItem extends CmsTimestamped {
   slug: string;
   place: string;
   region_label: string;
-  media_id: string;
+  media_id: string | null;
+  media: { id: string; url: string; alt_text: string | null; sort_order: number | null }[];
   layout: string;
   label_style: string;
   sort_order: number | null;

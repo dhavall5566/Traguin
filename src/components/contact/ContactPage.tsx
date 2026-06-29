@@ -6,6 +6,7 @@ import { scrollToConsultationSection } from "@/lib/scroll-to-consultation";
 import { Mail, Phone, MapPin, Clock, Send, MessageCircle } from "lucide-react";
 import { MagneticButton } from "@/components/ui/MagneticButton";
 import { FormField, fieldInputClass } from "@/components/ui/FormField";
+import { PhoneInput } from "@/components/ui/PhoneInput";
 import { PageShell } from "@/components/layout/PageShell";
 import { PageHero } from "@/components/layout/PageHero";
 import { TrustBar } from "@/components/layout/TrustBar";
@@ -20,6 +21,8 @@ import {
 } from "@/lib/form-validation";
 import { submitFormSubmissionOptimistic } from "@/lib/api/form-submissions";
 import { contactInfo } from "@/data/contact";
+import { defaultCountryCode } from "@/data/country-codes";
+import { formatFullPhone } from "@/lib/phone-input";
 import { pageHeroes } from "@/data/pageContent";
 import { cn } from "@/lib/utils";
 
@@ -39,6 +42,7 @@ const contactItems = [
 export function ContactPage() {
   const { lenis } = useLenis();
   const [form, setForm] = useState({ name: "", email: "", phone: "", message: "" });
+  const [phoneCountryCode, setPhoneCountryCode] = useState(defaultCountryCode);
   const [legalConsent, setLegalConsent] = useState(false);
   const [errors, setErrors] = useState<FieldErrors>({});
   const [submitted, setSubmitted] = useState(false);
@@ -69,15 +73,16 @@ export function ContactPage() {
     if (hasErrors(nextErrors)) return;
 
     setSubmitError(null);
+    const fullPhone = formatFullPhone(phoneCountryCode, form.phone);
     const payload = {
       form_type: "contact_consultation" as const,
       name: form.name.trim(),
       email: form.email.trim().toLowerCase(),
-      phone: form.phone.trim() || null,
+      phone: fullPhone || null,
       payload: {
         name: form.name.trim(),
         email: form.email.trim().toLowerCase(),
-        phone: form.phone.trim() || null,
+        phone: fullPhone || null,
         message: form.message.trim(),
       },
     };
@@ -198,14 +203,13 @@ export function ContactPage() {
                     />
                   </FormField>
                   <FormField label="Phone Number" htmlFor="contact-phone" error={errors.phone}>
-                    <input
+                    <PhoneInput
                       id="contact-phone"
-                      type="tel"
-                      autoComplete="tel"
+                      countryCode={phoneCountryCode}
+                      onCountryCodeChange={setPhoneCountryCode}
                       value={form.phone}
-                      onChange={(e) => update("phone", e.target.value)}
-                      className={fieldInputClass("phone", errors)}
-                      aria-invalid={!!errors.phone}
+                      onChange={(value) => update("phone", value)}
+                      invalid={!!errors.phone}
                     />
                   </FormField>
                   <FormField label="Message" htmlFor="contact-message" error={errors.message}>
