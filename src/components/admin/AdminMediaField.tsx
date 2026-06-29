@@ -111,11 +111,14 @@ export function AdminMediaField(props: AdminMediaFieldProps) {
   const [uploadError, setUploadError] = useState<string | null>(null);
   const fetchedIdsRef = useRef<Set<string>>(new Set());
 
-  const multiValue = multiple ? props.value : [];
+  const multiValue = props.multiple ? props.value : [];
 
-  const previewIds = (multiple ? multiValue : props.value ? [props.value] : [])
-    .map((mediaId) => String(mediaId))
-    .filter(Boolean);
+  const previewIds = useMemo((): string[] => {
+    if (props.multiple) {
+      return props.value.map((mediaId) => String(mediaId)).filter(Boolean);
+    }
+    return props.value ? [String(props.value)] : [];
+  }, [props]);
 
   const options = useMemo(() => {
     const map = new Map<string, MediaOption>();
@@ -181,8 +184,8 @@ export function AdminMediaField(props: AdminMediaFieldProps) {
   }, [optionsById, previewIds]);
 
   const removePreview = (optionId: string) => {
-    if (multiple) {
-      props.onChange(multiValue.filter((id) => id !== optionId));
+    if (props.multiple) {
+      props.onChange(props.value.filter((id) => id !== optionId));
       return;
     }
     props.onChange("");
@@ -242,8 +245,8 @@ export function AdminMediaField(props: AdminMediaFieldProps) {
     setLocalOptions((prev) => [...prev, ...uploaded]);
     const uploadedIds = uploaded.map((opt) => opt.value);
 
-    if (multiple) {
-      props.onChange([...new Set([...multiValue, ...uploadedIds])]);
+    if (props.multiple) {
+      props.onChange([...new Set([...props.value, ...uploadedIds])]);
     } else {
       props.onChange(uploadedIds[uploaded.length - 1] ?? props.value);
     }
@@ -294,11 +297,14 @@ export function AdminMediaField(props: AdminMediaFieldProps) {
         />
       </div>
 
-      {!multiple && !hideSelect ? (
+      {!props.multiple && !hideSelect ? (
         <select
           className={cn("admin-select", error && "admin-select--error")}
           value={props.value}
-          onChange={(e) => props.onChange(e.target.value)}
+          onChange={(e) => {
+            if (props.multiple) return;
+            props.onChange(e.target.value);
+          }}
           disabled={uploading}
         >
           <option value="">— None —</option>
@@ -326,9 +332,10 @@ export function AdminMediaField(props: AdminMediaFieldProps) {
                   aria-selected={isSelected}
                   className={cn("admin-media-field__option", isSelected && "admin-media-field__option--selected")}
                   onClick={() => {
+                    if (!props.multiple) return;
                     const next = isSelected
-                      ? multiValue.filter((id) => id !== opt.value)
-                      : [...multiValue, opt.value];
+                      ? props.value.filter((id) => id !== opt.value)
+                      : [...props.value, opt.value];
                     props.onChange(next);
                   }}
                 >
