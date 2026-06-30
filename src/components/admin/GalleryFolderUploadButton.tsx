@@ -43,45 +43,6 @@ function sortFilesByPath(files: File[]): File[] {
   );
 }
 
-type DirectoryEntry = FileSystemHandle & { kind: "file" | "directory" };
-
-async function readFilesFromDirectoryHandle(
-  dir: FileSystemDirectoryHandle,
-  prefix = "",
-): Promise<FileWithPath[]> {
-  const files: FileWithPath[] = [];
-  const entries = (dir as FileSystemDirectoryHandle & {
-    values(): AsyncIterable<DirectoryEntry>;
-  }).values();
-
-  for await (const entry of entries) {
-    const relativePath = prefix ? `${prefix}/${entry.name}` : entry.name;
-    if (entry.kind === "file") {
-      files.push({ file: await (entry as FileSystemFileHandle).getFile(), relativePath });
-    } else if (entry.kind === "directory") {
-      files.push(...await readFilesFromDirectoryHandle(entry as FileSystemDirectoryHandle, relativePath));
-    }
-  }
-  return files;
-}
-
-/** Split files into one batch per top-level subfolder; root files use `rootName`. */
-function buildFolderBatches(entries: FileWithPath[], rootName: string): FolderBatch[] {
-  const groups = new Map<string, File[]>();
-
-  for (const { file, relativePath } of entries) {
-    const parts = relativePath.split("/").filter(Boolean);
-    const groupKey = parts.length > 1 ? parts[0] : rootName;
-    const existing = groups.get(groupKey) ?? [];
-    existing.push(file);
-    groups.set(groupKey, existing);
-  }
-
-  return [...groups.entries()]
-    .map(([name, files]) => ({ name, files: sortFilesByPath(files) }))
-    .sort((a, b) => a.name.localeCompare(b.name));
-}
-
 function buildFolderBatchesFromInput(files: File[]): FolderBatch[] {
   if (files.length === 0) return [];
 
@@ -123,18 +84,6 @@ function buildFolderBatchesFromInput(files: File[]): FolderBatch[] {
   }
 
   return batches.length > 0 ? batches : [{ name: "Gallery item", files: sortFilesByPath(files) }];
-}
-
-async function pickDirectoryFiles(): Promise<{ entries: FileWithPath[]; name: string } | null> {
-  const picker = (window as Window & {
-    showDirectoryPicker?: (options?: { mode?: "read" }) => Promise<FileSystemDirectoryHandle>;
-  }).showDirectoryPicker;
-
-  if (!picker) return null;
-
-  const dir = await picker({ mode: "read" });
-  const entries = await readFilesFromDirectoryHandle(dir);
-  return { entries, name: dir.name };
 }
 
 export function GalleryFolderUploadButton({ onCreated, onStatusChange, disabled }: GalleryFolderUploadButtonProps) {
@@ -320,20 +269,8 @@ export function GalleryFolderUploadButton({ onCreated, onStatusChange, disabled 
     void processFolderBatch(batches);
   };
 
-  const openFolderPicker = async () => {
+  const openFolderPicker = () => {
     if (uploading || disabled) return;
-
-    try {
-      const picked = await pickDirectoryFiles();
-      if (picked) {
-        const batches = buildFolderBatches(picked.entries, picked.name);
-        void processFolderBatch(batches);
-        return;
-      }
-    } catch (err) {
-      if (err instanceof DOMException && err.name === "AbortError") return;
-    }
-
     inputRef.current?.click();
   };
 
@@ -343,7 +280,7 @@ export function GalleryFolderUploadButton({ onCreated, onStatusChange, disabled 
         type="button"
         className="admin-btn admin-btn--secondary admin-btn--add"
         disabled={disabled || uploading}
-        onClick={() => { void openFolderPicker(); }}
+        onClick={openFolderPicker}
         title="Select one folder, or a parent folder with multiple subfolders"
       >
         <FolderUp aria-hidden className="admin-btn__icon" />
