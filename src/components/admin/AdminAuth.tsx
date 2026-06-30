@@ -5,6 +5,7 @@ import { FormEvent, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { ADMIN_LOGIN_PATH } from "@/lib/admin/auth";
 import { traguinLogo } from "@/lib/brand/traguin-logo";
+import { PasswordInput } from "@/components/admin/PasswordInput";
 
 export function AdminLoginForm() {
   const router = useRouter();
@@ -77,14 +78,11 @@ export function AdminLoginForm() {
           <label htmlFor="password" className="admin-label">
             Password
           </label>
-          <input
+          <PasswordInput
             id="password"
-            type="password"
             autoComplete="current-password"
-            className="admin-input mt-1 w-full"
             value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            required
+            onChange={setPassword}
           />
         </div>
         <button type="submit" className="admin-btn admin-btn--primary w-full" disabled={submitting}>

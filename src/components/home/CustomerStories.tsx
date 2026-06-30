@@ -73,8 +73,8 @@ export function CustomerStories({ testimonials }: { testimonials: HomeTestimonia
         gsap
           .timeline()
           .to(inner, {
-            rotateY: dir * 14,
-            x: dir * -28,
+            rotateY: dir * -14,
+            x: dir * 28,
             opacity: 0,
             duration: 0.22,
             ease: "power2.in",
@@ -82,8 +82,8 @@ export function CustomerStories({ testimonials }: { testimonials: HomeTestimonia
             transformOrigin: "center center",
           })
           .set(inner, {
-            rotateY: dir * -68,
-            x: dir * 36,
+            rotateY: dir * 68,
+            x: dir * -36,
             opacity: 0,
           })
           .to(inner, {
@@ -99,7 +99,7 @@ export function CustomerStories({ testimonials }: { testimonials: HomeTestimonia
         gsap.fromTo(
           inner,
           {
-            rotateY: -48,
+            rotateY: 48,
             opacity: 0,
             y: 16,
             transformPerspective: 1400,
@@ -175,7 +175,7 @@ export function CustomerStories({ testimonials }: { testimonials: HomeTestimonia
             <div className="flex gap-2" role="tablist" aria-label="Client stories">
               {testimonials.map((t, i) => (
                 <button
-                  key={t.id}
+                  key={`${t.id}-${i}`}
                   type="button"
                   role="tab"
                   aria-selected={i === index}

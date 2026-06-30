@@ -58,7 +58,7 @@ export function GalleryPage({
               <div className="gallery-client-collage" aria-label="Client photo wall">
                 {clientWall.map((client, index) => (
                   <Link
-                    key={client.id}
+                    key={`${client.id}-${index}`}
                     href="/client-stories"
                     className="gallery-hanging-photo gallery-hanging-photo--collage group"
                     style={

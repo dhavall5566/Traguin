@@ -4,7 +4,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { ChevronLeft, ChevronRight, Plus, Trash2 } from "lucide-react";
-import { cn } from "@/lib/utils";
+import { cn, dedupeRowsByField } from "@/lib/utils";
 import { adminDelete, adminRelationOptions, adminUpdate } from "@/lib/admin/api-client";
 import {
   adminListCacheKey,
@@ -312,7 +312,8 @@ export function EntityTableView({ entityKey }: EntityTableViewProps) {
   const showDelete = entity && !entity.hideDelete;
 
   const filteredItems = useMemo(() => {
-    const filtered = items.filter((row) => {
+    const deduped = dedupeRowsByField(items, idField);
+    const filtered = deduped.filter((row) => {
       for (const filter of listFilters) {
         if (!rowMatchesFilter(row, filter, filterValues[filter.field] ?? "")) {
           return false;
@@ -333,7 +334,7 @@ export function EntityTableView({ entityKey }: EntityTableViewProps) {
     });
 
     return sortRows(filtered, sortBy, nameField);
-  }, [columns, filterValues, items, listFilters, nameField, relationLabelMaps, search, sortBy]);
+  }, [columns, filterValues, idField, items, listFilters, nameField, relationLabelMaps, search, sortBy]);
 
   const filtersActive = hasActiveFilters(search, filterValues);
 

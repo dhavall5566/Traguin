@@ -30,9 +30,9 @@ export function ClientStoriesPage({ photos, reviews }: ClientStoriesPageProps) {
           <>
             {photos.length > 0 && (
               <div className="page-content-grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
-                {photos.map((photo) => (
+                {photos.map((photo, index) => (
                   <div
-                    key={photo.id}
+                    key={`${photo.id}-${index}`}
                     className="relative aspect-square overflow-hidden rounded-xl bg-black/5"
                   >
                     <SafeImage
@@ -53,8 +53,8 @@ export function ClientStoriesPage({ photos, reviews }: ClientStoriesPageProps) {
             {reviews.length > 0 && (
               <div className={photos.length > 0 ? "mt-16" : undefined}>
                 <div className="page-content-grid md:grid-cols-2">
-                  {reviews.map((story) => (
-                    <ReviewCard key={story.id} story={story} />
+                  {reviews.map((story, index) => (
+                    <ReviewCard key={`${story.id}-${index}`} story={story} />
                   ))}
                 </div>
               </div>

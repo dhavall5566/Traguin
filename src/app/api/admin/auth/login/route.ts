@@ -29,10 +29,13 @@ export async function POST(request: NextRequest) {
 
   const payload = await response.json().catch(() => null);
   if (!response.ok) {
-    return NextResponse.json(
-      { detail: typeof payload?.detail === "string" ? payload.detail : "Login failed." },
-      { status: response.status }
-    );
+    const detail =
+      typeof payload?.detail === "string"
+        ? payload.detail
+        : response.status >= 500
+          ? "CMS server error. Check that the API is running and CMS_API_URL is correct."
+          : "Login failed.";
+    return NextResponse.json({ detail }, { status: response.status });
   }
 
   const accessToken = payload?.access_token;

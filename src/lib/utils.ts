@@ -41,3 +41,17 @@ export function uniqueById<T extends { id: string }>(items: T[]): T[] {
     return true;
   });
 }
+
+/** Dedupe admin/CMS list rows by id field (first occurrence wins). */
+export function dedupeRowsByField<T extends Record<string, unknown>>(
+  rows: T[],
+  field: string,
+): T[] {
+  const seen = new Set<string>();
+  return rows.filter((row) => {
+    const id = String(row[field] ?? "");
+    if (!id || seen.has(id)) return false;
+    seen.add(id);
+    return true;
+  });
+}

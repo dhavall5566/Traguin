@@ -1,10 +1,16 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useMemo, useRef, useState } from "react";
+import { useGSAP } from "@gsap/react";
+import gsap from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { filterGalleryItems } from "@/lib/gallery-types";
 import type { GalleryCategory, GalleryItem } from "@/lib/gallery-types";
 import { SafeImage } from "@/components/ui/SafeImage";
 import { cn } from "@/lib/utils";
+import { getMotionLite } from "@/lib/motion-profile";
+
+gsap.registerPlugin(ScrollTrigger);
 
 type GalleryGridProps = {
   className?: string;
@@ -13,11 +19,54 @@ type GalleryGridProps = {
   categories: GalleryCategory[];
 };
 
-function GalleryTile({ item, index }: { item: GalleryItem; index: number }) {
+function GalleryScrollTile({ item, index }: { item: GalleryItem; index: number }) {
+  const tileRef = useRef<HTMLElement>(null);
+  const tilt = index % 2 === 0 ? -6 : 6;
+
+  useGSAP(
+    () => {
+      const tile = tileRef.current;
+      if (!tile) return;
+
+      if (getMotionLite()) {
+        gsap.set(tile, { opacity: 1, clearProps: "transform" });
+        return;
+      }
+
+      gsap.fromTo(
+        tile,
+        {
+          y: 56,
+          rotateX: 12,
+          rotateY: tilt,
+          opacity: 0,
+          scale: 0.97,
+          transformPerspective: 1600,
+          transformOrigin: "center bottom",
+        },
+        {
+          y: 0,
+          rotateX: 0,
+          rotateY: 0,
+          opacity: 1,
+          scale: 1,
+          duration: 1.35,
+          ease: "power2.out",
+          scrollTrigger: {
+            trigger: tile,
+            start: "top 94%",
+            once: true,
+          },
+        },
+      );
+    },
+    { scope: tileRef, dependencies: [item.id, index] },
+  );
+
   return (
     <figure
-      className="gallery-tile-natural group"
-      style={{ animationDelay: `${index * 35}ms` }}
+      ref={tileRef}
+      className="gallery-tile-natural gallery-tile-natural--scroll-reveal group"
     >
       <div className="gallery-tile-natural__media">
         <SafeImage
@@ -36,12 +85,20 @@ function GalleryTile({ item, index }: { item: GalleryItem; index: number }) {
 
 export function GalleryGrid({ className, itemLimit, items, categories }: GalleryGridProps) {
   const [activeCategory, setActiveCategory] = useState("all");
+  const gridRef = useRef<HTMLDivElement>(null);
 
   const pool = itemLimit ? items.slice(0, itemLimit) : items;
 
   const visibleItems = useMemo(
     () => filterGalleryItems(pool, activeCategory),
     [activeCategory, pool],
+  );
+
+  useGSAP(
+    () => {
+      ScrollTrigger.refresh();
+    },
+    { dependencies: [activeCategory, visibleItems.length], scope: gridRef },
   );
 
   const filterCategories =
@@ -88,9 +145,13 @@ export function GalleryGrid({ className, itemLimit, items, categories }: Gallery
         </p>
       ) : (
         <>
-          <div key={activeCategory} className="gallery-intrinsic-grid mt-8">
+          <div
+            ref={gridRef}
+            key={activeCategory}
+            className="gallery-intrinsic-grid gallery-intrinsic-grid--3d mt-8"
+          >
             {visibleItems.map((item, index) => (
-              <GalleryTile key={item.id} item={item} index={index} />
+              <GalleryScrollTile key={`${item.id}-${index}`} item={item} index={index} />
             ))}
           </div>
 

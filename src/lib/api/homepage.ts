@@ -379,7 +379,7 @@ function resolveRegionPanels(
     .map((panel) => mergeRegionPanel(panel));
 
   if (mapped.length >= 2) {
-    return mapped;
+    return uniqueById(mapped);
   }
 
   return defaultRegionPanels.map((item) => ({
@@ -483,7 +483,7 @@ function mergeHomeStats(stats: HomeStat[]): HomeStat[] {
   if (!hasStudioHighlight) founding.push(DEFAULT_HOMEPAGE_STATS[0]);
   if (!hasYears) founding.push(DEFAULT_HOMEPAGE_STATS[1]);
 
-  return [...founding, ...cleaned].slice(0, 5);
+  return uniqueById([...founding, ...cleaned]).slice(0, 5);
 }
 
 function firstGalleryUrl(

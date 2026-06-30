@@ -670,6 +670,10 @@ html[data-theme="light"] input[type="date"] {
   width: 100%;
 }
 
+.gallery-intrinsic-grid--3d {
+  perspective: 1400px;
+}
+
 .gallery-tile-natural {
   display: inline-block;
   width: 100%;
@@ -684,6 +688,14 @@ html[data-theme="light"] input[type="date"] {
   box-shadow: 0 12px 32px -24px rgba(0, 0, 0, 0.45);
   animation: gallery-fade-in 0.5s cubic-bezier(0.22, 1, 0.36, 1) both;
   overflow: hidden;
+}
+
+.gallery-tile-natural--scroll-reveal {
+  animation: none;
+  opacity: 0;
+  transform-style: preserve-3d;
+  backface-visibility: hidden;
+  will-change: transform, opacity;
 }
 
 .gallery-tile-natural__media {

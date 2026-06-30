@@ -10,5 +10,5 @@ export const contactInfo = {
   instagram: "https://www.instagram.com/traguin.travel/",
   address:
     "Shaligram Lakeview, A 401, near Vaishnodevi Temple, Ahmedabad, Gujarat 382421",
-  hours: "10:00am - 7:00pm, Sunday Close",
+  hours: "10:00am - 7:00pm, Sunday Closed",
 } as const;

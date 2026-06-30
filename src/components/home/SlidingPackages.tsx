@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState, type MouseEvent } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState, type MouseEvent } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ChevronDown, ChevronLeft, ChevronRight, Clock, MapPin, Star } from "lucide-react";
 import type { HomeTravelPackage } from "@/lib/api/homepage";
@@ -8,7 +8,7 @@ import { SafeImage } from "@/components/ui/SafeImage";
 import { formatPrice } from "@/lib/utils";
 import { MagneticButton } from "@/components/ui/MagneticButton";
 import { primaryCta } from "@/data/site";
-import { cn } from "@/lib/utils";
+import { cn, uniqueById } from "@/lib/utils";
 import { useMotionLite } from "@/hooks/useMotionLite";
 
 const AUTO_ADVANCE_MS = 4500;
@@ -587,7 +587,7 @@ function CarouselControls({
 
 export function SlidingPackages({ packages }: { packages: HomeTravelPackage[] }) {
   const motionLite = useMotionLite();
-  const showcasePackages = packages;
+  const showcasePackages = useMemo(() => uniqueById(packages), [packages]);
   const packageCount = showcasePackages.length;
   const [activeIndex, setActiveIndex] = useState(0);
   const [paused, setPaused] = useState(false);

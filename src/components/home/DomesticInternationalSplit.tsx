@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import { motion } from "framer-motion";
 import { ArrowUpRight, ChevronLeft, ChevronRight } from "lucide-react";
@@ -10,7 +10,7 @@ import { HomeSection } from "@/components/home/HomeSection";
 import { SectionHeader } from "@/components/ui/SectionHeader";
 import { images } from "@/lib/images";
 import type { HomeRegionPanel } from "@/lib/api/homepage";
-import { cn } from "@/lib/utils";
+import { cn, uniqueById } from "@/lib/utils";
 import { useMotionLite } from "@/hooks/useMotionLite";
 
 const DOMESTIC_GALLERY = [
@@ -133,10 +133,11 @@ function RegionImageGallery({
 
 export function DomesticInternationalSplit({ panels }: { panels: HomeRegionPanel[] }) {
   const motionLite = useMotionLite();
+  const regionPanels = useMemo(() => uniqueById(panels), [panels]);
   const [active, setActive] = useState(0);
   const [galleryIndex, setGalleryIndex] = useState(0);
 
-  const activePanel = panels[Math.min(active, Math.max(panels.length - 1, 0))];
+  const activePanel = regionPanels[Math.min(active, Math.max(regionPanels.length - 1, 0))];
   const gallery = activePanel ? regionGallery(activePanel) : [];
   const hasGallerySlides = gallery.length > 1 && !motionLite;
 
@@ -152,7 +153,7 @@ export function DomesticInternationalSplit({ panels }: { panels: HomeRegionPanel
     [gallery.length]
   );
 
-  if (panels.length === 0 || !activePanel) return null;
+  if (regionPanels.length === 0 || !activePanel) return null;
 
   return (
     <HomeSection id="explore-regions">
@@ -163,11 +164,11 @@ export function DomesticInternationalSplit({ panels }: { panels: HomeRegionPanel
       />
 
       <div className="mt-8 flex flex-wrap justify-center gap-2.5 sm:gap-3 lg:mt-10">
-        {panels.map((panel, index) => {
+        {regionPanels.map((panel, index) => {
           const isActive = index === active;
           return (
             <button
-              key={panel.id}
+              key={`${panel.id}-${index}`}
               type="button"
               onClick={() => setActive(index)}
               aria-pressed={isActive}
@@ -188,7 +189,7 @@ export function DomesticInternationalSplit({ panels }: { panels: HomeRegionPanel
         <div className="relative overflow-hidden rounded-[1.5rem] border border-glass-border bg-[#0a0e14] shadow-[0_24px_60px_-28px_rgba(0,0,0,0.5)]">
           <div className="relative min-h-[420px] sm:min-h-[460px] lg:min-h-[520px]">
             <RegionImageGallery
-              key={activePanel.id}
+              key={`${activePanel.id}-gallery`}
               slides={gallery}
               imageClass={activePanel.imageClass}
               alt={`${activePanel.label} destinations`}
@@ -213,12 +214,12 @@ export function DomesticInternationalSplit({ panels }: { panels: HomeRegionPanel
 
               <span className="absolute top-5 right-5 font-display text-sm text-white/45 sm:top-6 sm:right-6">
                 {String(active + 1).padStart(2, "0")}
-                <span className="text-white/25"> / {String(panels.length).padStart(2, "0")}</span>
+                <span className="text-white/25"> / {String(regionPanels.length).padStart(2, "0")}</span>
               </span>
             </div>
 
             <motion.div
-              key={activePanel.id}
+              key={`${activePanel.id}-content`}
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.35, ease: [0.33, 1, 0.68, 1] }}
