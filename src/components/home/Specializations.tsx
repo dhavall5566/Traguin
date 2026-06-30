@@ -9,10 +9,13 @@ import { MagneticButton } from "@/components/ui/MagneticButton";
 import { HomeSection, HomeSectionActions } from "@/components/home/HomeSection";
 import { Tilt3DCard } from "@/components/itineraries/Tilt3DCard";
 import { useStaggerReveal3D } from "@/hooks/useStaggerReveal3D";
+import { useMotionLite } from "@/hooks/useMotionLite";
 import { iconFromKey } from "@/lib/icons";
+import { cn } from "@/lib/utils";
 import type { HomeSpecialization } from "@/lib/api/homepage";
 
 export function Specializations({ items }: { items: HomeSpecialization[] }) {
+  const motionLite = useMotionLite();
   const gridRef = useRef<HTMLDivElement>(null);
   useStaggerReveal3D(gridRef, { variant: "flip", stagger: 0.08 });
 
@@ -27,11 +30,17 @@ export function Specializations({ items }: { items: HomeSpecialization[] }) {
           description="From private holidays to corporate retreats, every program is built around your purpose, pace, and people."
         />
       </Reveal3D>
-      <div ref={gridRef} className="home-grid mt-10 sm:grid-cols-2 lg:mt-12 lg:grid-cols-3 xl:grid-cols-5 [perspective:1400px]">
+      <div
+        ref={gridRef}
+        className={cn(
+          "home-grid mt-10 sm:grid-cols-2 lg:mt-12 lg:grid-cols-3 xl:grid-cols-5",
+          !motionLite && "[perspective:1400px]"
+        )}
+      >
         {items.map((item) => {
           const Icon = iconFromKey(item.iconKey);
           return (
-            <div key={item.id} data-reveal-item className="[transform-style:preserve-3d]">
+            <div key={item.id} data-reveal-item className={cn(!motionLite && "[transform-style:preserve-3d]")}>
               <Tilt3DCard max={12}>
                 <Link
                   href="/contact"

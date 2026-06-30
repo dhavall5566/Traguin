@@ -10,10 +10,13 @@ import { MagneticButton } from "@/components/ui/MagneticButton";
 import { HomeSection, HomeSectionActions } from "@/components/home/HomeSection";
 import { useStaggerReveal3D } from "@/hooks/useStaggerReveal3D";
 import { primaryCta } from "@/data/site";
+import { cn } from "@/lib/utils";
 import { isLuxuryStaysVisible } from "@/lib/site-features";
+import { useMotionLite } from "@/hooks/useMotionLite";
 import type { HomeFeaturedDestination } from "@/lib/api/homepage";
 
 export function FeaturedDestinations({ destinations }: { destinations: HomeFeaturedDestination[] }) {
+  const motionLite = useMotionLite();
   const gridRef = useRef<HTMLDivElement>(null);
   useStaggerReveal3D(gridRef, { variant: "flip", stagger: 0.12 });
 
@@ -28,9 +31,19 @@ export function FeaturedDestinations({ destinations }: { destinations: HomeFeatu
           description="Handpicked journeys with full day-by-day itineraries, tap any destination to explore the complete program."
         />
       </Reveal3D>
-      <div ref={gridRef} className="home-grid mt-10 sm:grid-cols-2 lg:mt-12 lg:grid-cols-3 [perspective:1400px]">
+      <div
+        ref={gridRef}
+        className={cn(
+          "home-grid mt-10 sm:grid-cols-2 lg:mt-12 lg:grid-cols-3",
+          !motionLite && "[perspective:1400px]"
+        )}
+      >
         {destinations.map((dest) => (
-          <div key={dest.id} data-reveal-item className="[transform-style:preserve-3d]">
+          <div
+            key={dest.id}
+            data-reveal-item
+            className={cn(!motionLite && "[transform-style:preserve-3d]")}
+          >
             <DestinationListingCard
               destinationId={dest.slug}
               name={dest.name}
@@ -43,7 +56,7 @@ export function FeaturedDestinations({ destinations }: { destinations: HomeFeatu
               cta={dest.cta}
               duration={dest.duration}
               journeyCount={dest.journeyCount}
-              tilt
+              tilt={!motionLite}
             />
           </div>
         ))}

@@ -9,11 +9,14 @@ import { MagneticButton } from "@/components/ui/MagneticButton";
 import { HomeSection, HomeSectionActions } from "@/components/home/HomeSection";
 import { Tilt3DCard } from "@/components/itineraries/Tilt3DCard";
 import { useStaggerReveal3D } from "@/hooks/useStaggerReveal3D";
+import { useMotionLite } from "@/hooks/useMotionLite";
 import { primaryCta } from "@/data/site";
 import { iconFromKey } from "@/lib/icons";
+import { cn } from "@/lib/utils";
 import type { HomeJourneyStep } from "@/lib/api/homepage";
 
 export function JourneyProcess({ steps }: { steps: HomeJourneyStep[] }) {
+  const motionLite = useMotionLite();
   const gridRef = useRef<HTMLOListElement>(null);
   useStaggerReveal3D(gridRef, { variant: "up", stagger: 0.13 });
 
@@ -41,11 +44,18 @@ export function JourneyProcess({ steps }: { steps: HomeJourneyStep[] }) {
             aria-hidden
           />
 
-          <ol ref={gridRef} className="home-grid sm:grid-cols-2 lg:grid-cols-4 [perspective:1400px]">
+          <ol
+            ref={gridRef}
+            className={cn("home-grid sm:grid-cols-2 lg:grid-cols-4", !motionLite && "[perspective:1400px]")}
+          >
             {steps.map((step) => {
               const Icon = iconFromKey(step.iconKey, Compass);
               return (
-                <li key={step.id} data-reveal-item className="list-none [transform-style:preserve-3d]">
+                <li
+                  key={step.id}
+                  data-reveal-item
+                  className={cn("list-none", !motionLite && "[transform-style:preserve-3d]")}
+                >
                   <Tilt3DCard max={10}>
                     <div className="home-journey-card group relative glass rounded-2xl border border-glass-border p-7 sm:p-8">
                       <div className="flex items-start justify-between gap-3">

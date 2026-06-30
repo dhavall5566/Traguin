@@ -1,9 +1,9 @@
 "use client";
 
-import type { HomeStat } from "@/lib/api/homepage";
+import { useMotionLite } from "@/hooks/useMotionLite";
 
-function MarqueeTrack({ names }: { names: string[] }) {
-  const items = [...names, ...names];
+function MarqueeTrack({ names, duplicate }: { names: string[]; duplicate: boolean }) {
+  const items = duplicate ? [...names, ...names] : names;
 
   return (
     <div className="destination-marquee-track flex w-max items-center gap-8 sm:gap-12">
@@ -20,6 +20,7 @@ function MarqueeTrack({ names }: { names: string[] }) {
 }
 
 export function DestinationMarquee({ names }: { names: string[] }) {
+  const motionLite = useMotionLite();
   if (names.length === 0) return null;
 
   return (
@@ -29,7 +30,7 @@ export function DestinationMarquee({ names }: { names: string[] }) {
     >
       <div className="pointer-events-none absolute inset-y-0 left-0 z-10 w-16 bg-gradient-to-r from-background to-transparent sm:w-24" />
       <div className="pointer-events-none absolute inset-y-0 right-0 z-10 w-16 bg-gradient-to-l from-background to-transparent sm:w-24" />
-      <MarqueeTrack names={names} />
+      <MarqueeTrack names={names} duplicate={!motionLite} />
     </section>
   );
 }

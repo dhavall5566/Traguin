@@ -33,6 +33,11 @@ export type TravelExpertPageData = {
   desk: TravelExpertDeskSettings;
 };
 
+const CONCIERGE_IMAGE_BY_SLUG: Record<string, string> = {
+  "visa-documentation": images.serviceVisa,
+  "corporate-mice": images.serviceCorporateEvent,
+};
+
 const DEFAULT_SERVICES: TravelExpertService[] = [
   {
     id: "fallback-bespoke",
@@ -52,7 +57,7 @@ const DEFAULT_SERVICES: TravelExpertService[] = [
     iconKey: "file-check",
     title: "Visa & Documentation",
     description: "Paperwork, appointments, and approvals cleared before you ever pack a bag.",
-    image: images.singapore,
+    image: images.serviceVisa,
     number: "02",
     featured: false,
     wide: false,
@@ -109,7 +114,7 @@ const DEFAULT_SERVICES: TravelExpertService[] = [
     title: "Corporate & MICE",
     description:
       "Leadership retreats, incentive travel, and board-level programs without a single loose end.",
-    image: images.experienceCorporate,
+    image: images.serviceCorporateEvent,
     number: "07",
     featured: false,
     wide: true,
@@ -129,6 +134,7 @@ function mapConciergeService(
   mediaMap: Map<string, string>
 ): TravelExpertService {
   const imageFallback =
+    CONCIERGE_IMAGE_BY_SLUG[service.slug] ??
     DEFAULT_SERVICES.find((item) => item.slug === service.slug)?.image ??
     images.experiencePrivateLuxe;
 

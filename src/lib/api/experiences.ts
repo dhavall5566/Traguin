@@ -16,7 +16,8 @@ import { humanizeCopy } from "@/lib/copy";
 const SHOWCASE_IMAGE_BY_SLUG: Record<string, string> = {
   "group-tours": images.experienceGroupTours,
   "private-luxe": images.experiencePrivateLuxe,
-  "corporate-events": images.experienceCorporate,
+  "corporate-events": images.serviceCorporateEvent,
+  mice: images.serviceCorporateEvent,
   "school-trips": images.experienceSchool,
 };
 

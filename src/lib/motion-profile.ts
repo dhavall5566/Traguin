@@ -1,10 +1,10 @@
 /** Shared motion / performance profile for touch devices and reduced motion. */
-
 export function getMotionLite(): boolean {
   if (typeof window === "undefined") return false;
   return (
     window.matchMedia("(prefers-reduced-motion: reduce)").matches ||
-    window.matchMedia("(pointer: coarse)").matches
+    window.matchMedia("(pointer: coarse)").matches ||
+    window.matchMedia("(max-width: 767px)").matches
   );
 }
 

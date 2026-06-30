@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
-import { ChevronLeft, ChevronRight, Quote, ArrowUpRight } from "lucide-react";
+import { ChevronLeft, ChevronRight, ArrowUpRight } from "lucide-react";
 import { SectionHeader } from "@/components/ui/SectionHeader";
 import { MagneticButton } from "@/components/ui/MagneticButton";
 import { HomeSection, HomeSectionActions } from "@/components/home/HomeSection";
@@ -11,10 +11,12 @@ import { primaryCta } from "@/data/site";
 import { cn } from "@/lib/utils";
 import type { HomeTestimonial } from "@/lib/api/homepage";
 import { getMotionLite } from "@/lib/motion-profile";
+import { useMotionLite } from "@/hooks/useMotionLite";
 
 const AUTO_ADVANCE_MS = 4000;
 
 export function CustomerStories({ testimonials }: { testimonials: HomeTestimonial[] }) {
+  const motionLite = useMotionLite();
   const [index, setIndex] = useState(0);
   const [paused, setPaused] = useState(false);
   const directionRef = useRef(1);
@@ -46,13 +48,14 @@ export function CustomerStories({ testimonials }: { testimonials: HomeTestimonia
 
   useGSAP(
     () => {
+      if (motionLite) return;
+
       const inner = innerRef.current;
       if (!inner) return;
 
       const prefersReducedMotion =
         typeof window !== "undefined" &&
         window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-      const motionLite = getMotionLite();
 
       const isFirst = prevIndexRef.current === -1;
       const isSwitch = !isFirst && prevIndexRef.current !== index;
@@ -119,7 +122,7 @@ export function CustomerStories({ testimonials }: { testimonials: HomeTestimonia
 
       prevIndexRef.current = index;
     },
-    { dependencies: [index] }
+    { dependencies: [index, motionLite] }
   );
 
   if (testimonials.length === 0) return null;
@@ -139,7 +142,7 @@ export function CustomerStories({ testimonials }: { testimonials: HomeTestimonia
           onFocusCapture={() => setPaused(true)}
           onBlurCapture={() => setPaused(false)}
         >
-          <div className="site-container--content [perspective:1400px]">
+          <div className={cn("site-container--content", !motionLite && "[perspective:1400px]")}>
             <article
               className="glass overflow-hidden rounded-2xl border border-gold/20 shadow-[0_16px_48px_-20px_rgba(206,169,50,0.14)]"
               aria-live="polite"
@@ -147,11 +150,20 @@ export function CustomerStories({ testimonials }: { testimonials: HomeTestimonia
             >
               <div
                 ref={innerRef}
-                className="px-8 py-10 [transform-style:preserve-3d] md:px-12 md:py-12"
+                className={cn(
+                  "px-8 py-10 md:px-12 md:py-12",
+                  !motionLite && "[transform-style:preserve-3d]"
+                )}
               >
-                <Quote size={28} className="text-gold/50" aria-hidden />
+                <span
+                  className="font-display text-4xl leading-none text-gold/50 select-none md:text-5xl"
+                  aria-hidden
+                >
+                  “
+                </span>
                 <blockquote className="mt-4 text-base leading-relaxed text-foreground md:text-lg">
-                  &ldquo;{story.quote}&rdquo;
+                  {story.quote.replace(/^[“"']+|[”"']+$/g, "").trim()}
+                  &rdquo;
                 </blockquote>
                 <footer className="mt-8 border-t border-glass-border pt-6">
                   <p className="font-medium text-foreground">{story.name}</p>

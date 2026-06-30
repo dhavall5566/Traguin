@@ -1224,6 +1224,14 @@ html[data-theme="light"] input[type="date"] {
   color: color-mix(in srgb, var(--foreground) 62%, transparent);
 }
 
+.home-promo-banner__assurances-heading {
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--sand);
+}
+
 .home-promo-banner__assurances {
   display: grid;
   gap: 0.65rem;
@@ -1242,26 +1250,45 @@ html[data-theme="light"] input[type="date"] {
   gap: 0.65rem;
   min-height: 7.5rem;
   padding: 0.9rem 1rem;
-  border: 1px solid color-mix(in srgb, var(--gold) 18%, var(--glass-border));
+  border: 1px solid color-mix(in srgb, var(--gold) 28%, var(--glass-border));
   border-radius: 1rem;
-  background: color-mix(in srgb, var(--surface) 72%, transparent);
-  backdrop-filter: blur(8px);
+  background: var(--surface);
+  box-shadow: 0 1px 0 color-mix(in srgb, var(--foreground) 4%, transparent);
 }
 
 .home-promo-banner__assurance-index {
   font-family: var(--font-display);
-  font-size: 0.8rem;
+  font-size: 0.85rem;
+  font-weight: 700;
   line-height: 1;
-  color: color-mix(in srgb, var(--gold) 45%, transparent);
+  color: var(--sand);
+}
+
+.home-promo-banner__assurance-icon {
+  display: flex;
+  width: 2.35rem;
+  height: 2.35rem;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  background: var(--gold);
+  color: var(--on-gold);
+  box-shadow: 0 2px 8px color-mix(in srgb, var(--gold) 35%, transparent);
 }
 
 .home-promo-banner__assurance-label {
-  font-size: 0.72rem;
+  font-size: 0.82rem;
   font-weight: 600;
-  line-height: 1.35;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  color: color-mix(in srgb, var(--foreground) 82%, transparent);
+  line-height: 1.45;
+  letter-spacing: 0.01em;
+  color: var(--foreground);
+}
+
+.traguin-standard__emoji {
+  font-family: "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", sans-serif;
+  font-size: clamp(1.75rem, 4vw, 2.25rem);
+  line-height: 1;
 }
 
 .home-promo-banner__panel {
@@ -1282,9 +1309,10 @@ html[data-theme="light"] input[type="date"] {
 .home-promo-banner__steps li {
   position: relative;
   padding-left: 1.1rem;
-  font-size: 0.78rem;
+  font-size: 0.82rem;
+  font-weight: 500;
   line-height: 1.45;
-  color: color-mix(in srgb, var(--foreground) 72%, transparent);
+  color: var(--foreground);
 }
 
 .home-promo-banner__steps li::before {
@@ -1292,10 +1320,11 @@ html[data-theme="light"] input[type="date"] {
   position: absolute;
   left: 0;
   top: 0.55em;
-  width: 0.35rem;
-  height: 0.35rem;
+  width: 0.4rem;
+  height: 0.4rem;
   border-radius: 999px;
   background: var(--gold);
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--gold) 22%, transparent);
 }
 
 .home-grid {
@@ -1974,6 +2003,26 @@ html[data-theme="light"] input[type="date"] {
   perspective: 1400px;
 }
 
+html[data-motion-lite="true"] .home-3d-stage,
+html[data-motion-lite="true"] .home-3d-stage [class*="perspective"] {
+  perspective: none !important;
+}
+
+html[data-motion-lite="true"] [class*="preserve-3d"] {
+  transform-style: flat !important;
+}
+
+html[data-motion-lite="true"] .will-change-transform {
+  will-change: auto !important;
+}
+
+html[data-motion-lite="true"] .glass,
+html[data-motion-lite="true"] .hero-package-card,
+html[data-motion-lite="true"] .home-region-panel__chip {
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+}
+
 .home-value-card,
 .home-journey-card,
 .home-spec-card {
@@ -2568,6 +2617,14 @@ main > div > section {
     justify-content: center;
     row-gap: 0.75rem;
     padding-inline: 1.5rem;
+  }
+
+  .customer-stories-track {
+    animation: none;
+    flex-wrap: wrap;
+    width: 100%;
+    justify-content: center;
+    row-gap: 0.75rem;
   }
 
   .site-header--hero,

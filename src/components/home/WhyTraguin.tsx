@@ -8,11 +8,14 @@ import { MagneticButton } from "@/components/ui/MagneticButton";
 import { HomeSection, HomeSectionActions } from "@/components/home/HomeSection";
 import { Tilt3DCard } from "@/components/itineraries/Tilt3DCard";
 import { useStaggerReveal3D } from "@/hooks/useStaggerReveal3D";
+import { useMotionLite } from "@/hooks/useMotionLite";
 import { secondaryCta } from "@/data/site";
 import { iconFromKey } from "@/lib/icons";
+import { cn } from "@/lib/utils";
 import type { HomeValueProp } from "@/lib/api/homepage";
 
 export function WhyTraguin({ items }: { items: HomeValueProp[] }) {
+  const motionLite = useMotionLite();
   const gridRef = useRef<HTMLDivElement>(null);
   useStaggerReveal3D(gridRef, { variant: "flip", stagger: 0.11 });
 
@@ -27,11 +30,21 @@ export function WhyTraguin({ items }: { items: HomeValueProp[] }) {
         />
       </Reveal3D>
 
-      <div ref={gridRef} className="home-value-grid home-grid mt-10 sm:grid-cols-2 lg:mt-12 lg:grid-cols-4 [perspective:1400px]">
+      <div
+        ref={gridRef}
+        className={cn(
+          "home-value-grid home-grid mt-10 sm:grid-cols-2 lg:mt-12 lg:grid-cols-4",
+          !motionLite && "[perspective:1400px]"
+        )}
+      >
         {items.map((item) => {
           const Icon = iconFromKey(item.iconKey);
           return (
-            <div key={item.id} data-reveal-item className="flex min-h-0 flex-col [transform-style:preserve-3d]">
+            <div
+              key={item.id}
+              data-reveal-item
+              className={cn("flex min-h-0 flex-col", !motionLite && "[transform-style:preserve-3d]")}
+            >
               <Tilt3DCard max={11} className="flex min-h-0 flex-1 flex-col overflow-hidden rounded-2xl">
                 <article className="home-value-card glass group flex h-full min-h-[17.5rem] flex-col p-7 sm:min-h-[18.5rem] sm:p-8">
                   <div className="flex items-start justify-between gap-3">

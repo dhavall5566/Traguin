@@ -102,6 +102,8 @@ function ShowcaseBackground({
           src={activePkg.image}
           alt=""
           className="h-full min-h-full w-full object-cover object-center"
+          loading="eager"
+          fetchPriority="high"
         />
       </div>
     );
@@ -133,6 +135,102 @@ function ShowcaseBackground({
           </motion.div>
         );
       })}
+    </div>
+  );
+}
+
+function ShowcaseContentStatic({ pkg }: { pkg: HomeTravelPackage }) {
+  const journeyHref = pkg.journeyHref;
+  const reviewCount = pkg.reviewCount;
+  const stars = Math.min(5, Math.max(0, Math.round(pkg.rating)));
+
+  return (
+    <div key={pkg.id} className="max-w-xl lg:max-w-[34rem]">
+      <p className="inline-block max-w-full text-sm font-semibold tracking-[0.2em] text-white/80 uppercase sm:tracking-[0.22em] md:text-base md:tracking-[0.24em]">
+        {pkg.destination}
+        <span className="text-white/50">
+          {" · "}
+          {pkg.region === "domestic" ? "India" : "International"}
+        </span>
+      </p>
+
+      <h2 className="mt-2 font-display text-4xl leading-[1.08] text-balance text-white sm:mt-3 sm:text-5xl md:text-6xl lg:text-[2.35rem] lg:leading-[1.1] xl:text-5xl">
+        {pkg.title}
+      </h2>
+
+      <div
+        className="mt-3 flex flex-wrap items-center gap-x-1.5 gap-y-1 lg:mt-2.5"
+        aria-label={`${pkg.rating.toFixed(1)} out of 5 from ${reviewCount} guest reviews, ${pkg.soldLastMonth} plus sold in the last month`}
+      >
+        {Array.from({ length: stars }).map((_, i) => (
+          <Star key={i} size={14} className="fill-gold text-gold" aria-hidden />
+        ))}
+        <span className="text-sm font-medium text-white">{pkg.rating.toFixed(1)}</span>
+        <span className="text-sm text-white/65">
+          ({reviewCount} {reviewCount === 1 ? "review" : "reviews"})
+        </span>
+        <span className="text-sm text-white/50" aria-hidden>
+          ·
+        </span>
+        <span className="text-sm text-white/65">
+          {pkg.soldLastMonth}+ Sold in the last month
+        </span>
+      </div>
+
+      <div className="mt-2.5 flex flex-wrap items-center gap-4 text-sm text-white/75 lg:mt-2">
+        <span className="flex items-center gap-2 text-xs font-semibold tracking-[0.14em] uppercase">
+          <Clock size={16} className="text-gold" />
+          {pkg.duration}
+        </span>
+      </div>
+
+      <p className="mt-4 max-w-md text-sm leading-relaxed text-white/75 md:text-base lg:hidden">
+        {packageBlurb(pkg)}
+      </p>
+
+      <ul className="mt-4 space-y-1.5 lg:mt-3 lg:space-y-1">
+        {pkg.highlights.slice(0, 3).map((highlight, index) => (
+          <li
+            key={highlight}
+            className={cn(
+              "flex items-start gap-2 text-sm text-white/80",
+              index === 2 && "lg:hidden"
+            )}
+          >
+            <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-gold" />
+            {highlight}
+          </li>
+        ))}
+      </ul>
+
+      <div className="mt-4 lg:mt-3">
+        <p className="text-[10px] font-bold tracking-[0.22em] text-white/60 uppercase">
+          Onwards
+        </p>
+        <p className="mt-0.5 text-xl font-bold tracking-tight text-gold md:text-2xl lg:text-xl xl:text-2xl">
+          {formatPrice(pkg.price)}
+        </p>
+      </div>
+
+      <div className="mt-5 flex flex-wrap items-center gap-3 lg:mt-4">
+        <MagneticButton
+          as="a"
+          href={journeyHref}
+          variant="primary"
+          className="!px-8 !py-3.5 !text-xs !font-bold !tracking-[0.14em] !uppercase"
+        >
+          <MapPin size={16} />
+          Discover Journey
+        </MagneticButton>
+        <MagneticButton
+          as="a"
+          href={primaryCta.href}
+          variant="secondary"
+          className="!border-white/25 !bg-white/10 !px-6 !py-3.5 !text-xs !font-bold !tracking-[0.14em] !text-white !uppercase hover:!border-gold/45 hover:!bg-white/15"
+        >
+          {primaryCta.label}
+        </MagneticButton>
+      </div>
     </div>
   );
 }
@@ -668,9 +766,15 @@ export function SlidingPackages({ packages }: { packages: HomeTravelPackage[] })
         <div className="home-shell flex flex-1 flex-col">
           <div className="flex w-full flex-1 flex-col justify-center gap-6 py-5 sm:py-6 lg:flex-row lg:items-center lg:gap-8 lg:py-8 xl:gap-10">
           <div className="w-full min-w-0 shrink lg:w-[42%] xl:w-[min(40%,34rem)]">
-            <AnimatePresence mode="wait">
-              {active && <ShowcaseContent key={active.id} pkg={active} />}
-            </AnimatePresence>
+            {active ? (
+              motionLite ? (
+                <ShowcaseContentStatic key={active.id} pkg={active} />
+              ) : (
+                <AnimatePresence mode="wait">
+                  <ShowcaseContent key={active.id} pkg={active} />
+                </AnimatePresence>
+              )
+            ) : null}
           </div>
 
           <div className="flex w-full min-w-0 flex-col items-center justify-center gap-4 sm:gap-5 lg:w-[58%] lg:gap-5 xl:w-[60%]">

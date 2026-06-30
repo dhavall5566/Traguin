@@ -49,13 +49,24 @@ export type HomeStat = {
   decimals?: number;
   /** Non-numeric headline, e.g. "Since 2024" */
   textValue?: string;
+  /** Prose-style cell instead of a large number */
+  style?: "number" | "quote";
+};
+
+const DEFAULT_GROWTH_STAT: HomeStat = {
+  id: "customer-growth",
+  value: 0,
+  suffix: "",
+  label: "",
+  textValue: "We didn't add customers, we multiplied them over the last two years.",
+  style: "quote",
 };
 
 const DEFAULT_HOMEPAGE_STATS: HomeStat[] = [
   { id: "bespoke", textValue: "Bespoke", value: 0, suffix: "", label: "Every route, yours alone" },
-  { id: "years-active", value: 2, suffix: "+", label: "Years crafting journeys" },
+  DEFAULT_GROWTH_STAT,
   { id: "trips", value: 500, suffix: "+", label: "Trips designed" },
-  { id: "destinations", value: 15, suffix: "+", label: "Curated destinations" },
+  { id: "destinations", value: 130, suffix: "+", label: "Curated destinations" },
   { id: "draft-time", textValue: "48 hrs", value: 0, suffix: "", label: "First itinerary draft" },
 ];
 
@@ -106,12 +117,14 @@ export type HomePromoData = {
   title: string;
   titleAccent: string;
   description: string;
+  assurancesHeading: string;
   assurances: { iconKey: string; label: string }[];
   consultation: {
     badge: string;
     title: string;
     description: string;
   };
+  consultationSteps: string[];
 };
 
 const PROMO_PLACEHOLDER_PATTERNS = [
@@ -137,15 +150,12 @@ function resolveHomePromo(
   homepagePromo: import("./types").CmsHomepagePromo | null
 ): HomePromoData {
   if (!homepagePromo) {
-    return { ...defaultHomepagePromo, assurances: [...defaultHomepagePromo.assurances] };
+    return {
+      ...defaultHomepagePromo,
+      assurances: [...defaultHomepagePromo.assurances],
+      consultationSteps: [...defaultHomepagePromo.consultationSteps],
+    };
   }
-
-  const cmsAssurances = (homepagePromo.assurances ?? [])
-    .map((item) => ({
-      iconKey: item.icon_key ?? "sparkles",
-      label: item.label?.trim() ?? "",
-    }))
-    .filter((item) => item.label && !isPromoPlaceholder(item.label));
 
   const useDefaultTitle = isPromoPlaceholder(homepagePromo.title);
 
@@ -163,14 +173,13 @@ function resolveHomePromo(
         ? defaultHomepagePromo.description
         : homepagePromo.description
     ),
-    assurances:
-      cmsAssurances.length > 0
-        ? cmsAssurances.map((item) => ({ ...item, label: humanizeCopy(item.label) }))
-        : [...defaultHomepagePromo.assurances],
+    assurancesHeading: defaultHomepagePromo.assurancesHeading,
+    assurances: [...defaultHomepagePromo.assurances],
     consultation: {
       ...defaultHomepagePromo.consultation,
       description: humanizeCopy(defaultHomepagePromo.consultation.description),
     },
+    consultationSteps: [...defaultHomepagePromo.consultationSteps],
   };
 }
 
@@ -347,7 +356,8 @@ function mergeRegionPanel(panel: HomeRegionPanel): HomeRegionPanel {
     stat:
       shouldUseFallbackContent ||
       isRegionFieldPlaceholder(panel.stat) ||
-      panel.stat.trim().toLowerCase() === panel.label.trim().toLowerCase()
+      panel.stat.trim().toLowerCase() === panel.label.trim().toLowerCase() ||
+      (kind === "domestic" && /12\+?\s*states?/i.test(panel.stat))
         ? fallback.stat
         : panel.stat,
     highlights:
@@ -457,10 +467,19 @@ function parseStat(raw: CmsStatJson, index: number): HomeStat | null {
   return null;
 }
 
-function mergeHomeStats(stats: HomeStat[]): HomeStat[] {
-  const cleaned = stats.filter(
-    (item) => !item.textValue?.toLowerCase().includes("since 2024")
+function isYearsCraftingStat(stat: HomeStat): boolean {
+  const label = stat.label.trim().toLowerCase();
+  return (
+    stat.id === "years-active" ||
+    label.includes("years crafting") ||
+    (label.includes("year") && stat.value === 2 && stat.suffix === "+")
   );
+}
+
+function mergeHomeStats(stats: HomeStat[]): HomeStat[] {
+  const cleaned = stats
+    .filter((item) => !item.textValue?.toLowerCase().includes("since 2024"))
+    .filter((item) => !isYearsCraftingStat(item));
 
   if (cleaned.length === 0) {
     return DEFAULT_HOMEPAGE_STATS;
@@ -476,12 +495,15 @@ function mergeHomeStats(stats: HomeStat[]): HomeStat[] {
       labelKey(item).includes("luxury travel studio")
   );
 
-  const hasYears = cleaned.some(
-    (item) => labelKey(item).includes("year") || (item.value === 2 && item.suffix === "+")
+  const hasGrowthMessage = cleaned.some(
+    (item) =>
+      item.id === "customer-growth" ||
+      item.style === "quote" ||
+      item.textValue?.toLowerCase().includes("multiplied them")
   );
 
   if (!hasStudioHighlight) founding.push(DEFAULT_HOMEPAGE_STATS[0]);
-  if (!hasYears) founding.push(DEFAULT_HOMEPAGE_STATS[1]);
+  if (!hasGrowthMessage) founding.push(DEFAULT_GROWTH_STAT);
 
   return uniqueById([...founding, ...cleaned]).slice(0, 5);
 }
@@ -502,6 +524,13 @@ function resolvePackageHeroImage(
   itinerary: CmsItinerary | undefined,
   mediaMap: Map<string, string>
 ): string {
+  if (
+    pkg.slug === "gj-005-divine-statue-of-unity-circuit" ||
+    itinerary?.slug === "gj-005-divine-statue-of-unity-itinerary"
+  ) {
+    return images.statueOfUnityCircuit;
+  }
+
   return (
     resolveMediaUrl(mediaMap, pkg.hero_media_id, "") ||
     resolveMediaUrl(mediaMap, itinerary?.hero_media_id, "") ||

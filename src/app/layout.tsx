@@ -4,6 +4,7 @@ import { cookies } from "next/headers";
 import { isTheme, themeInitScript, THEME_COOKIE_NAME, type Theme } from "@/lib/theme";
 import "./globals.css";
 import { ThemeProvider } from "@/components/providers/ThemeProvider";
+import { MotionLiteProvider } from "@/components/providers/MotionLiteProvider";
 
 export const metadata: Metadata = {
   title: {
@@ -27,7 +28,9 @@ export const metadata: Metadata = {
   },
   icons: {
     icon: [
+      { url: "/favicon-32.png", sizes: "32x32", type: "image/png" },
       { url: "/favicon.png", sizes: "64x64", type: "image/png" },
+      { url: "/icon-192.png", sizes: "192x192", type: "image/png" },
       { url: "/icon.png", sizes: "512x512", type: "image/png" },
     ],
     shortcut: "/favicon.png",
@@ -64,7 +67,9 @@ export default async function RootLayout({
           strategy="beforeInteractive"
           dangerouslySetInnerHTML={{ __html: themeInitScript }}
         />
-        <ThemeProvider initialTheme={serverTheme}>{children}</ThemeProvider>
+        <ThemeProvider initialTheme={serverTheme}>
+          <MotionLiteProvider>{children}</MotionLiteProvider>
+        </ThemeProvider>
       </body>
     </html>
   );

@@ -24,8 +24,8 @@ function ExperienceCard({
       href={item.href}
       className={cn(
         "experience-showcase-card group flex h-full w-full flex-col overflow-hidden rounded-2xl border border-glass-border bg-surface text-left",
-        "shadow-[0_8px_28px_-12px_rgba(0,0,0,0.18)] transition-all duration-300",
-        "hover:border-gold/30 hover:shadow-[0_16px_40px_-14px_rgba(0,0,0,0.22)] hover:-translate-y-0.5",
+        "shadow-[0_8px_28px_-12px_rgba(0,0,0,0.18)] transition-[border-color,box-shadow] duration-300",
+        "hover:border-gold/30 hover:shadow-[0_16px_40px_-14px_rgba(0,0,0,0.22)]",
         "focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gold",
         className
       )}
@@ -34,7 +34,7 @@ function ExperienceCard({
         <SafeImage
           src={item.image}
           alt=""
-          className="h-full w-full object-cover object-center transition-transform duration-700 ease-out group-hover:scale-[1.04]"
+          className="h-full w-full object-cover object-center"
         />
         <span className="experience-showcase-card__index absolute top-3 left-3 sm:top-4 sm:left-4">
           {item.number}

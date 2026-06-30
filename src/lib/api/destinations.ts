@@ -2,6 +2,7 @@ import { cache } from "react";
 import type { DestinationListing, DestinationItineraryPreview, IndiaRegion, DestinationCategoryRef } from "@/lib/destination-listing-types";
 import { buildInternationalCountryFilters } from "@/lib/destination-grouping";
 import { resolveDestinationHeroImage } from "@/lib/destination-images";
+import { resolveIndiaRegion } from "@/lib/india-region";
 import type { Itinerary } from "@/types/itinerary";
 import { normalizeTravelMoods } from "@/lib/travel-moods";
 import {
@@ -142,9 +143,11 @@ export function mapCmsDestinationToListing(
     dest.gallery_media[0]?.url ||
     "";
 
+  const indiaRegion = resolveIndiaRegion(dest.slug, dest.india_region as IndiaRegion | null);
+
   const image = resolveDestinationHeroImage(dest.slug, {
     cmsImage,
-    indiaRegion: (dest.india_region as IndiaRegion | null) ?? undefined,
+    indiaRegion,
     region: dest.region,
   });
 
@@ -163,7 +166,7 @@ export function mapCmsDestinationToListing(
     categories,
     region: dest.region,
     country: dest.country?.trim() || (dest.region === "domestic" ? "India" : undefined),
-    indiaRegion: (dest.india_region as IndiaRegion | null) ?? undefined,
+    indiaRegion,
     moods: normalizeTravelMoods(dest.moods),
     hasItinerary,
     journeyCount,

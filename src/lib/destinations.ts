@@ -9,8 +9,8 @@ import type {
   DestinationCategoryRef,
   DestinationItineraryPreview,
   DestinationListing,
-  IndiaRegion,
 } from "@/lib/destination-listing-types";
+import { resolveIndiaRegion } from "@/lib/india-region";
 import type { TravelMood } from "@/types";
 
 export type {
@@ -44,14 +44,6 @@ export function getDestinationReviewCount(destinationId: string, rating?: number
   return 42 + (hash % 120) + Math.round(resolvedRating * 8);
 }
 
-const INDIA_REGION_BY_DESTINATION: Partial<Record<string, IndiaRegion>> = {
-  kashmir: "north",
-  himachal: "north",
-  ladakh: "north",
-  kerala: "south",
-  goa: "west",
-};
-
 export const INTERNATIONAL_COLLECTION_FILTERS = destinationCategories
   .filter((category) => category.id !== "indian-escapes")
   .map((category) => ({
@@ -83,7 +75,7 @@ export function getAllDestinations(): DestinationListing[] {
         categoryTitle: category.title,
         categories: [categoryRef],
         region: meta?.region ?? "international",
-        indiaRegion: INDIA_REGION_BY_DESTINATION[dest.id],
+        indiaRegion: resolveIndiaRegion(dest.id),
         moods: meta?.moods ?? [],
         hasItinerary: !!getItineraryByDestinationId(dest.id),
         journeyCount: getItineraryByDestinationId(dest.id) ? 1 : 0,

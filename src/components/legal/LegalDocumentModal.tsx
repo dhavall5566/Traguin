@@ -91,21 +91,14 @@ export function LegalDocumentModal({
         </div>
 
         <footer className="legal-document-modal__footer shrink-0 border-t border-glass-border bg-background/95 px-5 py-3 backdrop-blur-md sm:px-6 sm:py-4 md:px-8">
-          <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+          <div className="flex justify-end">
             <Link
               href={pageHref}
-              className="text-center text-xs font-semibold tracking-[0.14em] text-gold uppercase transition-colors hover:text-foreground sm:text-left"
+              className="inline-flex h-11 items-center justify-center rounded-full border border-gold/30 bg-gold px-8 text-xs font-bold tracking-[0.14em] text-on-gold uppercase transition-colors hover:bg-gold-light"
               onClick={onClose}
             >
-              Open full page
+              Read
             </Link>
-            <button
-              type="button"
-              onClick={onClose}
-              className="inline-flex h-11 items-center justify-center rounded-full border border-gold/30 bg-gold px-6 text-xs font-bold tracking-[0.14em] text-on-gold uppercase transition-colors hover:bg-gold-light"
-            >
-              Close
-            </button>
           </div>
         </footer>
       </div>

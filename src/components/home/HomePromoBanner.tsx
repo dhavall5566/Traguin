@@ -10,6 +10,7 @@ import { primaryCta, secondaryCta } from "@/data/site";
 import { iconFromKey } from "@/lib/icons";
 import { images } from "@/lib/images";
 import type { HomePromoData } from "@/lib/api/homepage";
+import { cn } from "@/lib/utils";
 
 export function HomePromoBanner({ promo }: { promo: HomePromoData | null }) {
   if (!promo) return null;
@@ -48,22 +49,34 @@ export function HomePromoBanner({ promo }: { promo: HomePromoData | null }) {
             </p>
 
             {promo.assurances.length > 0 && (
-              <ul className="home-promo-banner__assurances mt-7 sm:mt-8">
-                {promo.assurances.map(({ iconKey, label }, index) => {
-                  const Icon = iconFromKey(iconKey);
-                  return (
-                    <li key={label} className="home-promo-banner__assurance">
-                      <span className="home-promo-banner__assurance-index">
-                        {String(index + 1).padStart(2, "0")}
-                      </span>
-                      <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-gold/25 bg-gold/[0.08] text-gold">
-                        <Icon size={15} aria-hidden />
-                      </span>
-                      <span className="home-promo-banner__assurance-label">{label}</span>
-                    </li>
-                  );
-                })}
-              </ul>
+              <>
+                {promo.assurancesHeading ? (
+                  <p className="home-promo-banner__assurances-heading mt-7 sm:mt-8">
+                    {promo.assurancesHeading}
+                  </p>
+                ) : null}
+                <ul
+                  className={cn(
+                    "home-promo-banner__assurances",
+                    promo.assurancesHeading ? "mt-3 sm:mt-4" : "mt-7 sm:mt-8"
+                  )}
+                >
+                  {promo.assurances.map(({ iconKey, label }, index) => {
+                    const Icon = iconFromKey(iconKey);
+                    return (
+                      <li key={label} className="home-promo-banner__assurance">
+                        <span className="home-promo-banner__assurance-index">
+                          {String(index + 1).padStart(2, "0")}
+                        </span>
+                        <span className="home-promo-banner__assurance-icon" aria-hidden>
+                          <Icon size={18} strokeWidth={2.25} />
+                        </span>
+                        <span className="home-promo-banner__assurance-label">{label}</span>
+                      </li>
+                    );
+                  })}
+                </ul>
+              </>
             )}
 
             <p className="mt-6 hidden text-[0.68rem] tracking-[0.18em] text-muted uppercase lg:block">
@@ -90,9 +103,9 @@ export function HomePromoBanner({ promo }: { promo: HomePromoData | null }) {
               </p>
 
               <ol className="home-promo-banner__steps mt-5">
-                <li>Share your dates & travel style</li>
-                <li>Receive a tailored first draft</li>
-                <li>Refine until it feels right</li>
+                {promo.consultationSteps.map((step) => (
+                  <li key={step}>{step}</li>
+                ))}
               </ol>
             </div>
 

@@ -40,14 +40,14 @@ import { PageShell } from "@/components/layout/PageShell";
 import { PageHero } from "@/components/layout/PageHero";
 import { TrustBar } from "@/components/layout/TrustBar";
 import { PageCTA } from "@/components/layout/PageCTA";
-import { getDestinationsHeroContent } from "@/data/pageContent";
+import { getDestinationsHeroContent, curatedDestinationCount } from "@/data/pageContent";
 import type { TravelMood } from "@/types";
 
 const PRICE_FILTERS = [
-  { id: "all", label: "All price ranges" },
-  { id: "under1L", label: "Under ₹1L" },
-  { id: "1L-3L", label: "₹1L – ₹3L" },
-  { id: "over3L", label: "₹3L+" },
+  { id: "all", label: "All budgets" },
+  { id: "budget-friendly", label: "Budget friendly" },
+  { id: "1L-3L", label: "1L – 3L" },
+  { id: "over3L", label: "3L+" },
 ] as const;
 
 const REGION_FILTERS = [
@@ -126,10 +126,6 @@ const INDIA_REGION_OPTIONS = [
   })),
 ];
 
-const ALL_REGIONS_PLACEHOLDER = [
-  { value: "all", label: "Select India or International", icon: Globe },
-];
-
 function getSubRegionLabel(regionFilter: RegionFilterId) {
   if (regionFilter === "domestic") return "Region";
   if (regionFilter === "international") return "Country";
@@ -142,7 +138,16 @@ function getSubRegionOptions(
 ) {
   if (regionFilter === "domestic") return INDIA_REGION_OPTIONS;
   if (regionFilter === "international") return internationalCountryOptions;
-  return ALL_REGIONS_PLACEHOLDER;
+
+  return [
+    { value: "all", label: "All regions & countries", icon: Globe },
+    ...INDIA_REGION_FILTERS.filter((region) => region.id !== "all").map((region) => ({
+      value: region.id,
+      label: region.label,
+      icon: MapPin,
+    })),
+    ...internationalCountryOptions.filter((option) => option.value !== "all"),
+  ];
 }
 
 function matchesSubRegionFilter(
@@ -365,7 +370,7 @@ export function DestinationsPage({
       if (!matchesSubRegionFilter(dest, categoryFilter, regionFilter)) return false;
       if (regionFilter !== "all" && dest.region !== regionFilter) return false;
       if (moodFilter !== "all" && !dest.moods.includes(moodFilter)) return false;
-      if (priceFilter === "under1L" && dest.startingPrice >= 100000) return false;
+      if (priceFilter === "budget-friendly" && dest.startingPrice >= 100000) return false;
       if (priceFilter === "1L-3L" && (dest.startingPrice < 100000 || dest.startingPrice > 300000)) {
         return false;
       }
@@ -498,11 +503,8 @@ export function DestinationsPage({
                 />
               </label>
               <p className="shrink-0 self-start rounded-full border border-gold/25 bg-gold/8 px-4 py-2 text-sm sm:self-center">
-                <span className="font-medium text-gold">{filteredDestinations.length}</span>
-                <span className="text-muted">
-                  {" "}
-                  {filteredDestinations.length === 1 ? "destination" : "destinations"}
-                </span>
+                <span className="font-medium text-gold">{curatedDestinationCount}</span>
+                <span className="text-muted"> destinations</span>
               </p>
             </div>
 
@@ -574,7 +576,7 @@ export function DestinationsPage({
               />
               <FilterDropdown
                 id="budget"
-                label="Price range"
+                label="Budget friendly"
                 value={priceFilter}
                 options={PRICE_FILTERS.map((p) => ({
                   value: p.id,

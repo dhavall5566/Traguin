@@ -44,11 +44,19 @@ export function HomePageContent({ data }: { data: HomepageData }) {
   return (
     <main className="home-page home-3d-stage">
       <SlidingPackages packages={data.featuredPackages} />
-      <LuxuryStatsBar stats={data.stats} />
-      <DestinationMarquee names={data.marqueeNames} />
-      <DomesticInternationalSplit panels={data.regionPanels} />
-      <FeaturedDestinations destinations={data.featuredDestinations} />
-      <HomePromoBanner promo={data.promo} />
+      <LuxuryStatsBar />
+      <LazyHomeSection rootMargin="160px 0px">
+        <DestinationMarquee names={data.marqueeNames} />
+      </LazyHomeSection>
+      <LazyHomeSection rootMargin="200px 0px">
+        <DomesticInternationalSplit panels={data.regionPanels} />
+      </LazyHomeSection>
+      <LazyHomeSection rootMargin="200px 0px">
+        <FeaturedDestinations destinations={data.featuredDestinations} />
+      </LazyHomeSection>
+      <LazyHomeSection>
+        <HomePromoBanner promo={data.promo} />
+      </LazyHomeSection>
       <LazyHomeSection>
         <ExperienceShowcase items={data.experiences} />
       </LazyHomeSection>

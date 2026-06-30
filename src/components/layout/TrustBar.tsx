@@ -1,10 +1,10 @@
-import { trustHighlights } from "@/data/pageContent";
+import { getSiteTrustHighlights } from "@/lib/site-trust-stats";
 import { isHotelContentVisible } from "@/lib/site-features";
 
 export function TrustBar() {
   const highlights = isHotelContentVisible()
-    ? trustHighlights
-    : trustHighlights.filter((item) => item.label !== "Partner properties");
+    ? getSiteTrustHighlights()
+    : getSiteTrustHighlights().filter((item) => item.label !== "Partner properties");
 
   return (
     <section aria-label="TRAGUIN credentials" className="trust-bar border-y border-glass-border">

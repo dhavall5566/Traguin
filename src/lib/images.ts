@@ -24,6 +24,9 @@ export const images = {
   ladakh: pexels(2387873),
   rajasthan: pexels(1271619),
   himachal: pexels(3574440),
+  punjab: pexels(25264894),
+  delhi: pexels(1070535),
+  "uttar-pradesh": pexels(316458),
 
   // International, distinct verified photos
   bali: pexels(4244164),
@@ -38,10 +41,16 @@ export const images = {
 
   beach: pexels(1450360),
 
+  statueOfUnityCircuit: "/packages/statue-of-unity-circuit.png",
+
   // Experience showcase cards (local, real TRAGUIN photos)
   experienceGroupTours: "/experiences/group-tours.png",
   experiencePrivateLuxe: "/experiences/private-luxe.png",
-  experienceCorporate: pexels(1181677, 1400),
+  /** Travel Expert — visa & paperwork */
+  serviceVisa: pexels(4606725, 1400),
+  /** Travel Expert + corporate/MICE programs */
+  serviceCorporateEvent: pexels(2774552, 1400),
+  experienceCorporate: pexels(2774552, 1400),
   experienceSchool: pexels(8199572, 1400),
 
   couple1: unsplash("1524504388940-b1c1722653e1", 400),

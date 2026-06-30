@@ -4,9 +4,13 @@ import { useEffect, useRef, useState, type ReactNode } from "react";
 
 type LazyHomeSectionProps = {
   children: ReactNode;
+  rootMargin?: string;
 };
 
-export function LazyHomeSection({ children }: LazyHomeSectionProps) {
+export function LazyHomeSection({
+  children,
+  rootMargin = "240px 0px",
+}: LazyHomeSectionProps) {
   const ref = useRef<HTMLDivElement>(null);
   const [visible, setVisible] = useState(false);
 
@@ -20,7 +24,7 @@ export function LazyHomeSection({ children }: LazyHomeSectionProps) {
         setVisible(true);
         observer.disconnect();
       },
-      { rootMargin: "240px 0px" },
+      { rootMargin },
     );
 
     observer.observe(node);

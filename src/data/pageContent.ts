@@ -13,12 +13,21 @@ export type PageHeroContent = {
   secondaryAction?: { label: string; href: string };
 };
 
+export const curatedDestinationCount = 130;
+
+/** "The TRAGUIN Standard" row — emoji + promise copy */
+export const traguinStandardHighlights = [
+  { emoji: "⚡", label: "48-Hour Custom Proposal" },
+  { emoji: "👨‍💼", label: "One Expert. One Point of Contact." },
+  { emoji: "✈️", label: "India & Global Holidays" },
+] as const;
+
 export const trustHighlights = [
   { value: "Bespoke", label: "Every route, yours alone" },
-  { value: "2+", label: "Years of expertise" },
-  { value: "15+", label: "Curated destinations" },
+  { value: "100+", label: "More than 100 travelers monthly" },
+  { value: "130+", label: "Curated destinations" },
   { value: "28+", label: "Partner properties" },
-  { value: "2 hrs", label: "First itinerary draft" },
+  { value: "48 hrs", label: "First itinerary draft" },
 ] as const;
 
 export const pageHeroes = {
@@ -181,10 +190,11 @@ export const defaultHomepagePromo = {
   titleAccent: "not a template.",
   description:
     "We listen first, then design: handpicked stays, unhurried routes, and the small details that turn a good trip into the one you talk about for years.",
+  assurancesHeading: "Connect | Personalize | Travel",
   assurances: [
-    { iconKey: "clock", label: "48-hour first draft" },
-    { iconKey: "user", label: "One dedicated expert" },
-    { iconKey: "globe", label: "India & worldwide" },
+    { iconKey: "clock", label: "48-hour response" },
+    { iconKey: "calendar-check", label: "15-min design call" },
+    { iconKey: "badge-check", label: "Transparent pricing" },
   ],
   consultation: {
     badge: "Complimentary",
@@ -192,6 +202,11 @@ export const defaultHomepagePromo = {
     description:
       "Twenty minutes to understand your dates, pace, and priorities. We follow up with a tailored first itinerary, with no obligation.",
   },
+  consultationSteps: [
+    "Share your dates & travel style",
+    "120 min first draft",
+    "Refine until it feels right",
+  ],
 } as const;
 
 export const defaultSpecializations = [
@@ -239,7 +254,7 @@ export const defaultRegionPanels = [
     title: "India & Beyond",
     description:
       "Heritage circuits, Himalayan escapes, and coastal retreats across the subcontinent. Each journey is designed from our Ahmedabad studio with white-glove attention to detail.",
-    stat: "12+ States",
+    stat: "22+ States",
     highlights: ["Rajasthan", "Kerala", "Himalayas", "Goa"],
     href: "/destinations?region=domestic",
     mood: "warm" as const,

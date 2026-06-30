@@ -81,6 +81,7 @@ function RegionImageGallery({
 
   const activeIndex = motionLite ? 0 : index;
   const hasMultiple = slides.length > 1 && !motionLite;
+  const visibleSlides = motionLite ? slides.slice(0, 1) : slides;
 
   return (
     <div
@@ -90,7 +91,7 @@ function RegionImageGallery({
       aria-roledescription="carousel"
       aria-label={`${alt} photo gallery`}
     >
-      {slides.map((src, i) => (
+      {visibleSlides.map((src, i) => (
         <div
           key={`${src}-${i}`}
           className={cn(
@@ -155,6 +156,8 @@ export function DomesticInternationalSplit({ panels }: { panels: HomeRegionPanel
 
   if (regionPanels.length === 0 || !activePanel) return null;
 
+  const PanelContent = motionLite ? "div" : motion.div;
+
   return (
     <HomeSection id="explore-regions">
       <SectionHeader
@@ -218,11 +221,15 @@ export function DomesticInternationalSplit({ panels }: { panels: HomeRegionPanel
               </span>
             </div>
 
-            <motion.div
+            <PanelContent
               key={`${activePanel.id}-content`}
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.35, ease: [0.33, 1, 0.68, 1] }}
+              {...(motionLite
+                ? {}
+                : {
+                    initial: { opacity: 0, y: 10 },
+                    animate: { opacity: 1, y: 0 },
+                    transition: { duration: 0.35, ease: [0.33, 1, 0.68, 1] as const },
+                  })}
               className="pointer-events-none absolute inset-x-0 bottom-0 z-20 px-6 pt-0 pb-8 sm:px-8 sm:pb-10 lg:px-10 lg:pb-12"
             >
               {hasGallerySlides ? (
@@ -274,7 +281,7 @@ export function DomesticInternationalSplit({ panels }: { panels: HomeRegionPanel
                 Explore {activePanel.label}
                 <ArrowUpRight size={14} />
               </Link>
-            </motion.div>
+            </PanelContent>
           </div>
         </div>
       </Reveal3D>

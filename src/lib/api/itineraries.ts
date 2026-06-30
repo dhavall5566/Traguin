@@ -47,10 +47,12 @@ export function mapCmsItineraryToItinerary(
   hotelsByUuid?: Map<string, Hotel>
 ): Itinerary {
   const heroImage =
-    resolveMediaUrl(mediaMap, itinerary.hero_media_id, "") ||
-    resolveMediaUrl(mediaMap, destination.hero_media_id, "") ||
-    destination.gallery_media[0]?.url ||
-    images.bali;
+    itinerary.slug === "gj-005-divine-statue-of-unity-itinerary"
+      ? images.statueOfUnityCircuit
+      : resolveMediaUrl(mediaMap, itinerary.hero_media_id, "") ||
+        resolveMediaUrl(mediaMap, destination.hero_media_id, "") ||
+        destination.gallery_media[0]?.url ||
+        images.bali;
 
   const gallery = uniqueGalleryUrls(
     itinerary.gallery_media.length
