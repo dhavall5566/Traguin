@@ -4,6 +4,7 @@ import { formValueToNestedList, nestedListToFormValue } from "@/lib/admin/nested
 import { coerceAdminNumberPayload, clampAdminNumber } from "@/lib/admin/number-input";
 import { formValueToStats, statsToFormValue } from "@/lib/admin/stat-list";
 import type { AdminEntityDef, AdminEntityGroup, AdminFieldDef } from "@/lib/admin/types";
+import { uniqueStringsPreservingOrder } from "@/lib/utils";
 
 function slugifyGalleryName(value: string): string {
   const slug = value
@@ -255,7 +256,11 @@ export function recordToFormValues(
   const values: Record<string, unknown> = {};
   for (const field of entity.fields) {
     if (field.readFrom) {
-      values[field.name] = field.readFrom(record);
+      let value = field.readFrom(record);
+      if (field.type === "relation-multi" && Array.isArray(value)) {
+        value = uniqueStringsPreservingOrder(value.map(String));
+      }
+      values[field.name] = value;
       continue;
     }
     const raw = record[field.name];
@@ -266,7 +271,9 @@ export function recordToFormValues(
     } else if (field.type === "relation" && raw != null) {
       values[field.name] = String(raw);
     } else if (field.type === "relation-multi") {
-      values[field.name] = Array.isArray(raw) ? raw : [];
+      values[field.name] = uniqueStringsPreservingOrder(
+        (Array.isArray(raw) ? raw : []).map(String),
+      );
     } else if (field.type === "stat-list") {
       values[field.name] = statsToFormValue(raw);
     } else if (field.type === "legal-sections") {
@@ -316,7 +323,9 @@ export function formValuesToPayload(
     } else if (field.type === "relation") {
       value = value === "" || value == null ? null : value;
     } else if (field.type === "relation-multi") {
-      value = Array.isArray(value) ? value : [];
+      value = uniqueStringsPreservingOrder(
+        (Array.isArray(value) ? value : []).map(String).filter(Boolean),
+      );
     } else if (field.type === "select" && field.name === "india_region") {
       value = value === "" ? null : value;
     } else if (field.type === "boolean") {

@@ -3,6 +3,7 @@ import type {
   GalleryClientWallItem,
   GalleryItem,
 } from "@/lib/gallery-types";
+import { uniqueById } from "@/lib/utils";
 import {
   buildMediaUrlMap,
   getGalleryCategories,
@@ -70,12 +71,14 @@ export function mapCmsGalleryItemToGalleryItems(
   mediaMap: Map<string, string>,
   altMap: Map<string, string>
 ): GalleryItem[] {
-  const mediaEntries =
+  const sortedMedia =
     item.media.length > 0
       ? [...item.media].sort((a, b) => (a.sort_order ?? 0) - (b.sort_order ?? 0))
       : item.media_id
         ? [{ id: item.media_id, url: "", alt_text: null, sort_order: 0 }]
         : [];
+
+  const mediaEntries = uniqueById(sortedMedia);
 
   return mediaEntries
     .map((media) => {
@@ -109,19 +112,25 @@ export async function getGalleryPageData(): Promise<GalleryPageData> {
 
   const mediaMap = buildMediaUrlMap(mediaAssets);
   const altMap = buildMediaAltMap(mediaAssets);
-  const galleryStories = sortGalleryStories(cmsStories.filter((story) => story.is_published));
+  const galleryStories = uniqueById(
+    sortGalleryStories(cmsStories.filter((story) => story.is_published)),
+  );
 
-  const clientWall = galleryStories
-    .map((story, index) => mapCmsClientStoryToWallItem(story, mediaMap, index))
-    .filter((item): item is GalleryClientWallItem => item != null);
+  const clientWall = uniqueById(
+    galleryStories
+      .map((story, index) => mapCmsClientStoryToWallItem(story, mediaMap, index))
+      .filter((item): item is GalleryClientWallItem => item != null),
+  );
 
-  const galleryItems = cmsItems
-    .filter((item) => item.is_published)
-    .sort(
-      (a, b) =>
-        (a.sort_order ?? 999) - (b.sort_order ?? 999) || a.place.localeCompare(b.place)
-    )
-    .flatMap((item) => mapCmsGalleryItemToGalleryItems(item, mediaMap, altMap));
+  const galleryItems = uniqueById(
+    cmsItems
+      .filter((item) => item.is_published)
+      .sort(
+        (a, b) =>
+          (a.sort_order ?? 999) - (b.sort_order ?? 999) || a.place.localeCompare(b.place)
+      )
+      .flatMap((item) => mapCmsGalleryItemToGalleryItems(item, mediaMap, altMap)),
+  );
 
   const galleryCategories: GalleryCategory[] = [
     { id: "all", label: "All" },

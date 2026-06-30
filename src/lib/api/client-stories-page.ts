@@ -9,6 +9,7 @@ import { cmsFetchPaginated } from "@/lib/api/client";
 import type { CmsClientStory } from "@/lib/api/types";
 import type { GalleryClientWallItem } from "@/lib/gallery-types";
 import { mapCmsClientStoryToWallItem } from "@/lib/api/gallery";
+import { uniqueById } from "@/lib/utils";
 
 export type ClientStoryReview = {
   id: string;
@@ -57,7 +58,9 @@ export const getClientStoriesPageData = cache(async function getClientStoriesPag
   ]);
 
   const mediaMap = buildMediaUrlMap(mediaAssets);
-  const published = sortForPage(stories.filter((story) => story.is_published));
+  const published = uniqueById(
+    sortForPage(stories.filter((story) => story.is_published)),
+  );
 
   let photoIndex = 0;
   const photos = published

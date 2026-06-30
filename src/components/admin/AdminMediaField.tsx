@@ -4,7 +4,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { Upload, X } from "lucide-react";
 import { adminGetOne, adminUploadMedia, type AdminMediaAsset } from "@/lib/admin/api-client";
 import type { AdminMediaOption } from "@/lib/admin/media-field-options";
-import { cn } from "@/lib/utils";
+import { cn, uniqueStringsPreservingOrder } from "@/lib/utils";
 
 const ACCEPT = "image/jpeg,image/png,image/webp,image/gif";
 
@@ -115,7 +115,9 @@ export function AdminMediaField(props: AdminMediaFieldProps) {
 
   const previewIds = useMemo((): string[] => {
     if (props.multiple) {
-      return props.value.map((mediaId) => String(mediaId)).filter(Boolean);
+      return uniqueStringsPreservingOrder(
+        props.value.map((mediaId) => String(mediaId)).filter(Boolean),
+      );
     }
     return props.value ? [String(props.value)] : [];
   }, [props]);
@@ -246,7 +248,7 @@ export function AdminMediaField(props: AdminMediaFieldProps) {
     const uploadedIds = uploaded.map((opt) => opt.value);
 
     if (props.multiple) {
-      props.onChange([...new Set([...props.value, ...uploadedIds])]);
+      props.onChange(uniqueStringsPreservingOrder([...props.value, ...uploadedIds]));
     } else {
       props.onChange(uploadedIds[uploaded.length - 1] ?? props.value);
     }
@@ -335,7 +337,7 @@ export function AdminMediaField(props: AdminMediaFieldProps) {
                     if (!props.multiple) return;
                     const next = isSelected
                       ? props.value.filter((id) => id !== opt.value)
-                      : [...props.value, opt.value];
+                      : uniqueStringsPreservingOrder([...props.value, opt.value]);
                     props.onChange(next);
                   }}
                 >
@@ -369,7 +371,7 @@ export function AdminMediaField(props: AdminMediaFieldProps) {
 
               if (useFullCards) {
                 return (
-                  <figure key={optionId} className="admin-media-field__card">
+                  <figure key={`${optionId}-${index}`} className="admin-media-field__card">
                     <div className="admin-media-field__card-image">
                       {preview ? (
                         <UncroppedMediaPreview src={preview} alt={name} />
@@ -391,7 +393,7 @@ export function AdminMediaField(props: AdminMediaFieldProps) {
               }
 
               return (
-                <div key={optionId} className="admin-media-field__selected-item">
+                <div key={`${optionId}-${index}`} className="admin-media-field__selected-item">
                   {preview ? (
                     // eslint-disable-next-line @next/next/no-img-element
                     <img src={preview} alt={name} />

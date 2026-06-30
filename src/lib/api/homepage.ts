@@ -12,6 +12,7 @@ import { images } from "@/lib/images";
 import { cleanPackageTitle } from "@/lib/package-title";
 import { defaultHomepagePromo, defaultRegionPanels, defaultSpecializations } from "@/data/pageContent";
 import { humanizeCopy, humanizeCopyList } from "@/lib/copy";
+import { uniqueById } from "@/lib/utils";
 
 export { HERO_SLIDER_DEFAULT_MAX_ITEMS } from "@/lib/api/homepage-hero-settings";
 import { readHomepageHeroSettings } from "@/lib/api/homepage-hero-settings";
@@ -57,15 +58,6 @@ const DEFAULT_HOMEPAGE_STATS: HomeStat[] = [
   { id: "destinations", value: 15, suffix: "+", label: "Curated destinations" },
   { id: "draft-time", textValue: "48 hrs", value: 0, suffix: "", label: "First itinerary draft" },
 ];
-
-function uniqueById<T extends { id: string }>(items: T[]): T[] {
-  const seen = new Set<string>();
-  return items.filter((item) => {
-    if (seen.has(item.id)) return false;
-    seen.add(item.id);
-    return true;
-  });
-}
 
 export type HomeRegionPanel = {
   id: string;
