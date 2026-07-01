@@ -84,7 +84,7 @@ export function DestinationHubCard({
         <div className="destination-hub-card__footer mt-auto pt-3.5">
           <div className="min-w-0">
             <p className="text-[9px] font-bold tracking-[0.18em] text-muted uppercase">
-              {startingPrice != null ? "Packages from" : "Multiple itineraries"}
+              {startingPrice != null ? "Packages onwards" : "Multiple itineraries"}
             </p>
             {startingPrice != null ? (
               <p className="mt-0.5 font-display text-base text-gold">{formatPrice(startingPrice)}</p>

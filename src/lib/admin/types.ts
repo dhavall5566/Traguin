@@ -61,6 +61,8 @@ export type AdminFieldDef = {
   listLabel?: string;
   /** Render boolean list column as an inline active/inactive toggle. */
   listToggle?: boolean;
+  /** Allow inline editing of this column in the list table. */
+  listInlineEdit?: boolean;
   listFormat?: (value: unknown, record: Record<string, unknown>) => string;
 };
 

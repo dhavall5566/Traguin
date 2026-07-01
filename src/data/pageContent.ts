@@ -192,9 +192,9 @@ export const defaultHomepagePromo = {
     "We listen first, then design: handpicked stays, unhurried routes, and the small details that turn a good trip into the one you talk about for years.",
   assurancesHeading: "Connect | Personalize | Travel",
   assurances: [
-    { iconKey: "clock", label: "48-hour response" },
-    { iconKey: "calendar-check", label: "15-min design call" },
-    { iconKey: "badge-check", label: "Transparent pricing" },
+    { iconKey: "clock", label: "48-Hour Custom Proposal" },
+    { iconKey: "user", label: "One Expert. One Point of Contact." },
+    { iconKey: "globe", label: "India & Global Holidays" },
   ],
   consultation: {
     badge: "Complimentary",

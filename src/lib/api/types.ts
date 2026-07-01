@@ -40,6 +40,7 @@ export interface CmsPackage extends CmsTimestamped {
   is_featured: boolean;
   featured_sort_order: number | null;
   is_published: boolean;
+  sold_last_month: number;
   highlights: CmsPackageHighlight[];
   moods: string[];
 }

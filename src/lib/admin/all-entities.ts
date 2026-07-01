@@ -264,7 +264,7 @@ export const ALL_ADMIN_ENTITIES: Record<string, AdminEntityDef> = {
     key: "gallery-items", label: "Gallery Item", pluralLabel: "Gallery Items", group: "content", endpoint: "/gallery-items", nameField: "place",
     writableFields: ["place", "media_ids", "category_ids", "sort_order", "is_published"],
     fields: [
-      { name: "place", label: "Name", type: "text", required: true, showInList: true },
+      { name: "place", label: "Name", type: "text", required: true, showInList: true, listInlineEdit: true },
       {
         name: "media_ids",
         label: "Media",

@@ -247,6 +247,21 @@ export function getListColumns(entity: AdminEntityDef) {
   return entity.fields.filter((f) => f.showInList);
 }
 
+export function buildInlineEditPatch(
+  entity: AdminEntityDef,
+  field: AdminFieldDef,
+  value: string,
+): Record<string, unknown> {
+  const trimmed = value.trim();
+  const patch: Record<string, unknown> = { [field.name]: trimmed };
+
+  if (entity.key === "gallery-items" && field.name === "place") {
+    patch.region_label = trimmed;
+  }
+
+  return patch;
+}
+
 export { getListFilters } from "@/lib/admin/list-filters";
 
 export function recordToFormValues(

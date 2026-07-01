@@ -541,10 +541,11 @@ function resolvePackageHeroImage(
   );
 }
 
-function getSoldLastMonthCount(packageId: string): number {
-  const seed =
-    packageId.split("").reduce((sum, char, index) => sum + char.charCodeAt(0) * (index + 3), 0);
-  return 5 + (seed % 15);
+function soldLastMonthForPackage(pkg: CmsPackage): number {
+  if (typeof pkg.sold_last_month === "number" && pkg.sold_last_month > 0) {
+    return pkg.sold_last_month;
+  }
+  return 0;
 }
 
 function mapPackage(
@@ -583,7 +584,7 @@ function mapPackage(
     featured: pkg.is_featured,
     journeyHref,
     reviewCount,
-    soldLastMonth: getSoldLastMonthCount(pkg.id),
+    soldLastMonth: soldLastMonthForPackage(pkg),
   };
 }
 

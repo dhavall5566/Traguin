@@ -23,12 +23,14 @@ import {
   getListColumns,
   getListFilters,
   getNavSectionLabel,
+  buildInlineEditPatch,
   type AdminFieldDef,
 } from "@/lib/admin/entities";
 import { hasActiveFilters, rowMatchesFilter } from "@/lib/admin/list-filters";
 import { formatAdminListCell } from "@/lib/admin/list-cell-format";
 import { AdminListToolbar } from "@/components/admin/AdminListToolbar";
 import { AdminListToggle } from "@/components/admin/AdminListToggle";
+import { AdminInlineTextCell } from "@/components/admin/AdminInlineTextCell";
 import { useAdminToast } from "@/components/admin/AdminToast";
 import { DeleteConfirmDialog } from "@/components/admin/DeleteConfirmDialog";
 import { EntityFormView } from "@/components/admin/EntityFormView";
@@ -347,6 +349,53 @@ export function EntityTableView({ entityKey }: EntityTableViewProps) {
     setFilterValues((current) => ({ ...current, [field]: value }));
   };
 
+  const handleInlineTextUpdate = (
+    row: Record<string, unknown>,
+    field: AdminFieldDef,
+    nextValue: string,
+  ) => {
+    if (!entity) return;
+
+    const trimmed = nextValue.trim();
+    const previousValue = String(row[field.name] ?? "");
+    if (trimmed === previousValue.trim()) return;
+
+    if (field.required && !trimmed) {
+      showErrorToast(`${field.label} cannot be empty.`);
+      return;
+    }
+
+    const recordId = String(row[idField]);
+    const patch = buildInlineEditPatch(entity, field, trimmed);
+    const previousPatch = buildInlineEditPatch(entity, field, previousValue);
+
+    setItems((current) =>
+      current.map((item) =>
+        String(item[idField]) === recordId ? { ...item, ...patch } : item,
+      ),
+    );
+    patchCachedAdminListItem(entity.endpoint, idField, recordId, patch);
+
+    const fieldLabel = field.listLabel ?? field.label;
+    showUpdatedToast(`${fieldLabel} updated.`);
+
+    void adminUpdate(entity.endpoint, recordId, patch).then((result) => {
+      if (!result.error) {
+        revalidateAdminListInBackground(entity.endpoint, PAGE_SIZE, offset);
+        return;
+      }
+
+      setItems((current) =>
+        current.map((item) =>
+          String(item[idField]) === recordId ? { ...item, ...previousPatch } : item,
+        ),
+      );
+      patchCachedAdminListItem(entity.endpoint, idField, recordId, previousPatch);
+      setError(result.error.message);
+      showErrorToast(result.error.message);
+    });
+  };
+
   const handleListToggle = (
     row: Record<string, unknown>,
     field: AdminFieldDef,
@@ -570,8 +619,16 @@ export function EntityTableView({ entityKey }: EntityTableViewProps) {
                           className="admin-table__row"
                           onClick={() => router.push(editHref)}
                         >
-                          <td>
-                            <div className="admin-table__primary">{title}</div>
+                          <td onClick={titleColumn?.listInlineEdit ? (event) => event.stopPropagation() : undefined}>
+                            {titleColumn?.listInlineEdit ? (
+                              <AdminInlineTextCell
+                                value={String(row[titleColumn.name] ?? "")}
+                                placeholder="Untitled"
+                                onSave={(next) => handleInlineTextUpdate(row, titleColumn, next)}
+                              />
+                            ) : (
+                              <div className="admin-table__primary">{title}</div>
+                            )}
                             {(slug || recordId) && (
                               <div className="admin-table__secondary">{slug ?? recordId}</div>
                             )}
