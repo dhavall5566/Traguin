@@ -1,5 +1,4 @@
 import { cache } from "react";
-import { images } from "@/lib/images";
 import {
   buildMediaUrlMap,
   getMediaAssets,
@@ -16,7 +15,7 @@ export type ClientStoryReview = {
   name: string;
   destination: string | null;
   quote: string;
-  image: string;
+  image: string | null;
 };
 
 export type ClientStoriesPageData = {
@@ -45,7 +44,9 @@ function mapReview(
     name: story.client_name,
     destination: story.destination_name?.trim() || null,
     quote,
-    image: resolveMediaUrl(mediaMap, story.portrait_media_id, images.couple1),
+    image: story.portrait_media_id
+      ? resolveMediaUrl(mediaMap, story.portrait_media_id, "")
+      : null,
   };
 }
 

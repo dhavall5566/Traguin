@@ -75,13 +75,22 @@ function ReviewCard({ story }: { story: ClientStoryReview }) {
         &ldquo;{story.quote}&rdquo;
       </blockquote>
       <footer className="mt-6 flex items-center gap-4 border-t border-glass-border pt-6">
-        <div className="relative h-12 w-12 overflow-hidden rounded-full">
-          <SafeImage
-            src={story.image}
-            alt={story.name}
-            className="h-full w-full object-cover"
-          />
-        </div>
+        {story.image ? (
+          <div className="relative h-12 w-12 overflow-hidden rounded-full">
+            <SafeImage
+              src={story.image}
+              alt={story.name}
+              className="h-full w-full object-cover"
+            />
+          </div>
+        ) : (
+          <div
+            className="flex h-12 w-12 items-center justify-center rounded-full bg-gold/15 text-sm font-semibold text-gold"
+            aria-hidden
+          >
+            {story.name.trim().charAt(0).toUpperCase()}
+          </div>
+        )}
         <div>
           <p className="font-medium text-foreground">{story.name}</p>
           {story.destination ? (

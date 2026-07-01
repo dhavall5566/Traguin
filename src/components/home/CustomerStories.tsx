@@ -5,6 +5,7 @@ import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
 import { ChevronLeft, ChevronRight, ArrowUpRight } from "lucide-react";
 import { SectionHeader } from "@/components/ui/SectionHeader";
+import { SafeImage } from "@/components/ui/SafeImage";
 import { MagneticButton } from "@/components/ui/MagneticButton";
 import { HomeSection, HomeSectionActions } from "@/components/home/HomeSection";
 import { primaryCta } from "@/data/site";
@@ -165,11 +166,29 @@ export function CustomerStories({ testimonials }: { testimonials: HomeTestimonia
                   {story.quote.replace(/^[“"']+|[”"']+$/g, "").trim()}
                   &rdquo;
                 </blockquote>
-                <footer className="mt-8 border-t border-glass-border pt-6">
-                  <p className="font-medium text-foreground">{story.name}</p>
-                  {story.destination ? (
-                    <p className="mt-1 text-sm text-gold">{story.destination}</p>
-                  ) : null}
+                <footer className="mt-8 flex items-center gap-4 border-t border-glass-border pt-6">
+                  {story.image ? (
+                    <div className="relative h-12 w-12 shrink-0 overflow-hidden rounded-full">
+                      <SafeImage
+                        src={story.image}
+                        alt={story.name}
+                        className="h-full w-full object-cover"
+                      />
+                    </div>
+                  ) : (
+                    <div
+                      className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-gold/15 text-sm font-semibold text-gold"
+                      aria-hidden
+                    >
+                      {story.name.trim().charAt(0).toUpperCase()}
+                    </div>
+                  )}
+                  <div>
+                    <p className="font-medium text-foreground">{story.name}</p>
+                    {story.destination ? (
+                      <p className="mt-1 text-sm text-gold">{story.destination}</p>
+                    ) : null}
+                  </div>
                 </footer>
               </div>
             </article>

@@ -692,7 +692,9 @@ function mapTestimonial(story: CmsClientStory, mediaMap: Map<string, string>): H
     name: story.client_name,
     destination: story.destination_name?.trim() || null,
     quote: humanizeCopy(story.quote),
-    image: resolveMediaUrl(mediaMap, story.portrait_media_id, images.couple1),
+    image: story.portrait_media_id
+      ? resolveMediaUrl(mediaMap, story.portrait_media_id, "")
+      : "",
   };
 }
 
