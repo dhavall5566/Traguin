@@ -30,7 +30,7 @@ function ExperienceCard({
         className
       )}
     >
-      <div className="relative h-[220px] w-full overflow-hidden sm:h-[240px] lg:h-[255px]">
+      <div className="relative h-[200px] w-full overflow-hidden sm:h-[240px] lg:h-[255px]">
         <SafeImage
           src={item.image}
           alt=""
@@ -41,11 +41,11 @@ function ExperienceCard({
         </span>
       </div>
 
-      <div className="flex min-h-[150px] flex-1 flex-col p-4 sm:min-h-[160px] sm:p-5">
-        <h3 className="font-display text-xl leading-snug tracking-tight text-foreground text-balance sm:text-2xl">
+      <div className="flex min-h-[148px] flex-1 flex-col p-4 sm:min-h-[160px] sm:p-5">
+        <h3 className="font-display text-lg leading-snug tracking-tight text-foreground text-balance sm:text-2xl">
           {item.title}
         </h3>
-        <p className="mt-2 line-clamp-2 text-sm leading-relaxed text-muted">
+        <p className="mt-2 line-clamp-3 text-sm leading-relaxed text-muted sm:line-clamp-2">
           {item.description}
         </p>
         <span className="experience-showcase-card__cta mt-auto inline-flex items-center gap-2 pt-4 text-[10px] font-bold tracking-[0.18em] text-gold uppercase sm:text-[11px]">
@@ -74,26 +74,20 @@ export function ExperienceShowcase({
           eyebrow="Signature Experiences"
           title="Beyond the Ordinary"
           description="Private journeys, corporate retreats, and curated group programs, each designed with the same white-glove attention to detail."
-          titleClassName="text-balance"
+          titleClassName="text-balance text-[clamp(2rem,7.5vw,3.75rem)] leading-[1.05] md:text-5xl lg:text-6xl"
         />
       </Reveal3D>
 
-      <div className="experience-showcase-scroll mt-10 sm:hidden">
-        <div className="experience-showcase-scroll__track">
-          {items.map((item) => (
-            <div key={item.id} className="experience-showcase-scroll__item">
-              <ExperienceCard item={item} />
-            </div>
-          ))}
-        </div>
-      </div>
-
       <div
         ref={gridRef}
-        className="home-grid mt-10 hidden sm:grid sm:grid-cols-2 lg:mt-12 lg:gap-6 [perspective:1400px]"
+        className="mt-8 grid grid-cols-1 gap-4 sm:mt-10 sm:grid-cols-2 lg:mt-12 lg:gap-6 sm:[perspective:1400px]"
       >
         {items.map((item) => (
-          <div key={item.id} data-reveal-item className="flex min-w-0 [transform-style:preserve-3d]">
+          <div
+            key={item.id}
+            data-reveal-item
+            className="flex min-w-0 sm:[transform-style:preserve-3d]"
+          >
             <ExperienceCard item={item} />
           </div>
         ))}

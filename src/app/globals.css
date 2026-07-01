@@ -1332,6 +1332,10 @@ html[data-theme="light"] input[type="date"] {
   gap: clamp(1.25rem, 2.5vw, 1.75rem);
 }
 
+.home-grid.hidden {
+  display: none;
+}
+
 @media (min-width: 1024px) {
   .home-grid {
     gap: clamp(1.5rem, 2vw, 2rem);
@@ -2010,6 +2014,8 @@ html[data-motion-lite="true"] .home-3d-stage [class*="perspective"] {
 
 html[data-motion-lite="true"] [class*="preserve-3d"] {
   transform-style: flat !important;
+  opacity: 1 !important;
+  transform: none !important;
 }
 
 html[data-motion-lite="true"] .will-change-transform {
@@ -2608,17 +2614,6 @@ main > div > section {
 }
 
 @media (pointer: coarse) {
-  .destination-marquee-track {
-    animation: none;
-    flex-wrap: wrap;
-    width: 100%;
-    max-width: 100%;
-    margin-inline: auto;
-    justify-content: center;
-    row-gap: 0.75rem;
-    padding-inline: 1.5rem;
-  }
-
   .customer-stories-track {
     animation: none;
     flex-wrap: wrap;
