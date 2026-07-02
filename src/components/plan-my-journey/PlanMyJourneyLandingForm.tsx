@@ -221,10 +221,10 @@ export function PlanMyJourneyLandingForm({ context }: { context: PlanMyJourneySe
           ) : null}
         </dl>
         <div className="mt-8 flex flex-wrap gap-3">
-          <MagneticButton as={Link} href="/" variant="primary">
+          <MagneticButton as="a" href="/" variant="primary">
             Back to home
           </MagneticButton>
-          <MagneticButton as={Link} href="/destinations" variant="secondary">
+          <MagneticButton as="a" href="/destinations" variant="secondary">
             Browse destinations
           </MagneticButton>
         </div>
@@ -267,7 +267,7 @@ export function PlanMyJourneyLandingForm({ context }: { context: PlanMyJourneySe
               id="pmj-start-date"
               value={form.startDate}
               min={minDate}
-              onChange={(value) => update("startDate", value)}
+              onChange={(e) => update("startDate", e.target.value)}
               inputClassName={fieldInputClass("startDate", errors)}
             />
           </FormField>
@@ -276,7 +276,7 @@ export function PlanMyJourneyLandingForm({ context }: { context: PlanMyJourneySe
               id="pmj-end-date"
               value={form.endDate}
               min={form.startDate || minDate}
-              onChange={(value) => update("endDate", value)}
+              onChange={(e) => update("endDate", e.target.value)}
               inputClassName={fieldInputClass("endDate", errors)}
             />
           </FormField>
