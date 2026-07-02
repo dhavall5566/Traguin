@@ -124,6 +124,7 @@ export const NESTED_LIST_CONFIGS: Record<string, NestedListConfig> = {
     itemLabel: "Assurance",
     fields: [
       { name: "icon_key", label: "Icon key", type: "text" },
+      { name: "title", label: "Title", type: "text" },
       { name: "label", label: "Label", type: "text", required: true },
     ],
   },

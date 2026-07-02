@@ -12,6 +12,19 @@ import { images } from "@/lib/images";
 import type { HomePromoData } from "@/lib/api/homepage";
 import { cn } from "@/lib/utils";
 
+function assuranceTitle(
+  item: { title?: string; label: string },
+  index: number,
+  heading?: string
+): string | null {
+  if (item.title?.trim()) return item.title.trim();
+  if (heading) {
+    const part = heading.split("|").map((s) => s.trim())[index];
+    if (part) return part;
+  }
+  return null;
+}
+
 export function HomePromoBanner({ promo }: { promo: HomePromoData | null }) {
   if (!promo) return null;
 
@@ -61,17 +74,23 @@ export function HomePromoBanner({ promo }: { promo: HomePromoData | null }) {
                     promo.assurancesHeading ? "mt-3 sm:mt-4" : "mt-7 sm:mt-8"
                   )}
                 >
-                  {promo.assurances.map(({ iconKey, label }, index) => {
-                    const Icon = iconFromKey(iconKey);
+                  {promo.assurances.map((item, index) => {
+                    const Icon = iconFromKey(item.iconKey);
+                    const title = assuranceTitle(item, index, promo.assurancesHeading);
                     return (
-                      <li key={label} className="home-promo-banner__assurance">
+                      <li key={item.label} className="home-promo-banner__assurance">
                         <span className="home-promo-banner__assurance-index">
                           {String(index + 1).padStart(2, "0")}
                         </span>
-                        <span className="home-promo-banner__assurance-icon" aria-hidden>
-                          <Icon size={18} strokeWidth={2.25} />
-                        </span>
-                        <span className="home-promo-banner__assurance-label">{label}</span>
+                        <div className="home-promo-banner__assurance-head">
+                          <span className="home-promo-banner__assurance-icon" aria-hidden>
+                            <Icon size={18} strokeWidth={2.25} />
+                          </span>
+                          {title ? (
+                            <span className="home-promo-banner__assurance-title">{title}</span>
+                          ) : null}
+                        </div>
+                        <span className="home-promo-banner__assurance-label">{item.label}</span>
                       </li>
                     );
                   })}

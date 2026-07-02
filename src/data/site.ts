@@ -2,7 +2,7 @@ import { filterLuxuryStaysNavLinks } from "@/lib/site-features";
 
 export const primaryCta = {
   label: "Plan My Journey",
-  href: "/#plan-my-journey",
+  href: "/plan-my-journey",
 } as const;
 
 export const secondaryCta = {

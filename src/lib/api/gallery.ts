@@ -3,6 +3,7 @@ import type {
   GalleryClientWallItem,
   GalleryItem,
 } from "@/lib/gallery-types";
+import { normalizeGalleryLabel } from "@/lib/gallery-types";
 import { uniqueById } from "@/lib/utils";
 import {
   buildMediaUrlMap,
@@ -57,13 +58,71 @@ export function mapCmsClientStoryToWallItem(
   const image = resolveMediaUrl(mediaMap, story.portrait_media_id, "");
   if (!image) return null;
 
+  const destination = story.destination_name?.trim() ?? "";
+
   return {
     id: story.id,
     name: story.client_name,
-    destination: story.destination_name?.trim() || story.client_name,
+    destination,
     image,
+    portraitMediaId: story.portrait_media_id ?? story.id,
     rotate: COLLAGE_ROTATIONS[index % COLLAGE_ROTATIONS.length],
   };
+}
+
+function normalizeClientWallKey(item: GalleryClientWallItem): string {
+  const name = item.name.trim().toLowerCase();
+  const image = item.image.trim().toLowerCase();
+  return `${name}::${image}`;
+}
+
+/** One portrait per client — first gallery entry wins. */
+export function dedupeClientWallItems(items: GalleryClientWallItem[]): GalleryClientWallItem[] {
+  const seen = new Set<string>();
+  const seenNames = new Set<string>();
+  const result: GalleryClientWallItem[] = [];
+
+  for (const item of items) {
+    const nameKey = normalizeGalleryLabel(item.name);
+    const key = normalizeClientWallKey(item);
+    if (seen.has(key) || seenNames.has(nameKey)) continue;
+    seen.add(key);
+    seenNames.add(nameKey);
+    result.push(item);
+  }
+
+  return result;
+}
+
+function looksLikeClientName(place: string): boolean {
+  return /^(mr|mrs|ms|dr)\.?\s/i.test(place.trim());
+}
+
+function dedupeGalleryItems(
+  items: GalleryItem[],
+  clientNameKeys: Set<string>
+): GalleryItem[] {
+  const seenImages = new Set<string>();
+  const seenClientPlaces = new Set<string>();
+  const result: GalleryItem[] = [];
+
+  for (const item of items) {
+    const imageKey = item.image.trim().toLowerCase();
+    if (!imageKey || seenImages.has(imageKey)) continue;
+
+    const placeKey = normalizeGalleryLabel(item.place);
+    const isClientPlace = Boolean(placeKey) && (clientNameKeys.has(placeKey) || looksLikeClientName(item.place));
+
+    if (isClientPlace) {
+      if (seenClientPlaces.has(placeKey)) continue;
+      seenClientPlaces.add(placeKey);
+    }
+
+    seenImages.add(imageKey);
+    result.push(item);
+  }
+
+  return result;
 }
 
 export function mapCmsGalleryItemToGalleryItems(
@@ -116,20 +175,29 @@ export async function getGalleryPageData(): Promise<GalleryPageData> {
     sortGalleryStories(cmsStories.filter((story) => story.is_published)),
   );
 
-  const clientWall = uniqueById(
-    galleryStories
-      .map((story, index) => mapCmsClientStoryToWallItem(story, mediaMap, index))
-      .filter((item): item is GalleryClientWallItem => item != null),
+  const clientNameKeys = new Set(
+    galleryStories.map((story) => normalizeGalleryLabel(story.client_name)).filter(Boolean)
   );
 
-  const galleryItems = uniqueById(
-    cmsItems
-      .filter((item) => item.is_published)
-      .sort(
-        (a, b) =>
-          (a.sort_order ?? 999) - (b.sort_order ?? 999) || a.place.localeCompare(b.place)
-      )
-      .flatMap((item) => mapCmsGalleryItemToGalleryItems(item, mediaMap, altMap)),
+  const clientWall = dedupeClientWallItems(
+    uniqueById(
+      galleryStories
+        .map((story, index) => mapCmsClientStoryToWallItem(story, mediaMap, index))
+        .filter((item): item is GalleryClientWallItem => item != null),
+    ),
+  ).slice(0, 8);
+
+  const galleryItems = dedupeGalleryItems(
+    uniqueById(
+      cmsItems
+        .filter((item) => item.is_published)
+        .sort(
+          (a, b) =>
+            (a.sort_order ?? 999) - (b.sort_order ?? 999) || a.place.localeCompare(b.place)
+        )
+        .flatMap((item) => mapCmsGalleryItemToGalleryItems(item, mediaMap, altMap)),
+    ),
+    clientNameKeys,
   );
 
   const galleryCategories: GalleryCategory[] = [

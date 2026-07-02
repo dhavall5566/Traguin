@@ -41,14 +41,14 @@ import { PageHero } from "@/components/layout/PageHero";
 import { TrustBar } from "@/components/layout/TrustBar";
 import { PageCTA } from "@/components/layout/PageCTA";
 import { getDestinationsHeroContent, curatedDestinationCount } from "@/data/pageContent";
+import {
+  DESTINATION_PRICE_FILTERS,
+  matchesDestinationPriceFilter,
+  type DestinationPriceFilterId,
+} from "@/data/price-ranges";
 import type { TravelMood } from "@/types";
 
-const PRICE_FILTERS = [
-  { id: "all", label: "All budgets" },
-  { id: "budget-friendly", label: "Budget friendly" },
-  { id: "1L-3L", label: "1L – 3L" },
-  { id: "over3L", label: "3L+" },
-] as const;
+const PRICE_FILTERS = DESTINATION_PRICE_FILTERS;
 
 const REGION_FILTERS = [
   { id: "all", label: "All destinations" },
@@ -92,7 +92,7 @@ const DESTINATION_FILTER_IDS = [
   "sort",
 ] as const;
 
-type PriceFilterId = (typeof PRICE_FILTERS)[number]["id"];
+type PriceFilterId = DestinationPriceFilterId;
 type RegionFilterId = (typeof REGION_FILTERS)[number]["id"];
 type MoodFilterId = (typeof MOOD_FILTERS)[number]["id"];
 type ItineraryFilterId = (typeof ITINERARY_FILTERS)[number]["id"];
@@ -370,11 +370,7 @@ export function DestinationsPage({
       if (!matchesSubRegionFilter(dest, categoryFilter, regionFilter)) return false;
       if (regionFilter !== "all" && dest.region !== regionFilter) return false;
       if (moodFilter !== "all" && !dest.moods.includes(moodFilter)) return false;
-      if (priceFilter === "budget-friendly" && dest.startingPrice >= 100000) return false;
-      if (priceFilter === "1L-3L" && (dest.startingPrice < 100000 || dest.startingPrice > 300000)) {
-        return false;
-      }
-      if (priceFilter === "over3L" && dest.startingPrice <= 300000) return false;
+      if (!matchesDestinationPriceFilter(dest.startingPrice, priceFilter)) return false;
       if (itineraryFilter === "itinerary" && !dest.hasItinerary) return false;
       if (itineraryFilter === "explore" && dest.hasItinerary) return false;
       return true;
@@ -576,7 +572,7 @@ export function DestinationsPage({
               />
               <FilterDropdown
                 id="budget"
-                label="Budget friendly"
+                label="Price range"
                 value={priceFilter}
                 options={PRICE_FILTERS.map((p) => ({
                   value: p.id,

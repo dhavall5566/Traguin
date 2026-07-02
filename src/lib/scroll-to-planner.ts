@@ -7,10 +7,13 @@ export const PLANNER_SCROLL_DURATION = 1.1;
 const MAX_SCROLL_ATTEMPTS = 300;
 
 export function isPlannerHref(href: string): boolean {
+  // Dedicated landing page — let Next.js Link navigate normally.
+  if (href === "/plan-my-journey" || href.startsWith("/plan-my-journey?")) return false;
   if (href === "/#plan-my-journey" || href === "#plan-my-journey") return true;
   if (href === "/#planner" || href === "#planner") return true;
   try {
     const url = new URL(href, typeof window !== "undefined" ? window.location.origin : "https://traguin.com");
+    if (url.pathname === "/plan-my-journey") return false;
     return url.pathname === "/" && (url.hash === `#${PLANNER_SECTION_ID}` || url.hash === "#planner");
   } catch {
     return false;

@@ -23,7 +23,7 @@ type PhoneInputProps = {
 };
 
 const shellClass: Record<PhoneInputVariant, string> = {
-  form: "rounded-xl border border-glass-border bg-input px-2 py-1.5",
+  form: "rounded-xl border border-glass-border bg-input px-2 min-h-[3rem] py-1.5",
   hero:
     "h-12 rounded-full border-2 border-white/55 bg-white/16 py-1 pr-1 pl-2 shadow-[0_16px_48px_rgba(0,0,0,0.45)] ring-1 ring-white/25 backdrop-blur-xl sm:pl-3",
   crm: "rounded-lg border border-border bg-secondary/50 px-2 py-1.5",

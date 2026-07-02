@@ -291,3 +291,53 @@ export function validateTravelPlannerForm(
     ...validateTravelPlannerStep(2, form, minDate),
   };
 }
+
+export type PlanMyJourneyFormValues = {
+  name: string;
+  email: string;
+  phone: string;
+  destination: string;
+  startDate: string;
+  endDate: string;
+  rooms: string;
+  adults: string;
+  children: string;
+  childAges: string[];
+  travelingWithPets: boolean;
+  budget: string;
+  notes: string;
+};
+
+export function validatePlanMyJourneyForm(
+  form: PlanMyJourneyFormValues,
+  minDate: string
+): FieldErrors {
+  const children = Number(form.children) || 0;
+  const childAgeErrors: FieldErrors = {};
+  if (children > 0) {
+    for (let i = 0; i < children; i += 1) {
+      if (!form.childAges[i]?.trim()) {
+        childAgeErrors[`childAge_${i}`] = `Select age for child ${i + 1}`;
+      }
+    }
+  }
+
+  return {
+    ...collectErrors({
+      name: validateName(form.name),
+      email: validateEmail(form.email),
+      phone: validatePhone(form.phone, true),
+      destination: form.destination.trim() ? undefined : "Destination is required",
+      startDate: validateStartDate(form.startDate, minDate),
+      endDate: validateEndDate(form.endDate, form.startDate, minDate),
+      rooms: Number(form.rooms) >= 1 ? undefined : "At least 1 room",
+      adults: Number(form.adults) >= 1 ? undefined : "At least 1 adult",
+      children:
+        Number(form.children) >= 0 && Number(form.children) <= 12
+          ? undefined
+          : "Children must be between 0 and 12",
+      budget: validateBudget(form.budget),
+    }),
+    ...childAgeErrors,
+  };
+}

@@ -46,6 +46,14 @@ export const images = {
   // Experience showcase cards (local, real TRAGUIN photos)
   experienceGroupTours: "/experiences/group-tours.png",
   experiencePrivateLuxe: "/experiences/private-luxe.png",
+  /** Travel Expert page hero — concierge planning, warm editorial */
+  travelExpertHero: unsplash("1520251406685-9d47b813f37d", 1920),
+  /** Travel Expert service photography */
+  serviceBespoke: "/experiences/private-luxe.png",
+  serviceSkyCharter: pexels(46148, 1400),
+  serviceYacht: pexels(3601430, 1400),
+  serviceChauffeur: unsplash("1503376780353-7e6692767b70", 1400),
+  servicePrivateAccess: pexels(6266317, 1400),
   /** Travel Expert — visa & paperwork */
   serviceVisa: pexels(4606725, 1400),
   /** Travel Expert + corporate/MICE programs */

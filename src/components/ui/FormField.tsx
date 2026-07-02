@@ -6,10 +6,19 @@ export const formLabelClass = "mb-1.5 block text-xs tracking-wide text-muted upp
 export const formInputClass =
   "w-full rounded-xl border border-glass-border bg-input px-4 py-3 text-sm text-foreground outline-none focus:border-gold/50";
 
+export const formSelectClass = cn(
+  formInputClass,
+  "h-12 appearance-none py-0 leading-normal planner-wizard__select"
+);
+
 export const formInputInvalidClass = "border-red-400/70 focus:border-red-400";
 
 export function fieldInputClass(field: string, errors: Record<string, string | undefined>) {
   return cn(formInputClass, errors[field] && formInputInvalidClass);
+}
+
+export function fieldSelectClass(field: string, errors: Record<string, string | undefined>) {
+  return cn(formSelectClass, errors[field] && formInputInvalidClass);
 }
 
 type FormFieldProps = {

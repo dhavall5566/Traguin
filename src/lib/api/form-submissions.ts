@@ -31,7 +31,15 @@ export function getPublicFormSubmissionUrl(): string {
   return `${getPublicCmsBaseUrl()}/api/cms/public/form-submissions`;
 }
 
-export async function submitFormSubmission(input: FormSubmissionInput): Promise<void> {
+export type FormSubmissionResult = {
+  id: string;
+  lead_id?: string | null;
+  customer_id?: string | null;
+  member_code?: string | null;
+  inquiry_code?: string | null;
+};
+
+export async function submitFormSubmission(input: FormSubmissionInput): Promise<FormSubmissionResult> {
   const url = getPublicFormSubmissionUrl();
   const response = await fetch(url, {
     method: "POST",
@@ -54,6 +62,15 @@ export async function submitFormSubmission(input: FormSubmissionInput): Promise<
     }
     throw new FormSubmissionError(detail, response.status);
   }
+
+  const body = (await response.json()) as FormSubmissionResult & { id: string };
+  return {
+    id: body.id,
+    lead_id: body.lead_id ?? null,
+    customer_id: body.customer_id ?? null,
+    member_code: body.member_code ?? null,
+    inquiry_code: body.inquiry_code ?? null,
+  };
 }
 
 export type OptimisticFormSubmitOptions = {

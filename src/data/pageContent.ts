@@ -15,11 +15,11 @@ export type PageHeroContent = {
 
 export const curatedDestinationCount = 130;
 
-/** "The TRAGUIN Standard" row — emoji + promise copy */
+/** "The TRAGUIN Standard" row — icon + promise copy */
 export const traguinStandardHighlights = [
-  { emoji: "⚡", label: "48-Hour Custom Proposal" },
-  { emoji: "👨‍💼", label: "One Expert. One Point of Contact." },
-  { emoji: "✈️", label: "India & Global Holidays" },
+  { iconKey: "clock", label: "48-Hour Custom Proposal" },
+  { iconKey: "user", label: "One Expert. One Point of Contact." },
+  { iconKey: "globe", label: "India & Global Holidays" },
 ] as const;
 
 export const trustHighlights = [
@@ -50,7 +50,7 @@ export const pageHeroes = {
       "Palace hotels, cliffside resorts, and private villas. Each property is vetted for service, setting, and the quiet excellence discerning travelers expect.",
     image: images.bali,
     imageAlt: "Luxury resort overlooking tropical landscape",
-    primaryAction: { label: "Plan My Journey", href: "/#plan-my-journey" },
+    primaryAction: { label: "Plan My Journey", href: "/plan-my-journey" },
     secondaryAction: { label: "Speak With Expert", href: "/contact#consultation" },
   },
   travelExpert: {
@@ -59,8 +59,8 @@ export const pageHeroes = {
     title: "Travel Expert",
     description:
       "Bespoke itineraries, visa support, private aviation, and on-ground coordination from one dedicated team, from first conversation to homecoming.",
-    image: images.experiencePrivateLuxe,
-    imageAlt: "Private luxury travel experience",
+    image: images.travelExpertHero,
+    imageAlt: "Travel expert planning a bespoke luxury journey",
     primaryAction: { label: "Request Consultation", href: "/travel-expert#consultation" },
     secondaryAction: secondaryCta,
   },
@@ -192,9 +192,9 @@ export const defaultHomepagePromo = {
     "We listen first, then design: handpicked stays, unhurried routes, and the small details that turn a good trip into the one you talk about for years.",
   assurancesHeading: "Connect | Personalize | Travel",
   assurances: [
-    { iconKey: "clock", label: "48-Hour Custom Proposal" },
-    { iconKey: "user", label: "One Expert. One Point of Contact." },
-    { iconKey: "globe", label: "India & Global Holidays" },
+    { iconKey: "clock", title: "Connect", label: "48-Hour Custom Proposal" },
+    { iconKey: "calendar-check", title: "Personalize", label: "One Expert. One Point of Contact." },
+    { iconKey: "shield-check", title: "Travel", label: "India & Global Holidays" },
   ],
   consultation: {
     badge: "Complimentary",

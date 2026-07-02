@@ -1,10 +1,10 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { Clock, Crown, Headphones, MessageCircle, Phone } from "lucide-react";
 import { SafeImage } from "@/components/ui/SafeImage";
 import { MagneticButton } from "@/components/ui/MagneticButton";
-import { FormField, fieldInputClass } from "@/components/ui/FormField";
+import { FormField, fieldInputClass, fieldSelectClass } from "@/components/ui/FormField";
 import { PhoneInput } from "@/components/ui/PhoneInput";
 import { FormLegalConsent } from "@/components/forms/FormLegalConsent";
 import {
@@ -20,6 +20,7 @@ import { defaultCountryCode } from "@/data/country-codes";
 import { formatFullPhone } from "@/lib/phone-input";
 import { cn } from "@/lib/utils";
 import { iconFromKey } from "@/lib/icons";
+import { images } from "@/lib/images";
 import { PageShell } from "@/components/layout/PageShell";
 import { PageHero } from "@/components/layout/PageHero";
 import { TrustBar } from "@/components/layout/TrustBar";
@@ -31,95 +32,69 @@ import type {
   TravelExpertService,
 } from "@/lib/api/travel-expert";
 
+const SHOWCASE_PHOTOS = [
+  { src: images.serviceBespoke, alt: "Bespoke luxury journey planning" },
+  { src: images.serviceSkyCharter, alt: "Private aviation charter" },
+  { src: images.serviceYacht, alt: "Yacht and sea experiences" },
+] as const;
+
 function ServiceCard({
   service,
   isSelected,
   onSelect,
   revealed,
-  index,
 }: {
   service: TravelExpertService;
   isSelected: boolean;
   onSelect: () => void;
   revealed: boolean;
-  index: number;
 }) {
   const Icon = iconFromKey(service.iconKey);
-  const isWide = service.wide;
-  const isFeatured = service.featured;
 
   return (
     <button
       type="button"
       onClick={onSelect}
       className={cn(
-        "travel-expert-service-card group flex w-full overflow-hidden rounded-[1.25rem] border text-left transition-all duration-300",
-        isWide || isFeatured
-          ? "travel-expert-service-card--horizontal min-h-0 flex-col sm:min-h-[11.5rem] sm:flex-row"
-          : "min-h-0 flex-col",
-        isWide ? "sm:col-span-2" : "",
-        isFeatured && "sm:col-span-2",
+        "travel-expert-service-card group overflow-hidden rounded-2xl border text-left transition-all duration-300",
         isSelected
-          ? "border-gold/50 shadow-[0_20px_50px_-24px_color-mix(in_srgb,var(--gold)_40%,transparent)]"
-          : "border-glass-border hover:border-gold/28 hover:shadow-[0_16px_40px_-24px_color-mix(in_srgb,var(--gold)_22%,transparent)]",
-        revealed ? "translate-y-0 opacity-100" : "translate-y-5 opacity-0"
+          ? "border-gold/55 ring-2 ring-gold/25 shadow-[0_20px_48px_-24px_color-mix(in_srgb,var(--gold)_40%,transparent)]"
+          : "border-glass-border hover:border-gold/30 hover:shadow-[0_16px_40px_-28px_rgba(0,0,0,0.35)]",
+        revealed ? "translate-y-0 opacity-100" : "translate-y-4 opacity-0"
       )}
-      style={{ transitionDelay: revealed ? `${80 + index * 50}ms` : "0ms" }}
       aria-pressed={isSelected}
     >
-      <div
-        className={cn(
-          "travel-expert-service-card__media relative shrink-0 overflow-hidden",
-          isWide || isFeatured
-            ? "h-40 sm:h-auto sm:min-h-full sm:w-[42%] md:w-[40%]"
-            : "h-[7.5rem] sm:h-[8.25rem]"
-        )}
-      >
+      <div className="travel-expert-service-card__media relative aspect-[16/10] overflow-hidden">
         <SafeImage
           src={service.image}
           alt=""
           className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-[1.05]"
           loading="lazy"
         />
-        <div className="travel-expert-service-card__media-scrim pointer-events-none absolute inset-0" aria-hidden />
+        <div className="travel-expert-service-card__scrim pointer-events-none absolute inset-0" aria-hidden />
+        <div className="absolute inset-x-0 top-0 flex items-start justify-between gap-2 p-3 sm:p-4">
+          <span className="rounded-full border border-white/25 bg-black/35 px-2.5 py-1 text-[10px] font-bold tracking-[0.18em] text-white backdrop-blur-sm">
+            #{service.number}
+          </span>
+          <span className="flex h-9 w-9 items-center justify-center rounded-full border border-white/25 bg-black/35 text-gold-light backdrop-blur-sm">
+            <Icon size={16} strokeWidth={1.75} aria-hidden />
+          </span>
+        </div>
+        {isSelected ? (
+          <span className="absolute bottom-3 left-3 rounded-full border border-gold/40 bg-gold/90 px-2.5 py-1 text-[9px] font-bold tracking-[0.14em] text-on-gold uppercase">
+            Selected
+          </span>
+        ) : null}
       </div>
 
       <div
         className={cn(
-          "travel-expert-service-card__body relative flex flex-1 flex-col bg-surface p-5 md:p-6",
+          "travel-expert-service-card__body p-4 sm:p-5",
           isSelected && "travel-expert-service-card__body--selected"
         )}
       >
-        <div className="flex items-center justify-between gap-3">
-          <div className="flex items-center gap-2.5">
-            <span className="text-[10px] font-bold tracking-[0.22em] text-gold">#{service.number}</span>
-            <span
-              className={cn(
-                "flex h-9 w-9 items-center justify-center rounded-lg border transition-colors",
-                isSelected
-                  ? "border-gold/40 bg-gold/15 text-gold"
-                  : "border-glass-border bg-surface-elevated text-gold"
-              )}
-            >
-              <Icon size={17} strokeWidth={1.75} aria-hidden />
-            </span>
-          </div>
-          {isSelected && (
-            <span className="rounded-full border border-gold/35 bg-gold/12 px-2.5 py-1 text-[9px] font-bold tracking-[0.14em] text-gold uppercase">
-              Selected
-            </span>
-          )}
-        </div>
-
-        <h3
-          className={cn(
-            "mt-3 font-display font-semibold tracking-tight text-foreground",
-            isFeatured || isWide ? "text-xl md:text-[1.35rem]" : "text-lg"
-          )}
-        >
-          {service.title}
-        </h3>
-        <p className="mt-2 text-sm leading-relaxed text-muted">{service.description}</p>
+        <h3 className="font-display text-lg font-semibold tracking-tight text-foreground">{service.title}</h3>
+        <p className="mt-2 line-clamp-2 text-sm leading-relaxed text-muted">{service.description}</p>
       </div>
     </button>
   );
@@ -196,13 +171,7 @@ export function ConciergePage({ data }: ConciergePageProps) {
   const sectionRef = useRef<HTMLDivElement>(null);
   const [revealed, setRevealed] = useState(false);
   const defaultService = services[0]?.title ?? "";
-  const [form, setForm] = useState<{
-    name: string;
-    email: string;
-    phone: string;
-    service: string;
-    message: string;
-  }>({
+  const [form, setForm] = useState({
     name: "",
     email: "",
     phone: "",
@@ -215,6 +184,17 @@ export function ConciergePage({ data }: ConciergePageProps) {
   const [submitted, setSubmitted] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
+
+  const serviceGridClass = useMemo(
+    () =>
+      cn(
+        "travel-expert-services-grid grid gap-4",
+        services.length <= 3
+          ? "grid-cols-1 sm:grid-cols-2 xl:grid-cols-3"
+          : "grid-cols-1 sm:grid-cols-2"
+      ),
+    [services.length]
+  );
 
   useEffect(() => {
     const node = sectionRef.current;
@@ -285,7 +265,23 @@ export function ConciergePage({ data }: ConciergePageProps) {
       <TrustBar />
       <div ref={sectionRef} className="travel-expert-page">
         <PageShell noPaddingTop>
-          <div className="grid gap-10 lg:grid-cols-12 lg:items-start lg:gap-12">
+          <section className="travel-expert-showcase">
+            <div className="travel-expert-showcase__photos">
+              {SHOWCASE_PHOTOS.map((photo, index) => (
+                <div key={photo.src} className={cn("travel-expert-showcase__photo", index === 1 && "is-featured")}>
+                  <SafeImage src={photo.src} alt={photo.alt} className="h-full w-full object-cover" loading="lazy" />
+                </div>
+              ))}
+            </div>
+            <div className="travel-expert-showcase__copy">
+              <p className="text-xs tracking-[0.24em] text-gold uppercase">White-glove coordination</p>
+              <p className="mt-2 font-display text-xl text-foreground sm:text-2xl">
+                One team for planning, paperwork, and on-ground care.
+              </p>
+            </div>
+          </section>
+
+          <div className="mt-10 grid gap-10 lg:grid-cols-12 lg:items-start lg:gap-12 xl:mt-12">
             <div className="lg:col-span-7">
               <div
                 className={cn(
@@ -295,29 +291,25 @@ export function ConciergePage({ data }: ConciergePageProps) {
               >
                 <p className="text-xs tracking-[0.28em] text-gold uppercase">Expert services</p>
                 <h2 className="mt-3 font-display text-[clamp(1.75rem,4vw,2.5rem)] leading-tight text-foreground">
-                  Select a service
+                  How can we help?
                 </h2>
-                <p className="mt-3 text-sm leading-relaxed text-foreground/72 sm:text-base">
-                  Choose the support you need. Your selection pre-fills the request form beside it.
+                <p className="mt-3 text-sm leading-relaxed text-muted sm:text-base">
+                  Pick a service to begin. Your selection pre-fills the request form — our experts respond
+                  within two working hours.
                 </p>
               </div>
 
               {services.length > 0 ? (
                 <div
-                  className={cn(
-                    "travel-expert-services-grid grid grid-cols-1 gap-4 sm:grid-cols-2",
-                    revealed ? "opacity-100" : "opacity-0",
-                    "transition-opacity duration-700 delay-100"
-                  )}
+                  className={cn(serviceGridClass, revealed ? "opacity-100" : "opacity-0", "transition-opacity duration-700 delay-100")}
                 >
-                  {services.map((service, index) => (
+                  {services.map((service) => (
                     <ServiceCard
                       key={service.id}
                       service={service}
                       isSelected={form.service === service.title}
                       onSelect={() => selectService(service.title)}
                       revealed={revealed}
-                      index={index}
                     />
                   ))}
                 </div>
@@ -331,7 +323,7 @@ export function ConciergePage({ data }: ConciergePageProps) {
 
             <div
               className={cn(
-                "flex w-full min-w-0 flex-col gap-5 lg:col-span-5 lg:sticky lg:top-[calc(var(--site-header-height)+1.25rem)] lg:self-start",
+                "flex w-full min-w-0 flex-col gap-5 lg:col-span-5 lg:sticky lg:top-[calc(var(--site-header-height)+1.25rem)] lg:self-start lg:pb-24",
                 revealed ? "translate-y-0 opacity-100" : "translate-y-6 opacity-0",
                 "transition-all duration-700 delay-150"
               )}
@@ -343,19 +335,27 @@ export function ConciergePage({ data }: ConciergePageProps) {
                 className="travel-expert-form w-full scroll-mt-[var(--site-header-height)]"
               >
                 <div className="overflow-hidden rounded-[1.5rem] border border-glass-border bg-surface shadow-[0_24px_60px_-32px_rgba(0,0,0,0.35)]">
-                  <div className="border-b border-glass-border bg-[color-mix(in_srgb,var(--gold)_6%,var(--surface))] px-6 py-5 md:px-7">
-                    <p className="text-[10px] font-bold tracking-[0.26em] text-gold uppercase">Expert request</p>
-                    <h2 className="mt-2 font-display text-xl font-semibold text-foreground md:text-2xl">
-                      Start your request
-                    </h2>
-                    {form.service && (
-                      <p className="mt-3 flex flex-wrap items-center gap-2 text-sm text-muted">
-                        Selected
-                        <span className="rounded-full border border-gold/30 bg-gold/10 px-3 py-1 text-xs font-semibold tracking-wide text-gold">
-                          {form.service}
-                        </span>
-                      </p>
-                    )}
+                  <div className="relative border-b border-glass-border px-6 py-5 md:px-7">
+                    <SafeImage
+                      src={images.travelExpertHero}
+                      alt=""
+                      className="absolute inset-0 h-full w-full object-cover opacity-[0.12]"
+                      loading="lazy"
+                    />
+                    <div className="relative">
+                      <p className="text-[10px] font-bold tracking-[0.26em] text-gold uppercase">Expert request</p>
+                      <h2 className="mt-2 font-display text-xl font-semibold text-foreground md:text-2xl">
+                        Start your request
+                      </h2>
+                      {form.service ? (
+                        <p className="mt-3 flex flex-wrap items-center gap-2 text-sm text-muted">
+                          Selected
+                          <span className="rounded-full border border-gold/30 bg-gold/10 px-3 py-1 text-xs font-semibold tracking-wide text-gold">
+                            {form.service}
+                          </span>
+                        </p>
+                      ) : null}
+                    </div>
                   </div>
 
                   <div className="p-6 md:p-7">
@@ -371,22 +371,22 @@ export function ConciergePage({ data }: ConciergePageProps) {
                       </div>
                     ) : (
                       <div className="space-y-4">
-                        {hasErrors(errors) && (
+                        {hasErrors(errors) ? (
                           <p
                             className="rounded-xl border border-red-400/30 bg-red-400/10 px-4 py-3 text-sm text-red-400"
                             role="alert"
                           >
                             Please correct the highlighted fields before submitting.
                           </p>
-                        )}
-                        {submitError && (
+                        ) : null}
+                        {submitError ? (
                           <p
                             className="rounded-xl border border-red-400/30 bg-red-400/10 px-4 py-3 text-sm text-red-400"
                             role="alert"
                           >
                             {submitError}
                           </p>
-                        )}
+                        ) : null}
                         <FormField label="Full Name" htmlFor="concierge-name" error={errors.name}>
                           <input
                             id="concierge-name"
@@ -397,7 +397,7 @@ export function ConciergePage({ data }: ConciergePageProps) {
                             aria-invalid={!!errors.name}
                           />
                         </FormField>
-                        <div className="grid gap-4 sm:grid-cols-2">
+                        <div className="grid gap-4 sm:grid-cols-2 sm:items-end">
                           <FormField label="Email" htmlFor="concierge-email" error={errors.email}>
                             <input
                               id="concierge-email"
@@ -417,6 +417,7 @@ export function ConciergePage({ data }: ConciergePageProps) {
                               value={form.phone}
                               onChange={(value) => update("phone", value)}
                               invalid={!!errors.phone}
+                              className="min-h-[3rem]"
                             />
                           </FormField>
                         </div>
@@ -425,7 +426,7 @@ export function ConciergePage({ data }: ConciergePageProps) {
                             id="concierge-service"
                             value={form.service}
                             onChange={(e) => update("service", e.target.value)}
-                            className={fieldInputClass("service", errors)}
+                            className={fieldSelectClass("service", errors)}
                             aria-invalid={!!errors.service}
                           >
                             {services.length > 0 ? (

@@ -118,7 +118,7 @@ export type HomePromoData = {
   titleAccent: string;
   description: string;
   assurancesHeading: string;
-  assurances: { iconKey: string; label: string }[];
+  assurances: { iconKey: string; title?: string; label: string }[];
   consultation: {
     badge: string;
     title: string;

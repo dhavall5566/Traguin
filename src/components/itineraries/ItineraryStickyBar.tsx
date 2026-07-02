@@ -7,6 +7,7 @@ import type { Itinerary } from "@/types/itinerary";
 import { MagneticButton } from "@/components/ui/MagneticButton";
 import { PriceDisplay } from "@/components/ui/PriceDisplay";
 import { itineraryPrimaryCta } from "@/data/site";
+import { buildPlanMyJourneyHref } from "@/lib/plan-my-journey";
 
 type ItineraryStickyBarProps = {
   itinerary: Itinerary;
@@ -54,6 +55,13 @@ export function ItineraryStickyBar({ itinerary, whatsappHref }: ItineraryStickyB
     };
   }, [visible]);
 
+  const planHref = buildPlanMyJourneyHref({
+    itinerary_id: itinerary.cmsId,
+    itinerary_slug: itinerary.slug,
+    itinerary_title: itinerary.title,
+    destination: itinerary.destination,
+  });
+
   return (
     <AnimatePresence>
       {visible && (
@@ -77,7 +85,7 @@ export function ItineraryStickyBar({ itinerary, whatsappHref }: ItineraryStickyB
                 <MessageCircle size={16} className="sm:mr-1.5" />
                 <span className="hidden sm:inline">WhatsApp</span>
               </MagneticButton>
-              <MagneticButton as="a" href="#inquiry" variant="primary" className="!px-4 !py-2.5 !text-xs">
+              <MagneticButton as="a" href={planHref} variant="primary" className="!px-4 !py-2.5 !text-xs">
                 {itineraryPrimaryCta.label}
               </MagneticButton>
             </div>

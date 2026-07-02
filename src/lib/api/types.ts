@@ -173,6 +173,7 @@ export interface CmsHomepagePromo {
 
 export type CmsAssuranceJson = {
   icon_key?: string;
+  title?: string;
   label?: string;
 };
 

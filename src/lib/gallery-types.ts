@@ -19,10 +19,15 @@ export type GalleryClientWallItem = {
   name: string;
   destination: string;
   image: string;
+  portraitMediaId: string;
   rotate: number;
 };
 
 export function filterGalleryItems(items: GalleryItem[], categoryId: string): GalleryItem[] {
   if (categoryId === "all") return items;
   return items.filter((item) => item.categorySlugs.includes(categoryId));
+}
+
+export function normalizeGalleryLabel(value: string): string {
+  return value.trim().toLowerCase().replace(/\s+/g, " ");
 }

@@ -10,6 +10,7 @@ import { HotelImageSlider } from "@/components/hotels/HotelImageSlider";
 import { PriceDisplay } from "@/components/ui/PriceDisplay";
 import { MagneticButton } from "@/components/ui/MagneticButton";
 import { itineraryPrimaryCta, itinerarySecondaryCta } from "@/data/site";
+import { buildPlanMyJourneyHref } from "@/lib/plan-my-journey";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -67,6 +68,13 @@ export function ItineraryHero({
     { scope: sectionRef }
   );
 
+  const planHref = buildPlanMyJourneyHref({
+    itinerary_id: itinerary.cmsId,
+    itinerary_slug: itinerary.slug,
+    itinerary_title: itinerary.title,
+    destination: destinationName ?? itinerary.destination,
+  });
+
   return (
     <section
       ref={sectionRef}
@@ -114,7 +122,7 @@ export function ItineraryHero({
               </p>
 
               <div className="mt-8 flex flex-wrap items-center gap-3">
-                <MagneticButton as="a" href="#inquiry" variant="primary">
+                <MagneticButton as="a" href={planHref} variant="primary">
                   {itineraryPrimaryCta.label}
                 </MagneticButton>
                 <MagneticButton

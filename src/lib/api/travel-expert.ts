@@ -34,7 +34,12 @@ export type TravelExpertPageData = {
 };
 
 const CONCIERGE_IMAGE_BY_SLUG: Record<string, string> = {
+  "bespoke-journeys": images.serviceBespoke,
   "visa-documentation": images.serviceVisa,
+  "sky-charter": images.serviceSkyCharter,
+  "yacht-sea": images.serviceYacht,
+  "chauffeur-arrivals": images.serviceChauffeur,
+  "private-access": images.servicePrivateAccess,
   "corporate-mice": images.serviceCorporateEvent,
 };
 
@@ -46,7 +51,7 @@ const DEFAULT_SERVICES: TravelExpertService[] = [
     title: "Bespoke Journeys",
     description:
       "Routes shaped around your rhythm, stays, pacing, and moments no brochure can offer.",
-    image: images.experiencePrivateLuxe,
+    image: images.serviceBespoke,
     number: "01",
     featured: true,
     wide: false,
@@ -68,7 +73,7 @@ const DEFAULT_SERVICES: TravelExpertService[] = [
     iconKey: "plane-takeoff",
     title: "Sky & Charter",
     description: "Jets, helicopters, and aerial transfers stitched into one seamless arrival.",
-    image: images.switzerland,
+    image: images.serviceSkyCharter,
     number: "03",
     featured: false,
     wide: false,
@@ -79,7 +84,7 @@ const DEFAULT_SERVICES: TravelExpertService[] = [
     iconKey: "ship",
     title: "Yacht & Sea",
     description: "Crewed charters across the Med, Caribbean, and Indian Ocean.",
-    image: images.beach,
+    image: images.serviceYacht,
     number: "04",
     featured: false,
     wide: false,
@@ -91,7 +96,7 @@ const DEFAULT_SERVICES: TravelExpertService[] = [
     title: "Chauffeur Arrivals",
     description:
       "Private transfers, meet-and-greet, and city-to-city ease from tarmac to threshold.",
-    image: images.dubai,
+    image: images.serviceChauffeur,
     number: "05",
     featured: false,
     wide: false,
@@ -102,7 +107,7 @@ const DEFAULT_SERVICES: TravelExpertService[] = [
     iconKey: "crown",
     title: "Private Access",
     description: "After-hours entries, closed-door tables, and invitations reserved for your circle.",
-    image: images.bali,
+    image: images.servicePrivateAccess,
     number: "06",
     featured: false,
     wide: false,
