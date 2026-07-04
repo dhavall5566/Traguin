@@ -8,7 +8,8 @@ import { cmsFetchPaginated } from "@/lib/api/client";
 import type { CmsClientStory } from "@/lib/api/types";
 import type { GalleryClientWallItem } from "@/lib/gallery-types";
 import { mapCmsClientStoryToWallItem } from "@/lib/api/gallery";
-import { uniqueById } from "@/lib/utils";
+import { sortClientStoriesForDisplay } from "@/lib/client-stories";
+import { formatHonorificName, uniqueById } from "@/lib/utils";
 
 export type ClientStoryReview = {
   id: string;
@@ -23,16 +24,7 @@ export type ClientStoriesPageData = {
   reviews: ClientStoryReview[];
 };
 
-function sortForPage(stories: CmsClientStory[]): CmsClientStory[] {
-  return [...stories].sort(
-    (a, b) =>
-      (a.gallery_sort_order ?? a.home_sort_order ?? 999) -
-        (b.gallery_sort_order ?? b.home_sort_order ?? 999) ||
-      a.client_name.localeCompare(b.client_name),
-  );
-}
-
-function mapReview(
+export function mapClientStoryReview(
   story: CmsClientStory,
   mediaMap: Map<string, string>,
 ): ClientStoryReview | null {
@@ -41,7 +33,7 @@ function mapReview(
 
   return {
     id: story.id,
-    name: story.client_name,
+    name: formatHonorificName(story.client_name),
     destination: story.destination_name?.trim() || null,
     quote,
     image: story.portrait_media_id
@@ -60,7 +52,7 @@ export const getClientStoriesPageData = cache(async function getClientStoriesPag
 
   const mediaMap = buildMediaUrlMap(mediaAssets);
   const published = uniqueById(
-    sortForPage(stories.filter((story) => story.is_published)),
+    sortClientStoriesForDisplay(stories.filter((story) => story.is_published)),
   );
 
   let photoIndex = 0;
@@ -70,7 +62,7 @@ export const getClientStoriesPageData = cache(async function getClientStoriesPag
     .filter((item): item is GalleryClientWallItem => item != null);
 
   const reviews = published
-    .map((story) => mapReview(story, mediaMap))
+    .map((story) => mapClientStoryReview(story, mediaMap))
     .filter((item): item is ClientStoryReview => item != null);
 
   return { photos, reviews };

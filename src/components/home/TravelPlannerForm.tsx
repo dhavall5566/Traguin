@@ -185,7 +185,7 @@ export function TravelPlannerForm() {
           description="Three quick steps. We respond with a tailored first draft, usually within 48 hours."
         />
 
-        <div className="mx-auto mt-8 w-full max-w-3xl px-4 sm:px-6">
+        <div className="mt-8 w-full">
           <div className="planner-wizard__progress" aria-hidden>
             <span className="planner-wizard__progress-fill" style={{ width: `${progress}%` }} />
           </div>

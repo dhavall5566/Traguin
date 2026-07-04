@@ -87,11 +87,11 @@ export const pageHeroes = {
     secondaryAction: { label: "View Stories", href: "/client-stories" },
   },
   about: {
-    eyebrow: "Our Studio",
-    badge: "Ahmedabad · Global Reach",
+    eyebrow: "Luxury · Corporate · Experiential",
+    badge: "Headquartered in India",
     title: "About TRAGUIN",
     description:
-      "A luxury travel practice devoted to extraordinary journeys that are personal, precise, and never pulled from a brochure.",
+      "A luxury-led, corporate-ready travel brand headquartered in India—delivering domestic and international journeys with global service standards, deep regional expertise, and experiences that are seamless, meaningful, and impeccably managed.",
     image: images.hero,
     imageAlt: "Travel landscape at golden hour",
     primaryAction: primaryCta,

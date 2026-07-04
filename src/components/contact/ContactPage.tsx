@@ -155,7 +155,7 @@ export function ContactPage() {
               noValidate
               className="glass scroll-mt-[var(--site-header-height)] rounded-3xl p-6 md:p-8 lg:col-span-3 lg:col-start-3 lg:row-span-2"
             >
-              <h2 className="font-display text-2xl text-foreground">Consultation request</h2>
+              <h2 className="font-display text-2xl text-foreground">Expert request</h2>
               <p className="mt-2 text-sm text-muted">We respond within 2 working hours.</p>
               {submitted ? (
                 <div className="flex min-h-[220px] flex-col items-center justify-center text-center">

@@ -143,7 +143,7 @@ export function CustomerStories({ testimonials }: { testimonials: HomeTestimonia
           onFocusCapture={() => setPaused(true)}
           onBlurCapture={() => setPaused(false)}
         >
-          <div className={cn("site-container--content", !motionLite && "[perspective:1400px]")}>
+          <div className={cn("w-full", !motionLite && "[perspective:1400px]")}>
             <article
               className="glass overflow-hidden rounded-2xl border border-gold/20 shadow-[0_16px_48px_-20px_rgba(206,169,50,0.14)]"
               aria-live="polite"
@@ -163,8 +163,7 @@ export function CustomerStories({ testimonials }: { testimonials: HomeTestimonia
                   “
                 </span>
                 <blockquote className="mt-4 text-base leading-relaxed text-foreground md:text-lg">
-                  {story.quote.replace(/^[“"']+|[”"']+$/g, "").trim()}
-                  &rdquo;
+                  &ldquo;{story.quote.replace(/^[“"']+|[”"']+$/g, "").trim()}&rdquo;
                 </blockquote>
                 <footer className="mt-8 flex items-center gap-4 border-t border-glass-border pt-6">
                   {story.image ? (
@@ -230,7 +229,7 @@ export function CustomerStories({ testimonials }: { testimonials: HomeTestimonia
           </div>
         </div>
 
-      <HomeSectionActions className="site-container--content !mt-10 lg:!mt-12">
+      <HomeSectionActions className="!mt-10 lg:!mt-12">
         <MagneticButton as="a" href={primaryCta.href} variant="primary">
           Plan Your Journey
           <ArrowUpRight size={14} />

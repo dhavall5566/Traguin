@@ -2,10 +2,10 @@
 
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
-import { ArrowLeft, Check, IndianRupee, Minus, PawPrint, Plus } from "lucide-react";
+import { ArrowLeft, Check, Minus, PawPrint, Plus } from "lucide-react";
 import { MagneticButton } from "@/components/ui/MagneticButton";
+import { BudgetRangeSlider } from "@/components/ui/BudgetRangeSlider";
 import { FormField, fieldInputClass } from "@/components/ui/FormField";
-import { FormSelectDropdown } from "@/components/ui/FormSelectDropdown";
 import { PhoneInput } from "@/components/ui/PhoneInput";
 import { DatePickerInput } from "@/components/ui/DatePickerInput";
 import { FormLegalConsent } from "@/components/forms/FormLegalConsent";
@@ -22,13 +22,10 @@ import { defaultCountryCode } from "@/data/country-codes";
 import { formatFullPhone } from "@/lib/phone-input";
 import { getLocalDateIso } from "@/lib/date-input";
 import { cn } from "@/lib/utils";
-import { FORM_BUDGET_RANGES } from "@/data/price-ranges";
-
-const budgetOptions = FORM_BUDGET_RANGES.map((option) => ({
-  value: option.value,
-  label: option.label,
-  icon: IndianRupee,
-}));
+import {
+  BUDGET_SLIDER_DEFAULT_MAX,
+  BUDGET_SLIDER_DEFAULT_MIN,
+} from "@/data/price-ranges";
 
 const childAgeOptions = Array.from({ length: 18 }, (_, age) => ({
   value: String(age),
@@ -104,7 +101,8 @@ export function PlanMyJourneyLandingForm({ context }: { context: PlanMyJourneySe
     children: "0",
     childAges: [] as string[],
     travelingWithPets: false,
-    budget: "200000",
+    budgetMin: String(BUDGET_SLIDER_DEFAULT_MIN),
+    budgetMax: String(BUDGET_SLIDER_DEFAULT_MAX),
     notes: "",
   });
 
@@ -171,7 +169,9 @@ export function PlanMyJourneyLandingForm({ context }: { context: PlanMyJourneySe
           children: childrenCount,
           child_ages: form.childAges,
           traveling_with_pets: form.travelingWithPets,
-          budget: form.budget,
+          budget_min: Number(form.budgetMin),
+          budget_max: Number(form.budgetMax),
+          budget: Number(form.budgetMax),
           notes: form.notes.trim(),
           itinerary_slug: context.itinerary_slug ?? null,
           itinerary_title: context.itinerary_title ?? null,
@@ -282,17 +282,19 @@ export function PlanMyJourneyLandingForm({ context }: { context: PlanMyJourneySe
           </FormField>
           <FormField
             label="Price range"
-            htmlFor="pmj-budget"
+            htmlFor="pmj-budget-min"
             error={errors.budget}
             className="sm:col-span-2"
           >
-            <FormSelectDropdown
+            <BudgetRangeSlider
               id="pmj-budget"
-              label="Price range"
-              value={form.budget}
-              options={budgetOptions}
-              onChange={(value) => update("budget", value)}
+              valueMin={Number(form.budgetMin)}
+              valueMax={Number(form.budgetMax)}
               invalid={!!errors.budget}
+              onChange={(min, max) => {
+                update("budgetMin", String(min));
+                update("budgetMax", String(max));
+              }}
             />
           </FormField>
         </div>

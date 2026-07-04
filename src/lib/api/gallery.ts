@@ -4,7 +4,7 @@ import type {
   GalleryItem,
 } from "@/lib/gallery-types";
 import { normalizeGalleryLabel } from "@/lib/gallery-types";
-import { uniqueById } from "@/lib/utils";
+import { formatHonorificName, uniqueById } from "@/lib/utils";
 import {
   buildMediaUrlMap,
   getGalleryCategories,
@@ -62,7 +62,7 @@ export function mapCmsClientStoryToWallItem(
 
   return {
     id: story.id,
-    name: story.client_name,
+    name: formatHonorificName(story.client_name),
     destination,
     image,
     portraitMediaId: story.portrait_media_id ?? story.id,

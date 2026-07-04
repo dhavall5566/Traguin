@@ -32,7 +32,13 @@ export function AboutPage({ data }: AboutPageProps) {
             {data.storySections.map((section) => (
               <article key={section.id} className="glass rounded-2xl border border-glass-border p-7 md:p-8">
                 <h2 className="font-display text-2xl font-semibold text-foreground">{section.title}</h2>
-                <p className="mt-4 text-sm leading-relaxed text-muted">{section.body}</p>
+                <div className="mt-4 space-y-4">
+                  {section.body.split(/\n\n+/).map((paragraph, index) => (
+                    <p key={index} className="text-sm leading-relaxed text-muted">
+                      {paragraph}
+                    </p>
+                  ))}
+                </div>
               </article>
             ))}
           </div>

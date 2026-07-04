@@ -9,6 +9,6 @@ export const contactInfo = {
   inquiryEmailHref: "mailto:sales@traguin.in",
   instagram: "https://www.instagram.com/traguin.travel/",
   address:
-    "Shaligram Lakeview, A 401, near Vaishnodevi Temple, Ahmedabad, Gujarat 382421",
+    "A-401 Shaligram Lakeview, Near K.D. Hospital B/h Vaishnodevi Temple, Ahmedabad, Gujarat 382421",
   hours: "10:00am - 7:00pm, Sunday Closed",
 } as const;

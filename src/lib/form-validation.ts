@@ -115,6 +115,16 @@ export function validateBudget(value: string): string | undefined {
   return undefined;
 }
 
+export function validateBudgetRange(minValue: string, maxValue: string): string | undefined {
+  const min = Number(minValue);
+  const max = Number(maxValue);
+  if (!minValue || !maxValue || Number.isNaN(min) || Number.isNaN(max)) {
+    return "Please select a budget range";
+  }
+  if (min >= max) return "Maximum budget must be higher than minimum";
+  return undefined;
+}
+
 export function validatePositiveNumber(
   value: string,
   label: string,
@@ -304,7 +314,8 @@ export type PlanMyJourneyFormValues = {
   children: string;
   childAges: string[];
   travelingWithPets: boolean;
-  budget: string;
+  budgetMin: string;
+  budgetMax: string;
   notes: string;
 };
 
@@ -336,7 +347,7 @@ export function validatePlanMyJourneyForm(
         Number(form.children) >= 0 && Number(form.children) <= 12
           ? undefined
           : "Children must be between 0 and 12",
-      budget: validateBudget(form.budget),
+      budget: validateBudgetRange(form.budgetMin, form.budgetMax),
     }),
     ...childAgeErrors,
   };

@@ -170,8 +170,7 @@ export function getValuePropositions() {
 
 export function getHomeClientStories() {
   return cmsFetchPaginated<CmsClientStory>("/api/cms/public/client-stories", {
-    limit: 20,
-    searchParams: { show_on_home: true },
+    limit: 100,
   });
 }
 

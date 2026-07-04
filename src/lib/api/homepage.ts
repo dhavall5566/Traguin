@@ -12,6 +12,8 @@ import { images } from "@/lib/images";
 import { cleanPackageTitle } from "@/lib/package-title";
 import { defaultHomepagePromo, defaultRegionPanels, defaultSpecializations } from "@/data/pageContent";
 import { humanizeCopy, humanizeCopyList } from "@/lib/copy";
+import { selectHomeClientStories } from "@/lib/client-stories";
+import { mapClientStoryReview } from "@/lib/api/client-stories-page";
 import { uniqueById } from "@/lib/utils";
 
 export { HERO_SLIDER_DEFAULT_MAX_ITEMS } from "@/lib/api/homepage-hero-settings";
@@ -686,15 +688,14 @@ function mapExperience(
 }
 
 function mapTestimonial(story: CmsClientStory, mediaMap: Map<string, string>): HomeTestimonial | null {
-  if (!story.quote?.trim()) return null;
+  const review = mapClientStoryReview(story, mediaMap);
+  if (!review) return null;
   return {
-    id: story.id,
-    name: story.client_name,
-    destination: story.destination_name?.trim() || null,
-    quote: humanizeCopy(story.quote),
-    image: story.portrait_media_id
-      ? resolveMediaUrl(mediaMap, story.portrait_media_id, "")
-      : "",
+    id: review.id,
+    name: review.name,
+    destination: review.destination,
+    quote: review.quote,
+    image: review.image ?? "",
   };
 }
 
@@ -780,6 +781,22 @@ function mapHomepageBundle(bundle: import("./types").CmsHomepageBundle): Homepag
   });
 }
 
+function buildMarqueeNames(destinations: CmsDestination[]): string[] {
+  const byName = (a: CmsDestination, b: CmsDestination) =>
+    a.name.localeCompare(b.name, undefined, { sensitivity: "base" });
+
+  const domestic = destinations
+    .filter((d) => d.region === "domestic")
+    .sort(byName)
+    .map((d) => d.name);
+  const international = destinations
+    .filter((d) => d.region === "international")
+    .sort(byName)
+    .map((d) => d.name);
+
+  return [...domestic, ...international];
+}
+
 function mapHomepageSources({
   packages,
   destinations,
@@ -845,7 +862,7 @@ function mapHomepageSources({
       .filter((item): item is HomeStat => item !== null)
   );
 
-  const marqueeNames = destinations.map((d) => d.name);
+  const marqueeNames = buildMarqueeNames(destinations);
 
   const mappedRegionPanels = uniqueById(resolveRegionPanels(regionPanels, mediaMap));
 
@@ -902,10 +919,9 @@ function mapHomepageSources({
   );
 
   const testimonials = uniqueById(
-    clientStories
-      .sort((a, b) => (a.home_sort_order ?? 999) - (b.home_sort_order ?? 999))
+    selectHomeClientStories(clientStories)
       .map((story) => mapTestimonial(story, mediaMap))
-      .filter((item): item is HomeTestimonial => item !== null)
+      .filter((item): item is HomeTestimonial => item !== null),
   );
 
   return {

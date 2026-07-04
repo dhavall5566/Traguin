@@ -17,6 +17,33 @@ export const FORM_BUDGET_RANGES = [
   { value: "1000001", label: "₹10L+" },
 ] as const;
 
+/** Dual-handle budget slider bounds (INR). */
+export const BUDGET_SLIDER_MIN = 50_000;
+export const BUDGET_SLIDER_MAX = 2_000_000;
+export const BUDGET_SLIDER_STEP = 25_000;
+export const BUDGET_SLIDER_DEFAULT_MIN = 100_000;
+export const BUDGET_SLIDER_DEFAULT_MAX = 300_000;
+
+export function formatInrBudgetShort(amount: number): string {
+  if (amount >= 100_000) {
+    const lakhs = amount / 100_000;
+    const rounded = Math.round(lakhs * 10) / 10;
+    return Number.isInteger(rounded) ? `₹${rounded}L` : `₹${rounded.toFixed(1)}L`;
+  }
+  if (amount >= 1_000) {
+    const thousands = amount / 1_000;
+    return `₹${Math.round(thousands)}K`;
+  }
+  return `₹${amount}`;
+}
+
+export function formatInrBudgetRange(min: number, max: number): string {
+  if (max >= BUDGET_SLIDER_MAX) {
+    return `${formatInrBudgetShort(min)} – ${formatInrBudgetShort(BUDGET_SLIDER_MAX)}+`;
+  }
+  return `${formatInrBudgetShort(min)} – ${formatInrBudgetShort(max)}`;
+}
+
 export function matchesDestinationPriceFilter(
   startingPrice: number,
   filterId: DestinationPriceFilterId

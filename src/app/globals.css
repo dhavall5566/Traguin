@@ -40,8 +40,7 @@ html {
   scroll-padding-top: var(--site-header-height);
 }
 
-/* Dark theme (default) */
-:root,
+/* Dark theme */
 [data-theme="dark"] {
   --background: #0b0b0b;
   --surface: #111111;
@@ -109,7 +108,8 @@ html {
   color-scheme: dark;
 }
 
-/* Light theme */
+/* Light theme (default) */
+:root,
 [data-theme="light"] {
   --background: #ede8e0;
   --surface: #f5f2ec;
@@ -3957,5 +3957,73 @@ html[data-theme="light"] .date-picker-input__field {
   font-family: var(--font-mono, ui-monospace, monospace);
   font-size: 1.05rem;
   color: var(--foreground);
+}
+
+.budget-range-slider__track {
+  touch-action: none;
+}
+
+.budget-range-slider__thumb {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 2rem;
+  margin: 0;
+  appearance: none;
+  background: transparent;
+  pointer-events: none;
+}
+
+.budget-range-slider__thumb::-webkit-slider-runnable-track {
+  height: 0.375rem;
+  background: transparent;
+}
+
+.budget-range-slider__thumb::-moz-range-track {
+  height: 0.375rem;
+  background: transparent;
+}
+
+.budget-range-slider__thumb::-webkit-slider-thumb {
+  appearance: none;
+  width: 1.125rem;
+  height: 1.125rem;
+  margin-top: -0.375rem;
+  border-radius: 9999px;
+  border: 2px solid var(--gold);
+  background: var(--surface);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.18);
+  pointer-events: auto;
+  cursor: grab;
+}
+
+.budget-range-slider__thumb::-moz-range-thumb {
+  width: 1.125rem;
+  height: 1.125rem;
+  border-radius: 9999px;
+  border: 2px solid var(--gold);
+  background: var(--surface);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.18);
+  pointer-events: auto;
+  cursor: grab;
+}
+
+.budget-range-slider__thumb--max {
+  z-index: 4;
+}
+
+.budget-range-slider__thumb--min {
+  z-index: 3;
+}
+
+.budget-range-slider__thumb:focus-visible::-webkit-slider-thumb {
+  outline: 2px solid color-mix(in srgb, var(--gold) 55%, transparent);
+  outline-offset: 2px;
+}
+
+.budget-range-slider__thumb:focus-visible::-moz-range-thumb {
+  outline: 2px solid color-mix(in srgb, var(--gold) 55%, transparent);
+  outline-offset: 2px;
 }
 

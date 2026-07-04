@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Script from "next/script";
 import { cookies } from "next/headers";
-import { isTheme, themeInitScript, THEME_COOKIE_NAME, type Theme } from "@/lib/theme";
+import { isTheme, themeInitScript, THEME_COOKIE_NAME, DEFAULT_THEME, type Theme } from "@/lib/theme";
 import "./globals.css";
 import { ThemeProvider } from "@/components/providers/ThemeProvider";
 import { MotionLiteProvider } from "@/components/providers/MotionLiteProvider";
@@ -41,7 +41,7 @@ export const metadata: Metadata = {
 async function getServerTheme(): Promise<Theme> {
   const cookieStore = await cookies();
   const stored = cookieStore.get(THEME_COOKIE_NAME)?.value;
-  return isTheme(stored) ? stored : "dark";
+  return isTheme(stored) ? stored : DEFAULT_THEME;
 }
 
 export default async function RootLayout({

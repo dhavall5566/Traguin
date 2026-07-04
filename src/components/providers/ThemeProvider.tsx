@@ -10,6 +10,7 @@ import {
 import {
   persistTheme,
   readThemeFromDocument,
+  DEFAULT_THEME,
   type Theme,
 } from "@/lib/theme";
 
@@ -38,7 +39,7 @@ function getThemeSnapshot(): Theme {
 
 export function ThemeProvider({
   children,
-  initialTheme = "dark",
+  initialTheme = DEFAULT_THEME,
 }: {
   children: ReactNode;
   initialTheme?: Theme;

@@ -21,6 +21,18 @@ export function formatPriceLabel(amount: number, onRequest?: boolean) {
   return isPriceOnRequest(amount, onRequest) ? "Inquire for price" : formatPrice(amount);
 }
 
+/** Ensures titles like Mr/Mr,/Mr. render consistently as "Mr." */
+export function formatHonorificName(name: string): string {
+  const trimmed = name.trim();
+  if (!trimmed) return trimmed;
+
+  return trimmed.replace(
+    /^(Mr|Mrs|Ms|Miss|Dr|Prof|Shri|Smt)\.?\s*,?\s*/i,
+    (_, honorific: string) =>
+      `${honorific.charAt(0).toUpperCase()}${honorific.slice(1).toLowerCase()}. `,
+  );
+}
+
 /** Keeps the first occurrence of each string (skips empty values). */
 export function uniqueStringsPreservingOrder(values: string[]): string[] {
   const seen = new Set<string>();

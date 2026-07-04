@@ -233,14 +233,14 @@ export const ALL_ADMIN_ENTITIES: Record<string, AdminEntityDef> = {
         listFormat: (value) => {
           const text = String(value ?? "").trim();
           if (!text) return "—";
-          return text.length > 72 ? `${text.slice(0, 72)}…` : text;
+          return text.length > 200 ? `${text.slice(0, 200)}…` : text;
         },
       },
       { name: "portrait_media_id", label: "Media", type: "relation", relation: M, mediaUploadOnly: true },
-      { name: "show_on_home", label: "Show on home", type: "boolean", showInList: true },
+      { name: "show_on_home", label: "Show on home", type: "boolean", showInList: true, helpText: "Legacy flag. Homepage shows the top 6 published reviews by sort order (same as Client Stories)." },
       { name: "show_in_gallery", label: "Photo grid", type: "boolean", showInList: true, helpText: "Show portrait in the client stories photo grid (when Active)." },
       { name: "is_featured_in_gallery", label: "Featured in gallery", type: "boolean" },
-      { name: "home_sort_order", label: "Home sort order", type: "number", showInList: true, listLabel: "Order" },
+      { name: "home_sort_order", label: "Home sort order", type: "number", showInList: true, listLabel: "Order", helpText: "Lower numbers appear first on Client Stories and the homepage carousel (top 6)." },
       { name: "gallery_sort_order", label: "Gallery sort order", type: "number" },
       {
         name: "is_published",
