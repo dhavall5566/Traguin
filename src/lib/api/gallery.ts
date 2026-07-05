@@ -13,6 +13,7 @@ import {
   getMediaAssets,
   resolveMediaUrl,
 } from "./cms";
+import { toPublicMediaUrl } from "./media-url";
 import type { CmsClientStory, CmsGalleryItem, CmsMediaAsset } from "./types";
 
 export type GalleryPageData = {
@@ -141,7 +142,7 @@ export function mapCmsGalleryItemToGalleryItems(
 
   return mediaEntries
     .map((media) => {
-      const image = media.url || resolveMediaUrl(mediaMap, media.id, "");
+      const image = toPublicMediaUrl(media.url || resolveMediaUrl(mediaMap, media.id, ""));
       if (!image) return null;
 
       const alt =

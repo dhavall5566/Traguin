@@ -1,9 +1,19 @@
 import type { NextConfig } from "next";
 
+const cmsApiBase = (process.env.CMS_API_URL ?? "http://127.0.0.1:8001").replace(/\/$/, "");
+
 const nextConfig: NextConfig = {
   allowedDevOrigins: ["127.0.0.1"],
   experimental: {
     optimizePackageImports: ["lucide-react", "framer-motion", "gsap"],
+  },
+  async rewrites() {
+    return [
+      {
+        source: "/cms-uploads/:path*",
+        destination: `${cmsApiBase}/uploads/:path*`,
+      },
+    ];
   },
   async redirects() {
     return [

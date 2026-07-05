@@ -26,8 +26,9 @@ export function formatHonorificName(name: string): string {
   const trimmed = name.trim();
   if (!trimmed) return trimmed;
 
+  // Longer honorifics first — "Mr" must not match inside "Mrs", nor "Ms" inside "Miss".
   return trimmed.replace(
-    /^(Mr|Mrs|Ms|Miss|Dr|Prof|Shri|Smt)\.?\s*,?\s*/i,
+    /^(Miss|Mrs|Mr|Ms|Dr|Prof|Shri|Smt)\.?\s*,?\s*/i,
     (_, honorific: string) =>
       `${honorific.charAt(0).toUpperCase()}${honorific.slice(1).toLowerCase()}. `,
   );

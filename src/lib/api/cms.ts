@@ -1,4 +1,5 @@
 import { cmsFetch, cmsFetchPaginated } from "./client";
+import { toPublicMediaUrl } from "./media-url";
 import type {
   CmsClientStory,
   CmsCompanyStats,
@@ -224,7 +225,7 @@ export function getLegalPageBySlug(slug: string) {
 }
 
 export function buildMediaUrlMap(assets: CmsMediaAsset[]): Map<string, string> {
-  return new Map(assets.map((asset) => [asset.id, asset.url]));
+  return new Map(assets.map((asset) => [asset.id, toPublicMediaUrl(asset.url)]));
 }
 
 export function resolveMediaUrl(
@@ -233,5 +234,5 @@ export function resolveMediaUrl(
   fallback = ""
 ): string {
   if (!mediaId) return fallback;
-  return mediaMap.get(mediaId) ?? fallback;
+  return toPublicMediaUrl(mediaMap.get(mediaId) ?? fallback);
 }
