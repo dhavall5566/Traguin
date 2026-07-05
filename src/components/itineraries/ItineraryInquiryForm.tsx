@@ -15,6 +15,7 @@ import {
   type FieldErrors,
 } from "@/lib/form-validation";
 import { FormSubmissionError, submitFormSubmission } from "@/lib/api/form-submissions";
+import { FormSubmissionSuccessCodes } from "@/components/forms/FormSubmissionSuccessCodes";
 import { itineraryPrimaryCta } from "@/data/site";
 import { formatDateRangeForPayload, getLocalDateIso } from "@/lib/date-input";
 import { defaultCountryCode } from "@/data/country-codes";
@@ -25,12 +26,14 @@ type ItineraryInquiryFormProps = {
   itineraryTitle: string;
   itinerarySlug: string;
   relatedItineraryId?: string;
+  relatedPackageId?: string;
 };
 
 export function ItineraryInquiryForm({
   itineraryTitle,
   itinerarySlug,
   relatedItineraryId,
+  relatedPackageId,
 }: ItineraryInquiryFormProps) {
   const [minDate, setMinDate] = useState("");
   const [form, setForm] = useState({
@@ -50,6 +53,8 @@ export function ItineraryInquiryForm({
   const [phoneCountryCode, setPhoneCountryCode] = useState(defaultCountryCode);
   const [errors, setErrors] = useState<FieldErrors>({});
   const [submitted, setSubmitted] = useState(false);
+  const [leadCode, setLeadCode] = useState<string | null>(null);
+  const [inquiryCode, setInquiryCode] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
 
@@ -68,12 +73,13 @@ export function ItineraryInquiryForm({
     setSubmitError(null);
     const fullPhone = formatFullPhone(phoneCountryCode, form.phone);
     try {
-      await submitFormSubmission({
+      const response = await submitFormSubmission({
         form_type: "itinerary_inquiry",
         name: form.name.trim(),
         email: form.email.trim().toLowerCase(),
         phone: fullPhone,
         related_itinerary_id: relatedItineraryId ?? null,
+        related_package_id: relatedPackageId ?? null,
         payload: {
           name: form.name.trim(),
           email: form.email.trim().toLowerCase(),
@@ -85,6 +91,8 @@ export function ItineraryInquiryForm({
           itinerary_title: itineraryTitle,
         },
       });
+      setLeadCode(response.lead_code ?? null);
+      setInquiryCode(response.inquiry_code ?? null);
       setSubmitted(true);
     } catch (error) {
       setSubmitError(
@@ -118,6 +126,8 @@ export function ItineraryInquiryForm({
           <Send size={40} className="text-gold" />
           <h3 className="mt-4 font-display text-xl">Inquiry Received</h3>
           <p className="mt-2 text-sm text-muted">We&apos;ll respond within one business day.</p>
+          <p className="mt-1 text-sm text-muted">Save these reference codes for tracking your request.</p>
+          <FormSubmissionSuccessCodes leadCode={leadCode} inquiryCode={inquiryCode} />
         </div>
       ) : (
         <div className="mt-6 space-y-4">

@@ -12,6 +12,7 @@ import { PageHero } from "@/components/layout/PageHero";
 import { TrustBar } from "@/components/layout/TrustBar";
 import { PageCTA } from "@/components/layout/PageCTA";
 import { FormLegalConsent } from "@/components/forms/FormLegalConsent";
+import { FormSubmissionSuccessCodes } from "@/components/forms/FormSubmissionSuccessCodes";
 import {
   clearFieldError,
   hasErrors,
@@ -19,7 +20,7 @@ import {
   withLegalConsent,
   type FieldErrors,
 } from "@/lib/form-validation";
-import { submitFormSubmissionOptimistic } from "@/lib/api/form-submissions";
+import { FormSubmissionError, submitFormSubmission } from "@/lib/api/form-submissions";
 import { contactInfo } from "@/data/contact";
 import { defaultCountryCode } from "@/data/country-codes";
 import { formatFullPhone } from "@/lib/phone-input";
@@ -46,7 +47,10 @@ export function ContactPage() {
   const [legalConsent, setLegalConsent] = useState(false);
   const [errors, setErrors] = useState<FieldErrors>({});
   const [submitted, setSubmitted] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
+  const [leadCode, setLeadCode] = useState<string | null>(null);
+  const [inquiryCode, setInquiryCode] = useState<string | null>(null);
 
   useEffect(() => {
     const scrollToForm = () => scrollToConsultationSection(lenis);
@@ -66,34 +70,41 @@ export function ContactPage() {
     clearFieldError(setErrors, key);
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     const nextErrors = withLegalConsent(validateContactForm(form), legalConsent);
     setErrors(nextErrors);
     if (hasErrors(nextErrors)) return;
 
+    setSubmitting(true);
     setSubmitError(null);
     const fullPhone = formatFullPhone(phoneCountryCode, form.phone);
-    const payload = {
-      form_type: "contact_consultation" as const,
-      name: form.name.trim(),
-      email: form.email.trim().toLowerCase(),
-      phone: fullPhone || null,
-      payload: {
+
+    try {
+      const response = await submitFormSubmission({
+        form_type: "contact_consultation",
         name: form.name.trim(),
         email: form.email.trim().toLowerCase(),
         phone: fullPhone || null,
-        message: form.message.trim(),
-      },
-    };
-
-    submitFormSubmissionOptimistic(payload, {
-      onSuccess: () => setSubmitted(true),
-      onError: (error) => {
-        setSubmitted(false);
-        setSubmitError(error.message);
-      },
-    });
+        payload: {
+          name: form.name.trim(),
+          email: form.email.trim().toLowerCase(),
+          phone: fullPhone || null,
+          message: form.message.trim(),
+        },
+      });
+      setLeadCode(response.lead_code ?? null);
+      setInquiryCode(response.inquiry_code ?? null);
+      setSubmitted(true);
+    } catch (error) {
+      setSubmitError(
+        error instanceof FormSubmissionError
+          ? error.message
+          : "Something went wrong. Please try again."
+      );
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   return (
@@ -162,6 +173,14 @@ export function ContactPage() {
                   <Send size={48} className="text-gold" />
                   <h3 className="mt-4 font-display text-2xl">Message Sent</h3>
                   <p className="mt-2 text-muted">We&apos;ll be in touch within 2 working hours.</p>
+                  <p className="mt-1 max-w-md text-sm text-muted">
+                    Save these reference codes for tracking your request.
+                  </p>
+                  <FormSubmissionSuccessCodes
+                    leadCode={leadCode}
+                    inquiryCode={inquiryCode}
+                    className="mx-auto max-w-md justify-items-center text-center sm:justify-items-start sm:text-left"
+                  />
                 </div>
               ) : (
                 <div className="mt-6 space-y-4">
@@ -231,8 +250,8 @@ export function ContactPage() {
                     }}
                     error={errors.legalConsent}
                   />
-                  <MagneticButton type="submit" variant="primary">
-                    Connect With a Travel Expert
+                  <MagneticButton type="submit" variant="primary" disabled={submitting}>
+                    {submitting ? "Sending…" : "Connect With a Travel Expert"}
                   </MagneticButton>
                 </div>
               )}

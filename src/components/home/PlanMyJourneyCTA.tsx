@@ -17,6 +17,7 @@ import { formatFullPhone } from "@/lib/phone-input";
 import { FormLegalConsent } from "@/components/forms/FormLegalConsent";
 import { collectErrors, clearFieldError, hasErrors, validateLegalConsent, validatePhone, type FieldErrors } from "@/lib/form-validation";
 import { FormSubmissionError, submitFormSubmission } from "@/lib/api/form-submissions";
+import { FormSubmissionSuccessCodes } from "@/components/forms/FormSubmissionSuccessCodes";
 import { HomeSection } from "@/components/home/HomeSection";
 import { cn } from "@/lib/utils";
 import { getMotionLite } from "@/lib/motion-profile";
@@ -38,6 +39,8 @@ export function PlanMyJourneyCTA() {
   const [legalConsent, setLegalConsent] = useState(false);
   const [errors, setErrors] = useState<FieldErrors>({});
   const [submitted, setSubmitted] = useState(false);
+  const [leadCode, setLeadCode] = useState<string | null>(null);
+  const [inquiryCode, setInquiryCode] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
 
@@ -115,7 +118,7 @@ export function PlanMyJourneyCTA() {
     setSubmitting(true);
     setSubmitError(null);
     try {
-      await submitFormSubmission({
+      const response = await submitFormSubmission({
         form_type: "plan_my_journey",
         name: "WhatsApp Callback Request",
         phone: fullPhone,
@@ -124,6 +127,8 @@ export function PlanMyJourneyCTA() {
           country_code: getCountryByCode(countryCode).dial,
         },
       });
+      setLeadCode(response.lead_code ?? null);
+      setInquiryCode(response.inquiry_code ?? null);
       setSubmitted(true);
     } catch (error) {
       setSubmitError(
@@ -175,9 +180,16 @@ export function PlanMyJourneyCTA() {
           </p>
 
           {submitted ? (
-            <p className="mx-auto mt-8 max-w-md rounded-2xl border border-white/20 bg-white/10 px-5 py-4 text-sm text-white backdrop-blur-sm sm:px-6 sm:text-base">
-              Thank you. A travel designer will call you within 2 working hours.
-            </p>
+            <div className="mx-auto mt-8 max-w-md rounded-2xl border border-white/20 bg-white/10 px-5 py-4 text-sm text-white backdrop-blur-sm sm:px-6 sm:text-base">
+              <p>Thank you. A travel designer will call you within 2 working hours.</p>
+              <p className="mt-2 text-sm text-white/80">Save these reference codes for tracking your request.</p>
+              <FormSubmissionSuccessCodes
+                leadCode={leadCode}
+                inquiryCode={inquiryCode}
+                variant="light"
+                className="mt-3"
+              />
+            </div>
           ) : (
             <form onSubmit={handleSubmit} className="plan-journey-card__form mx-auto mt-7 w-full sm:mt-10">
               <PhoneInput

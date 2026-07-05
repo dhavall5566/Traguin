@@ -186,6 +186,7 @@ export function ItineraryDetail({
                 itineraryTitle={itinerary.title}
                 itinerarySlug={itinerary.slug}
                 relatedItineraryId={itinerary.cmsId}
+                relatedPackageId={itinerary.packageId || undefined}
               />
             </ItineraryReveal3D>
 

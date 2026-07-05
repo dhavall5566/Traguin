@@ -7,6 +7,7 @@ export type FormSubmissionInput = {
   related_itinerary_id?: string | null;
   related_hotel_id?: string | null;
   related_destination_id?: string | null;
+  related_package_id?: string | null;
 };
 
 export class FormSubmissionError extends Error {
@@ -20,7 +21,11 @@ export class FormSubmissionError extends Error {
 }
 
 export function getPublicCmsBaseUrl(): string {
-  return (process.env.NEXT_PUBLIC_CMS_API_URL ?? "http://127.0.0.1:8001").replace(/\/$/, "");
+  const base =
+    process.env.CMS_API_URL ??
+    process.env.NEXT_PUBLIC_CMS_API_URL ??
+    "http://127.0.0.1:8001";
+  return base.replace(/\/$/, "");
 }
 
 /** Same-origin in the browser — avoids CORS preflight to the FastAPI host. */
@@ -35,6 +40,7 @@ export type FormSubmissionResult = {
   id: string;
   lead_id?: string | null;
   customer_id?: string | null;
+  lead_code?: string | null;
   member_code?: string | null;
   inquiry_code?: string | null;
 };
@@ -68,7 +74,8 @@ export async function submitFormSubmission(input: FormSubmissionInput): Promise<
     id: body.id,
     lead_id: body.lead_id ?? null,
     customer_id: body.customer_id ?? null,
-    member_code: body.member_code ?? null,
+    lead_code: body.lead_code ?? body.member_code ?? null,
+    member_code: body.member_code ?? body.lead_code ?? null,
     inquiry_code: body.inquiry_code ?? null,
   };
 }

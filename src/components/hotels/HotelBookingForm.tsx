@@ -15,6 +15,7 @@ import {
   type FieldErrors,
 } from "@/lib/form-validation";
 import { FormSubmissionError, submitFormSubmission } from "@/lib/api/form-submissions";
+import { FormSubmissionSuccessCodes } from "@/components/forms/FormSubmissionSuccessCodes";
 import { formatDateRangeForPayload, getLocalDateIso } from "@/lib/date-input";
 import { defaultCountryCode } from "@/data/country-codes";
 import { formatFullPhone } from "@/lib/phone-input";
@@ -48,6 +49,8 @@ export function HotelBookingForm({ hotel }: HotelBookingFormProps) {
   const [phoneCountryCode, setPhoneCountryCode] = useState(defaultCountryCode);
   const [errors, setErrors] = useState<FieldErrors>({});
   const [submitted, setSubmitted] = useState(false);
+  const [leadCode, setLeadCode] = useState<string | null>(null);
+  const [inquiryCode, setInquiryCode] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
 
@@ -67,6 +70,8 @@ export function HotelBookingForm({ hotel }: HotelBookingFormProps) {
     });
     setErrors({});
     setSubmitted(false);
+    setInquiryCode(null);
+    setLeadCode(null);
     setLegalConsent(false);
   }, [hotel.id, hotel.name, hotel.destination]);
 
@@ -85,7 +90,7 @@ export function HotelBookingForm({ hotel }: HotelBookingFormProps) {
     setSubmitError(null);
     const fullPhone = formatFullPhone(phoneCountryCode, form.phone);
     try {
-      await submitFormSubmission({
+      const response = await submitFormSubmission({
         form_type: "hotel_booking",
         name: form.name.trim(),
         email: form.email.trim().toLowerCase(),
@@ -102,6 +107,8 @@ export function HotelBookingForm({ hotel }: HotelBookingFormProps) {
           hotel_name: hotel.name,
         },
       });
+      setLeadCode(response.lead_code ?? null);
+      setInquiryCode(response.inquiry_code ?? null);
       setSubmitted(true);
     } catch (error) {
       setSubmitError(
@@ -133,6 +140,8 @@ export function HotelBookingForm({ hotel }: HotelBookingFormProps) {
           <Send size={36} className="text-gold" />
           <h4 className="mt-4 font-display text-lg">Booking Request Received</h4>
           <p className="mt-2 text-sm text-muted">We&apos;ll respond within one business day.</p>
+          <p className="mt-1 text-sm text-muted">Save these reference codes for tracking your request.</p>
+          <FormSubmissionSuccessCodes leadCode={leadCode} inquiryCode={inquiryCode} />
         </div>
       ) : (
         <div className="mt-5 space-y-4">

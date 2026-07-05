@@ -34,6 +34,7 @@ import type { TravelMood } from "@/types";
 import { getLocalDateIso } from "@/lib/theme";
 import { cn } from "@/lib/utils";
 import { FormSubmissionError, submitFormSubmission } from "@/lib/api/form-submissions";
+import { FormSubmissionSuccessCodes } from "@/components/forms/FormSubmissionSuccessCodes";
 import { defaultCountryCode } from "@/data/country-codes";
 import { formatFullPhone } from "@/lib/phone-input";
 
@@ -86,6 +87,8 @@ const steps = [
 export function TravelPlannerForm() {
   const [step, setStep] = useState(0);
   const [submitted, setSubmitted] = useState(false);
+  const [leadCode, setLeadCode] = useState<string | null>(null);
+  const [inquiryCode, setInquiryCode] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
   const [minDate, setMinDate] = useState("");
@@ -147,7 +150,7 @@ export function TravelPlannerForm() {
     setSubmitError(null);
     const fullPhone = formatFullPhone(phoneCountryCode, form.phone);
     try {
-      await submitFormSubmission({
+      const response = await submitFormSubmission({
         form_type: "travel_planner",
         email: form.email.trim().toLowerCase(),
         phone: fullPhone,
@@ -163,6 +166,8 @@ export function TravelPlannerForm() {
           phone: fullPhone,
         },
       });
+      setLeadCode(response.lead_code ?? null);
+      setInquiryCode(response.inquiry_code ?? null);
       setSubmitted(true);
     } catch (error) {
       setSubmitError(
@@ -225,6 +230,14 @@ export function TravelPlannerForm() {
                 <p className="mx-auto mt-2 max-w-md text-sm leading-relaxed text-muted sm:text-base">
                   A travel designer will contact you shortly with your personalized itinerary.
                 </p>
+                <p className="mx-auto mt-1 max-w-md text-sm text-muted">
+                  Save these reference codes for tracking your request.
+                </p>
+                <FormSubmissionSuccessCodes
+                  leadCode={leadCode}
+                  inquiryCode={inquiryCode}
+                  className="mx-auto mt-4 max-w-md"
+                />
               </div>
             ) : (
               <>

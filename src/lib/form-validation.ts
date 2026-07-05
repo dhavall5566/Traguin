@@ -1,4 +1,5 @@
 import type { Dispatch, SetStateAction } from "react";
+import { validateLocalPhone } from "@/lib/phone-input";
 
 export type FieldErrors = Record<string, string>;
 
@@ -46,12 +47,7 @@ export function validateEmail(value: string): string | undefined {
 }
 
 export function validatePhone(value: string, required = false): string | undefined {
-  const trimmed = value.trim();
-  if (!trimmed) return required ? "Please enter your phone number" : undefined;
-  const digits = trimmed.replace(/\D/g, "");
-  if (digits.length < 10) return "Enter a valid phone number (at least 10 digits)";
-  if (digits.length > 15) return "Phone number is too long";
-  return undefined;
+  return validateLocalPhone(value, required);
 }
 
 export function validateMessage(value: string, minLength = 10): string | undefined {

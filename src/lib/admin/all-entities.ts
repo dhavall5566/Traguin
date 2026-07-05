@@ -185,7 +185,7 @@ export const ALL_ADMIN_ENTITIES: Record<string, AdminEntityDef> = {
   media: {
     key: "media", label: "Media Asset", pluralLabel: "Media Assets", group: "catalog", endpoint: "/media", nameField: "slug",
     fields: [
-      { name: "url", label: "URL", type: "text", required: true, showInList: true, helpText: "External image URL, or upload via the Media picker on related forms." },
+      { name: "url", label: "URL", type: "text", required: true, showInList: true, helpText: "Filled automatically when you upload via the media picker. External URLs are copied to the API server on save." },
       { name: "slug", label: "Slug", type: "slug", showInList: true },
       { name: "alt_text", label: "Alt text", type: "text", showInList: true },
       { name: "mime_type", label: "MIME type", type: "text" },

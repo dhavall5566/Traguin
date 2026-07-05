@@ -3933,18 +3933,21 @@ html[data-theme="light"] .date-picker-input__field {
   color: var(--on-gold);
 }
 
-.plan-journey-success__codes {
+.plan-journey-success__codes,
+.form-submission-success__codes {
   display: grid;
   gap: 1rem;
 }
 
 @media (min-width: 640px) {
-  .plan-journey-success__codes {
+  .plan-journey-success__codes,
+  .form-submission-success__codes {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
 
-.plan-journey-success__codes dt {
+.plan-journey-success__codes dt,
+.form-submission-success__codes dt {
   font-size: 0.68rem;
   font-weight: 700;
   letter-spacing: 0.16em;
@@ -3952,11 +3955,20 @@ html[data-theme="light"] .date-picker-input__field {
   color: var(--muted);
 }
 
-.plan-journey-success__codes dd {
+.form-submission-success__codes--light dt {
+  color: rgb(255 255 255 / 0.72);
+}
+
+.plan-journey-success__codes dd,
+.form-submission-success__codes dd {
   margin-top: 0.35rem;
   font-family: var(--font-mono, ui-monospace, monospace);
   font-size: 1.05rem;
   color: var(--foreground);
+}
+
+.form-submission-success__codes--light dd {
+  color: rgb(255 255 255 / 0.95);
 }
 
 .budget-range-slider__track {

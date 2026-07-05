@@ -17,6 +17,7 @@ import {
   type FieldErrors,
 } from "@/lib/form-validation";
 import { FormSubmissionError, submitFormSubmission } from "@/lib/api/form-submissions";
+import { FormSubmissionSuccessCodes } from "@/components/forms/FormSubmissionSuccessCodes";
 import type { PlanMyJourneySearchParams } from "@/lib/plan-my-journey";
 import { defaultCountryCode } from "@/data/country-codes";
 import { formatFullPhone } from "@/lib/phone-input";
@@ -84,9 +85,8 @@ export function PlanMyJourneyLandingForm({ context }: { context: PlanMyJourneySe
   const [phoneCountryCode, setPhoneCountryCode] = useState(defaultCountryCode);
   const [errors, setErrors] = useState<FieldErrors>({});
   const [result, setResult] = useState<{
-    memberCode: string;
+    leadCode: string;
     inquiryCode: string;
-    customerId?: string | null;
   } | null>(null);
 
   const [form, setForm] = useState({
@@ -179,9 +179,8 @@ export function PlanMyJourneyLandingForm({ context }: { context: PlanMyJourneySe
       });
 
       setResult({
-        memberCode: response.member_code ?? "Pending",
+        leadCode: response.lead_code ?? response.member_code ?? "Pending",
         inquiryCode: response.inquiry_code ?? "Pending",
-        customerId: response.customer_id,
       });
     } catch (error) {
       setSubmitError(
@@ -204,22 +203,19 @@ export function PlanMyJourneyLandingForm({ context }: { context: PlanMyJourneySe
         <p className="mt-3 max-w-xl text-muted">
           A TRAGUIN travel expert will reach out shortly. Save these reference codes for member tracking.
         </p>
-        <dl className="plan-journey-success__codes mt-8">
-          <div>
-            <dt>Customer ID</dt>
-            <dd>{result.memberCode}</dd>
-          </div>
-          <div>
-            <dt>Inquiry ID</dt>
-            <dd>{result.inquiryCode}</dd>
-          </div>
-          {selectedItinerary ? (
+        <FormSubmissionSuccessCodes
+          leadCode={result.leadCode}
+          inquiryCode={result.inquiryCode}
+          className="plan-journey-success__codes mt-8"
+        />
+        {selectedItinerary ? (
+          <dl className="plan-journey-success__codes mt-4">
             <div className="sm:col-span-2">
               <dt>Selected itinerary</dt>
               <dd>{selectedItinerary}</dd>
             </div>
-          ) : null}
-        </dl>
+          </dl>
+        ) : null}
         <div className="mt-8 flex flex-wrap gap-3">
           <MagneticButton as="a" href="/" variant="primary">
             Back to home

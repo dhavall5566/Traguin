@@ -15,6 +15,7 @@ import {
   type FieldErrors,
 } from "@/lib/form-validation";
 import { FormSubmissionError, submitFormSubmission } from "@/lib/api/form-submissions";
+import { FormSubmissionSuccessCodes } from "@/components/forms/FormSubmissionSuccessCodes";
 import { contactInfo } from "@/data/contact";
 import { defaultCountryCode } from "@/data/country-codes";
 import { formatFullPhone } from "@/lib/phone-input";
@@ -182,6 +183,8 @@ export function ConciergePage({ data }: ConciergePageProps) {
   const [phoneCountryCode, setPhoneCountryCode] = useState(defaultCountryCode);
   const [errors, setErrors] = useState<FieldErrors>({});
   const [submitted, setSubmitted] = useState(false);
+  const [leadCode, setLeadCode] = useState<string | null>(null);
+  const [inquiryCode, setInquiryCode] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
 
@@ -234,7 +237,7 @@ export function ConciergePage({ data }: ConciergePageProps) {
     setSubmitError(null);
     const fullPhone = formatFullPhone(phoneCountryCode, form.phone);
     try {
-      await submitFormSubmission({
+      const response = await submitFormSubmission({
         form_type: "travel_expert_consultation",
         name: form.name.trim(),
         email: form.email.trim().toLowerCase(),
@@ -247,6 +250,8 @@ export function ConciergePage({ data }: ConciergePageProps) {
           message: form.message.trim(),
         },
       });
+      setLeadCode(response.lead_code ?? null);
+      setInquiryCode(response.inquiry_code ?? null);
       setSubmitted(true);
     } catch (error) {
       setSubmitError(
@@ -368,6 +373,10 @@ export function ConciergePage({ data }: ConciergePageProps) {
                         <p className="mt-2 max-w-xs text-sm text-muted">
                           Your travel expert will reach out within 2 working hours.
                         </p>
+                        <p className="mt-1 max-w-xs text-sm text-muted">
+                          Save these reference codes for tracking your request.
+                        </p>
+                        <FormSubmissionSuccessCodes leadCode={leadCode} inquiryCode={inquiryCode} />
                       </div>
                     ) : (
                       <div className="space-y-4">

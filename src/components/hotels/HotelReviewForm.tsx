@@ -13,6 +13,7 @@ import {
   type FieldErrors,
 } from "@/lib/form-validation";
 import { FormSubmissionError, submitFormSubmission } from "@/lib/api/form-submissions";
+import { FormSubmissionSuccessCodes } from "@/components/forms/FormSubmissionSuccessCodes";
 import { cn } from "@/lib/utils";
 import type { Hotel } from "@/types";
 
@@ -31,6 +32,7 @@ export function HotelReviewForm({ hotel, compact = false }: HotelReviewFormProps
   const [legalConsent, setLegalConsent] = useState(false);
   const [errors, setErrors] = useState<FieldErrors>({});
   const [submitted, setSubmitted] = useState(false);
+  const [inquiryCode, setInquiryCode] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
 
@@ -39,6 +41,7 @@ export function HotelReviewForm({ hotel, compact = false }: HotelReviewFormProps
     setHoverRating(0);
     setErrors({});
     setSubmitted(false);
+    setInquiryCode(null);
     setLegalConsent(false);
   }, [hotel.id]);
 
@@ -56,7 +59,7 @@ export function HotelReviewForm({ hotel, compact = false }: HotelReviewFormProps
     setSubmitting(true);
     setSubmitError(null);
     try {
-      await submitFormSubmission({
+      const response = await submitFormSubmission({
         form_type: "hotel_review",
         name: form.name.trim(),
         related_hotel_id: hotel.id,
@@ -68,6 +71,7 @@ export function HotelReviewForm({ hotel, compact = false }: HotelReviewFormProps
           hotel_name: hotel.name,
         },
       });
+      setInquiryCode(response.inquiry_code ?? null);
       setSubmitted(true);
     } catch (error) {
       setSubmitError(
@@ -116,6 +120,9 @@ export function HotelReviewForm({ hotel, compact = false }: HotelReviewFormProps
           <p className="mt-1 max-w-xs text-sm text-muted">
             Your review has been received. Our team may reach out before it appears publicly.
           </p>
+          {inquiryCode ? (
+            <FormSubmissionSuccessCodes inquiryCode={inquiryCode} className="mx-auto max-w-xs" />
+          ) : null}
         </div>
       ) : (
         <div className={cn("space-y-4", compact ? "mt-4" : "mt-5")}>
