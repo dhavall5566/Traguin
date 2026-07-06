@@ -326,6 +326,7 @@ export function EntityTableView({ entityKey }: EntityTableViewProps) {
       const q = search.trim().toLowerCase();
       const parts = [
         String(row[nameField] ?? ""),
+        String(row.serial_code ?? ""),
         String(row.slug ?? ""),
         String(row.id ?? ""),
         ...columns.map((col) =>
@@ -608,6 +609,12 @@ export function EntityTableView({ entityKey }: EntityTableViewProps) {
                           ) || "Untitled"
                         : String(row[nameField] ?? "Untitled");
                       const slug = row.slug ? String(row.slug) : null;
+                      const serialCode = row.serial_code ? String(row.serial_code) : null;
+                      const showSerialSecondary =
+                        entity.key === "packages" || entity.key === "itineraries";
+                      const secondaryLine = showSerialSecondary
+                        ? serialCode
+                        : slug ?? recordId;
                       const dateValue = row.updated_at ?? row.created_at;
                       const formattedDate = dateValue
                         ? new Date(String(dateValue)).toLocaleDateString()
@@ -629,8 +636,8 @@ export function EntityTableView({ entityKey }: EntityTableViewProps) {
                             ) : (
                               <div className="admin-table__primary">{title}</div>
                             )}
-                            {(slug || recordId) && (
-                              <div className="admin-table__secondary">{slug ?? recordId}</div>
+                            {secondaryLine && (
+                              <div className="admin-table__secondary">{secondaryLine}</div>
                             )}
                           </td>
 
