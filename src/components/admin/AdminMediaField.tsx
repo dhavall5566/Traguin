@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Upload, X } from "lucide-react";
-import { adminGetOne, adminUploadMedia, type AdminMediaAsset } from "@/lib/admin/api-client";
+import { adminDelete, adminGetOne, adminUploadMedia, type AdminMediaAsset } from "@/lib/admin/api-client";
 import type { AdminMediaOption } from "@/lib/admin/media-field-options";
 import { cn, uniqueStringsPreservingOrder } from "@/lib/utils";
 
@@ -77,6 +77,8 @@ type AdminMediaFieldBaseProps = {
   compact?: boolean;
   /** Hide the existing-asset dropdown; upload + preview grid only. */
   hideSelect?: boolean;
+  /** When true, removing a preview deletes the media asset from the server. */
+  deleteOnRemove?: boolean;
 };
 
 type AdminMediaFieldSingleProps = AdminMediaFieldBaseProps & {
@@ -103,6 +105,7 @@ export function AdminMediaField(props: AdminMediaFieldProps) {
     compact = false,
     multiple = false,
     hideSelect = false,
+    deleteOnRemove = false,
   } = props;
   const inputRef = useRef<HTMLInputElement>(null);
   const [localOptions, setLocalOptions] = useState<MediaOption[]>([]);
@@ -185,7 +188,18 @@ export function AdminMediaField(props: AdminMediaFieldProps) {
     })();
   }, [optionsById, previewIds]);
 
-  const removePreview = (optionId: string) => {
+  const removePreview = async (optionId: string) => {
+    if (deleteOnRemove) {
+      setUploadError(null);
+      const { error: deleteError } = await adminDelete("/media", optionId);
+      if (deleteError) {
+        setUploadError(deleteError.message ?? "Could not delete image from server.");
+        return;
+      }
+      setLocalOptions((prev) => prev.filter((opt) => opt.value !== optionId));
+      fetchedIdsRef.current.delete(optionId);
+    }
+
     if (props.multiple) {
       props.onChange(props.value.filter((id) => id !== optionId));
       return;
@@ -382,7 +396,9 @@ export function AdminMediaField(props: AdminMediaFieldProps) {
                         type="button"
                         className="admin-media-field__remove"
                         aria-label={`Remove ${name}`}
-                        onClick={() => removePreview(optionId)}
+                        onClick={() => {
+                          void removePreview(optionId);
+                        }}
                       >
                         <X aria-hidden />
                       </button>
@@ -404,7 +420,9 @@ export function AdminMediaField(props: AdminMediaFieldProps) {
                     type="button"
                     className="admin-media-field__remove"
                     aria-label={`Remove ${name}`}
-                    onClick={() => removePreview(optionId)}
+                    onClick={() => {
+                      void removePreview(optionId);
+                    }}
                   >
                     <X aria-hidden />
                   </button>

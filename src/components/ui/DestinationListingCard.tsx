@@ -8,6 +8,7 @@ export type DestinationListingCardProps = {
   name: string;
   description: string;
   image: string;
+  galleryImages?: string[];
   href: string;
   regionLabel?: string;
   location?: string;
@@ -27,6 +28,7 @@ export function DestinationListingCard({
   name,
   description,
   image,
+  galleryImages,
   href,
   regionLabel,
   location,
@@ -61,6 +63,7 @@ export function DestinationListingCard({
       name={name}
       description={description}
       image={image}
+      galleryImages={galleryImages}
       href={href}
       regionLabel={regionLabel}
       location={location}

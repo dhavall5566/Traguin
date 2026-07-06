@@ -1,13 +1,10 @@
 "use client";
 
-import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
-import { ArrowLeft, Bell, ChevronDown, LogOut, Moon, Settings, Sun } from "lucide-react";
+import { ChevronDown, LogOut, Moon, Settings, Sun } from "lucide-react";
 import { AccountSettingsModal } from "@/components/admin/AccountSettingsModal";
 import { useTheme } from "@/components/providers/ThemeProvider";
-import { getCrmAppUrl } from "@/lib/admin-links";
-import { prefetchCrossApp } from "@/lib/cross-app-prefetch";
 import { ADMIN_LOGIN_PATH } from "@/lib/admin/auth";
 
 type AdminSessionUser = {
@@ -20,32 +17,6 @@ function formatRoleLabel(role: string): string {
   return role
     .replace(/_/g, " ")
     .replace(/\b\w/g, (char) => char.toUpperCase());
-}
-
-export function AdminProductSwitcher() {
-  const crmUrl = getCrmAppUrl();
-
-  useEffect(() => {
-    prefetchCrossApp(crmUrl);
-  }, [crmUrl]);
-
-  return (
-    <div className="admin-product-switcher" role="tablist" aria-label="Product area">
-      <span className="admin-product-tab admin-product-tab--active" role="tab" aria-selected="true">
-        CMS
-      </span>
-      <a
-        href={crmUrl}
-        className="admin-product-tab admin-product-tab--link"
-        role="tab"
-        aria-selected="false"
-        onMouseEnter={() => prefetchCrossApp(crmUrl)}
-        onFocus={() => prefetchCrossApp(crmUrl)}
-      >
-        CRM
-      </a>
-    </div>
-  );
 }
 
 function AdminThemeToggle() {
@@ -61,47 +32,6 @@ function AdminThemeToggle() {
     >
       {theme === "light" ? <Moon className="h-4 w-4" /> : <Sun className="h-4 w-4" />}
     </button>
-  );
-}
-
-function AdminNotificationsButton() {
-  const [open, setOpen] = useState(false);
-  const ref = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    if (!open) return undefined;
-    const onPointerDown = (event: MouseEvent) => {
-      if (ref.current && !ref.current.contains(event.target as Node)) {
-        setOpen(false);
-      }
-    };
-    document.addEventListener("mousedown", onPointerDown);
-    return () => document.removeEventListener("mousedown", onPointerDown);
-  }, [open]);
-
-  return (
-    <div className="relative" ref={ref}>
-      <button
-        type="button"
-        onClick={() => setOpen((value) => !value)}
-        className="admin-icon-btn"
-        title="Notifications"
-        aria-label="Notifications"
-        aria-expanded={open}
-      >
-        <Bell className="h-4 w-4" />
-      </button>
-      {open && (
-        <div className="admin-dropdown w-80 p-2 text-xs">
-          <div className="border-b border-[var(--glass-border)] px-1 pb-2 mb-2">
-            <span className="block font-semibold">Notifications</span>
-          </div>
-          <div className="py-6 text-center text-[11px] text-[var(--muted)]">
-            No notifications yet.
-          </div>
-        </div>
-      )}
-    </div>
   );
 }
 
@@ -231,20 +161,11 @@ export function AdminTopBar() {
     <>
       <header className="admin-topbar">
         <div className="admin-topbar__section admin-topbar__section--start">
-          <Link href="/" className="admin-topbar__back-link">
-            <ArrowLeft aria-hidden className="admin-topbar__back-link-icon" />
-            Back to site
-          </Link>
-        </div>
-
-        <div className="admin-topbar__section admin-topbar__section--center">
           <p className="admin-topbar__brand">Traguin Admin CMS</p>
         </div>
 
         <div className="admin-topbar__section admin-topbar__section--end">
-          <AdminProductSwitcher />
           <AdminThemeToggle />
-          <AdminNotificationsButton />
           {user ? (
             <AdminAccountMenu
               user={user}

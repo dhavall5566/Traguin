@@ -138,9 +138,14 @@ export function mapCmsDestinationToListing(
   hasItinerary: boolean,
   journeyCount = hasItinerary ? 1 : 0
 ): DestinationListing {
+  const cmsGallery = dest.gallery_media
+    .sort((a, b) => (a.sort_order ?? 999) - (b.sort_order ?? 999))
+    .map((item) => resolveMediaUrl(mediaMap, item.id, item.url))
+    .filter(Boolean);
+
   const cmsImage =
     resolveMediaUrl(mediaMap, dest.hero_media_id, "") ||
-    dest.gallery_media[0]?.url ||
+    cmsGallery[0] ||
     "";
 
   const indiaRegion = resolveIndiaRegion(dest.slug, dest.india_region as IndiaRegion | null);
@@ -160,6 +165,7 @@ export function mapCmsDestinationToListing(
     name: dest.name,
     description: dest.description,
     image,
+    galleryImages: cmsGallery.length > 0 ? cmsGallery : undefined,
     startingPrice: dest.starting_price,
     categoryId: primaryCategory?.id ?? "uncategorized",
     categoryTitle: primaryCategory?.title ?? "Destinations",

@@ -17,6 +17,7 @@ type DestinationCardProps = {
   image: string;
   /** Resolves five destination photos for the card slider */
   destinationId: string;
+  galleryImages?: string[];
   startingPrice?: number;
   href: string;
   cta?: string;
@@ -39,6 +40,7 @@ export function DestinationCard({
   description,
   image,
   destinationId,
+  galleryImages,
   startingPrice,
   href,
   cta = "View Journey",
@@ -55,7 +57,7 @@ export function DestinationCard({
   const displayReviewCount =
     reviewCount ?? getDestinationReviewCount(destinationId, displayRating);
   const stars = Math.min(5, Math.max(0, Math.round(displayRating)));
-  const galleryImages = getDestinationGalleryImages(destinationId, image);
+  const galleryImagesResolved = getDestinationGalleryImages(destinationId, image, galleryImages);
 
   return (
     <Link
@@ -72,7 +74,7 @@ export function DestinationCard({
     >
       <div className="relative aspect-[16/10] overflow-hidden">
         <HotelImageSlider
-          images={galleryImages}
+          images={galleryImagesResolved}
           alt={name}
           className="h-full w-full"
           intervalMs={DESTINATION_SLIDE_INTERVAL_MS}

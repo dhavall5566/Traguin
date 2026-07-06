@@ -94,6 +94,9 @@ export function resolveDestinationHeroImage(
 ): string {
   const slug = SLUG_ALIASES[destinationSlug] ?? destinationSlug;
 
+  const cmsImage = options?.cmsImage?.trim();
+  if (cmsImage) return cmsImage;
+
   const curated = destinationGalleries[slug]?.[0];
   if (curated) return curated;
 
@@ -103,9 +106,6 @@ export function resolveDestinationHeroImage(
   if (options?.region === "domestic" && options.indiaRegion) {
     return INDIA_REGION_HERO[options.indiaRegion];
   }
-
-  const cmsImage = options?.cmsImage?.trim();
-  if (cmsImage) return cmsImage;
 
   return FALLBACK_IMAGE;
 }

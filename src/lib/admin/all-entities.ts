@@ -19,12 +19,14 @@ export const ALL_ADMIN_ENTITIES: Record<string, AdminEntityDef> = {
     key: "packages", label: "Package", pluralLabel: "Packages", group: "catalog", endpoint: "/packages", nameField: "title",
     fields: [
       { name: "title", label: "Title", type: "text", required: true, showInList: true },
-      { name: "slug", label: "Slug", type: "slug", required: true, showInList: true },
+      { name: "serial_code", label: "Serial code", type: "text", showInList: true },
+      { name: "traguin_tour_code", label: "TRAGUIN tour code", type: "text" },
+      { name: "slug", label: "Slug", type: "slug", required: true },
       { name: "destination_id", label: "Destination", type: "relation", required: true, relation: D, showInList: true, listFormat: (_v, r) => String(r.destination_name ?? "—") },
       { name: "duration_label", label: "Duration label", type: "text", required: true, showInList: true },
       { name: "rating", label: "Rating", type: "number" },
       { name: "price", label: "Price", type: "number", required: true, showInList: true, listFormat: (v) => (v === 0 || v == null ? "Inquire for price" : String(v)) },
-      { name: "hero_media_id", label: "Hero media", type: "relation", relation: M },
+      { name: "hero_media_id", label: "Hero media", type: "relation", relation: M, mediaUploadOnly: true },
       {
         name: "highlights",
         label: "Highlights",
@@ -57,7 +59,8 @@ export const ALL_ADMIN_ENTITIES: Record<string, AdminEntityDef> = {
     key: "itineraries", label: "Itinerary", pluralLabel: "Itineraries", group: "catalog", endpoint: "/itineraries", nameField: "title",
     fields: [
       { name: "title", label: "Title", type: "text", required: true, showInList: true },
-      { name: "slug", label: "Slug", type: "slug", required: true, showInList: true },
+      { name: "serial_code", label: "Serial code", type: "text", readOnly: true, showInList: true },
+      { name: "slug", label: "Slug", type: "slug", required: true },
       { name: "destination_id", label: "Destination", type: "relation", required: true, relation: D, showInList: true, listFormat: (_v, r) => String(r.destination_name ?? "—") },
       { name: "package_id", label: "Package", type: "relation", relation: { endpoint: "/packages", valueKey: "id", labelKey: "title" }, showInList: true, listFormat: (_v, r) => String(r.package_title ?? "—") },
       { name: "duration_label", label: "Duration label", type: "text", required: true, showInList: true },
@@ -66,7 +69,7 @@ export const ALL_ADMIN_ENTITIES: Record<string, AdminEntityDef> = {
       { name: "price_note", label: "Price note", type: "textarea" },
       { name: "rating", label: "Rating", type: "number" },
       { name: "review_count", label: "Review count", type: "number" },
-      { name: "hero_media_id", label: "Hero media", type: "relation", relation: M },
+      { name: "hero_media_id", label: "Hero media", type: "relation", relation: M, mediaUploadOnly: true },
       { name: "tagline", label: "Tagline", type: "text", required: true },
       { name: "overview", label: "Overview", type: "textarea", required: true },
       {
@@ -101,7 +104,7 @@ export const ALL_ADMIN_ENTITIES: Record<string, AdminEntityDef> = {
         readFrom: (record) => nestedListToFormValue("inclusions", record.inclusions),
         writeValue: (value) => formValueToNestedList("inclusions", value),
       },
-      { name: "gallery_media_ids", label: "Gallery media", type: "relation-multi", relation: M,
+      { name: "gallery_media_ids", label: "Gallery media", type: "relation-multi", relation: M, mediaUploadOnly: true,
         readFrom: (r) => Array.isArray(r.gallery_media) ? r.gallery_media.map((m: {id:string}) => m.id) : [] },
       { name: "is_featured", label: "Featured", type: "boolean" },
       { name: "featured_sort_order", label: "Featured sort order", type: "number" },
@@ -297,7 +300,7 @@ export const ALL_ADMIN_ENTITIES: Record<string, AdminEntityDef> = {
     ],
   },
   "site-settings": {
-    key: "site-settings", label: "Site Settings", pluralLabel: "Site Settings", group: "site-config", endpoint: "/site-settings", isSingleton: true,
+    key: "site-settings", label: "Site Settings", pluralLabel: "Site Settings", group: "site-config", endpoint: "/site-settings", isSingleton: true, hideFromNav: true,
     fields: [
       { name: "phone", label: "Phone", type: "text", required: true },
       { name: "phone_href", label: "Phone href", type: "text", required: true },
@@ -323,7 +326,7 @@ export const ALL_ADMIN_ENTITIES: Record<string, AdminEntityDef> = {
     ],
   },
   "navigation-links": {
-    key: "navigation-links", label: "Navigation Link", pluralLabel: "Navigation Links", group: "site-config", endpoint: "/navigation-links", nameField: "label",
+    key: "navigation-links", label: "Navigation Link", pluralLabel: "Navigation Links", group: "site-config", endpoint: "/navigation-links", nameField: "label", hideFromNav: true,
     fields: [
       { name: "menu_group", label: "Menu group", type: "text", required: true, showInList: true },
       { name: "label", label: "Label", type: "text", required: true, showInList: true },
@@ -333,7 +336,7 @@ export const ALL_ADMIN_ENTITIES: Record<string, AdminEntityDef> = {
     ],
   },
   "site-ctas": {
-    key: "site-ctas", label: "Site CTA", pluralLabel: "Site CTAs", group: "site-config", endpoint: "/site-ctas", nameField: "label",
+    key: "site-ctas", label: "Site CTA", pluralLabel: "Site CTAs", group: "site-config", endpoint: "/site-ctas", nameField: "label", hideFromNav: true,
     fields: [
       { name: "key", label: "Key", type: "slug", required: true, showInList: true },
       { name: "label", label: "Label", type: "text", required: true, showInList: true },
@@ -342,7 +345,7 @@ export const ALL_ADMIN_ENTITIES: Record<string, AdminEntityDef> = {
     ],
   },
   "global-page-cta": {
-    key: "global-page-cta", label: "Global Page CTA", pluralLabel: "Global Page CTA", group: "site-config", endpoint: "/global-page-cta", isSingleton: true,
+    key: "global-page-cta", label: "Global Page CTA", pluralLabel: "Global Page CTA", group: "site-config", endpoint: "/global-page-cta", isSingleton: true, hideFromNav: true,
     fields: [
       { name: "eyebrow", label: "Eyebrow", type: "text", required: true },
       { name: "title", label: "Title", type: "text", required: true },
@@ -352,7 +355,7 @@ export const ALL_ADMIN_ENTITIES: Record<string, AdminEntityDef> = {
     ],
   },
   "page-metadata": {
-    key: "page-metadata", label: "Page Metadata", pluralLabel: "Page Metadata", group: "site-config", endpoint: "/page-metadata", nameField: "page_key",
+    key: "page-metadata", label: "Page Metadata", pluralLabel: "Page Metadata", group: "site-config", endpoint: "/page-metadata", nameField: "page_key", hideFromNav: true,
     fields: [
       { name: "page_key", label: "Page key", type: "slug", required: true, showInList: true },
       { name: "title", label: "Title", type: "text", required: true, showInList: true },
@@ -361,7 +364,7 @@ export const ALL_ADMIN_ENTITIES: Record<string, AdminEntityDef> = {
     ],
   },
   "page-heroes": {
-    key: "page-heroes", label: "Page Hero", pluralLabel: "Page Heroes", group: "site-config", endpoint: "/page-heroes", nameField: "title",
+    key: "page-heroes", label: "Page Hero", pluralLabel: "Page Heroes", group: "site-config", endpoint: "/page-heroes", nameField: "title", hideFromNav: true,
     fields: [
       { name: "page_key", label: "Page key", type: "slug", required: true, showInList: true },
       { name: "region_variant", label: "Region variant", type: "text" },
@@ -380,7 +383,7 @@ export const ALL_ADMIN_ENTITIES: Record<string, AdminEntityDef> = {
     ],
   },
   redirects: {
-    key: "redirects", label: "Redirect", pluralLabel: "Redirects", group: "site-config", endpoint: "/redirects", nameField: "old_path",
+    key: "redirects", label: "Redirect", pluralLabel: "Redirects", group: "site-config", endpoint: "/redirects", nameField: "old_path", hideFromNav: true,
     fields: [
       { name: "old_path", label: "Old path", type: "slug", required: true, showInList: true },
       { name: "target_type", label: "Target type", type: "text", required: true, showInList: true },
@@ -390,7 +393,7 @@ export const ALL_ADMIN_ENTITIES: Record<string, AdminEntityDef> = {
     ],
   },
   "journey-process-steps": {
-    key: "journey-process-steps", label: "Journey Process Step", pluralLabel: "Journey Process Steps", group: "marketing", endpoint: "/journey-process-steps", nameField: "title",
+    key: "journey-process-steps", label: "Journey Process Step", pluralLabel: "Journey Process Steps", group: "marketing", endpoint: "/journey-process-steps", nameField: "title", hideFromNav: true,
     fields: [
       { name: "step_label", label: "Step label", type: "text", required: true, showInList: true },
       { name: "title", label: "Title", type: "text", required: true, showInList: true },
@@ -401,7 +404,7 @@ export const ALL_ADMIN_ENTITIES: Record<string, AdminEntityDef> = {
     ],
   },
   "value-propositions": {
-    key: "value-propositions", label: "Value Proposition", pluralLabel: "Value Propositions", group: "marketing", endpoint: "/value-propositions", nameField: "title",
+    key: "value-propositions", label: "Value Proposition", pluralLabel: "Value Propositions", group: "marketing", endpoint: "/value-propositions", nameField: "title", hideFromNav: true,
     fields: [
       { name: "step_label", label: "Step label", type: "text", required: true, showInList: true },
       { name: "title", label: "Title", type: "text", required: true, showInList: true },
@@ -458,7 +461,7 @@ export const ALL_ADMIN_ENTITIES: Record<string, AdminEntityDef> = {
     ],
   },
   "homepage-promo": {
-    key: "homepage-promo", label: "Homepage Promo", pluralLabel: "Homepage Promo", group: "marketing", endpoint: "/homepage-promo", isSingleton: true,
+    key: "homepage-promo", label: "Homepage Promo", pluralLabel: "Homepage Promo", group: "marketing", endpoint: "/homepage-promo", isSingleton: true, hideFromNav: true,
     fields: [
       { name: "eyebrow", label: "Eyebrow", type: "text", required: true },
       { name: "title", label: "Title", type: "text", required: true },
@@ -512,7 +515,7 @@ export const ALL_ADMIN_ENTITIES: Record<string, AdminEntityDef> = {
     ],
   },
   "chat-agent-settings": {
-    key: "chat-agent-settings", label: "Chat Agent Settings", pluralLabel: "Chat Agent Settings", group: "chat-agent", endpoint: "/chat-agent-settings", isSingleton: true,
+    key: "chat-agent-settings", label: "Chat Agent Settings", pluralLabel: "Chat Agent Settings", group: "chat-agent", endpoint: "/chat-agent-settings", isSingleton: true, hideFromNav: true,
     fields: [
       { name: "name", label: "Name", type: "text", required: true },
       { name: "role", label: "Role", type: "text", required: true },
@@ -522,14 +525,14 @@ export const ALL_ADMIN_ENTITIES: Record<string, AdminEntityDef> = {
     ],
   },
   "chat-agent-welcome-messages": {
-    key: "chat-agent-welcome-messages", label: "Chat Welcome Message", pluralLabel: "Chat Welcome Messages", group: "chat-agent", endpoint: "/chat-agent-welcome-messages", nameField: "message",
+    key: "chat-agent-welcome-messages", label: "Chat Welcome Message", pluralLabel: "Chat Welcome Messages", group: "chat-agent", endpoint: "/chat-agent-welcome-messages", nameField: "message", hideFromNav: true,
     fields: [
       { name: "message", label: "Message", type: "textarea", required: true, showInList: true },
       { name: "sort_order", label: "Sort order", type: "number", required: true, showInList: true },
     ],
   },
   "chat-agent-quick-replies": {
-    key: "chat-agent-quick-replies", label: "Chat Quick Reply", pluralLabel: "Chat Quick Replies", group: "chat-agent", endpoint: "/chat-agent-quick-replies", nameField: "label",
+    key: "chat-agent-quick-replies", label: "Chat Quick Reply", pluralLabel: "Chat Quick Replies", group: "chat-agent", endpoint: "/chat-agent-quick-replies", nameField: "label", hideFromNav: true,
     fields: [
       { name: "key", label: "Key", type: "slug", required: true, showInList: true },
       { name: "label", label: "Label", type: "text", required: true, showInList: true },
@@ -540,7 +543,7 @@ export const ALL_ADMIN_ENTITIES: Record<string, AdminEntityDef> = {
     ],
   },
   "form-submissions": {
-    key: "form-submissions", label: "Form Submission", pluralLabel: "Form Submissions", group: "submissions", endpoint: "/form-submissions", nameField: "form_type",
+    key: "form-submissions", label: "Form Submission", pluralLabel: "Form Submissions", group: "submissions", endpoint: "/form-submissions", nameField: "form_type", hideFromNav: true,
     hideCreate: true, hideDelete: true, writableFields: ["status"],
     fields: [
       { name: "form_type", label: "Form type", type: "text", readOnly: true, showInList: true },

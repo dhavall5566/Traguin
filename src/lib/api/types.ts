@@ -31,6 +31,8 @@ export interface CmsPackageHighlight extends CmsTimestamped {
 
 export interface CmsPackage extends CmsTimestamped {
   slug: string;
+  serial_code: string | null;
+  traguin_tour_code: string | null;
   destination_id: string;
   title: string;
   duration_label: string;

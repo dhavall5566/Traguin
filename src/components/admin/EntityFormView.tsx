@@ -198,6 +198,7 @@ function FieldControl({
           relationOptions={relationOptions}
           seedOptions={mediaSeedOptions}
           hideSelect={Boolean(field.mediaUploadOnly)}
+          deleteOnRemove={Boolean(field.mediaUploadOnly)}
           imageCaption={imageCaption}
           onChange={(next) => onChange(next || null)}
         />
@@ -232,6 +233,7 @@ function FieldControl({
           relationOptions={relationOptions}
           seedOptions={mediaSeedOptions}
           hideSelect={Boolean(field.mediaUploadOnly)}
+          deleteOnRemove={Boolean(field.mediaUploadOnly)}
           imageCaption={imageCaption}
           onChange={onChange}
         />

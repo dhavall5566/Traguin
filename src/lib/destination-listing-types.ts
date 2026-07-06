@@ -12,6 +12,8 @@ export type DestinationListing = {
   name: string;
   description: string;
   image: string;
+  /** CMS gallery URLs when linked in admin */
+  galleryImages?: string[];
   startingPrice: number;
   categoryId: string;
   categoryTitle: string;

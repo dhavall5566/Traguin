@@ -42,6 +42,7 @@ export type {
 export { ADMIN_ENTITY_GROUPS } from "@/lib/admin/types";
 export {
   CMS_NAV_SECTIONS,
+  CMS_DEFAULT_LANDING_PATH,
   getCustomLinkNavSectionId,
   getEntityNavSectionId,
   getNavSectionLabel,
@@ -55,6 +56,7 @@ const PILOT_ENTITIES: Record<string, AdminEntityDef> = {
     group: "content",
     endpoint: "/specializations",
     nameField: "title",
+    hideFromNav: true,
     fields: [
       { name: "title", label: "Title", type: "text", required: true, showInList: true },
       { name: "slug", label: "Slug", type: "slug", required: true, showInList: true },
@@ -120,12 +122,14 @@ const PILOT_ENTITIES: Record<string, AdminEntityDef> = {
         label: "Hero media",
         type: "relation",
         relation: { endpoint: "/media", valueKey: "id", labelKeys: ["slug", "url"] },
+        mediaUploadOnly: true,
       },
       {
         name: "gallery_media_ids",
         label: "Gallery media",
         type: "relation-multi",
         relation: { endpoint: "/media", valueKey: "id", labelKeys: ["slug", "url"] },
+        mediaUploadOnly: true,
         readFrom: (record) =>
           Array.isArray(record.gallery_media)
             ? (record.gallery_media as { id: string }[]).map((m) => m.id)
@@ -148,6 +152,7 @@ const PILOT_ENTITIES: Record<string, AdminEntityDef> = {
     group: "site-config",
     endpoint: "/company-stats",
     isSingleton: true,
+    hideFromNav: true,
     fields: [
       {
         name: "homepage_stats",

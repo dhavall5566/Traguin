@@ -50,7 +50,7 @@ export type AdminFieldDef = {
   readOnly?: boolean;
   placeholder?: string;
   helpText?: string;
-  /** Media relation: show upload + preview only (no existing-asset dropdown). */
+  /** Media relation: upload-only UI (no asset library picker). Also deletes file on remove. */
   mediaUploadOnly?: boolean;
   options?: { value: string; label: string }[];
   relation?: AdminRelationConfig;

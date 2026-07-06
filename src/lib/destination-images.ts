@@ -11,9 +11,14 @@ const GALLERY_SIZE = 5;
 /** Five unique destination photos, curated gallery only (no itinerary cross-merge) */
 export function getDestinationGalleryImages(
   destinationId: string,
-  fallback?: string
+  fallback?: string,
+  cmsGallery?: string[]
 ): string[] {
-  const curated = destinationGalleries[destinationId];
+  if (cmsGallery?.length) {
+    return [...cmsGallery].slice(0, GALLERY_SIZE);
+  }
+  const slug = destinationId;
+  const curated = destinationGalleries[slug];
   if (curated?.length) {
     return [...curated].slice(0, GALLERY_SIZE);
   }

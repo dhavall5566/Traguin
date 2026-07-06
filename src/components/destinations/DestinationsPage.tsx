@@ -195,6 +195,7 @@ function toGridDestination(dest: DestinationListing) {
     regionLabel: listingRegionLabel(dest),
     description: dest.description,
     image: dest.image,
+    galleryImages: dest.galleryImages,
     startingPrice: dest.startingPrice,
     hasItinerary: dest.hasItinerary,
     journeyCount: dest.journeyCount,
@@ -268,6 +269,7 @@ function DestinationGrid({
                   : dest.description
             }
             image={isHub ? dest.image : (itinerary?.heroImage ?? dest.image)}
+            galleryImages={dest.galleryImages}
             startingPrice={isHub ? dest.startingPrice : (itinerary?.startingPrice ?? dest.startingPrice)}
             href={`/destinations/${dest.id}`}
             cta={

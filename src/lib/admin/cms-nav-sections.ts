@@ -13,19 +13,14 @@ export const CMS_NAV_SECTIONS: AdminEntityGroup[] = [
   { id: "careers", label: "Careers" },
   { id: "legal", label: "Legal" },
   { id: "media", label: "Media Library" },
-  { id: "site-wide", label: "Site-wide" },
-  { id: "chat-agent", label: "Chat Agent" },
-  { id: "submissions", label: "Submissions" },
 ];
+
+/** First CMS screen after login — matches the primary homepage content workflow. */
+export const CMS_DEFAULT_LANDING_PATH = "/admin/cms/homepage-hero-slider";
 
 const ENTITY_NAV_SECTION: Record<string, string> = {
   // Home
-  "homepage-promo": "home",
   "homepage-region-panels": "home",
-  "company-stats": "home",
-  "journey-process-steps": "home",
-  "value-propositions": "home",
-  specializations: "home",
   experiences: "home",
 
   // Destinations
@@ -62,23 +57,6 @@ const ENTITY_NAV_SECTION: Record<string, string> = {
 
   // Media Library
   media: "media",
-
-  // Site-wide
-  "site-settings": "site-wide",
-  "navigation-links": "site-wide",
-  "site-ctas": "site-wide",
-  "global-page-cta": "site-wide",
-  "page-metadata": "site-wide",
-  "page-heroes": "site-wide",
-  redirects: "site-wide",
-
-  // Chat Agent
-  "chat-agent-settings": "chat-agent",
-  "chat-agent-welcome-messages": "chat-agent",
-  "chat-agent-quick-replies": "chat-agent",
-
-  // Submissions
-  "form-submissions": "submissions",
 };
 
 const CUSTOM_LINK_NAV_SECTION: Record<string, string> = {

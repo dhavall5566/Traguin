@@ -2906,6 +2906,34 @@ main > div > section {
     row-gap: 0.75rem;
     padding-inline: 1.5rem;
   }
+
+  .client-marquee-track {
+    animation: none;
+    flex-wrap: wrap;
+    width: 100%;
+    max-width: 100%;
+    margin-inline: auto;
+    justify-content: center;
+    gap: 1rem;
+    padding-inline: 1.5rem;
+  }
+}
+
+@keyframes client-marquee {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+.client-marquee-track {
+  animation: client-marquee 48s linear infinite;
+}
+
+.client-marquee-track:hover {
+  animation-play-state: paused;
 }
 
 @media (pointer: coarse) {

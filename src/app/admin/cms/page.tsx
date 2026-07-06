@@ -1,6 +1,6 @@
 import { redirect } from "next/navigation";
-import { ADMIN_ENABLED_ENTITY_KEYS } from "@/lib/admin/entities";
+import { CMS_DEFAULT_LANDING_PATH } from "@/lib/admin/entities";
 
 export default function CmsAdminIndexPage() {
-  redirect(`/admin/cms/${ADMIN_ENABLED_ENTITY_KEYS[0]}`);
+  redirect(CMS_DEFAULT_LANDING_PATH);
 }

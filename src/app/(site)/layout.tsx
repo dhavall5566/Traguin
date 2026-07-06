@@ -1,5 +1,7 @@
+import { Suspense } from "react";
 import { DevChunkRecovery } from "@/components/providers/DevChunkRecovery";
-import { GoogleAnalytics } from "@/components/analytics/GoogleAnalytics";
+import { GoogleAnalyticsRouteTracker } from "@/components/analytics/GoogleAnalytics";
+import { GoogleAnalyticsScripts } from "@/components/analytics/GoogleAnalyticsScripts";
 import { LenisProvider } from "@/components/providers/LenisProvider";
 import { PlannerScrollHandler } from "@/components/providers/PlannerScrollHandler";
 import { PageTransition } from "@/components/providers/PageTransitionProvider";
@@ -11,7 +13,10 @@ import { PageLoader } from "@/components/layout/PageLoader";
 export default function SiteLayout({ children }: { children: React.ReactNode }) {
   return (
     <>
-      <GoogleAnalytics />
+      <GoogleAnalyticsScripts />
+      <Suspense fallback={null}>
+        <GoogleAnalyticsRouteTracker />
+      </Suspense>
       <PageLoader />
       <DevChunkRecovery />
       <LenisProvider>
