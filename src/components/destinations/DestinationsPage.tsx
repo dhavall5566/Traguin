@@ -16,7 +16,6 @@ import {
   Heart,
   Waves,
   Leaf,
-  IndianRupee,
   Route,
   type LucideIcon,
 } from "lucide-react";
@@ -36,19 +35,20 @@ import { DestinationRegionAccordion } from "@/components/destinations/Destinatio
 import { DestinationListingCard } from "@/components/ui/DestinationListingCard";
 import { MagneticButton } from "@/components/ui/MagneticButton";
 import { FilterDropdown } from "@/components/ui/FilterDropdown";
+import { FilterBudgetRange } from "@/components/ui/FilterBudgetRange";
 import { PageShell } from "@/components/layout/PageShell";
 import { PageHero } from "@/components/layout/PageHero";
 import { TrustBar } from "@/components/layout/TrustBar";
 import { PageCTA } from "@/components/layout/PageCTA";
 import { getDestinationsHeroContent, curatedDestinationCount } from "@/data/pageContent";
 import {
-  DESTINATION_PRICE_FILTERS,
-  matchesDestinationPriceFilter,
-  type DestinationPriceFilterId,
+  BUDGET_SLIDER_MAX,
+  BUDGET_SLIDER_MIN,
+  formatInrBudgetRange,
+  isFullBudgetRange,
+  matchesDestinationPriceRange,
 } from "@/data/price-ranges";
 import type { TravelMood } from "@/types";
-
-const PRICE_FILTERS = DESTINATION_PRICE_FILTERS;
 
 const REGION_FILTERS = [
   { id: "all", label: "All destinations" },
@@ -92,7 +92,6 @@ const DESTINATION_FILTER_IDS = [
   "sort",
 ] as const;
 
-type PriceFilterId = DestinationPriceFilterId;
 type RegionFilterId = (typeof REGION_FILTERS)[number]["id"];
 type MoodFilterId = (typeof MOOD_FILTERS)[number]["id"];
 type ItineraryFilterId = (typeof ITINERARY_FILTERS)[number]["id"];
@@ -306,7 +305,8 @@ export function DestinationsPage({
     parseRegionParam(searchParams.get("region"))
   );
   const [moodFilter, setMoodFilter] = useState<MoodFilterId>("all");
-  const [priceFilter, setPriceFilter] = useState<PriceFilterId>("all");
+  const [budgetMin, setBudgetMin] = useState(BUDGET_SLIDER_MIN);
+  const [budgetMax, setBudgetMax] = useState(BUDGET_SLIDER_MAX);
   const [itineraryFilter, setItineraryFilter] = useState<ItineraryFilterId>("all");
   const [sortBy, setSortBy] = useState<SortId>("recommended");
   const [openDropdown, setOpenDropdown] = useState<string | null>(null);
@@ -339,10 +339,12 @@ export function DestinationsPage({
     setCategoryFilter("all");
   };
 
+  const budgetFilterActive = !isFullBudgetRange(budgetMin, budgetMax);
+
   const prefersGroupedLayout =
     !searchQuery.trim() &&
     moodFilter === "all" &&
-    priceFilter === "all" &&
+    !budgetFilterActive &&
     itineraryFilter === "all" &&
     sortBy === "recommended";
 
@@ -351,7 +353,7 @@ export function DestinationsPage({
     categoryFilter !== "all" ||
     regionFilter !== "all" ||
     moodFilter !== "all" ||
-    priceFilter !== "all" ||
+    budgetFilterActive ||
     itineraryFilter !== "all" ||
     sortBy !== "recommended";
 
@@ -372,7 +374,7 @@ export function DestinationsPage({
       if (!matchesSubRegionFilter(dest, categoryFilter, regionFilter)) return false;
       if (regionFilter !== "all" && dest.region !== regionFilter) return false;
       if (moodFilter !== "all" && !dest.moods.includes(moodFilter)) return false;
-      if (!matchesDestinationPriceFilter(dest.startingPrice, priceFilter)) return false;
+      if (!matchesDestinationPriceRange(dest.startingPrice, budgetMin, budgetMax)) return false;
       if (itineraryFilter === "itinerary" && !dest.hasItinerary) return false;
       if (itineraryFilter === "explore" && dest.hasItinerary) return false;
       return true;
@@ -390,7 +392,8 @@ export function DestinationsPage({
     destinations,
     itineraryFilter,
     moodFilter,
-    priceFilter,
+    budgetMax,
+    budgetMin,
     regionFilter,
     searchQuery,
     sortBy,
@@ -427,11 +430,14 @@ export function DestinationsPage({
         clear: () => setMoodFilter("all"),
       });
     }
-    if (priceFilter !== "all") {
+    if (budgetFilterActive) {
       chips.push({
         key: "price",
-        label: PRICE_FILTERS.find((p) => p.id === priceFilter)?.label ?? priceFilter,
-        clear: () => setPriceFilter("all"),
+        label: formatInrBudgetRange(budgetMin, budgetMax),
+        clear: () => {
+          setBudgetMin(BUDGET_SLIDER_MIN);
+          setBudgetMax(BUDGET_SLIDER_MAX);
+        },
       });
     }
     if (itineraryFilter !== "all") {
@@ -443,11 +449,13 @@ export function DestinationsPage({
     }
     return chips;
   }, [
+    budgetFilterActive,
+    budgetMax,
+    budgetMin,
     categoryFilter,
     internationalCountryFilters,
     itineraryFilter,
     moodFilter,
-    priceFilter,
     regionFilter,
     searchQuery,
   ]);
@@ -457,7 +465,8 @@ export function DestinationsPage({
     setCategoryFilter("all");
     setRegionFilter("all");
     setMoodFilter("all");
-    setPriceFilter("all");
+    setBudgetMin(BUDGET_SLIDER_MIN);
+    setBudgetMax(BUDGET_SLIDER_MAX);
     setItineraryFilter("all");
     setSortBy("recommended");
   };
@@ -572,16 +581,15 @@ export function DestinationsPage({
                 siblingIds={[...DESTINATION_FILTER_IDS]}
                 onActivateSibling={activateSiblingFilter}
               />
-              <FilterDropdown
+              <FilterBudgetRange
                 id="budget"
                 label="Price range"
-                value={priceFilter}
-                options={PRICE_FILTERS.map((p) => ({
-                  value: p.id,
-                  label: p.label,
-                  icon: IndianRupee,
-                }))}
-                onChange={(value) => setPriceFilter(value as PriceFilterId)}
+                valueMin={budgetMin}
+                valueMax={budgetMax}
+                onChange={(min, max) => {
+                  setBudgetMin(min);
+                  setBudgetMax(max);
+                }}
                 isOpen={openDropdown === "budget"}
                 onToggle={setOpenDropdown}
                 siblingIds={[...DESTINATION_FILTER_IDS]}

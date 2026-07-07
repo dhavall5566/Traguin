@@ -291,6 +291,7 @@ export const termsOfService: LegalPageContent = {
       title: "13. Privacy & Communications",
       paragraphs: [
         "Your use of our services is also governed by our Privacy Policy. By submitting forms or contacting us, you consent to our use of your information as described there, including service-related communications via email, phone, SMS, and WhatsApp.",
+        "To Communicate with You: We may use your information to respond to your inquiries, provide customer service support, send you important information about the services, and send you marketing communications (with your consent) via different channels, including but not limited to SMS, Email, WhatsApp, RCS and Voice.",
         "Marketing communications are sent only where permitted by law and, where required, with your consent. You may opt out at any time as described in our Privacy Policy.",
       ],
     },

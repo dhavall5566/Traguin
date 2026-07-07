@@ -54,3 +54,17 @@ export function matchesDestinationPriceFilter(
   if (filterId === "over3L") return startingPrice > 300_000;
   return true;
 }
+
+export function isFullBudgetRange(min: number, max: number): boolean {
+  return min <= BUDGET_SLIDER_MIN && max >= BUDGET_SLIDER_MAX;
+}
+
+export function matchesDestinationPriceRange(
+  startingPrice: number,
+  min: number,
+  max: number,
+): boolean {
+  if (isFullBudgetRange(min, max)) return true;
+  const effectiveMax = max >= BUDGET_SLIDER_MAX ? Number.POSITIVE_INFINITY : max;
+  return startingPrice >= min && startingPrice <= effectiveMax;
+}
