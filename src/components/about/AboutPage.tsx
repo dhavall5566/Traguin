@@ -47,7 +47,7 @@ export function AboutPage({ data }: AboutPageProps) {
           <p className="text-sm text-muted">Our story sections are being updated. Please check back soon.</p>
         )}
 
-        <ClientMarquee />
+        <ClientMarquee logos={data.clientLogos} />
 
         <section className="mt-16 rounded-3xl border border-glass-border bg-surface/60 px-4 py-10 sm:px-8 md:mt-20 md:py-12">
           <FaqSection items={aboutFaq} titleClassName="font-semibold" />

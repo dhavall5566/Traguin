@@ -390,6 +390,7 @@ export function defaultFormValues(entity: AdminEntityDef): Record<string, unknow
     else values[field.name] = "";
   }
   if (entity.key === "destinations") values.is_published = true;
+  if (entity.key === "about-client-logos") values.is_published = true;
   if (entity.key === "form-submissions") values.status = "new";
   if (entity.key === "homepage-region-panels") values.is_active = true;
   return values;

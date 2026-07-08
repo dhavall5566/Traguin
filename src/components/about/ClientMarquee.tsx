@@ -2,10 +2,14 @@
 
 import Image from "next/image";
 import { SectionHeader } from "@/components/ui/SectionHeader";
-import { aboutClientLogos } from "@/data/about-clients";
+import type { AboutClientLogo } from "@/lib/api/about";
 
-function MarqueeTrack() {
-  const items = [...aboutClientLogos, ...aboutClientLogos];
+type ClientMarqueeProps = {
+  logos: AboutClientLogo[];
+};
+
+function MarqueeTrack({ logos }: { logos: AboutClientLogo[] }) {
+  const items = [...logos, ...logos];
 
   return (
     <div className="client-marquee-track flex w-max items-center gap-4 sm:gap-5 md:gap-6">
@@ -28,8 +32,8 @@ function MarqueeTrack() {
   );
 }
 
-export function ClientMarquee() {
-  if (aboutClientLogos.length === 0) return null;
+export function ClientMarquee({ logos }: ClientMarqueeProps) {
+  if (logos.length === 0) return null;
 
   return (
     <section className="mt-14 md:mt-16" aria-label="Corporate client logos">
@@ -45,7 +49,7 @@ export function ClientMarquee() {
       <div className="relative overflow-hidden rounded-3xl border border-glass-border bg-surface/40 py-6 sm:py-8">
         <div className="pointer-events-none absolute inset-y-0 left-0 z-10 w-12 bg-gradient-to-r from-surface/95 to-transparent sm:w-20" />
         <div className="pointer-events-none absolute inset-y-0 right-0 z-10 w-12 bg-gradient-to-l from-surface/95 to-transparent sm:w-20" />
-        <MarqueeTrack />
+        <MarqueeTrack logos={logos} />
       </div>
     </section>
   );

@@ -460,6 +460,37 @@ export const ALL_ADMIN_ENTITIES: Record<string, AdminEntityDef> = {
       { name: "sort_order", label: "Sort order", type: "number", required: true, showInList: true },
     ],
   },
+  "about-client-logos": {
+    key: "about-client-logos",
+    label: "About Client Logo",
+    pluralLabel: "About Client Logos",
+    group: "marketing",
+    endpoint: "/about-client-logos",
+    nameField: "name",
+    fields: [
+      { name: "name", label: "Organization name", type: "text", required: true, showInList: true },
+      { name: "slug", label: "Slug", type: "slug", required: true, showInList: true },
+      {
+        name: "logo_media_id",
+        label: "Logo image",
+        type: "relation",
+        relation: M,
+        mediaUploadOnly: true,
+        required: true,
+        helpText: "Upload a transparent PNG or SVG logo via the Media Library.",
+      },
+      { name: "sort_order", label: "Sort order", type: "number", required: true, showInList: true },
+      {
+        name: "is_published",
+        label: "Published",
+        type: "boolean",
+        showInList: true,
+        listLabel: "Status",
+        listToggle: true,
+        helpText: "Only published logos appear in the About page marquee.",
+      },
+    ],
+  },
   "homepage-promo": {
     key: "homepage-promo", label: "Homepage Promo", pluralLabel: "Homepage Promo", group: "marketing", endpoint: "/homepage-promo", isSingleton: true, hideFromNav: true,
     fields: [

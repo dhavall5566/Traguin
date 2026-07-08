@@ -14,6 +14,7 @@ import type {
   CmsHomepageRegionPanel,
   CmsAboutPageHeader,
   CmsAboutStorySection,
+  CmsAboutClientLogo,
   CmsCareersPageExtras,
   CmsItinerary,
   CmsJobOpening,
@@ -198,6 +199,12 @@ export function getAboutPageHeader() {
 
 export function getAboutStorySections() {
   return cmsFetchPaginated<CmsAboutStorySection>("/api/cms/public/about-story-sections", {
+    limit: 50,
+  });
+}
+
+export function getAboutClientLogos() {
+  return cmsFetchPaginated<CmsAboutClientLogo>("/api/cms/public/about-client-logos", {
     limit: 50,
   });
 }

@@ -363,6 +363,14 @@ export interface CmsAboutStorySection extends CmsTimestamped {
   sort_order: number;
 }
 
+export interface CmsAboutClientLogo extends CmsTimestamped {
+  slug: string;
+  name: string;
+  logo_media_id: string | null;
+  sort_order: number;
+  is_published: boolean;
+}
+
 export interface CmsJobOpening extends CmsTimestamped {
   slug: string;
   title: string;

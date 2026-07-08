@@ -46,6 +46,7 @@ const ENTITY_NAV_SECTION: Record<string, string> = {
   // About
   "about-page-header": "about",
   "about-story-sections": "about",
+  "about-client-logos": "about",
   faqs: "about",
 
   // Careers
