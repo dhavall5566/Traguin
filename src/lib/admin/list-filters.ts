@@ -65,7 +65,18 @@ export function buildDefaultListFilters(entity: AdminEntityDef): AdminListFilter
     });
   }
 
-  if (names.has("is_featured")) {
+  if (names.has("is_featured") && entity.key === "packages") {
+    filters.push({
+      type: "select",
+      field: "is_featured",
+      label: "Hero slider",
+      options: [
+        ALL_OPTION,
+        { value: "true", label: "On hero slider" },
+        { value: "false", label: "Off hero slider" },
+      ],
+    });
+  } else if (names.has("is_featured")) {
     filters.push({
       type: "select",
       field: "is_featured",
@@ -206,6 +217,32 @@ export function buildDynamicFilterOptions(
     if (!b.value) return 1;
     return a.label.localeCompare(b.label);
   });
+}
+
+export function buildServerListQuery(
+  entity: AdminEntityDef | null | undefined,
+  filterValues: Record<string, string>,
+  search: string,
+  listFilters: AdminListFilterDef[],
+): Record<string, string> {
+  if (!usesServerListFilters(entity)) return {};
+
+  const query: Record<string, string> = {};
+  for (const filter of listFilters) {
+    const value = filterValues[filter.field]?.trim();
+    if (!value) continue;
+    if (filter.field === "destination_name") {
+      query.destination_name = value;
+      continue;
+    }
+    query[filter.field] = value;
+  }
+  if (search.trim()) query.search = search.trim();
+  return query;
+}
+
+export function usesServerListFilters(entity: AdminEntityDef | null | undefined): boolean {
+  return Boolean(entity && !entity.isSingleton);
 }
 
 export function hasActiveFilters(

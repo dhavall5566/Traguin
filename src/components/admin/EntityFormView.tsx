@@ -233,7 +233,7 @@ function FieldControl({
           relationOptions={relationOptions}
           seedOptions={mediaSeedOptions}
           hideSelect={Boolean(field.mediaUploadOnly)}
-          deleteOnRemove={Boolean(field.mediaUploadOnly)}
+          deleteOnRemove={false}
           imageCaption={imageCaption}
           onChange={onChange}
         />

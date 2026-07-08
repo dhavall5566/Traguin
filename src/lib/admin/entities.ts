@@ -136,9 +136,31 @@ const PILOT_ENTITIES: Record<string, AdminEntityDef> = {
             : [],
       },
       { name: "moods", label: "Moods", type: "tags", helpText: "Comma-separated tags" },
-      { name: "is_featured", label: "Featured", type: "boolean" },
-      { name: "featured_sort_order", label: "Featured sort order", type: "number" },
-      { name: "is_published", label: "Published", type: "boolean" },
+      {
+        name: "is_published",
+        label: "Visible on destinations",
+        type: "boolean",
+        showInList: true,
+        listLabel: "Visible",
+        listToggle: true,
+        listToggleOnLabel: "Visible",
+        listToggleOffLabel: "Hidden",
+        helpText: "When enabled, this destination appears on the public destinations page.",
+      },
+      {
+        name: "is_featured",
+        label: "Featured on homepage",
+        type: "boolean",
+        showInList: false,
+        helpText: "When enabled, this destination can appear in the homepage featured destinations section.",
+      },
+      {
+        name: "featured_sort_order",
+        label: "Featured sort order",
+        type: "number",
+        showInList: false,
+        helpText: "Lower numbers appear first among featured destinations on the homepage.",
+      },
       { name: "package_count", label: "Package count", type: "number" },
       { name: "hotel_count", label: "Hotel count", type: "number" },
       { name: "meta_title", label: "Meta title", type: "text" },
@@ -243,9 +265,10 @@ export function getEntityDef(key: string): AdminEntityDef | undefined {
 
 export function getFormFields(entity: AdminEntityDef): AdminFieldDef[] {
   const allowed = entity.formFields ?? entity.writableFields;
-  if (!allowed) return entity.fields;
-  const names = new Set(allowed);
-  return entity.fields.filter((field) => names.has(field.name));
+  const fields = allowed
+    ? entity.fields.filter((field) => allowed.includes(field.name))
+    : entity.fields;
+  return fields.filter((field) => !field.listHomepageVisibility && !field.hideFromForm);
 }
 
 export function getListColumns(entity: AdminEntityDef) {
@@ -275,6 +298,7 @@ export function recordToFormValues(
 ): Record<string, unknown> {
   const values: Record<string, unknown> = {};
   for (const field of entity.fields) {
+    if (field.listHomepageVisibility || field.hideFromForm) continue;
     if (field.readFrom) {
       let value = field.readFrom(record);
       if (field.type === "relation-multi" && Array.isArray(value)) {
@@ -329,6 +353,7 @@ export function formValuesToPayload(
     : entity.fields;
 
   for (const field of fields) {
+    if (field.listHomepageVisibility || field.hideFromForm) continue;
     let value = values[field.name];
     if (field.writeValue) {
       value = field.writeValue(value);
@@ -378,6 +403,7 @@ export function formValuesToPayload(
 export function defaultFormValues(entity: AdminEntityDef): Record<string, unknown> {
   const values: Record<string, unknown> = {};
   for (const field of entity.fields) {
+    if (field.listHomepageVisibility || field.hideFromForm) continue;
     if (field.type === "boolean") values[field.name] = false;
     else if (field.type === "relation-multi") values[field.name] = [];
     else if (field.type === "stat-list" || field.type === "legal-sections" || field.type === "nested-list") {

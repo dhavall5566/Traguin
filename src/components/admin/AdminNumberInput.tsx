@@ -31,7 +31,7 @@ export function AdminNumberInput({
       id={id}
       type="number"
       min={min}
-      step={step}
+      step={step ?? "any"}
       disabled={disabled}
       className={cn("admin-input", className)}
       value={value === "" || value == null ? "" : String(value)}

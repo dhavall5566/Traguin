@@ -180,15 +180,17 @@ export function mapCmsDestinationToListing(
 }
 
 export async function getDestinationsPageData(): Promise<DestinationsPageData> {
-  const [cmsDestinations, cmsItineraries, mediaAssets, faqs, cmsHotels] = await Promise.all([
+  const [cmsDestinations, cmsItineraries, mediaAssets, faqs, cmsHotels, cmsPackages] = await Promise.all([
     getDestinations(),
     getItineraries(),
     getMediaAssets(),
     getFaqs("itinerary"),
     import("./cms").then(({ getHotels }) => getHotels()),
+    getPackages(),
   ]);
 
   const mediaMap = buildMediaUrlMap(mediaAssets);
+  const packagesById = new Map(cmsPackages.map((pkg) => [pkg.id, pkg]));
   const hotelsByUuid = buildHotelsByUuidMap(cmsHotels, cmsDestinations, mediaMap);
   const itineraryCounts = buildPublishedItineraryCountsByDestinationId(cmsItineraries);
   const minItineraryPrices = buildMinStartingPriceByDestinationId(cmsItineraries);
@@ -217,7 +219,8 @@ export async function getDestinationsPageData(): Promise<DestinationsPageData> {
     cmsItineraries,
     mediaMap,
     faqs,
-    hotelsByUuid
+    hotelsByUuid,
+    packagesById,
   );
 
   const itineraryPreviews = new Map<string, DestinationItineraryPreview>();
@@ -255,6 +258,7 @@ export const getDestinationDetailData = cache(async (
         context.mediaMap,
         context.faqs,
         context.hotelsByUuid,
+        cmsItinerary.package_id ? context.packagesById.get(cmsItinerary.package_id) : undefined,
       )
     );
 

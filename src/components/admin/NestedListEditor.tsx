@@ -141,7 +141,7 @@ export function NestedListEditor({
     const row: Record<string, unknown> = {};
     for (const field of config.fields) {
       if (field.type === "select") row[field.name] = field.options?.[0]?.value ?? "";
-      else if (field.type === "number") row[field.name] = field.name === "sort_order" ? items.length : "";
+      else if (field.type === "number") row[field.name] = "";
       else row[field.name] = "";
     }
     return row;
@@ -203,10 +203,7 @@ export function NestedListEditor({
               return (
                 <div
                   key={field.name}
-                  className={cn(
-                    "admin-section-card__field",
-                    field.name === "sort_order" && "admin-section-card__field--sort",
-                  )}
+                  className="admin-section-card__field"
                 >
                   <label className="admin-field-label">
                     {field.label}

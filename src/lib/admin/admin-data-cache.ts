@@ -33,8 +33,17 @@ function isFresh(fetchedAt: number, ttl: number) {
   return Date.now() - fetchedAt < ttl;
 }
 
-export function adminListCacheKey(endpoint: string, limit: number, offset: number) {
-  return `${endpoint}:${limit}:${offset}`;
+export function adminListCacheKey(
+  endpoint: string,
+  limit: number,
+  offset: number,
+  query: Record<string, string> = {},
+) {
+  const queryKey =
+    Object.keys(query).length > 0
+      ? `:${new URLSearchParams(query).toString()}`
+      : "";
+  return `${endpoint}:${limit}:${offset}${queryKey}`;
 }
 
 export function adminRecordCacheKey(endpoint: string, recordId: string | "singleton") {
@@ -206,9 +215,10 @@ export function revalidateAdminListInBackground(
   endpoint: string,
   limit: number,
   offset: number,
+  query: Record<string, string> = {},
 ) {
-  const key = adminListCacheKey(endpoint, limit, offset);
-  void refreshAdminListInBackground(endpoint, limit, offset, key);
+  const key = adminListCacheKey(endpoint, limit, offset, query);
+  void refreshAdminListInBackground(endpoint, limit, offset, key, query);
 }
 
 export function getCachedAdminRecord(key: string): Record<string, unknown> | null {
@@ -259,13 +269,14 @@ export async function fetchAdminListCached(
   endpoint: string,
   limit: number,
   offset: number,
-  options?: { force?: boolean },
+  options?: { force?: boolean; query?: Record<string, string> },
 ): Promise<{ items: Record<string, unknown>[]; total: number; fromCache: boolean } | { error: string }> {
-  const key = adminListCacheKey(endpoint, limit, offset);
+  const query = options?.query ?? {};
+  const key = adminListCacheKey(endpoint, limit, offset, query);
   const cached = options?.force ? null : getCachedAdminList(key);
 
   if (cached) {
-    void refreshAdminListInBackground(endpoint, limit, offset, key);
+    void refreshAdminListInBackground(endpoint, limit, offset, key, query);
     return {
       items: cached.items ?? [],
       total: cached.total ?? 0,
@@ -278,7 +289,7 @@ export async function fetchAdminListCached(
   const request =
     inflight ??
     (async () => {
-      const data = await fetchAdminListRaw(endpoint, limit, offset);
+      const data = await fetchAdminListRaw(endpoint, limit, offset, query);
       inflightLists.delete(key);
       if (!data) return null;
       setCachedAdminList(key, data.items, data.total);
@@ -312,11 +323,12 @@ async function refreshAdminListInBackground(
   limit: number,
   offset: number,
   key: string,
+  query: Record<string, string> = {},
 ) {
   if (inflightLists.has(key)) return;
 
   const request = (async () => {
-    const data = await fetchAdminListRaw(endpoint, limit, offset);
+    const data = await fetchAdminListRaw(endpoint, limit, offset, query);
     inflightLists.delete(key);
     if (!data) return null;
     setCachedAdminList(key, data.items, data.total);
@@ -327,18 +339,27 @@ async function refreshAdminListInBackground(
   await request;
 }
 
-export function prefetchAdminList(endpoint: string, limit = 20, offset = 0) {
-  const key = adminListCacheKey(endpoint, limit, offset);
+export function prefetchAdminList(
+  endpoint: string,
+  limit = 20,
+  offset = 0,
+  query: Record<string, string> = {},
+) {
+  const key = adminListCacheKey(endpoint, limit, offset, query);
   if (getCachedAdminList(key) || inflightLists.has(key)) return;
-  void refreshAdminListInBackground(endpoint, limit, offset, key);
+  void refreshAdminListInBackground(endpoint, limit, offset, key, query);
 }
 
 async function fetchAdminListRaw(
   endpoint: string,
   limit: number,
   offset: number,
+  query: Record<string, string> = {},
 ): Promise<{ items: Record<string, unknown>[]; total: number } | null> {
   const params = new URLSearchParams({ limit: String(limit), offset: String(offset) });
+  for (const [field, value] of Object.entries(query)) {
+    if (value) params.set(field, value);
+  }
   const path = endpoint.startsWith("/") ? endpoint : `/${endpoint}`;
   const response = await fetch(`/api/admin${path}?${params.toString()}`, {
     credentials: "include",

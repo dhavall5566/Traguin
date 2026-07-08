@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { filterGalleryItems, normalizeGalleryLabel } from "@/lib/gallery-types";
+import { filterGalleryItems, shouldShowGalleryRegion } from "@/lib/gallery-types";
 import type { GalleryCategory, GalleryItem } from "@/lib/gallery-types";
 import { GalleryLazyImage } from "@/components/gallery/GalleryLazyImage";
 import { cn } from "@/lib/utils";
@@ -14,9 +14,7 @@ type GalleryGridProps = {
 };
 
 function GalleryArchiveCard({ item, priority }: { item: GalleryItem; priority: boolean }) {
-  const showRegion =
-    item.region.trim().length > 0 &&
-    normalizeGalleryLabel(item.region) !== normalizeGalleryLabel(item.place);
+  const showRegion = shouldShowGalleryRegion(item.place, item.region);
 
   return (
     <figure className="gallery-archive-card group">

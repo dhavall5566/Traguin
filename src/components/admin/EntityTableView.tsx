@@ -7,6 +7,10 @@ import { ChevronLeft, ChevronRight, Plus, Trash2 } from "lucide-react";
 import { cn, dedupeRowsByField } from "@/lib/utils";
 import { adminDelete, adminRelationOptions, adminUpdate } from "@/lib/admin/api-client";
 import {
+  fetchHomepageHeroSliderSettings,
+  setPackageHomepageVisibility,
+} from "@/lib/admin/homepage-hero-admin";
+import {
   adminListCacheKey,
   fetchAdminListCached,
   invalidateAdminListCache,
@@ -26,7 +30,7 @@ import {
   buildInlineEditPatch,
   type AdminFieldDef,
 } from "@/lib/admin/entities";
-import { hasActiveFilters, rowMatchesFilter } from "@/lib/admin/list-filters";
+import { hasActiveFilters, rowMatchesFilter, buildServerListQuery, usesServerListFilters } from "@/lib/admin/list-filters";
 import { formatAdminListCell } from "@/lib/admin/list-cell-format";
 import { AdminListToolbar } from "@/components/admin/AdminListToolbar";
 import { AdminListToggle } from "@/components/admin/AdminListToggle";
@@ -38,6 +42,13 @@ import { GalleryFolderUploadButton, type FolderUploadStatus } from "@/components
 import { GalleryFolderUploadBanner } from "@/components/admin/GalleryFolderUploadBanner";
 
 const PAGE_SIZE = 20;
+
+const LIST_PAGE_SUBTITLES: Record<string, string> = {
+  packages:
+    "Manage packages from the table: use Published and Hero slider toggles. Destination pages list linked Itineraries.",
+  itineraries:
+    "Full journey pages shown on destination hubs (e.g. Uttarakhand’s 10 itineraries). Each itinerary should link to a Package.",
+};
 
 type EntityTableViewProps = {
   entityKey: string;
@@ -101,10 +112,22 @@ export function EntityTableView({ entityKey }: EntityTableViewProps) {
   const [relationOptions, setRelationOptions] = useState<
     Record<string, { value: string; label: string }[]>
   >({});
+  const [homepageVisibleIds, setHomepageVisibleIds] = useState<string[]>([]);
+  const [homepageMaxItems, setHomepageMaxItems] = useState(8);
   const { showUpdatedToast, showDeletedToast, showErrorToast } = useAdminToast();
 
   const columns = useMemo(() => (entity ? getListColumns(entity) : []), [entity]);
+  const homepageVisibleSet = useMemo(() => new Set(homepageVisibleIds), [homepageVisibleIds]);
+  const hasHomepageVisibilityColumn = useMemo(
+    () => columns.some((col) => col.listHomepageVisibility),
+    [columns],
+  );
   const listFilters = useMemo(() => (entity ? getListFilters(entity) : []), [entity]);
+  const serverQuery = useMemo(
+    () => buildServerListQuery(entity, filterValues, search, listFilters),
+    [entity, filterValues, search, listFilters],
+  );
+  const serverFiltered = usesServerListFilters(entity);
   const listRelationFields = useMemo(
     () => columns.filter((col) => col.type === "relation" && col.relation),
     [columns],
@@ -116,7 +139,7 @@ export function EntityTableView({ entityKey }: EntityTableViewProps) {
   const load = useCallback(async () => {
     if (!entity) return;
 
-    const cacheKey = adminListCacheKey(entity.endpoint, PAGE_SIZE, offset);
+    const cacheKey = adminListCacheKey(entity.endpoint, PAGE_SIZE, offset, serverQuery);
     const cached = peekCachedAdminList(cacheKey);
 
     if (cached) {
@@ -130,7 +153,9 @@ export function EntityTableView({ entityKey }: EntityTableViewProps) {
     }
 
     setError(null);
-    const result = await fetchAdminListCached(entity.endpoint, PAGE_SIZE, offset);
+    const result = await fetchAdminListCached(entity.endpoint, PAGE_SIZE, offset, {
+      query: serverQuery,
+    });
     setInitialLoading(false);
 
     if ("error" in result) {
@@ -142,13 +167,33 @@ export function EntityTableView({ entityKey }: EntityTableViewProps) {
     setItems(result.items ?? []);
     setTotal(result.total ?? 0);
     setRefreshing(false);
-  }, [entity, offset]);
+  }, [entity, offset, serverQuery]);
 
   useEffect(() => {
     if (searchParams.get("create") !== "1") return;
     setCreateOpen(true);
     router.replace(`/admin/cms/${entityKey}`, { scroll: false });
   }, [entityKey, router, searchParams]);
+
+  useEffect(() => {
+    if (!hasHomepageVisibilityColumn) return;
+
+    let cancelled = false;
+    void fetchHomepageHeroSliderSettings()
+      .then((settings) => {
+        if (cancelled) return;
+        setHomepageVisibleIds(settings.visible_package_ids);
+        setHomepageMaxItems(settings.hero_slider_max_items);
+      })
+      .catch((err) => {
+        if (cancelled) return;
+        setError(err instanceof Error ? err.message : "Failed to load homepage slider settings.");
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [hasHomepageVisibilityColumn, entityKey, offset, serverQuery]);
 
   const handleCreated = useCallback(
     (record: Record<string, unknown>) => {
@@ -165,9 +210,12 @@ export function EntityTableView({ entityKey }: EntityTableViewProps) {
 
       void (async () => {
         invalidateAdminListCache(entity.endpoint);
-        const result = await fetchAdminListCached(entity.endpoint, PAGE_SIZE, 0, { force: true });
+        const result = await fetchAdminListCached(entity.endpoint, PAGE_SIZE, 0, {
+          force: true,
+          query: serverQuery,
+        });
         if ("error" in result) {
-          const cacheKey = adminListCacheKey(entity.endpoint, PAGE_SIZE, 0);
+          const cacheKey = adminListCacheKey(entity.endpoint, PAGE_SIZE, 0, serverQuery);
           const cached = peekCachedAdminList(cacheKey);
           if (cached) {
             setItems(cached.items);
@@ -179,7 +227,7 @@ export function EntityTableView({ entityKey }: EntityTableViewProps) {
         setTotal(result.total ?? 0);
       })();
     },
-    [entity],
+    [entity, serverQuery],
   );
 
   useEffect(() => {
@@ -189,14 +237,14 @@ export function EntityTableView({ entityKey }: EntityTableViewProps) {
   useEffect(() => {
     if (!entity) return undefined;
 
-    const cacheKey = adminListCacheKey(entity.endpoint, PAGE_SIZE, offset);
+    const cacheKey = adminListCacheKey(entity.endpoint, PAGE_SIZE, offset, serverQuery);
     return subscribeAdminListCache((key, entry) => {
       if (key !== cacheKey) return;
       setItems(entry.items ?? []);
       setTotal(entry.total ?? 0);
       setRefreshing(false);
     });
-  }, [entity, offset]);
+  }, [entity, offset, serverQuery]);
 
   useEffect(() => {
     setSearch("");
@@ -208,7 +256,9 @@ export function EntityTableView({ entityKey }: EntityTableViewProps) {
     const nextEntity = getEntityDef(entityKey);
     if (!nextEntity) return;
 
-    const cached = peekCachedAdminList(adminListCacheKey(nextEntity.endpoint, PAGE_SIZE, 0));
+    const cached = peekCachedAdminList(
+      adminListCacheKey(nextEntity.endpoint, PAGE_SIZE, 0, {}),
+    );
     if (cached) {
       setItems(cached.items ?? []);
       setTotal(cached.total ?? 0);
@@ -219,10 +269,6 @@ export function EntityTableView({ entityKey }: EntityTableViewProps) {
       setInitialLoading(true);
     }
   }, [entityKey]);
-
-  useEffect(() => {
-    setOffset(0);
-  }, [search, filterValues]);
 
   useEffect(() => {
     if (!entity) return;
@@ -302,7 +348,7 @@ export function EntityTableView({ entityKey }: EntityTableViewProps) {
       return;
     }
 
-    revalidateAdminListInBackground(entity.endpoint, PAGE_SIZE, offset);
+    revalidateAdminListInBackground(entity.endpoint, PAGE_SIZE, offset, serverQuery);
   };
 
   const page = Math.floor(offset / PAGE_SIZE) + 1;
@@ -315,6 +361,10 @@ export function EntityTableView({ entityKey }: EntityTableViewProps) {
 
   const filteredItems = useMemo(() => {
     const deduped = dedupeRowsByField(items, idField);
+    if (serverFiltered) {
+      return sortRows(deduped, sortBy, nameField);
+    }
+
     const filtered = deduped.filter((row) => {
       for (const filter of listFilters) {
         if (!rowMatchesFilter(row, filter, filterValues[filter.field] ?? "")) {
@@ -337,16 +387,23 @@ export function EntityTableView({ entityKey }: EntityTableViewProps) {
     });
 
     return sortRows(filtered, sortBy, nameField);
-  }, [columns, filterValues, idField, items, listFilters, nameField, relationLabelMaps, search, sortBy]);
+  }, [columns, filterValues, idField, items, listFilters, nameField, relationLabelMaps, search, sortBy, serverFiltered]);
 
   const filtersActive = hasActiveFilters(search, filterValues);
 
   const handleClearFilters = () => {
+    setOffset(0);
     setSearch("");
     setFilterValues({});
   };
 
+  const handleSearchChange = (value: string) => {
+    setOffset(0);
+    setSearch(value);
+  };
+
   const handleFilterChange = (field: string, value: string) => {
+    setOffset(0);
     setFilterValues((current) => ({ ...current, [field]: value }));
   };
 
@@ -382,7 +439,7 @@ export function EntityTableView({ entityKey }: EntityTableViewProps) {
 
     void adminUpdate(entity.endpoint, recordId, patch).then((result) => {
       if (!result.error) {
-        revalidateAdminListInBackground(entity.endpoint, PAGE_SIZE, offset);
+        revalidateAdminListInBackground(entity.endpoint, PAGE_SIZE, offset, serverQuery);
         return;
       }
 
@@ -417,10 +474,22 @@ export function EntityTableView({ entityKey }: EntityTableViewProps) {
 
     const toggleLabel = field.listLabel ?? field.label;
     showUpdatedToast(
-      field.name === "is_published"
+      field.name === "is_published" && entity.key === "client-stories"
         ? nextValue
           ? "Story activated."
           : "Story deactivated."
+        : field.name === "is_published" && entity.key === "packages"
+          ? nextValue
+            ? "Package published."
+            : "Package moved to draft."
+        : field.name === "is_published" && field.listToggleOnLabel
+          ? nextValue
+            ? "Now visible on the destinations page."
+            : "Now hidden from the destinations page."
+        : field.name === "is_featured" && field.listToggleOnLabel
+          ? nextValue
+            ? "Now visible on the homepage."
+            : "Now hidden from the homepage."
         : nextValue
           ? `${toggleLabel} enabled.`
           : `${toggleLabel} disabled.`,
@@ -428,7 +497,7 @@ export function EntityTableView({ entityKey }: EntityTableViewProps) {
 
     void adminUpdate(entity.endpoint, recordId, patch).then((result) => {
       if (!result.error) {
-        revalidateAdminListInBackground(entity.endpoint, PAGE_SIZE, offset);
+        revalidateAdminListInBackground(entity.endpoint, PAGE_SIZE, offset, serverQuery);
         return;
       }
 
@@ -443,6 +512,100 @@ export function EntityTableView({ entityKey }: EntityTableViewProps) {
       setError(result.error.message);
       showErrorToast(result.error.message);
     });
+  };
+
+  const handleHomepageVisibilityToggle = (
+    row: Record<string, unknown>,
+    makeVisible: boolean,
+  ) => {
+    if (!entity) return;
+
+    const recordId = String(row[idField]);
+    const title = String(row[entity.nameField ?? "title"] ?? "Package");
+    const previousVisibleIds = homepageVisibleIds;
+    const isVisible = homepageVisibleSet.has(recordId);
+
+    if (makeVisible) {
+      if (isVisible) return;
+      if (homepageVisibleIds.length >= homepageMaxItems) {
+        showErrorToast(
+          `You can only show up to ${homepageMaxItems} packages on the homepage. Hide another package first.`,
+        );
+        return;
+      }
+
+      const featuredCount = items.filter((item) => Boolean(item.is_featured)).length;
+      setHomepageVisibleIds([...homepageVisibleIds, recordId]);
+
+      void setPackageHomepageVisibility({
+        packageId: recordId,
+        makeVisible: true,
+        currentVisibleIds: homepageVisibleIds,
+        featuredCount,
+      })
+        .then((saved) => {
+          setHomepageVisibleIds(saved.visible_package_ids);
+          setHomepageMaxItems(saved.hero_slider_max_items);
+          setItems((current) =>
+            current.map((item) =>
+              String(item[idField]) === recordId
+                ? {
+                    ...item,
+                    is_featured: true,
+                    featured_sort_order: item.featured_sort_order ?? featuredCount + 1,
+                  }
+                : item,
+            ),
+          );
+          patchCachedAdminListItem(entity.endpoint, idField, recordId, {
+            is_featured: true,
+            featured_sort_order: featuredCount + 1,
+          });
+          showUpdatedToast(`${title} is now visible on the homepage.`);
+        })
+        .catch((err) => {
+          setHomepageVisibleIds(previousVisibleIds);
+          const message =
+            err instanceof Error ? err.message : "Failed to update homepage visibility.";
+          setError(message);
+          showErrorToast(message);
+        });
+      return;
+    }
+
+    if (!isVisible) return;
+
+    setHomepageVisibleIds(homepageVisibleIds.filter((id) => id !== recordId));
+
+    void setPackageHomepageVisibility({
+      packageId: recordId,
+      makeVisible: false,
+      currentVisibleIds: homepageVisibleIds,
+      featuredCount: 0,
+    })
+      .then((saved) => {
+        setHomepageVisibleIds(saved.visible_package_ids);
+        setHomepageMaxItems(saved.hero_slider_max_items);
+        setItems((current) =>
+          current.map((item) =>
+            String(item[idField]) === recordId
+              ? { ...item, is_featured: false, featured_sort_order: null }
+              : item,
+          ),
+        );
+        patchCachedAdminListItem(entity.endpoint, idField, recordId, {
+          is_featured: false,
+          featured_sort_order: null,
+        });
+        showUpdatedToast(`${title} is now hidden on the homepage.`);
+      })
+      .catch((err) => {
+        setHomepageVisibleIds(previousVisibleIds);
+        const message =
+          err instanceof Error ? err.message : "Failed to update homepage visibility.";
+        setError(message);
+        showErrorToast(message);
+      });
   };
 
   if (!entity) {
@@ -471,7 +634,8 @@ export function EntityTableView({ entityKey }: EntityTableViewProps) {
               <p className="admin-workspace-eyebrow">CMS · {sectionLabel}</p>
               <h1 className="admin-list-panel__title">{entity.pluralLabel}</h1>
               <p className="admin-list-panel__subtitle">
-                Search, filter, and manage {entity.pluralLabel.toLowerCase()} for the public site.
+                {LIST_PAGE_SUBTITLES[entity.key] ??
+                  `Search, filter, and manage ${entity.pluralLabel.toLowerCase()} for the public site.`}
               </p>
               {total > 0 && (
                 <div className="admin-page-stats">
@@ -479,7 +643,7 @@ export function EntityTableView({ entityKey }: EntityTableViewProps) {
                     <span className="admin-stat-chip__value">{total}</span>
                     <span className="admin-stat-chip__label">{total === 1 ? "entry" : "entries"}</span>
                   </span>
-                  {filtersActive && filteredItems.length !== total && (
+                  {filtersActive && !serverFiltered && filteredItems.length !== total && (
                     <span className="admin-stat-chip admin-stat-chip--accent">
                       <span className="admin-stat-chip__value">{filteredItems.length}</span>
                       <span className="admin-stat-chip__label">shown</span>
@@ -525,7 +689,7 @@ export function EntityTableView({ entityKey }: EntityTableViewProps) {
             <AdminListToolbar
               entityLabel={entity.pluralLabel}
               search={search}
-              onSearchChange={setSearch}
+              onSearchChange={handleSearchChange}
               filters={listFilters}
               filterValues={filterValues}
               onFilterChange={handleFilterChange}
@@ -649,20 +813,39 @@ export function EntityTableView({ entityKey }: EntityTableViewProps) {
                               relationLabelMaps,
                             );
                             const isPublished = col.name === "is_published";
-                            const isListToggle = Boolean(col.listToggle && col.type === "boolean");
+                            const isHomepageVisibility = Boolean(col.listHomepageVisibility);
+                            const isListToggle = Boolean(
+                              col.listToggle && col.type === "boolean" && !isHomepageVisibility,
+                            );
+                            const isVisibleOnHomepage = homepageVisibleSet.has(recordId);
 
                             return (
                               <td
                                 key={col.name}
                                 className={cn(
-                                  (isPublished || isListToggle) && "admin-table__col--status",
+                                  (isPublished || isListToggle || isHomepageVisibility) &&
+                                    "admin-table__col--status",
                                 )}
-                                onClick={isListToggle ? (event) => event.stopPropagation() : undefined}
+                                onClick={
+                                  isListToggle || isHomepageVisibility
+                                    ? (event) => event.stopPropagation()
+                                    : undefined
+                                }
                               >
-                                {isListToggle ? (
+                                {isHomepageVisibility ? (
+                                  <AdminListToggle
+                                    checked={isVisibleOnHomepage}
+                                    label={title}
+                                    onLabel={col.listToggleOnLabel ?? "Visible"}
+                                    offLabel={col.listToggleOffLabel ?? "Hidden"}
+                                    onChange={(next) => handleHomepageVisibilityToggle(row, next)}
+                                  />
+                                ) : isListToggle ? (
                                   <AdminListToggle
                                     checked={Boolean(row[col.name])}
                                     label={title}
+                                    onLabel={col.listToggleOnLabel}
+                                    offLabel={col.listToggleOffLabel}
                                     onChange={(next) => handleListToggle(row, col, next)}
                                   />
                                 ) : isPublished ? (

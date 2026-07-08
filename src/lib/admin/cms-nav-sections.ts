@@ -12,7 +12,6 @@ export const CMS_NAV_SECTIONS: AdminEntityGroup[] = [
     })),
   { id: "careers", label: "Careers" },
   { id: "legal", label: "Legal" },
-  { id: "media", label: "Media Library" },
 ];
 
 /** First CMS screen after login — matches the primary homepage content workflow. */
@@ -47,7 +46,6 @@ const ENTITY_NAV_SECTION: Record<string, string> = {
   "about-page-header": "about",
   "about-story-sections": "about",
   "about-client-logos": "about",
-  faqs: "about",
 
   // Careers
   "job-openings": "careers",
@@ -55,9 +53,6 @@ const ENTITY_NAV_SECTION: Record<string, string> = {
 
   // Legal
   "legal-pages": "legal",
-
-  // Media Library
-  media: "media",
 };
 
 const CUSTOM_LINK_NAV_SECTION: Record<string, string> = {

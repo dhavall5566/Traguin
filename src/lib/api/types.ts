@@ -115,6 +115,7 @@ export interface CmsItinerary extends CmsTimestamped {
   rating: string | number | null;
   review_count: number | null;
   hero_media_id: string | null;
+  package_hero_media_id?: string | null;
   tagline: string;
   overview: string;
   is_featured: boolean;

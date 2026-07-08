@@ -108,8 +108,7 @@ html {
   color-scheme: dark;
 }
 
-/* Light theme (default) */
-:root,
+/* Light theme — must not use :root here; :root is always html and would override [data-theme="dark"] */
 [data-theme="light"] {
   --background: #ede8e0;
   --surface: #f5f2ec;

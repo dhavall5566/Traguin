@@ -147,9 +147,14 @@ export function Footer() {
         </div>
 
         <div className="mt-12 flex flex-col items-center justify-between gap-4 border-t border-glass-border pt-8 md:flex-row">
-          <p className="text-xs text-muted">
-            © {new Date().getFullYear()} TRAGUIN Luxury Travel. All rights reserved.
-          </p>
+          <div className="flex flex-col items-center gap-1 md:items-start">
+            <p className="text-xs text-muted">
+              © {new Date().getFullYear()} TRAGUIN Luxury Travel. All rights reserved.
+            </p>
+            <p className="text-xs tracking-wide text-muted">
+              TRAGUIN brand powered by ARKINOX
+            </p>
+          </div>
           <div className="flex gap-6 text-xs text-muted">
             <Link href="/privacy-policy" className="hover:text-foreground">
               Privacy Policy

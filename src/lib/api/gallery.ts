@@ -3,7 +3,7 @@ import type {
   GalleryClientWallItem,
   GalleryItem,
 } from "@/lib/gallery-types";
-import { normalizeGalleryLabel } from "@/lib/gallery-types";
+import { normalizeGalleryLabel, looksLikeClientName } from "@/lib/gallery-types";
 import { formatHonorificName, uniqueById } from "@/lib/utils";
 import {
   buildMediaUrlMap,
@@ -93,10 +93,6 @@ export function dedupeClientWallItems(items: GalleryClientWallItem[]): GalleryCl
   }
 
   return result;
-}
-
-function looksLikeClientName(place: string): boolean {
-  return /^(mr|mrs|ms|dr)\.?\s/i.test(place.trim());
 }
 
 function dedupeGalleryItems(

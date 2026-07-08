@@ -36,4 +36,47 @@ export function readHomepageHeroSettings(
   };
 }
 
+export function hasHomepageHeroVisibilityConfigured(
+  companyStats: CmsCompanyStats | null | undefined,
+): boolean {
+  if (!companyStats?.homepage_stats?.length) return false;
+  return companyStats.homepage_stats.some((item) => item?.id === HERO_SLIDER_META_ID);
+}
+
+export function selectHomepageHeroPackages(
+  packages: import("@/lib/api/types").CmsPackage[],
+  companyStats: CmsCompanyStats | null | undefined,
+): import("@/lib/api/types").CmsPackage[] {
+  const published = packages.filter((pkg) => pkg.is_published);
+  const settings = readHomepageHeroSettings(companyStats);
+
+  if (hasHomepageHeroVisibilityConfigured(companyStats)) {
+    const visibleSet = new Set(settings.visible_package_ids);
+    return published
+      .filter((pkg) => visibleSet.has(pkg.id))
+      .sort(
+        (a, b) =>
+          (a.featured_sort_order ?? 999) - (b.featured_sort_order ?? 999) ||
+          a.title.localeCompare(b.title),
+      );
+  }
+
+  let featured = published
+    .filter((pkg) => pkg.is_featured)
+    .sort(
+      (a, b) =>
+        (a.featured_sort_order ?? 999) - (b.featured_sort_order ?? 999) ||
+        a.title.localeCompare(b.title),
+    );
+
+  if (settings.visible_package_ids.length > 0) {
+    const visibleSet = new Set(settings.visible_package_ids);
+    featured = featured.filter((pkg) => visibleSet.has(pkg.id));
+  } else if (featured.length > 0) {
+    featured = featured.slice(0, settings.hero_slider_max_items);
+  }
+
+  return featured;
+}
+
 export type AdminHomepageHeroSliderSettings = HomepageHeroSliderSettings;

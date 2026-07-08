@@ -4,6 +4,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { Upload, X } from "lucide-react";
 import { adminDelete, adminGetOne, adminUploadMedia, type AdminMediaAsset } from "@/lib/admin/api-client";
 import type { AdminMediaOption } from "@/lib/admin/media-field-options";
+import { toPublicMediaUrl } from "@/lib/api/media-url";
 import { cn, uniqueStringsPreservingOrder } from "@/lib/utils";
 
 const ACCEPT = "image/jpeg,image/png,image/webp,image/gif";
@@ -47,9 +48,8 @@ function optionUrl(opt: MediaOption): string | null {
 
 function resolvePreviewUrl(url: string | null | undefined): string | null {
   if (!url) return null;
-  if (url.startsWith("http://") || url.startsWith("https://")) return url;
-  const base = (process.env.NEXT_PUBLIC_CMS_API_URL ?? "http://127.0.0.1:8001").replace(/\/$/, "");
-  return `${base}${url.startsWith("/") ? url : `/${url}`}`;
+  const normalized = toPublicMediaUrl(url);
+  return normalized || null;
 }
 
 /** Renders the full image scaled to its column — never cropped. */
@@ -169,7 +169,7 @@ export function AdminMediaField(props: AdminMediaFieldProps) {
               {
                 value: data.id,
                 label: formatMediaLabel(data.slug, data.url),
-                url: data.url,
+                url: toPublicMediaUrl(data.url),
                 displayName: data.alt_text?.trim() || data.slug || "Image",
               },
             ]
@@ -192,7 +192,7 @@ export function AdminMediaField(props: AdminMediaFieldProps) {
     if (deleteOnRemove) {
       setUploadError(null);
       const { error: deleteError } = await adminDelete("/media", optionId);
-      if (deleteError) {
+      if (deleteError && deleteError.status !== 404) {
         setUploadError(deleteError.message ?? "Could not delete image from server.");
         return;
       }
@@ -202,6 +202,8 @@ export function AdminMediaField(props: AdminMediaFieldProps) {
 
     if (props.multiple) {
       props.onChange(props.value.filter((id) => id !== optionId));
+      setLocalOptions((prev) => prev.filter((opt) => opt.value !== optionId));
+      fetchedIdsRef.current.delete(optionId);
       return;
     }
     props.onChange("");
@@ -234,7 +236,7 @@ export function AdminMediaField(props: AdminMediaFieldProps) {
           option: {
             value: data.id,
             label: formatMediaLabel(data.slug, data.url),
-            url: data.url,
+            url: toPublicMediaUrl(data.url),
             displayName: data.alt_text?.trim() || data.slug || displayNameFromFilename(file.name),
           },
         };

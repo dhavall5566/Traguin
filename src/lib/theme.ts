@@ -17,8 +17,12 @@ export function getLocalDateIso(): string {
   return `${y}-${m}-${day}`;
 }
 
-/** Blocking script in <head>, runs before paint; keeps SSR theme when set, else localStorage / system. */
-export const themeInitScript = `(function(){try{var el=document.documentElement;var t=el.getAttribute("data-theme");if(t!=="light"&&t!=="dark"){t=localStorage.getItem("${THEME_STORAGE_KEY}");if(t!=="light"&&t!=="dark"){t="${DEFAULT_THEME}";}}el.setAttribute("data-theme",t);document.cookie="${THEME_COOKIE_NAME}="+t+";path=/;max-age=31536000;SameSite=Lax";localStorage.setItem("${THEME_STORAGE_KEY}",t);}catch(e){document.documentElement.setAttribute("data-theme","${DEFAULT_THEME}");}})();`;
+/** Sync cookie/localStorage with the SSR `data-theme` attribute (React 19-safe, no inline script). */
+export function syncClientTheme(): Theme {
+  const theme = readThemeFromDocument();
+  persistTheme(theme);
+  return theme;
+}
 
 export function readThemeFromDocument(): Theme {
   if (typeof document === "undefined") return DEFAULT_THEME;

@@ -5,10 +5,16 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { ArrowDown, ArrowUp, Trash2 } from "lucide-react";
 import { AdminListToolbar } from "@/components/admin/AdminListToolbar";
 import { useAdminToast } from "@/components/admin/AdminToast";
-import { adminFetch, adminList, adminUpdate } from "@/lib/admin/api-client";
+import { adminList, adminUpdate } from "@/lib/admin/api-client";
 import { hasActiveFilters, rowMatchesFilter } from "@/lib/admin/list-filters";
 import { parseAdminPaginatedList } from "@/lib/admin/list-response";
 import type { AdminListFilterDef } from "@/lib/admin/types";
+import {
+  fetchHomepageHeroSliderSettings,
+  saveHomepageHeroSliderOrder,
+  saveHomepageHeroSliderSettings,
+  setPackageHomepageVisibility,
+} from "@/lib/admin/homepage-hero-admin";
 import {
   clampHeroSliderMaxItems,
   HERO_SLIDER_DEFAULT_MAX_ITEMS,
@@ -90,45 +96,6 @@ async function fetchAllPackages(): Promise<PackageRow[]> {
   return rows;
 }
 
-async function fetchHeroSliderSettings(): Promise<AdminHomepageHeroSliderSettings> {
-  const { data, error } = await adminFetch<AdminHomepageHeroSliderSettings>(
-    "/homepage-hero-slider/settings",
-  );
-  if (error) throw new Error(error.message);
-  return {
-    hero_slider_max_items: clampHeroSliderMaxItems(data?.hero_slider_max_items),
-    visible_package_ids: data?.visible_package_ids?.map(String) ?? [],
-  };
-}
-
-async function saveHeroSliderSettings(
-  payload: Partial<AdminHomepageHeroSliderSettings>,
-): Promise<AdminHomepageHeroSliderSettings> {
-  const { data, error } = await adminFetch<AdminHomepageHeroSliderSettings>(
-    "/homepage-hero-slider/settings",
-    {
-      method: "PATCH",
-      body: JSON.stringify(payload),
-    },
-  );
-  if (error) throw new Error(error.message);
-  return {
-    hero_slider_max_items: clampHeroSliderMaxItems(data?.hero_slider_max_items),
-    visible_package_ids: data?.visible_package_ids?.map(String) ?? [],
-  };
-}
-
-async function saveHeroSliderOrder(packageIds: string[]): Promise<void> {
-  const { error } = await adminFetch<AdminHomepageHeroSliderSettings>(
-    "/homepage-hero-slider/order",
-    {
-      method: "PUT",
-      body: JSON.stringify({ package_ids: packageIds }),
-    },
-  );
-  if (error) throw new Error(error.message);
-}
-
 function sortFeaturedPackages(packages: PackageRow[]): PackageRow[] {
   return packages
     .filter((pkg) => pkg.is_featured)
@@ -168,7 +135,6 @@ export function HomeHeroSliderManager() {
   const [savingSettings, setSavingSettings] = useState(false);
   const [savingOrder, setSavingOrder] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const syncGeneration = useRef(0);
   const orderGeneration = useRef(0);
 
   const load = useCallback(async () => {
@@ -176,7 +142,7 @@ export function HomeHeroSliderManager() {
     try {
       const [allPackages, settings] = await Promise.all([
         fetchAllPackages(),
-        fetchHeroSliderSettings(),
+        fetchHomepageHeroSliderSettings(),
       ]);
 
       setPackages(allPackages);
@@ -240,28 +206,6 @@ export function HomeHeroSliderManager() {
   const clampedMaxItems = clampHeroSliderMaxItems(maxItems);
   const maxItemsDirty = clampedMaxItems !== savedMaxItems;
 
-  const queueSettingsSave = useCallback(
-    (nextVisibleIds: string[], previousVisibleIds: string[]) => {
-      const generation = ++syncGeneration.current;
-
-      void saveHeroSliderSettings({
-        hero_slider_max_items: savedMaxItems,
-        visible_package_ids: nextVisibleIds,
-      })
-        .then((saved) => {
-          if (generation !== syncGeneration.current) return;
-          setVisiblePackageIds(saved.visible_package_ids);
-          showUpdatedToast("Homepage visibility updated.");
-        })
-        .catch((err) => {
-          if (generation !== syncGeneration.current) return;
-          setVisiblePackageIds(previousVisibleIds);
-          setError(err instanceof Error ? err.message : "Failed to update package visibility.");
-        });
-    },
-    [savedMaxItems, showUpdatedToast],
-  );
-
   const handleSaveSettings = async () => {
     if (!maxItemsDirty) return;
 
@@ -277,7 +221,7 @@ export function HomeHeroSliderManager() {
       setSavedMaxItems(clampedMax);
       setVisiblePackageIds(trimmedVisible);
 
-      const saved = await saveHeroSliderSettings({
+      const saved = await saveHomepageHeroSliderSettings({
         hero_slider_max_items: clampedMax,
         visible_package_ids: trimmedVisible,
       });
@@ -312,18 +256,58 @@ export function HomeHeroSliderManager() {
         return;
       }
       if (visibleIdSet.has(packageId)) return;
-
-      const nextVisible = [...visiblePackageIds, packageId];
-      setVisiblePackageIds(nextVisible);
-      queueSettingsSave(nextVisible, visiblePackageIds);
+    } else if (!visibleIdSet.has(packageId)) {
       return;
     }
 
-    if (!visibleIdSet.has(packageId)) return;
+    const previousVisible = visiblePackageIds;
+    const featuredCount = packages.filter((pkg) => pkg.is_featured).length;
+    const nextVisible = makeVisible
+      ? [...visiblePackageIds, packageId]
+      : visiblePackageIds.filter((id) => id !== packageId);
 
-    const nextVisible = visiblePackageIds.filter((id) => id !== packageId);
     setVisiblePackageIds(nextVisible);
-    queueSettingsSave(nextVisible, visiblePackageIds);
+    setPackages((current) =>
+      current.map((pkg) =>
+        pkg.id === packageId
+          ? {
+              ...pkg,
+              is_featured: makeVisible,
+              featured_sort_order: makeVisible
+                ? pkg.featured_sort_order ?? featuredCount + 1
+                : null,
+            }
+          : pkg,
+      ),
+    );
+
+    void setPackageHomepageVisibility({
+      packageId,
+      makeVisible,
+      currentVisibleIds: visiblePackageIds,
+      featuredCount,
+    })
+      .then((saved) => {
+        setVisiblePackageIds(saved.visible_package_ids);
+        setSavedMaxItems(saved.hero_slider_max_items);
+        setMaxItems(saved.hero_slider_max_items);
+        showUpdatedToast("Homepage visibility updated.");
+      })
+      .catch((err) => {
+        setVisiblePackageIds(previousVisible);
+        setPackages((current) =>
+          current.map((pkg) =>
+            pkg.id === packageId
+              ? {
+                  ...pkg,
+                  is_featured: !makeVisible,
+                  featured_sort_order: makeVisible ? null : pkg.featured_sort_order,
+                }
+              : pkg,
+          ),
+        );
+        setError(err instanceof Error ? err.message : "Failed to update package visibility.");
+      });
   };
 
   const handleMove = (index: number, direction: -1 | 1) => {
@@ -345,7 +329,7 @@ export function HomeHeroSliderManager() {
     void (async () => {
       setSavingOrder(true);
       try {
-        await saveHeroSliderOrder(orderedIds);
+        await saveHomepageHeroSliderOrder(orderedIds);
         if (generation !== orderGeneration.current) return;
         showUpdatedToast("Slider order saved.");
       } catch (err) {
@@ -383,7 +367,7 @@ export function HomeHeroSliderManager() {
       });
       if (removeError) throw new Error(removeError.message);
 
-      await saveHeroSliderSettings({
+      await saveHomepageHeroSliderSettings({
         hero_slider_max_items: savedMaxItems,
         visible_package_ids: nextVisible,
       });
@@ -539,7 +523,6 @@ export function HomeHeroSliderManager() {
                   {filteredFeaturedPackages.map((pkg) => {
                     const index = featuredPackages.findIndex((item) => item.id === pkg.id);
                     const isVisible = visibleIdSet.has(pkg.id);
-                    const canEnable = isVisible || visibleCount < savedMaxItems;
 
                     return (
                       <tr key={pkg.id} className="admin-table__row">
@@ -567,7 +550,6 @@ export function HomeHeroSliderManager() {
                               type="checkbox"
                               className="admin-visibility-toggle__input"
                               checked={isVisible}
-                              disabled={!isVisible && !canEnable}
                               aria-label={`${isVisible ? "Hide" : "Show"} ${pkg.title} on homepage`}
                               onChange={(event) =>
                                 handleToggleVisibility(pkg.id, event.target.checked)
@@ -577,13 +559,12 @@ export function HomeHeroSliderManager() {
                               className={cn(
                                 "admin-visibility-toggle__track",
                                 isVisible && "admin-visibility-toggle__track--on",
-                                !canEnable && !isVisible && "admin-visibility-toggle__track--disabled",
                               )}
                             >
                               <span className="admin-visibility-toggle__thumb" />
                             </span>
                             <span className="admin-visibility-toggle__label">
-                              {isVisible ? "Visible" : "Hidden"}
+                              {isVisible ? "Visible" : "Off slider"}
                             </span>
                           </label>
                         </td>

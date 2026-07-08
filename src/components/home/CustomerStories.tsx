@@ -156,16 +156,10 @@ export function CustomerStories({ testimonials }: { testimonials: HomeTestimonia
                   !motionLite && "[transform-style:preserve-3d]"
                 )}
               >
-                <span
-                  className="font-display text-4xl leading-none text-gold/50 select-none md:text-5xl"
-                  aria-hidden
-                >
-                  “
-                </span>
-                <blockquote className="mt-4 text-base leading-relaxed text-foreground md:text-lg">
+                <blockquote className="text-base leading-relaxed text-foreground md:text-lg">
                   &ldquo;{story.quote.replace(/^[“"']+|[”"']+$/g, "").trim()}&rdquo;
                 </blockquote>
-                <footer className="mt-8 flex items-center gap-4 border-t border-glass-border pt-6">
+                <footer className="mt-8 flex items-center gap-4 pt-2">
                   {story.image ? (
                     <div className="relative h-12 w-12 shrink-0 overflow-hidden rounded-full">
                       <SafeImage

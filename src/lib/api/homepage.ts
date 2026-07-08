@@ -17,7 +17,11 @@ import { mapClientStoryReview } from "@/lib/api/client-stories-page";
 import { uniqueById } from "@/lib/utils";
 
 export { HERO_SLIDER_DEFAULT_MAX_ITEMS } from "@/lib/api/homepage-hero-settings";
-import { readHomepageHeroSettings } from "@/lib/api/homepage-hero-settings";
+import {
+  hasHomepageHeroVisibilityConfigured,
+  readHomepageHeroSettings,
+  selectHomepageHeroPackages,
+} from "@/lib/api/homepage-hero-settings";
 import {
   buildMediaUrlMap,
   getCompanyStats,
@@ -823,19 +827,9 @@ function mapHomepageSources({
   const itineraryCounts = buildPublishedItineraryCountsByDestinationId(itineraries);
   const minItineraryPrices = buildMinStartingPriceByDestinationId(itineraries);
 
-  let cmsFeatured = packages
-    .filter((pkg) => pkg.is_featured)
-    .sort((a, b) => (a.featured_sort_order ?? 999) - (b.featured_sort_order ?? 999));
-
   const heroSettings = readHomepageHeroSettings(companyStats);
   const heroSliderMaxItems = heroSettings.hero_slider_max_items;
-  const visibleIdSet = new Set(heroSettings.visible_package_ids);
-
-  if (visibleIdSet.size > 0) {
-    cmsFeatured = cmsFeatured.filter((pkg) => visibleIdSet.has(pkg.id));
-  } else if (cmsFeatured.length > 0) {
-    cmsFeatured = cmsFeatured.slice(0, heroSliderMaxItems);
-  }
+  const cmsFeatured = selectHomepageHeroPackages(packages, companyStats);
 
   let featuredPackages = uniqueById(
     cmsFeatured.map((pkg) =>
@@ -843,9 +837,10 @@ function mapHomepageSources({
     )
   );
 
-  if (featuredPackages.length === 0) {
+  if (featuredPackages.length === 0 && !hasHomepageHeroVisibilityConfigured(companyStats)) {
     featuredPackages = uniqueById(
       packages
+        .filter((pkg) => pkg.is_published)
         .slice(0, heroSliderMaxItems)
         .map((pkg) => mapPackage(pkg, destinationById, itineraryByPackageId, mediaMap))
     );

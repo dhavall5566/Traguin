@@ -39,20 +39,42 @@ function mapFaqsForItinerary(faqs: CmsFaq[], itineraryId: string) {
     }));
 }
 
+function resolveItineraryHeroImage(
+  itinerary: CmsItinerary,
+  destination: CmsDestination,
+  mediaMap: Map<string, string>,
+  linkedPackage?: { hero_media_id: string | null } | null,
+): string {
+  if (itinerary.slug === "gj-005-divine-statue-of-unity-itinerary") {
+    return images.statueOfUnityCircuit;
+  }
+
+  const packageHeroMediaId =
+    itinerary.package_hero_media_id ?? linkedPackage?.hero_media_id ?? null;
+
+  return (
+    resolveMediaUrl(mediaMap, itinerary.hero_media_id, "") ||
+    resolveMediaUrl(mediaMap, packageHeroMediaId, "") ||
+    resolveMediaUrl(mediaMap, destination.hero_media_id, "") ||
+    destination.gallery_media[0]?.url ||
+    images.bali
+  );
+}
+
 export function mapCmsItineraryToItinerary(
   itinerary: CmsItinerary,
   destination: CmsDestination,
   mediaMap: Map<string, string>,
   faqs: CmsFaq[] = [],
-  hotelsByUuid?: Map<string, Hotel>
+  hotelsByUuid?: Map<string, Hotel>,
+  linkedPackage?: { hero_media_id: string | null } | null,
 ): Itinerary {
-  const heroImage =
-    itinerary.slug === "gj-005-divine-statue-of-unity-itinerary"
-      ? images.statueOfUnityCircuit
-      : resolveMediaUrl(mediaMap, itinerary.hero_media_id, "") ||
-        resolveMediaUrl(mediaMap, destination.hero_media_id, "") ||
-        destination.gallery_media[0]?.url ||
-        images.bali;
+  const heroImage = resolveItineraryHeroImage(
+    itinerary,
+    destination,
+    mediaMap,
+    linkedPackage,
+  );
 
   const gallery = uniqueGalleryUrls(
     itinerary.gallery_media.length
@@ -166,6 +188,7 @@ export async function getItineraryDetailBySlug(
       context.mediaMap,
       context.faqs,
       context.hotelsByUuid,
+      cmsItinerary.package_id ? context.packagesById.get(cmsItinerary.package_id) : undefined,
     ),
     destinationName: matchedDestination.name,
     hotelsCatalog: context.hotelsCatalog,
@@ -192,6 +215,7 @@ export async function getItineraryDetailForDestinationSlug(
       context.mediaMap,
       context.faqs,
       context.hotelsByUuid,
+      cmsItinerary.package_id ? context.packagesById.get(cmsItinerary.package_id) : undefined,
     ),
     destinationName: destination.name,
     hotelsCatalog: context.hotelsCatalog,
@@ -288,7 +312,8 @@ export async function buildItineraryLookupByDestinationSlug(
   cmsItineraries: CmsItinerary[],
   mediaMap: Map<string, string>,
   faqs: CmsFaq[] = [],
-  hotelsByUuid?: Map<string, Hotel>
+  hotelsByUuid?: Map<string, Hotel>,
+  packagesById?: Map<string, import("./types").CmsPackage>,
 ): Promise<Map<string, Itinerary>> {
   const destinationById = new Map(destinations.map((dest) => [dest.id, dest]));
   const primaryByDestinationId = pickPrimaryItineraryPerDestination(cmsItineraries);
@@ -304,7 +329,8 @@ export async function buildItineraryLookupByDestinationSlug(
         destination,
         mediaMap,
         faqs,
-        hotelsByUuid
+        hotelsByUuid,
+        cmsItinerary.package_id ? packagesById?.get(cmsItinerary.package_id) : undefined,
       )
     );
   }

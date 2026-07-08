@@ -4,12 +4,14 @@ import {
   createContext,
   useCallback,
   useContext,
+  useLayoutEffect,
   useSyncExternalStore,
   type ReactNode,
 } from "react";
 import {
   persistTheme,
   readThemeFromDocument,
+  syncClientTheme,
   DEFAULT_THEME,
   type Theme,
 } from "@/lib/theme";
@@ -46,6 +48,11 @@ export function ThemeProvider({
 }) {
   const getServerSnapshot = useCallback(() => initialTheme, [initialTheme]);
   const theme = useSyncExternalStore(subscribe, getThemeSnapshot, getServerSnapshot);
+
+  useLayoutEffect(() => {
+    syncClientTheme();
+    emitThemeChange();
+  }, []);
 
   const setTheme = useCallback((next: Theme) => {
     persistTheme(next);
