@@ -33,7 +33,8 @@ function MarqueeTrack({ logos }: { logos: AboutClientLogo[] }) {
 }
 
 export function ClientMarquee({ logos }: ClientMarqueeProps) {
-  if (logos.length === 0) return null;
+  const visibleLogos = logos.filter((logo) => logo.logoSrc.trim().length > 0);
+  if (visibleLogos.length === 0) return null;
 
   return (
     <section className="mt-14 md:mt-16" aria-label="Corporate client logos">
@@ -49,7 +50,7 @@ export function ClientMarquee({ logos }: ClientMarqueeProps) {
       <div className="relative overflow-hidden rounded-3xl border border-glass-border bg-surface/40 py-6 sm:py-8">
         <div className="pointer-events-none absolute inset-y-0 left-0 z-10 w-12 bg-gradient-to-r from-surface/95 to-transparent sm:w-20" />
         <div className="pointer-events-none absolute inset-y-0 right-0 z-10 w-12 bg-gradient-to-l from-surface/95 to-transparent sm:w-20" />
-        <MarqueeTrack logos={logos} />
+        <MarqueeTrack logos={visibleLogos} />
       </div>
     </section>
   );

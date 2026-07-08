@@ -47,9 +47,13 @@ export function AboutPage({ data }: AboutPageProps) {
           <p className="text-sm text-muted">Our story sections are being updated. Please check back soon.</p>
         )}
 
-        <ClientMarquee logos={data.clientLogos} />
+        {data.clientLogos.length > 0 ? <ClientMarquee logos={data.clientLogos} /> : null}
 
-        <section className="mt-16 rounded-3xl border border-glass-border bg-surface/60 px-4 py-10 sm:px-8 md:mt-20 md:py-12">
+        <section
+          className={`rounded-3xl border border-glass-border bg-surface/60 px-4 py-10 sm:px-8 md:py-12 ${
+            data.clientLogos.length > 0 ? "mt-16 md:mt-20" : "mt-14 md:mt-16"
+          }`}
+        >
           <FaqSection items={aboutFaq} titleClassName="font-semibold" />
         </section>
 
