@@ -1,4 +1,5 @@
 import { contactInfo } from "@/data/contact";
+import { curatedDestinationCount } from "@/data/pageContent";
 import { primaryCta, secondaryCta } from "@/data/site";
 import { isLuxuryStaysVisible } from "@/lib/site-features";
 import { images } from "@/lib/images";
@@ -27,16 +28,10 @@ export const nikiWelcomeMessages = [
 
 export const nikiQuickReplies: NikiQuickReply[] = [
   {
-    id: "about",
-    label: "About TRAGUIN",
-    response:
-      "TRAGUIN is a luxury travel studio based in Ahmedabad. Since 2024 we've crafted personalized itineraries, never off-the-shelf packages, with dedicated experts from first call to homecoming.",
-  },
-  {
     id: "destinations",
     label: "Destinations",
     response:
-      "Explore 15+ curated regions, Bali, Switzerland, Japan, Kashmir, Kerala, and more. Each destination includes day-by-day programs, partner hotels, and transparent pricing.",
+      `We curate ${curatedDestinationCount}+ destinations across two collections. Domestic (India): heritage circuits, Himalayan escapes, and coastal retreats across Rajasthan, Kerala, Kashmir, Himachal, Goa, and more. International: island escapes, alpine lodges, and iconic cities across Thailand, Bali, Singapore, Australia, Switzerland, Japan, and 40+ countries. Each destination includes day-by-day itineraries, partner hotels, and transparent pricing.`,
     href: "/destinations",
   },
   {
@@ -67,6 +62,28 @@ export const nikiQuickReplies: NikiQuickReply[] = [
     response:
       "Every great trip starts with a conversation. Request a complimentary planning session, no obligation, no generic quotes.",
     href: secondaryCta.href,
+  },
+  {
+    id: "cancellation",
+    label: "Cancellation",
+    response:
+      "Cancellation and refund terms depend on your booking and supplier policies. Share your booking reference on WhatsApp or our contact page and our team will guide you through amendments, penalties, and next steps.",
+    href: contactInfo.whatsappHref,
+    external: true,
+  },
+  {
+    id: "query",
+    label: "Query",
+    response:
+      "Have a question about an itinerary, payment, visa, or an existing booking? Message us on WhatsApp or submit your query on our contact page. We typically respond within 2 working hours.",
+    href: "/contact",
+  },
+  {
+    id: "about",
+    label: "About TRAGUIN",
+    response:
+      "TRAGUIN is a luxury travel studio based in Ahmedabad. Since 2024 we've crafted personalized itineraries, never off-the-shelf packages, with dedicated experts from first call to homecoming.",
+    href: "/about",
   },
 ];
 

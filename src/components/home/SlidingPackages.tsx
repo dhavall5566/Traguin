@@ -154,12 +154,12 @@ function ShowcaseContentStatic({ pkg }: { pkg: HomeTravelPackage }) {
         </span>
       </p>
 
-      <h2 className="mt-2 font-display text-4xl leading-[1.08] text-balance text-white sm:mt-3 sm:text-5xl md:text-6xl lg:text-[2.35rem] lg:leading-[1.1] xl:text-5xl">
+      <h2 className="mt-1.5 font-display text-[1.75rem] leading-[1.12] text-balance text-white sm:mt-2 sm:text-4xl sm:leading-[1.08] md:text-5xl lg:mt-3 lg:text-[2.35rem] lg:leading-[1.1] xl:text-5xl">
         {pkg.title}
       </h2>
 
       <div
-        className="mt-3 flex flex-wrap items-center gap-x-1.5 gap-y-1 lg:mt-2.5"
+        className="mt-2 flex flex-wrap items-center gap-x-1.5 gap-y-1 max-lg:text-xs lg:mt-2.5"
         aria-label={`${pkg.rating.toFixed(1)} out of 5 from ${reviewCount} guest reviews, ${pkg.soldLastMonth} plus sold in the last month`}
       >
         {Array.from({ length: stars }).map((_, i) => (
@@ -169,10 +169,10 @@ function ShowcaseContentStatic({ pkg }: { pkg: HomeTravelPackage }) {
         <span className="text-sm text-white/65">
           ({reviewCount} {reviewCount === 1 ? "review" : "reviews"})
         </span>
-        <span className="text-sm text-white/50" aria-hidden>
+        <span className="hidden text-sm text-white/50 sm:inline" aria-hidden>
           ·
         </span>
-        <span className="text-sm text-white/65">
+        <span className="hidden text-sm text-white/65 sm:inline">
           {pkg.soldLastMonth}+ Sold in the last month
         </span>
       </div>
@@ -184,11 +184,11 @@ function ShowcaseContentStatic({ pkg }: { pkg: HomeTravelPackage }) {
         </span>
       </div>
 
-      <p className="mt-4 max-w-md text-sm leading-relaxed text-white/75 md:text-base lg:hidden">
+      <p className="mt-3 hidden max-w-md text-sm leading-relaxed text-white/75 md:text-base lg:block">
         {packageBlurb(pkg)}
       </p>
 
-      <ul className="mt-4 space-y-1.5 lg:mt-3 lg:space-y-1">
+      <ul className="mt-3 hidden space-y-1.5 lg:mt-3 lg:block lg:space-y-1">
         {pkg.highlights.slice(0, 3).map((highlight, index) => (
           <li
             key={highlight}
@@ -203,21 +203,21 @@ function ShowcaseContentStatic({ pkg }: { pkg: HomeTravelPackage }) {
         ))}
       </ul>
 
-      <div className="mt-4 lg:mt-3">
+      <div className="mt-3 lg:mt-3">
         <p className="text-[10px] font-bold tracking-[0.22em] text-white/60 uppercase">
           Onwards
         </p>
-        <p className="mt-0.5 text-xl font-bold tracking-tight text-gold md:text-2xl lg:text-xl xl:text-2xl">
+        <p className="mt-0.5 text-lg font-bold tracking-tight text-gold sm:text-xl md:text-2xl lg:text-xl xl:text-2xl">
           {formatPrice(pkg.price)}
         </p>
       </div>
 
-      <div className="mt-5 flex flex-wrap items-center gap-3 lg:mt-4">
+      <div className="mt-3 flex flex-wrap items-center gap-2.5 lg:mt-4 lg:gap-3">
         <MagneticButton
           as="a"
           href={journeyHref}
           variant="primary"
-          className="!px-8 !py-3.5 !text-xs !font-bold !tracking-[0.14em] !uppercase"
+          className="!px-6 !py-3 !text-[0.68rem] !font-bold !tracking-[0.14em] !uppercase sm:!px-8 sm:!py-3.5 sm:!text-xs"
         >
           <MapPin size={16} />
           Discover Journey
@@ -226,7 +226,7 @@ function ShowcaseContentStatic({ pkg }: { pkg: HomeTravelPackage }) {
           as="a"
           href={primaryCta.href}
           variant="secondary"
-          className="!border-white/25 !bg-white/10 !px-6 !py-3.5 !text-xs !font-bold !tracking-[0.14em] !text-white !uppercase hover:!border-gold/45 hover:!bg-white/15"
+          className="!hidden !border-white/25 !bg-white/10 !px-6 !py-3.5 !text-xs !font-bold !tracking-[0.14em] !text-white !uppercase hover:!border-gold/45 hover:!bg-white/15 lg:!inline-flex"
         >
           {primaryCta.label}
         </MagneticButton>
@@ -291,7 +291,7 @@ function ShowcaseContent({ pkg }: { pkg: HomeTravelPackage }) {
       <motion.h2
         custom={1}
         variants={item}
-        className="mt-2 font-display text-4xl leading-[1.08] text-balance text-white sm:mt-3 sm:text-5xl md:text-6xl lg:text-[2.35rem] lg:leading-[1.1] xl:text-5xl"
+        className="mt-1.5 font-display text-[1.75rem] leading-[1.12] text-balance text-white sm:mt-2 sm:text-4xl sm:leading-[1.08] md:text-5xl lg:mt-3 lg:text-[2.35rem] lg:leading-[1.1] xl:text-5xl"
       >
         {pkg.title}
       </motion.h2>
@@ -299,7 +299,7 @@ function ShowcaseContent({ pkg }: { pkg: HomeTravelPackage }) {
       <motion.div
         custom={2}
         variants={item}
-        className="mt-3 flex flex-wrap items-center gap-x-1.5 gap-y-1 lg:mt-2.5"
+        className="mt-2 flex flex-wrap items-center gap-x-1.5 gap-y-1 max-lg:text-xs lg:mt-2.5"
         aria-label={`${pkg.rating.toFixed(1)} out of 5 from ${reviewCount} guest reviews, ${pkg.soldLastMonth} plus sold in the last month`}
       >
         {Array.from({ length: stars }).map((_, i) => (
@@ -309,10 +309,10 @@ function ShowcaseContent({ pkg }: { pkg: HomeTravelPackage }) {
         <span className="text-sm text-white/65">
           ({reviewCount} {reviewCount === 1 ? "review" : "reviews"})
         </span>
-        <span className="text-sm text-white/50" aria-hidden>
+        <span className="hidden text-sm text-white/50 sm:inline" aria-hidden>
           ·
         </span>
-        <span className="text-sm text-white/65">
+        <span className="hidden text-sm text-white/65 sm:inline">
           {pkg.soldLastMonth}+ Sold in the last month
         </span>
       </motion.div>
@@ -331,12 +331,12 @@ function ShowcaseContent({ pkg }: { pkg: HomeTravelPackage }) {
       <motion.p
         custom={4}
         variants={item}
-        className="mt-4 max-w-md text-sm leading-relaxed text-white/75 md:text-base lg:hidden"
+        className="mt-3 hidden max-w-md text-sm leading-relaxed text-white/75 md:text-base lg:block"
       >
         {packageBlurb(pkg)}
       </motion.p>
 
-      <motion.ul custom={5} variants={item} className="mt-4 space-y-1.5 lg:mt-3 lg:space-y-1">
+      <motion.ul custom={5} variants={item} className="mt-3 hidden space-y-1.5 lg:mt-3 lg:block lg:space-y-1">
         {pkg.highlights.slice(0, 3).map((highlight, index) => (
           <li
             key={highlight}
@@ -351,21 +351,21 @@ function ShowcaseContent({ pkg }: { pkg: HomeTravelPackage }) {
         ))}
       </motion.ul>
 
-      <motion.div custom={6} variants={item} className="mt-4 lg:mt-3">
+      <motion.div custom={6} variants={item} className="mt-3 lg:mt-3">
         <p className="text-[10px] font-bold tracking-[0.22em] text-white/60 uppercase">
           Onwards
         </p>
-        <p className="mt-0.5 text-xl font-bold tracking-tight text-gold md:text-2xl lg:text-xl xl:text-2xl">
+        <p className="mt-0.5 text-lg font-bold tracking-tight text-gold sm:text-xl md:text-2xl lg:text-xl xl:text-2xl">
           {formatPrice(pkg.price)}
         </p>
       </motion.div>
 
-      <motion.div custom={7} variants={item} className="mt-5 flex flex-wrap items-center gap-3 lg:mt-4">
+      <motion.div custom={7} variants={item} className="mt-3 flex flex-wrap items-center gap-2.5 lg:mt-4 lg:gap-3">
         <MagneticButton
           as="a"
           href={journeyHref}
           variant="primary"
-          className="!px-8 !py-3.5 !text-xs !font-bold !tracking-[0.14em] !uppercase"
+          className="!px-6 !py-3 !text-[0.68rem] !font-bold !tracking-[0.14em] !uppercase sm:!px-8 sm:!py-3.5 sm:!text-xs"
         >
           <MapPin size={16} />
           Discover Journey
@@ -374,7 +374,7 @@ function ShowcaseContent({ pkg }: { pkg: HomeTravelPackage }) {
           as="a"
           href={primaryCta.href}
           variant="secondary"
-          className="!border-white/25 !bg-white/10 !px-6 !py-3.5 !text-xs !font-bold !tracking-[0.14em] !text-white !uppercase backdrop-blur-sm hover:!border-gold/45 hover:!bg-white/15"
+          className="!hidden !border-white/25 !bg-white/10 !px-6 !py-3.5 !text-xs !font-bold !tracking-[0.14em] !text-white !uppercase backdrop-blur-sm hover:!border-gold/45 hover:!bg-white/15 lg:!inline-flex"
         >
           {primaryCta.label}
         </MagneticButton>
@@ -614,7 +614,7 @@ function MobileCardStrip({
         {showcasePackages.map((pkg, i) => (
           <div
             key={pkg.id}
-            className="aspect-[3/4] w-[min(82vw,280px)] shrink-0 snap-center"
+            className="h-[clamp(9.5rem,31svh,12.5rem)] w-[clamp(7.25rem,42vw,10rem)] shrink-0 snap-center"
           >
             {motionLite ? (
               <div className="size-full">
@@ -666,7 +666,7 @@ function CarouselControls({
       <button
         type="button"
         onClick={onPrev}
-        className="flex h-11 w-11 items-center justify-center rounded-full border border-white/25 bg-black/30 text-white backdrop-blur-md transition-colors hover:border-gold/50"
+        className="flex h-10 w-10 items-center justify-center rounded-full border border-white/25 bg-black/30 text-white backdrop-blur-md transition-colors hover:border-gold/50 lg:h-11 lg:w-11"
         aria-label="Previous package"
       >
         <ChevronLeft size={20} />
@@ -674,7 +674,7 @@ function CarouselControls({
       <button
         type="button"
         onClick={onNext}
-        className="flex h-11 w-11 items-center justify-center rounded-full border border-white/25 bg-black/30 text-white backdrop-blur-md transition-colors hover:border-gold/50"
+        className="flex h-10 w-10 items-center justify-center rounded-full border border-white/25 bg-black/30 text-white backdrop-blur-md transition-colors hover:border-gold/50 lg:h-11 lg:w-11"
         aria-label="Next package"
       >
         <ChevronRight size={20} />
@@ -731,7 +731,7 @@ export function SlidingPackages({ packages }: { packages: HomeTravelPackage[] })
     return (
       <section
         id="hero"
-        className="relative flex min-h-[100svh] w-full items-center justify-center bg-background"
+        className="home-hero relative flex h-[100dvh] max-h-[100dvh] w-full items-center justify-center overflow-hidden bg-background"
         aria-label="Curated travel packages showcase"
       >
         <h1 className="sr-only">TRAGUIN: extraordinary luxury journeys crafted for you</h1>
@@ -743,7 +743,7 @@ export function SlidingPackages({ packages }: { packages: HomeTravelPackage[] })
   return (
     <section
       id="hero"
-      className="relative min-h-[100svh] w-full overflow-x-hidden bg-background"
+      className="home-hero relative h-[100dvh] max-h-[100dvh] w-full overflow-hidden bg-background lg:min-h-[100svh] lg:h-auto lg:max-h-none lg:overflow-x-hidden"
       aria-label="Curated travel packages showcase"
       aria-live="polite"
       onMouseMove={handleParallax}
@@ -762,10 +762,10 @@ export function SlidingPackages({ packages }: { packages: HomeTravelPackage[] })
         <div className="sliding-packages-overlay absolute inset-0 z-[1]" />
       </div>
 
-      <div className="relative z-20 flex min-h-[calc(100svh-var(--site-header-height))] flex-col pt-[var(--site-header-height)] pb-8 sm:pb-10 lg:pb-12">
-        <div className="home-shell flex flex-1 flex-col">
-          <div className="flex w-full flex-1 flex-col justify-center gap-6 py-5 sm:py-6 lg:flex-row lg:items-center lg:gap-8 lg:py-8 xl:gap-10">
-          <div className="w-full min-w-0 shrink lg:w-[42%] xl:w-[min(40%,34rem)]">
+      <div className="relative z-20 flex h-[calc(100dvh-var(--site-header-height))] max-h-[calc(100dvh-var(--site-header-height))] flex-col overflow-hidden pt-[var(--site-header-height)] pb-3 sm:pb-6 lg:min-h-[calc(100svh-var(--site-header-height))] lg:h-auto lg:max-h-none lg:overflow-visible lg:pb-10 xl:pb-12">
+        <div className="home-shell flex min-h-0 flex-1 flex-col">
+          <div className="flex w-full min-h-0 flex-1 flex-col justify-between gap-3 py-2 sm:gap-4 sm:py-4 lg:flex-row lg:items-center lg:justify-center lg:gap-8 lg:py-8 xl:gap-10">
+          <div className="w-full min-w-0 shrink-0 lg:w-[42%] lg:shrink xl:w-[min(40%,34rem)]">
             {active ? (
               motionLite ? (
                 <ShowcaseContentStatic key={active.id} pkg={active} />
@@ -777,7 +777,7 @@ export function SlidingPackages({ packages }: { packages: HomeTravelPackage[] })
             ) : null}
           </div>
 
-          <div className="flex w-full min-w-0 flex-col items-center justify-center gap-4 sm:gap-5 lg:w-[58%] lg:gap-5 xl:w-[60%]">
+          <div className="flex w-full min-w-0 flex-col items-center justify-end gap-2.5 sm:gap-4 lg:w-[58%] lg:justify-center lg:gap-5 xl:w-[60%]">
             <DesktopCardStage
               activeIndex={activeIndex}
               onSelect={goTo}

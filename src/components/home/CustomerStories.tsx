@@ -71,52 +71,36 @@ export function CustomerStories({ testimonials }: { testimonials: HomeTestimonia
         return;
       }
 
-      const dir = directionRef.current;
-
       if (isSwitch) {
         gsap
           .timeline()
           .to(inner, {
-            rotateY: dir * -14,
-            x: dir * 28,
             opacity: 0,
-            duration: 0.22,
+            y: 8,
+            duration: 0.2,
             ease: "power2.in",
-            transformPerspective: 1400,
-            transformOrigin: "center center",
           })
           .set(inner, {
-            rotateY: dir * 68,
-            x: dir * -36,
-            opacity: 0,
+            y: -8,
           })
           .to(inner, {
-            rotateY: 0,
-            x: 0,
             opacity: 1,
-            duration: 0.55,
-            ease: "power3.out",
-            transformPerspective: 1400,
-            transformOrigin: "center center",
+            y: 0,
+            duration: 0.35,
+            ease: "power2.out",
           });
       } else {
         gsap.fromTo(
           inner,
           {
-            rotateY: 48,
             opacity: 0,
-            y: 16,
-            transformPerspective: 1400,
-            transformOrigin: "center center",
+            y: 12,
           },
           {
-            rotateY: 0,
             opacity: 1,
             y: 0,
-            duration: 0.7,
-            ease: "power3.out",
-            transformPerspective: 1400,
-            transformOrigin: "center center",
+            duration: 0.45,
+            ease: "power2.out",
           }
         );
       }
@@ -143,19 +127,13 @@ export function CustomerStories({ testimonials }: { testimonials: HomeTestimonia
           onFocusCapture={() => setPaused(true)}
           onBlurCapture={() => setPaused(false)}
         >
-          <div className={cn("w-full", !motionLite && "[perspective:1400px]")}>
+          <div className="w-full">
             <article
               className="glass overflow-hidden rounded-2xl border border-gold/20 shadow-[0_16px_48px_-20px_rgba(206,169,50,0.14)]"
               aria-live="polite"
               aria-atomic="true"
             >
-              <div
-                ref={innerRef}
-                className={cn(
-                  "px-8 py-10 md:px-12 md:py-12",
-                  !motionLite && "[transform-style:preserve-3d]"
-                )}
-              >
+              <div ref={innerRef} className="px-8 py-10 md:px-12 md:py-12">
                 <blockquote className="text-base leading-relaxed text-foreground md:text-lg">
                   &ldquo;{story.quote.replace(/^[“"']+|[”"']+$/g, "").trim()}&rdquo;
                 </blockquote>
