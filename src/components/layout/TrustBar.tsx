@@ -10,8 +10,12 @@ export function TrustBar() {
     <section aria-label="TRAGUIN credentials" className="trust-bar border-y border-glass-border">
       <div className="home-shell">
         <div
-          className={`site-container grid grid-cols-2 divide-x divide-glass-border ${
-            highlights.length >= 4 ? "md:grid-cols-4" : "md:grid-cols-3"
+          className={`site-container grid ${
+            highlights.length === 3
+              ? "grid-cols-1 divide-y divide-glass-border sm:grid-cols-3 sm:divide-x sm:divide-y-0"
+              : highlights.length >= 4
+                ? "grid-cols-2 divide-x divide-glass-border md:grid-cols-4"
+                : "grid-cols-2 divide-x divide-glass-border md:grid-cols-3"
           }`}
         >
           {highlights.map((item) => (

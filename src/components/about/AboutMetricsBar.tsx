@@ -1,4 +1,5 @@
 import { ABOUT_METRICS } from "@/data/about-content";
+import { contactInfo } from "@/data/contact";
 import { curatedDestinationCount } from "@/data/pageContent";
 
 export function AboutMetricsBar() {
@@ -16,7 +17,19 @@ export function AboutMetricsBar() {
             {metrics.map((metric) => (
               <div key={metric.label} className="about-metrics__item">
                 <dt className="about-metrics__label">{metric.label}</dt>
-                <dd className="about-metrics__value">{metric.value}</dd>
+                <dd className="about-metrics__value">
+                  {metric.label === "Headquarters" ? (
+                    <>
+                      {contactInfo.aboutRegisteredAddressLines.map((line) => (
+                        <span key={line} className="block">
+                          {line}
+                        </span>
+                      ))}
+                    </>
+                  ) : (
+                    metric.value
+                  )}
+                </dd>
               </div>
             ))}
           </dl>

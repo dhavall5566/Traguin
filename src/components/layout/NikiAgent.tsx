@@ -203,7 +203,7 @@ export function NikiAgent() {
             <button
               type="button"
               onClick={toggle}
-              className="niki-agent__bubble shrink-0 cursor-pointer whitespace-nowrap rounded-full border border-gold/35 px-5 py-2.5 text-sm font-semibold transition-[opacity,transform] duration-300 hover:scale-[1.03] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gold"
+              className="niki-agent__bubble max-w-[min(100vw-5.5rem,16rem)] shrink cursor-pointer rounded-full border border-gold/35 px-4 py-2.5 text-left text-[13px] leading-snug font-semibold transition-[opacity,transform] duration-300 hover:scale-[1.03] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gold sm:max-w-none sm:whitespace-nowrap sm:px-5 sm:text-sm"
             >
               {nikiAgent.greeting}
             </button>

@@ -9,6 +9,8 @@ export const FALLBACK_IMAGE = pexels(2387866);
 
 export const images = {
   hero: unsplash("1469854523086-cc02fe5d8800", 1920),
+  /** About page hero — alpine nature landscape */
+  aboutHero: unsplash("1506905925346-21bda4d32df4", 1920),
   travel: pexels(2387866, 1920),
   /** Moraine Lake, Plan My Journey CTA background */
   plannerCta: pexels(1365425, 3840),

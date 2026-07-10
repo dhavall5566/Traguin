@@ -52,7 +52,7 @@ export function ExperienceDetailModalContent({ experience }: ExperienceDetailMod
           </header>
 
           {experience.stats.length > 0 && (
-          <dl className="experience-modal-stats mt-6 grid grid-cols-3 gap-3 sm:mt-7 sm:gap-4">
+          <dl className="experience-modal-stats mt-6 grid grid-cols-1 gap-3 min-[420px]:grid-cols-3 sm:mt-7 sm:gap-4">
             {experience.stats.map((stat) => (
               <div
                 key={stat.label}

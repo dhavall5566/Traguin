@@ -92,8 +92,8 @@ export const pageHeroes = {
     title: "About TRAGUIN",
     description:
       "A luxury-led, corporate-ready travel brand headquartered in India—delivering domestic and international journeys with global service standards, deep regional expertise, and experiences that are seamless, meaningful, and impeccably managed.",
-    image: images.hero,
-    imageAlt: "Travel landscape at golden hour",
+    image: images.aboutHero,
+    imageAlt: "Mountain peaks rising above clouds at golden hour",
     primaryAction: primaryCta,
     secondaryAction: secondaryCta,
   },

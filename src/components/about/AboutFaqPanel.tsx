@@ -9,21 +9,34 @@ export function AboutFaqPanel({ items }: AboutFaqPanelProps) {
   if (items.length === 0) return null;
 
   return (
-    <section className="about-faq" aria-labelledby="about-faq-heading">
-      <div className="about-faq__header">
-        <p className="about-faq__eyebrow">Support</p>
-        <h2 id="about-faq-heading" className="about-faq__title">
-          Frequently asked questions
-        </h2>
-        <p className="about-faq__description">
-          Practical answers for travelers and corporate teams evaluating TRAGUIN as a planning partner.
-        </p>
-      </div>
+    <section className="about-enterprise__section about-faq" aria-labelledby="about-faq-heading">
+      <div className="about-faq__layout">
+        <header className="about-enterprise__section-header about-faq__header">
+          <p className="about-enterprise__eyebrow">Support</p>
+          <h2 id="about-faq-heading" className="about-enterprise__section-title">
+            Frequently asked questions
+          </h2>
+          <p className="about-enterprise__section-description">
+            Practical answers for travelers and corporate teams evaluating TRAGUIN as a planning
+            partner.
+          </p>
+          <p className="about-faq__meta">
+            {items.length} {items.length === 1 ? "topic" : "topics"}
+          </p>
+        </header>
 
-      <div className="about-faq__panel">
-        {items.map((item) => (
-          <FaqItem key={item.question} question={item.question} answer={item.answer} />
-        ))}
+        <div className="about-faq__card">
+          {items.map((item, index) => (
+            <FaqItem
+              key={item.question}
+              variant="embedded"
+              index={index}
+              question={item.question}
+              answer={item.answer}
+              className={index < items.length - 1 ? "about-faq__item--divider" : undefined}
+            />
+          ))}
+        </div>
       </div>
     </section>
   );

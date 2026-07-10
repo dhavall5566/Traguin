@@ -326,7 +326,7 @@ function DestinationGrid({
   );
 
   return (
-    <div className="destination-grid grid grid-cols-1 gap-5 sm:grid-cols-2 sm:gap-6 lg:grid-cols-3 lg:gap-x-6 lg:gap-y-8">
+    <div className="destination-grid">
       {gridItems.map((dest) => (
         <DestinationListingCard
           key={dest.key}
@@ -601,7 +601,7 @@ export function DestinationsPage({
               </div>
             )}
 
-            <div className="relative z-10 mt-4 grid gap-4 overflow-visible sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6">
+            <div className="relative z-10 mt-4 grid gap-4 overflow-visible sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-6">
               <FilterDropdown
                 id="region"
                 label="Destination"
