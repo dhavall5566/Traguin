@@ -3,7 +3,8 @@
 import { useEffect, useState } from "react";
 import { useLenis } from "@/components/providers/LenisContext";
 import { scrollToConsultationSection } from "@/lib/scroll-to-consultation";
-import { Mail, Phone, MapPin, Clock, Send, MessageCircle } from "lucide-react";
+import { Mail, Phone, MapPin, Clock, Send } from "lucide-react";
+import { WhatsAppIcon } from "@/components/ui/WhatsAppIcon";
 import { MagneticButton } from "@/components/ui/MagneticButton";
 import { FormField, fieldInputClass } from "@/components/ui/FormField";
 import { PhoneInput } from "@/components/ui/PhoneInput";
@@ -30,7 +31,7 @@ import { cn } from "@/lib/utils";
 const contactItems = [
   { icon: Phone, label: "Call", value: contactInfo.phone, href: contactInfo.phoneHref },
   {
-    icon: MessageCircle,
+    icon: WhatsAppIcon,
     label: "WhatsApp",
     value: contactInfo.whatsapp,
     href: contactInfo.whatsappHref,
@@ -125,7 +126,7 @@ export function ContactPage() {
                 variant="primary"
                 className="inline-flex items-center justify-center gap-2"
               >
-                <MessageCircle size={18} />
+                <WhatsAppIcon size={18} />
                 WhatsApp Travel Expert
               </MagneticButton>
               <MagneticButton as="a" href={contactInfo.phoneHref} variant="secondary">

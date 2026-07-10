@@ -44,6 +44,8 @@ export interface PriceDisplayProps {
   note?: string;
   size?: PriceSize;
   variant?: PriceVariant;
+  /** Stronger gold panel for card footers. */
+  emphasized?: boolean;
   className?: string;
 }
 
@@ -61,6 +63,7 @@ export function PriceDisplay({
   note,
   size = "md",
   variant = "default",
+  emphasized = false,
   className,
 }: PriceDisplayProps) {
   const showLabel = label != null && label.length > 0;
@@ -68,13 +71,13 @@ export function PriceDisplay({
   const priceOnRequest = isPriceOnRequest(amount, onRequest);
 
   return (
-    <div className={cn("font-body", className)}>
+    <div className={cn("font-body", emphasized && "price-display--emphasized", className)}>
       {showLabel ? (
         <p
           className={cn(
             "font-semibold tracking-[0.18em] uppercase",
-            labelClass[size],
-            tones.label
+            emphasized ? "price-display__label" : labelClass[size],
+            !emphasized && tones.label
           )}
         >
           {label}
@@ -83,9 +86,10 @@ export function PriceDisplay({
       <p
         className={cn(
           priceOnRequest ? "font-semibold tracking-tight" : "font-bold tracking-tight",
-          priceOnRequest ? inquireClass[size] : amountClass[size],
-          tones.amount,
-          showLabel && "mt-0.5"
+          emphasized
+            ? "price-display__amount"
+            : cn(priceOnRequest ? inquireClass[size] : amountClass[size], tones.amount),
+          showLabel && (emphasized ? "mt-0.5" : "mt-0.5")
         )}
       >
         {formatPriceLabel(amount, onRequest)}

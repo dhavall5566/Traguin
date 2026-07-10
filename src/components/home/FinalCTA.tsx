@@ -1,6 +1,6 @@
 "use client";
 
-import { MessageCircle } from "lucide-react";
+import { WhatsAppIcon } from "@/components/ui/WhatsAppIcon";
 import { MagneticButton } from "@/components/ui/MagneticButton";
 import { SafeImage } from "@/components/ui/SafeImage";
 import { images } from "@/lib/images";
@@ -38,7 +38,7 @@ export function FinalCTA() {
             variant="secondary"
             className="!px-8 !py-4 inline-flex items-center gap-2"
           >
-            <MessageCircle size={18} />
+            <WhatsAppIcon size={18} />
             WhatsApp Travel Expert
           </MagneticButton>
         </div>

@@ -93,9 +93,12 @@ const PILOT_ENTITIES: Record<string, AdminEntityDef> = {
         options: [
           { value: "", label: "— None —" },
           { value: "north", label: "North" },
+          { value: "central", label: "Central" },
           { value: "east", label: "East" },
           { value: "south", label: "South" },
           { value: "west", label: "West" },
+          { value: "north-east", label: "North East" },
+          { value: "islands", label: "Islands" },
         ],
       },
       { name: "country", label: "Country", type: "text" },

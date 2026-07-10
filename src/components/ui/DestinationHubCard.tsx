@@ -4,7 +4,7 @@ import Link from "next/link";
 import { ArrowRight, Layers, MapPin } from "lucide-react";
 import { resolveDestinationHeroImage } from "@/lib/destination-images";
 import { SafeImage } from "@/components/ui/SafeImage";
-import { formatPrice } from "@/lib/utils";
+import { PriceDisplay } from "@/components/ui/PriceDisplay";
 import { cn } from "@/lib/utils";
 
 type DestinationHubCardProps = {
@@ -43,7 +43,7 @@ export function DestinationHubCard({
         className
       )}
     >
-      <div className="relative aspect-[16/9] overflow-hidden">
+      <div className="destination-hub-card__media">
         <SafeImage
           src={heroImage}
           alt={name}
@@ -58,14 +58,14 @@ export function DestinationHubCard({
           {journeyCount} {journeyCount === 1 ? "package" : "packages"}
         </span>
 
-        <div className="absolute inset-x-0 bottom-0 z-20 p-4">
+        <div className="absolute inset-x-0 bottom-0 z-20 p-3.5">
           {regionLabel && (
             <p className="inline-flex items-center gap-1.5 text-[9px] font-semibold tracking-[0.2em] text-gold-light uppercase">
               <MapPin size={10} aria-hidden />
               {regionLabel}
             </p>
           )}
-          <h3 className="mt-1 font-display text-xl leading-tight text-white">
+          <h3 className="mt-1 font-display text-lg leading-tight text-white">
             {name}
           </h3>
         </div>
@@ -83,15 +83,22 @@ export function DestinationHubCard({
 
         <div className="destination-hub-card__footer mt-auto pt-3.5">
           <div className="min-w-0">
-            <p className="text-[9px] font-bold tracking-[0.18em] text-muted uppercase">
-              {startingPrice != null ? "Packages onwards" : "Multiple itineraries"}
-            </p>
             {startingPrice != null ? (
-              <p className="mt-0.5 font-display text-base text-gold">{formatPrice(startingPrice)}</p>
+              <PriceDisplay
+                amount={startingPrice}
+                label="Packages onwards"
+                size="sm"
+                emphasized
+              />
             ) : (
-              <p className="mt-0.5 text-xs text-foreground">
-                Choose from {journeyCount} curated options
-              </p>
+              <>
+                <p className="text-[9px] font-bold tracking-[0.18em] text-sand uppercase">
+                  Multiple itineraries
+                </p>
+                <p className="mt-0.5 text-xs text-foreground">
+                  Choose from {journeyCount} curated options
+                </p>
+              </>
             )}
           </div>
           <span className="destination-hub-card__cta">

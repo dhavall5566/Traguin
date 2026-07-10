@@ -50,18 +50,12 @@ function AccordionRow({
         aria-controls={`${id}-panel`}
         className="destination-accordion__trigger group"
       >
-        <span className="min-w-0 flex-1 text-left">
-          <span className="destination-accordion__title">
-            {title}
-            <span className="destination-accordion__count">
-              {" "}
-              ({packageCount} {packageCount === 1 ? "package" : "packages"})
-            </span>
-          </span>
+        <span className="destination-accordion__title">{title}</span>
+        <span className="destination-accordion__count-badge">
+          {packageCount} {packageCount === 1 ? "package" : "packages"}
         </span>
-
         <span className="destination-accordion__chevron" aria-hidden>
-          <ChevronDown size={14} strokeWidth={2} />
+          <ChevronDown size={16} strokeWidth={1.75} />
         </span>
       </button>
 

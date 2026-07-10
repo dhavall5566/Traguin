@@ -10,7 +10,7 @@ export const contactInfo = {
   instagram: "https://www.instagram.com/traguin.travel/",
   address:
     "A-401 Shaligram Lakeview, Near K.D. Hospital B/h Vaishnodevi Temple, Ahmedabad, Gujarat 382421",
-  /** Registered office — shown in site footer on the About page only. */
+  /** Registered office — shown on the About page intro. */
   aboutRegisteredAddressLines: [
     "C 1101, Shaligram Lakeview",
     "Nr Vaishnodevi Temple",

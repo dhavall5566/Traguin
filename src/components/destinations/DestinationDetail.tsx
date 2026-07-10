@@ -2,7 +2,8 @@
 
 import { useEffect, useMemo } from "react";
 import Link from "next/link";
-import { ArrowLeft, MapPin, MessageCircle } from "lucide-react";
+import { ArrowLeft, MapPin } from "lucide-react";
+import { WhatsAppIcon } from "@/components/ui/WhatsAppIcon";
 import type { DestinationListing } from "@/lib/destinations";
 import { DestinationHotelsSlider } from "@/components/hotels/DestinationHotelsSlider";
 import { SafeImage } from "@/components/ui/SafeImage";
@@ -81,7 +82,7 @@ export function DestinationDetail({ destination, hotelsCatalog }: DestinationDet
                   {itineraryPrimaryCta.label}
                 </MagneticButton>
                 <MagneticButton as="a" href={whatsappHref} variant="secondary" className="inline-flex items-center gap-2">
-                  <MessageCircle size={18} />
+                  <WhatsAppIcon size={18} />
                   WhatsApp
                 </MagneticButton>
               </div>

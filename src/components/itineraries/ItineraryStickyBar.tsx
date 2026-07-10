@@ -2,7 +2,7 @@
 
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { MessageCircle } from "lucide-react";
+import { WhatsAppIcon } from "@/components/ui/WhatsAppIcon";
 import type { Itinerary } from "@/types/itinerary";
 import { MagneticButton } from "@/components/ui/MagneticButton";
 import { PriceDisplay } from "@/components/ui/PriceDisplay";
@@ -82,7 +82,7 @@ export function ItineraryStickyBar({ itinerary, whatsappHref }: ItineraryStickyB
             </div>
             <div className="flex shrink-0 gap-2">
               <MagneticButton as="a" href={whatsappHref} variant="secondary" className="!px-3 !py-2.5 sm:!px-4">
-                <MessageCircle size={16} className="sm:mr-1.5" />
+                <WhatsAppIcon size={16} className="sm:mr-1.5" />
                 <span className="hidden sm:inline">WhatsApp</span>
               </MagneticButton>
               <MagneticButton as="a" href={planHref} variant="primary" className="!px-4 !py-2.5 !text-xs">

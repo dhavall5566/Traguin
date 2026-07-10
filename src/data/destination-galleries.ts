@@ -19,6 +19,7 @@ const SLUG_ALIASES: Record<string, string> = {
 
 const INDIA_REGION_HERO: Record<IndiaRegion, string> = {
   north: images.himachal,
+  central: p(316458),
   south: images.kerala,
   west: images.rajasthan,
   east: p(1693441),

@@ -5,8 +5,13 @@ import type { ExperienceShowcaseItem } from "@/lib/experience-types";
 import {
   mapCmsExperienceToShowcaseItem,
 } from "./experiences";
-import { buildItineraryByDestinationIdMap, buildMinStartingPriceByDestinationId, buildPublishedItineraryCountsByDestinationId } from "./itineraries";
-import type { IndiaRegion } from "@/lib/destination-listing-types";
+import {
+  buildItineraryByDestinationIdMap,
+  buildMinPublishedPackagePriceByDestinationId,
+  buildPublishedPackageCountsByDestinationId,
+  buildPublishedPackageIds,
+} from "./itineraries";
+import { resolveIndiaRegion } from "@/lib/india-region";
 import { resolveDestinationHeroImage } from "@/lib/destination-images";
 import { images } from "@/lib/images";
 import { cleanPackageTitle } from "@/lib/package-title";
@@ -610,7 +615,7 @@ function mapFeaturedDestination(
 
   const image = resolveDestinationHeroImage(dest.slug, {
     cmsImage,
-    indiaRegion: (dest.india_region as IndiaRegion | null) ?? undefined,
+    indiaRegion: resolveIndiaRegion(dest.slug, dest.india_region),
     region: dest.region,
   });
 
@@ -823,9 +828,13 @@ function mapHomepageSources({
       .filter((itinerary) => itinerary.package_id)
       .map((itinerary) => [itinerary.package_id as string, itinerary])
   );
-  const itineraryByDestinationId = buildItineraryByDestinationIdMap(itineraries);
-  const itineraryCounts = buildPublishedItineraryCountsByDestinationId(itineraries);
-  const minItineraryPrices = buildMinStartingPriceByDestinationId(itineraries);
+  const publishedPackageIds = buildPublishedPackageIds(packages);
+  const itineraryByDestinationId = buildItineraryByDestinationIdMap(
+    itineraries,
+    publishedPackageIds,
+  );
+  const packageCounts = buildPublishedPackageCountsByDestinationId(packages);
+  const minPackagePrices = buildMinPublishedPackagePriceByDestinationId(packages);
 
   const heroSettings = readHomepageHeroSettings(companyStats);
   const heroSliderMaxItems = heroSettings.hero_slider_max_items;
@@ -870,8 +879,8 @@ function mapHomepageSources({
           dest,
           itineraryByDestinationId.get(dest.id),
           mediaMap,
-          itineraryCounts.get(dest.id) ?? 0,
-          minItineraryPrices.get(dest.id)
+          packageCounts.get(dest.id) ?? 0,
+          minPackagePrices.get(dest.id)
         )
       )
   );

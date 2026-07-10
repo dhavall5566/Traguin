@@ -14,10 +14,11 @@ export type DestinationDisplaySection = {
   subgroups: DestinationSubgroup[];
 };
 
-const INDIA_REGION_ORDER: IndiaRegion[] = ["north", "west", "south", "east"];
+const INDIA_REGION_ORDER: IndiaRegion[] = ["north", "central", "west", "south", "east"];
 
 const INDIA_REGION_TITLES: Record<IndiaRegion, string> = {
   north: "North India",
+  central: "Central India",
   west: "West India",
   south: "South India",
   east: "East India",
@@ -64,40 +65,26 @@ function sortDestinations(list: DestinationListing[]): DestinationListing[] {
 
 function buildIndiaSubgroups(destinations: DestinationListing[]): DestinationSubgroup[] {
   const byRegion = new Map<string, DestinationListing[]>();
-  const unassigned: DestinationListing[] = [];
 
   for (const dest of destinations) {
-    if (dest.region !== "domestic") continue;
-    if (dest.indiaRegion && INDIA_REGION_ORDER.includes(dest.indiaRegion)) {
-      const bucket = byRegion.get(dest.indiaRegion) ?? [];
-      bucket.push(dest);
-      byRegion.set(dest.indiaRegion, bucket);
-    } else {
-      unassigned.push(dest);
-    }
+    if (dest.region !== "domestic" || !dest.indiaRegion) continue;
+    if (!INDIA_REGION_ORDER.includes(dest.indiaRegion)) continue;
+    const bucket = byRegion.get(dest.indiaRegion) ?? [];
+    bucket.push(dest);
+    byRegion.set(dest.indiaRegion, bucket);
   }
 
-  const subgroups: DestinationSubgroup[] = [];
-
-  for (const region of INDIA_REGION_ORDER) {
+  return INDIA_REGION_ORDER.flatMap((region) => {
     const items = byRegion.get(region);
-    if (!items?.length) continue;
-    subgroups.push({
-      id: region,
-      title: INDIA_REGION_TITLES[region],
-      destinations: sortDestinations(items),
-    });
-  }
-
-  if (unassigned.length > 0) {
-    subgroups.push({
-      id: "other",
-      title: "Other Regions",
-      destinations: sortDestinations(unassigned),
-    });
-  }
-
-  return subgroups;
+    if (!items?.length) return [];
+    return [
+      {
+        id: region,
+        title: INDIA_REGION_TITLES[region],
+        destinations: sortDestinations(items),
+      },
+    ];
+  });
 }
 
 function buildInternationalSubgroups(destinations: DestinationListing[]): DestinationSubgroup[] {
@@ -127,8 +114,12 @@ function buildInternationalSubgroups(destinations: DestinationListing[]): Destin
     }));
 }
 
+/** Published itineraries per destination; destination guides without itineraries count as 1. */
 export function totalPackagesInDestinations(destinations: DestinationListing[]): number {
-  return destinations.reduce((total, dest) => total + dest.journeyCount, 0);
+  return destinations.reduce(
+    (total, dest) => total + (dest.journeyCount > 0 ? dest.journeyCount : 1),
+    0
+  );
 }
 
 export function buildDestinationDisplaySections(
@@ -175,8 +166,7 @@ export function buildDestinationDisplaySections(
   return sections;
 }
 
-export function isIndiaSubregionFilter(filterId: string): filterId is IndiaRegion | "other" {
-  if (filterId === "other") return true;
+export function isIndiaSubregionFilter(filterId: string): filterId is IndiaRegion {
   return INDIA_REGION_FILTERS.some((region) => region.id === filterId && region.id !== "all");
 }
 
@@ -188,9 +178,6 @@ export function matchesDestinationSubregion(
   if (filterId === "all") return true;
 
   if (isIndiaSubregionFilter(filterId)) {
-    if (filterId === "other") {
-      return dest.region === "domestic" && !dest.indiaRegion;
-    }
     return dest.region === "domestic" && dest.indiaRegion === filterId;
   }
 

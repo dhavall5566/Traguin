@@ -1,5 +1,5 @@
 import { cache } from "react";
-import type { DestinationListing, DestinationItineraryPreview, IndiaRegion, DestinationCategoryRef } from "@/lib/destination-listing-types";
+import type { DestinationListing, DestinationItineraryPreview, DestinationPackagePreview, IndiaRegion, DestinationCategoryRef } from "@/lib/destination-listing-types";
 import { buildInternationalCountryFilters } from "@/lib/destination-grouping";
 import { resolveDestinationHeroImage } from "@/lib/destination-images";
 import { resolveIndiaRegion } from "@/lib/india-region";
@@ -19,8 +19,9 @@ import {
 import { loadCmsDetailContext } from "./detail-context";
 import {
   buildItineraryLookupByDestinationSlug,
-  buildMinStartingPriceByDestinationId,
-  buildPublishedItineraryCountsByDestinationId,
+  buildAllJourneysLookupByDestinationSlug,
+  buildMinPublishedPackagePriceByDestinationId,
+  buildPublishedPackageCountsByDestinationId,
   mapCmsItineraryToItinerary,
 } from "./itineraries";
 import { buildHotelsByUuidMap } from "./hotels";
@@ -39,6 +40,7 @@ export type DestinationsPageData = {
   categories: DestinationCategoryGroup[];
   internationalCountryFilters: { id: string; label: string }[];
   itineraryByDestinationSlug: Map<string, DestinationItineraryPreview>;
+  journeysByDestinationSlug: Map<string, DestinationPackagePreview[]>;
 };
 
 function toItineraryPreview(itinerary: Itinerary): DestinationItineraryPreview {
@@ -48,6 +50,14 @@ function toItineraryPreview(itinerary: Itinerary): DestinationItineraryPreview {
     heroImage: itinerary.heroImage,
     startingPrice: itinerary.startingPrice,
     duration: itinerary.duration,
+  };
+}
+
+function toPackagePreview(itinerary: Itinerary): DestinationPackagePreview {
+  return {
+    slug: itinerary.slug,
+    title: itinerary.title,
+    ...toItineraryPreview(itinerary),
   };
 }
 
@@ -148,7 +158,7 @@ export function mapCmsDestinationToListing(
     cmsGallery[0] ||
     "";
 
-  const indiaRegion = resolveIndiaRegion(dest.slug, dest.india_region as IndiaRegion | null);
+  const indiaRegion = resolveIndiaRegion(dest.slug, dest.india_region);
 
   const image = resolveDestinationHeroImage(dest.slug, {
     cmsImage,
@@ -192,13 +202,13 @@ export async function getDestinationsPageData(): Promise<DestinationsPageData> {
   const mediaMap = buildMediaUrlMap(mediaAssets);
   const packagesById = new Map(cmsPackages.map((pkg) => [pkg.id, pkg]));
   const hotelsByUuid = buildHotelsByUuidMap(cmsHotels, cmsDestinations, mediaMap);
-  const itineraryCounts = buildPublishedItineraryCountsByDestinationId(cmsItineraries);
-  const minItineraryPrices = buildMinStartingPriceByDestinationId(cmsItineraries);
+  const packageCounts = buildPublishedPackageCountsByDestinationId(cmsPackages);
+  const minPackagePrices = buildMinPublishedPackagePriceByDestinationId(cmsPackages);
 
   const destinations = cmsDestinations
     .filter((dest) => dest.is_published)
     .map((dest) => {
-      const journeyCount = itineraryCounts.get(dest.id) ?? 0;
+      const journeyCount = packageCounts.get(dest.id) ?? 0;
       const listing = mapCmsDestinationToListing(
         dest,
         mediaMap,
@@ -206,7 +216,7 @@ export async function getDestinationsPageData(): Promise<DestinationsPageData> {
         journeyCount
       );
       if (journeyCount > 1) {
-        const minPrice = minItineraryPrices.get(dest.id);
+        const minPrice = minPackagePrices.get(dest.id);
         if (minPrice != null) listing.startingPrice = minPrice;
       }
       return listing;
@@ -222,10 +232,23 @@ export async function getDestinationsPageData(): Promise<DestinationsPageData> {
     hotelsByUuid,
     packagesById,
   );
+  const allJourneysByDestinationSlug = await buildAllJourneysLookupByDestinationSlug(
+    cmsDestinations,
+    cmsItineraries,
+    mediaMap,
+    faqs,
+    hotelsByUuid,
+    packagesById,
+  );
 
   const itineraryPreviews = new Map<string, DestinationItineraryPreview>();
   for (const [slug, itinerary] of itineraryByDestinationSlug) {
     itineraryPreviews.set(slug, toItineraryPreview(itinerary));
+  }
+
+  const journeyPreviews = new Map<string, DestinationPackagePreview[]>();
+  for (const [slug, journeys] of allJourneysByDestinationSlug) {
+    journeyPreviews.set(slug, journeys.map(toPackagePreview));
   }
 
   return {
@@ -233,6 +256,7 @@ export async function getDestinationsPageData(): Promise<DestinationsPageData> {
     categories,
     internationalCountryFilters,
     itineraryByDestinationSlug: itineraryPreviews,
+    journeysByDestinationSlug: journeyPreviews,
   };
 }
 

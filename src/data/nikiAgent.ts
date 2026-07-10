@@ -23,7 +23,7 @@ export type NikiQuickReply = {
 export const nikiWelcomeMessages = [
   "Hi, I'm Navanya, your TRAGUIN travel expert.",
   "We design bespoke luxury journeys across India and the world, with handpicked stays and white-glove coordination.",
-  "Pick a topic below or message us on WhatsApp. I respond within 2 working hours.",
+  "Please feel free to choose a topic below, or message us on WhatsApp — I'd be happy to help and will get back to you within 2 working hours.",
 ] as const;
 
 export const nikiQuickReplies: NikiQuickReply[] = [

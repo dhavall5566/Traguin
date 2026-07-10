@@ -1,11 +1,13 @@
 "use client";
 
 import Link from "next/link";
-import { ArrowLeft, ArrowRight, CalendarDays, MapPin } from "lucide-react";
+import { ArrowLeft } from "lucide-react";
 import type { DestinationListing } from "@/lib/destination-listing-types";
+import { INDIA_REGION_FILTERS } from "@/lib/destination-listing-types";
 import type { Itinerary } from "@/types/itinerary";
+import { DestinationListingCard } from "@/components/ui/DestinationListingCard";
+import { destinationCountryLabel } from "@/lib/destination-grouping";
 import { SafeImage } from "@/components/ui/SafeImage";
-import { formatPriceLabel, isPriceOnRequest } from "@/lib/utils";
 
 type DestinationJourneysHubProps = {
   destination: DestinationListing;
@@ -14,69 +16,39 @@ type DestinationJourneysHubProps = {
 
 function destinationRegionLabel(destination: DestinationListing): string {
   if (destination.region === "domestic") {
-    return destination.country ?? "India";
+    const region = destination.indiaRegion
+      ? INDIA_REGION_FILTERS.find((item) => item.id === destination.indiaRegion)?.label
+      : undefined;
+    return region ? `${region} · India` : "India";
   }
-  return destination.country ?? "International";
+  return destinationCountryLabel(destination) ?? "International";
 }
 
 function JourneyCard({
   journey,
-  destinationName,
   destinationId,
+  regionLabel,
 }: {
   journey: Itinerary;
-  destinationName: string;
   destinationId: string;
+  regionLabel?: string;
 }) {
-  const priceOnRequest = isPriceOnRequest(journey.startingPrice);
-
   return (
-    <Link
+    <DestinationListingCard
+      name={journey.title}
+      description={journey.tagline || journey.highlights.slice(0, 3).join(" ")}
+      image={journey.heroImage}
+      destinationId={destinationId}
+      galleryImages={journey.heroImage ? [journey.heroImage] : undefined}
+      startingPrice={journey.startingPrice}
       href={`/destinations/${destinationId}?journey=${encodeURIComponent(journey.slug)}`}
-      className="journey-card group flex h-full flex-col"
-    >
-      <div className="journey-card__media">
-        <SafeImage
-          src={journey.heroImage}
-          alt={journey.title}
-          className="journey-card__image"
-        />
-        <span className="journey-card__duration">{journey.duration}</span>
-      </div>
-
-      <div className="journey-card__body">
-        <h2 className="journey-card__title">{journey.title}</h2>
-        <p className="journey-card__tagline">{journey.tagline}</p>
-
-        <ul className="journey-card__facts" aria-label="Journey details">
-          <li>
-            <CalendarDays size={12} aria-hidden />
-            {journey.days.length} days
-          </li>
-          <li>
-            <MapPin size={12} aria-hidden />
-            {destinationName}
-          </li>
-        </ul>
-
-        <div className="journey-card__action">
-          <div className="journey-card__price">
-            <span className="journey-card__price-label">Onwards</span>
-            <span
-              className={
-                priceOnRequest ? "journey-card__price-inquire" : "journey-card__price-value"
-              }
-            >
-              {formatPriceLabel(journey.startingPrice)}
-            </span>
-          </div>
-          <span className="journey-card__cta">
-            Explore journey
-            <ArrowRight size={14} aria-hidden />
-          </span>
-        </div>
-      </div>
-    </Link>
+      cta="Explore Journey"
+      duration={journey.duration}
+      location={journey.destination}
+      regionLabel={regionLabel}
+      rating={5}
+      journeyCount={1}
+    />
   );
 }
 
@@ -152,13 +124,13 @@ export function DestinationJourneysHub({ destination, journeys }: DestinationJou
             </p>
           </header>
 
-          <div className="journeys-hub__grid">
+          <div className="destination-grid grid grid-cols-1 gap-5 sm:grid-cols-2 sm:gap-6 lg:grid-cols-3 lg:gap-x-6 lg:gap-y-8">
             {journeys.map((journey) => (
               <JourneyCard
                 key={journey.slug}
                 journey={journey}
-                destinationName={destination.name}
                 destinationId={destination.id}
+                regionLabel={regionLabel}
               />
             ))}
           </div>

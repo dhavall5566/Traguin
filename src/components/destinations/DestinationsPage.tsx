@@ -22,6 +22,7 @@ import {
 import type {
   DestinationItineraryPreview,
   DestinationListing,
+  DestinationPackagePreview,
 } from "@/lib/destination-listing-types";
 import { INDIA_REGION_FILTERS } from "@/lib/destination-listing-types";
 import {
@@ -101,6 +102,7 @@ type DestinationsPageProps = {
   destinations: DestinationListing[];
   internationalCountryFilters: { id: string; label: string }[];
   itineraryByDestinationSlug: Record<string, DestinationItineraryPreview>;
+  journeysByDestinationSlug: Record<string, DestinationPackagePreview[]>;
 };
 
 function buildInternationalCountryOptions(
@@ -167,7 +169,6 @@ function getSubRegionChipLabel(
   internationalCountryFilters: { id: string; label: string }[]
 ) {
   if (isIndiaSubregionFilter(categoryFilter)) {
-    if (categoryFilter === "other") return "Other Regions";
     return INDIA_REGION_FILTERS.find((region) => region.id === categoryFilter)?.label ?? categoryFilter;
   }
   return (
@@ -191,6 +192,7 @@ function toGridDestination(dest: DestinationListing) {
     id: dest.id,
     name: dest.name,
     location: dest.name,
+    region: dest.region,
     regionLabel: listingRegionLabel(dest),
     description: dest.description,
     image: dest.image,
@@ -201,12 +203,79 @@ function toGridDestination(dest: DestinationListing) {
   };
 }
 
+type DestinationGridItem = ReturnType<typeof toGridDestination> & {
+  key: string;
+  href: string;
+  cta: string;
+  duration?: string;
+  rating: number;
+};
+
+function expandDestinationsForGrid(
+  destinations: ReturnType<typeof toGridDestination>[],
+  itineraryByDestinationSlug: Record<string, DestinationItineraryPreview>,
+  journeysByDestinationSlug: Record<string, DestinationPackagePreview[]>,
+): DestinationGridItem[] {
+  const items: DestinationGridItem[] = [];
+
+  for (const dest of destinations) {
+    const isInternationalHub = dest.region === "international" && dest.journeyCount > 1;
+    const journeys = journeysByDestinationSlug[dest.id] ?? [];
+
+    if (isInternationalHub && journeys.length > 0) {
+      for (const journey of journeys) {
+        items.push({
+          ...dest,
+          key: `${dest.id}-${journey.slug}`,
+          name: journey.title,
+          location: journey.destination,
+          description: journey.highlights.slice(0, 3).join(" "),
+          image: journey.heroImage,
+          startingPrice: journey.startingPrice,
+          href: `/destinations/${dest.id}?journey=${encodeURIComponent(journey.slug)}`,
+          cta: "View Itinerary",
+          duration: journey.duration,
+          rating: 5,
+          journeyCount: 1,
+        });
+      }
+      continue;
+    }
+
+    const isHub = dest.journeyCount > 1;
+    const itinerary = !isHub ? itineraryByDestinationSlug[dest.id] : undefined;
+
+    items.push({
+      ...dest,
+      key: dest.id,
+      name: dest.name,
+      location: itinerary?.destination ?? dest.location,
+      description: isHub
+        ? dest.description
+        : itinerary
+          ? itinerary.highlights.slice(0, 3).join(" ")
+          : dest.description,
+      image: isHub ? dest.image : (itinerary?.heroImage ?? dest.image),
+      startingPrice: isHub ? dest.startingPrice : (itinerary?.startingPrice ?? dest.startingPrice),
+      href: `/destinations/${dest.id}`,
+      cta: isHub ? "Browse journeys" : dest.hasItinerary ? "View Itinerary" : "View Destination",
+      duration: isHub ? undefined : itinerary?.duration,
+      rating: dest.hasItinerary && !isHub ? 5 : 4,
+      journeyCount: dest.journeyCount,
+    });
+  }
+
+  return items;
+}
+
 function DestinationGroupedSections({
   sections,
   itineraryByDestinationSlug,
+  journeysByDestinationSlug,
 }: {
   sections: ReturnType<typeof buildDestinationDisplaySections>;
   itineraryByDestinationSlug: Record<string, DestinationItineraryPreview>;
+  journeysByDestinationSlug: Record<string, DestinationPackagePreview[]>;
 }) {
   return (
     <div className="mt-16 space-y-24">
@@ -230,6 +299,7 @@ function DestinationGroupedSections({
                 <DestinationGrid
                   destinations={subgroup.destinations.map(toGridDestination)}
                   itineraryByDestinationSlug={itineraryByDestinationSlug}
+                  journeysByDestinationSlug={journeysByDestinationSlug}
                 />
               ),
             }))}
@@ -243,47 +313,38 @@ function DestinationGroupedSections({
 function DestinationGrid({
   destinations,
   itineraryByDestinationSlug,
+  journeysByDestinationSlug,
 }: {
   destinations: ReturnType<typeof toGridDestination>[];
   itineraryByDestinationSlug: Record<string, DestinationItineraryPreview>;
+  journeysByDestinationSlug: Record<string, DestinationPackagePreview[]>;
 }) {
+  const gridItems = expandDestinationsForGrid(
+    destinations,
+    itineraryByDestinationSlug,
+    journeysByDestinationSlug,
+  );
+
   return (
     <div className="destination-grid grid grid-cols-1 gap-5 sm:grid-cols-2 sm:gap-6 lg:grid-cols-3 lg:gap-x-6 lg:gap-y-8">
-      {destinations.map((dest) => {
-        const isHub = dest.journeyCount > 1;
-        const itinerary = !isHub ? itineraryByDestinationSlug[dest.id] : undefined;
-
-        return (
-          <DestinationListingCard
-            key={dest.id}
-            destinationId={dest.id}
-            name={dest.name}
-            location={itinerary?.destination ?? dest.location}
-            regionLabel={dest.regionLabel}
-            description={
-              isHub
-                ? dest.description
-                : itinerary
-                  ? itinerary.highlights.slice(0, 3).join(" ")
-                  : dest.description
-            }
-            image={isHub ? dest.image : (itinerary?.heroImage ?? dest.image)}
-            galleryImages={dest.galleryImages}
-            startingPrice={isHub ? dest.startingPrice : (itinerary?.startingPrice ?? dest.startingPrice)}
-            href={`/destinations/${dest.id}`}
-            cta={
-              isHub
-                ? "Browse journeys"
-                : dest.hasItinerary
-                  ? "View Itinerary"
-                  : "View Destination"
-            }
-            duration={isHub ? undefined : itinerary?.duration}
-            rating={dest.hasItinerary && !isHub ? 5 : 4}
-            journeyCount={dest.journeyCount}
-          />
-        );
-      })}
+      {gridItems.map((dest) => (
+        <DestinationListingCard
+          key={dest.key}
+          destinationId={dest.id}
+          name={dest.name}
+          location={dest.location}
+          regionLabel={dest.regionLabel}
+          description={dest.description}
+          image={dest.image}
+          galleryImages={dest.galleryImages}
+          startingPrice={dest.startingPrice}
+          href={dest.href}
+          cta={dest.cta}
+          duration={dest.duration}
+          rating={dest.rating}
+          journeyCount={dest.journeyCount}
+        />
+      ))}
     </div>
   );
 }
@@ -297,6 +358,7 @@ export function DestinationsPage({
   destinations,
   internationalCountryFilters,
   itineraryByDestinationSlug,
+  journeysByDestinationSlug,
 }: DestinationsPageProps) {
   const searchParams = useSearchParams();
   const [searchQuery, setSearchQuery] = useState("");
@@ -640,12 +702,14 @@ export function DestinationsPage({
             <DestinationGroupedSections
               sections={displaySections}
               itineraryByDestinationSlug={itineraryByDestinationSlug}
+              journeysByDestinationSlug={journeysByDestinationSlug}
             />
           ) : (
             <div className="mt-12">
               <DestinationGrid
                 destinations={filteredDestinations.map(toGridDestination)}
                 itineraryByDestinationSlug={itineraryByDestinationSlug}
+                journeysByDestinationSlug={journeysByDestinationSlug}
               />
             </div>
           )}

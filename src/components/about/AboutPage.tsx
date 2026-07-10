@@ -1,12 +1,17 @@
-import { SectionHeader } from "@/components/ui/SectionHeader";
-import { FaqSection } from "@/components/ui/FaqSection";
+import { ArrowUpRight, MapPin } from "lucide-react";
+import { AboutFaqPanel } from "@/components/about/AboutFaqPanel";
+import { AboutMetricsBar } from "@/components/about/AboutMetricsBar";
+import { AboutStoryCatalog } from "@/components/about/AboutStoryCatalog";
+import { ClientMarquee } from "@/components/about/ClientMarquee";
 import { PageShell } from "@/components/layout/PageShell";
 import { PageHero } from "@/components/layout/PageHero";
 import { TrustBar } from "@/components/layout/TrustBar";
 import { PageCTA } from "@/components/layout/PageCTA";
-import { ClientMarquee } from "@/components/about/ClientMarquee";
+import { MagneticButton } from "@/components/ui/MagneticButton";
+import { contactInfo } from "@/data/contact";
 import { aboutFaq } from "@/data/faq";
 import { pageHeroes } from "@/data/pageContent";
+import { primaryCta, secondaryCta } from "@/data/site";
 import type { AboutPageData } from "@/lib/api/about";
 
 type AboutPageProps = {
@@ -15,50 +20,51 @@ type AboutPageProps = {
 
 export function AboutPage({ data }: AboutPageProps) {
   return (
-    <>
+    <div className="about-enterprise">
       <PageHero {...pageHeroes.about} />
       <TrustBar />
-      <PageShell noPaddingTop>
-        <SectionHeader
-          align="left"
-          eyebrow={data.header.eyebrow}
-          title={data.header.title}
-          description={data.header.description}
-          titleClassName="text-[clamp(1.75rem,4vw,3rem)]"
-          className="mb-10 md:mb-12"
-        />
+      <AboutMetricsBar />
 
-        {data.storySections.length > 0 ? (
-          <div className="page-content-grid md:grid-cols-2">
-            {data.storySections.map((section) => (
-              <article key={section.id} className="glass rounded-2xl border border-glass-border p-7 md:p-8">
-                <h2 className="font-display text-2xl font-semibold text-foreground">{section.title}</h2>
-                <div className="mt-4 space-y-4">
-                  {section.body.split(/\n\n+/).map((paragraph, index) => (
-                    <p key={index} className="text-sm leading-relaxed text-muted">
-                      {paragraph}
-                    </p>
-                  ))}
-                </div>
-              </article>
-            ))}
+      <PageShell noPaddingTop>
+        <section className="about-intro">
+          <div className="about-intro__grid">
+            <div className="about-intro__lead">
+              <p className="about-intro__eyebrow">{data.header.eyebrow}</p>
+              <h2 className="about-intro__title">{data.header.title}</h2>
+              <p className="about-intro__description">{data.header.description}</p>
+              <div className="about-intro__actions">
+                <MagneticButton as="a" href={primaryCta.href} variant="primary" className="!text-xs">
+                  {primaryCta.label}
+                  <ArrowUpRight size={14} aria-hidden />
+                </MagneticButton>
+                <MagneticButton as="a" href={secondaryCta.href} variant="secondary" className="!text-xs">
+                  {secondaryCta.label}
+                </MagneticButton>
+              </div>
+            </div>
+
+            <address className="about-office about-intro__aside not-italic">
+              <p className="about-office__label">
+                <MapPin size={14} aria-hidden />
+                Registered office
+              </p>
+              {contactInfo.aboutRegisteredAddressLines.map((line) => (
+                <p key={line} className="about-office__line">
+                  {line}
+                </p>
+              ))}
+            </address>
           </div>
-        ) : (
-          <p className="text-sm text-muted">Our story sections are being updated. Please check back soon.</p>
-        )}
+        </section>
+
+        <AboutStoryCatalog sections={data.storySections} />
 
         {data.clientLogos.length > 0 ? <ClientMarquee logos={data.clientLogos} /> : null}
 
-        <section
-          className={`rounded-3xl border border-glass-border bg-surface/60 px-4 py-10 sm:px-8 md:py-12 ${
-            data.clientLogos.length > 0 ? "mt-16 md:mt-20" : "mt-14 md:mt-16"
-          }`}
-        >
-          <FaqSection items={aboutFaq} titleClassName="font-semibold" />
-        </section>
+        <AboutFaqPanel items={aboutFaq} />
 
         <PageCTA />
       </PageShell>
-    </>
+    </div>
   );
 }

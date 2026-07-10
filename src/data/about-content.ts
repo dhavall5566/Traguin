@@ -5,6 +5,41 @@ export const ABOUT_PAGE_HEADER = {
     "TRAGUIN is a full-spectrum travel and destination management company delivering domestic and international travel solutions with global service standards and deep regional expertise. From leadership offsites and incentive programs to luxury leisure and immersive cultural journeys, we design experiences that are seamless, meaningful, and impeccably managed.",
 } as const;
 
+export const ABOUT_BRAND_PILLARS = [
+  {
+    id: "trust",
+    title: "Trust by Design",
+    description: "Transparent planning, accountable delivery, and relationships that endure beyond a single trip.",
+  },
+  {
+    id: "luxury",
+    title: "Luxury with Purpose",
+    description: "Reliability, discretion, and refinement — never excess for its own sake.",
+  },
+  {
+    id: "depth",
+    title: "Experiential Depth",
+    description: "Every journey is designed as a narrative, not an itinerary checklist.",
+  },
+  {
+    id: "corporate",
+    title: "Corporate Precision",
+    description: "Strategic planning, financial discipline, and flawless on-ground execution for institutions.",
+  },
+  {
+    id: "growth",
+    title: "Responsible Growth",
+    description: "Ethical partnerships, sustainability, and respect for the communities we visit.",
+  },
+] as const;
+
+export const ABOUT_METRICS = [
+  { label: "Founded", value: "2024" },
+  { label: "Destinations", value: "500+" },
+  { label: "Markets", value: "India & International" },
+  { label: "Headquarters", value: "Ahmedabad, India" },
+] as const;
+
 export const ABOUT_STORY_SECTIONS = [
   {
     title: "Brand Story",

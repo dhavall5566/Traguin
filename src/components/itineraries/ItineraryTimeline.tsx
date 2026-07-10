@@ -291,7 +291,7 @@ export function ItineraryTimeline({ days, durationDays }: ItineraryTimelineProps
                               key={`${activity}-${index}`}
                               className="group flex gap-4 rounded-2xl border border-glass-border bg-surface/50 p-4 transition-colors duration-300 hover:border-gold/25 hover:bg-surface/80 md:p-5"
                             >
-                              <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-gold/10 font-display text-sm text-gold transition-colors group-hover:bg-gold/20">
+                              <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-gold/25 bg-surface font-display text-sm font-bold text-foreground shadow-sm transition-colors group-hover:border-gold/40 group-hover:text-gold">
                                 {String(index + 1).padStart(2, "0")}
                               </span>
                               <div className="min-w-0 flex-1 pt-0.5">
@@ -356,8 +356,8 @@ function DayPill({ day, isActive, onSelect }: DayPillProps) {
       )}
       style={{ transitionTimingFunction: EASE }}
     >
-      <span className="text-[10px] tracking-[0.2em] uppercase">Day</span>
-      <span className="ml-1.5 font-display text-base">{String(day.day).padStart(2, "0")}</span>
+      <span className="text-[10px] font-semibold tracking-[0.2em] uppercase">Day</span>
+      <span className="ml-1.5 font-display text-base font-bold text-foreground">{String(day.day).padStart(2, "0")}</span>
     </button>
   );
 }
@@ -396,17 +396,17 @@ function DayRailItem({ day, isActive, onSelect }: DayRailItemProps) {
 
         <span
           className={cn(
-            "flex w-[4.5rem] shrink-0 flex-col items-center justify-center border-r py-4 transition-colors duration-500",
+            "flex w-[4.5rem] shrink-0 flex-col items-center justify-center border-r py-3.5 transition-colors duration-500",
             isActive
-              ? "border-gold/20 bg-gold/10"
-              : "border-gold/10 bg-gold/[0.03] group-hover:border-gold/18"
+              ? "border-gold/30 bg-gold/15"
+              : "border-glass-border bg-surface group-hover:bg-foreground/[0.03]"
           )}
           style={{ transitionTimingFunction: EASE }}
         >
           <span
             className={cn(
-              "text-[9px] font-bold tracking-[0.32em] uppercase transition-colors duration-500",
-              isActive ? "text-gold" : "text-gold/80 group-hover:text-gold"
+              "text-[9px] font-bold tracking-[0.28em] uppercase transition-colors duration-500",
+              isActive ? "text-gold" : "text-muted group-hover:text-foreground"
             )}
           >
             Day
@@ -414,7 +414,7 @@ function DayRailItem({ day, isActive, onSelect }: DayRailItemProps) {
           <span
             className={cn(
               "mt-1 font-display text-[1.75rem] font-bold leading-none transition-colors duration-500",
-              isActive ? "text-gold" : "text-gold/85 group-hover:text-gold"
+              isActive ? "text-gold" : "text-foreground group-hover:text-gold"
             )}
           >
             {String(day.day).padStart(2, "0")}
@@ -451,12 +451,12 @@ function DayBrowseCard({ day, index, onSelect }: DayBrowseCardProps) {
       <button
         type="button"
         onClick={onSelect}
-        className="group flex w-full items-center gap-5 rounded-2xl border border-glass-border bg-glass p-5 text-left transition-all duration-500 hover:border-gold/35 hover:bg-gold/[0.04] hover:shadow-[0_16px_48px_-20px_rgba(206,169,50,0.2)]"
+        className="group flex w-full items-center gap-5 rounded-2xl border border-gold/20 bg-gradient-to-br from-gold/[0.18] via-gold/[0.10] to-gold/[0.04] p-5 text-left shadow-[inset_0_1px_0_rgba(255,255,255,0.45)] transition-all duration-500 hover:border-gold/40 hover:from-gold/[0.24] hover:via-gold/[0.14] hover:to-gold/[0.06] hover:shadow-[0_16px_48px_-20px_rgba(206,169,50,0.28)]"
         style={{ transitionTimingFunction: EASE }}
       >
-        <span className="flex h-14 w-14 shrink-0 flex-col items-center justify-center rounded-2xl border border-gold/20 bg-gold/[0.06]">
-          <span className="text-[9px] tracking-[0.2em] text-gold/70 uppercase">Day</span>
-          <span className="font-display text-2xl leading-none text-gold">
+        <span className="flex h-14 w-14 shrink-0 flex-col items-center justify-center rounded-2xl border border-gold/35 bg-gold/[0.22] shadow-[inset_0_1px_0_rgba(255,255,255,0.35)]">
+          <span className="text-[9px] font-semibold tracking-[0.2em] text-gold/80 uppercase">Day</span>
+          <span className="font-display text-2xl font-bold leading-none text-foreground">
             {String(day.day).padStart(2, "0")}
           </span>
         </span>

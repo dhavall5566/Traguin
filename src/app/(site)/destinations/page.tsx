@@ -17,6 +17,7 @@ export default async function Page() {
         destinations={data.destinations}
         internationalCountryFilters={data.internationalCountryFilters}
         itineraryByDestinationSlug={Object.fromEntries(data.itineraryByDestinationSlug)}
+        journeysByDestinationSlug={Object.fromEntries(data.journeysByDestinationSlug)}
       />
     </Suspense>
   );

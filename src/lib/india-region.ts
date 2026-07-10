@@ -9,16 +9,37 @@ const INDIA_REGION_BY_SLUG: Partial<Record<string, IndiaRegion>> = {
   punjab: "north",
   delhi: "north",
   "uttar-pradesh": "north",
+  chhattisgarh: "central",
+  jharkhand: "central",
   kerala: "south",
+  "andaman-and-nicobar": "south",
   goa: "west",
   gujarat: "west",
   maharashtra: "west",
   rajasthan: "west",
+  "arunachal-pradesh": "east",
 };
+
+/** Normalize CMS india_region aliases into listing regions. */
+const CMS_INDIA_REGION_ALIASES: Record<string, IndiaRegion> = {
+  north: "north",
+  central: "central",
+  east: "east",
+  south: "south",
+  west: "west",
+  northeast: "east",
+  "north-east": "east",
+  islands: "south",
+};
+
+export function normalizeIndiaRegion(value?: string | null): IndiaRegion | undefined {
+  if (!value?.trim()) return undefined;
+  return CMS_INDIA_REGION_ALIASES[value.trim().toLowerCase()];
+}
 
 export function resolveIndiaRegion(
   slug: string,
-  cmsRegion?: IndiaRegion | null
+  cmsRegion?: string | null
 ): IndiaRegion | undefined {
-  return INDIA_REGION_BY_SLUG[slug] ?? cmsRegion ?? undefined;
+  return INDIA_REGION_BY_SLUG[slug] ?? normalizeIndiaRegion(cmsRegion);
 }

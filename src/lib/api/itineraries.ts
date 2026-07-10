@@ -7,7 +7,7 @@ import {
   getRedirectByPath,
   resolveMediaUrl,
 } from "./cms";
-import type { CmsDestination, CmsFaq, CmsItinerary, CmsRedirect } from "./types";
+import type { CmsDestination, CmsFaq, CmsItinerary, CmsPackage, CmsRedirect } from "./types";
 import type { Hotel } from "@/types";
 import { cleanPackageTitle } from "@/lib/package-title";
 import { loadCmsDetailContext } from "./detail-context";
@@ -248,11 +248,14 @@ export function resolveRedirectTarget(redirect: CmsRedirect): string | null {
   return null;
 }
 
-function pickPrimaryItineraryPerDestination(itineraries: CmsItinerary[]): Map<string, CmsItinerary> {
+function pickPrimaryItineraryPerDestination(
+  itineraries: CmsItinerary[],
+  publishedPackageIds?: Set<string>,
+): Map<string, CmsItinerary> {
   const grouped = new Map<string, CmsItinerary[]>();
 
   for (const itinerary of itineraries) {
-    if (!itinerary.is_published) continue;
+    if (!isPubliclyVisibleItinerary(itinerary, publishedPackageIds)) continue;
     const list = grouped.get(itinerary.destination_id) ?? [];
     list.push(itinerary);
     grouped.set(itinerary.destination_id, list);
@@ -271,12 +274,52 @@ function pickPrimaryItineraryPerDestination(itineraries: CmsItinerary[]): Map<st
   return map;
 }
 
+export function buildPublishedPackageIds(packages: CmsPackage[]): Set<string> {
+  return new Set(packages.filter((pkg) => pkg.is_published).map((pkg) => pkg.id));
+}
+
+export function isPubliclyVisibleItinerary(
+  itinerary: CmsItinerary,
+  publishedPackageIds?: Set<string>,
+): boolean {
+  if (!itinerary.is_published) return false;
+  if (!itinerary.package_id) return true;
+  if (!publishedPackageIds) return true;
+  return publishedPackageIds.has(itinerary.package_id);
+}
+
+export function buildPublishedPackageCountsByDestinationId(
+  packages: CmsPackage[],
+): Map<string, number> {
+  const counts = new Map<string, number>();
+  for (const pkg of packages) {
+    if (!pkg.is_published) continue;
+    counts.set(pkg.destination_id, (counts.get(pkg.destination_id) ?? 0) + 1);
+  }
+  return counts;
+}
+
+export function buildMinPublishedPackagePriceByDestinationId(
+  packages: CmsPackage[],
+): Map<string, number> {
+  const mins = new Map<string, number>();
+  for (const pkg of packages) {
+    if (!pkg.is_published) continue;
+    const existing = mins.get(pkg.destination_id);
+    if (existing == null || pkg.price < existing) {
+      mins.set(pkg.destination_id, pkg.price);
+    }
+  }
+  return mins;
+}
+
 export function buildPublishedItineraryCountsByDestinationId(
-  itineraries: CmsItinerary[]
+  itineraries: CmsItinerary[],
+  publishedPackageIds?: Set<string>,
 ): Map<string, number> {
   const counts = new Map<string, number>();
   for (const itinerary of itineraries) {
-    if (!itinerary.is_published) continue;
+    if (!isPubliclyVisibleItinerary(itinerary, publishedPackageIds)) continue;
     counts.set(
       itinerary.destination_id,
       (counts.get(itinerary.destination_id) ?? 0) + 1
@@ -286,11 +329,12 @@ export function buildPublishedItineraryCountsByDestinationId(
 }
 
 export function buildMinStartingPriceByDestinationId(
-  itineraries: CmsItinerary[]
+  itineraries: CmsItinerary[],
+  publishedPackageIds?: Set<string>,
 ): Map<string, number> {
   const mins = new Map<string, number>();
   for (const itinerary of itineraries) {
-    if (!itinerary.is_published) continue;
+    if (!isPubliclyVisibleItinerary(itinerary, publishedPackageIds)) continue;
     const price = itinerary.starting_price;
     if (price == null) continue;
     const existing = mins.get(itinerary.destination_id);
@@ -302,9 +346,10 @@ export function buildMinStartingPriceByDestinationId(
 }
 
 export function buildItineraryByDestinationIdMap(
-  itineraries: CmsItinerary[]
+  itineraries: CmsItinerary[],
+  publishedPackageIds?: Set<string>,
 ): Map<string, CmsItinerary> {
-  return pickPrimaryItineraryPerDestination(itineraries);
+  return pickPrimaryItineraryPerDestination(itineraries, publishedPackageIds);
 }
 
 export async function buildItineraryLookupByDestinationSlug(
@@ -316,7 +361,12 @@ export async function buildItineraryLookupByDestinationSlug(
   packagesById?: Map<string, import("./types").CmsPackage>,
 ): Promise<Map<string, Itinerary>> {
   const destinationById = new Map(destinations.map((dest) => [dest.id, dest]));
-  const primaryByDestinationId = pickPrimaryItineraryPerDestination(cmsItineraries);
+  const primaryByDestinationId = pickPrimaryItineraryPerDestination(
+    cmsItineraries,
+    packagesById
+      ? buildPublishedPackageIds([...packagesById.values()])
+      : undefined,
+  );
   const lookup = new Map<string, Itinerary>();
 
   for (const cmsItinerary of primaryByDestinationId.values()) {
@@ -332,6 +382,57 @@ export async function buildItineraryLookupByDestinationSlug(
         hotelsByUuid,
         cmsItinerary.package_id ? packagesById?.get(cmsItinerary.package_id) : undefined,
       )
+    );
+  }
+
+  return lookup;
+}
+
+export async function buildAllJourneysLookupByDestinationSlug(
+  destinations: CmsDestination[],
+  cmsItineraries: CmsItinerary[],
+  mediaMap: Map<string, string>,
+  faqs: CmsFaq[] = [],
+  hotelsByUuid?: Map<string, Hotel>,
+  packagesById?: Map<string, import("./types").CmsPackage>,
+): Promise<Map<string, Itinerary[]>> {
+  const destinationById = new Map(destinations.map((dest) => [dest.id, dest]));
+  const publishedPackageIds = packagesById
+    ? buildPublishedPackageIds([...packagesById.values()])
+    : undefined;
+  const grouped = new Map<string, CmsItinerary[]>();
+
+  for (const cmsItinerary of cmsItineraries) {
+    if (!isPubliclyVisibleItinerary(cmsItinerary, publishedPackageIds)) continue;
+    const list = grouped.get(cmsItinerary.destination_id) ?? [];
+    list.push(cmsItinerary);
+    grouped.set(cmsItinerary.destination_id, list);
+  }
+
+  const lookup = new Map<string, Itinerary[]>();
+
+  for (const [destinationId, list] of grouped) {
+    const destination = destinationById.get(destinationId);
+    if (!destination?.is_published) continue;
+
+    const sorted = [...list].sort(
+      (a, b) =>
+        (a.featured_sort_order ?? 999) - (b.featured_sort_order ?? 999) ||
+        a.title.localeCompare(b.title),
+    );
+
+    lookup.set(
+      destination.slug,
+      sorted.map((cmsItinerary) =>
+        mapCmsItineraryToItinerary(
+          cmsItinerary,
+          destination,
+          mediaMap,
+          faqs,
+          hotelsByUuid,
+          cmsItinerary.package_id ? packagesById?.get(cmsItinerary.package_id) : undefined,
+        )
+      ),
     );
   }
 

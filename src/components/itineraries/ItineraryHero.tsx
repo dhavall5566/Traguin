@@ -4,15 +4,19 @@ import { useRef } from "react";
 import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
-import { MessageCircle, Sparkles } from "lucide-react";
+import { Sparkles } from "lucide-react";
 import type { Itinerary } from "@/types/itinerary";
 import { HotelImageSlider } from "@/components/hotels/HotelImageSlider";
 import { PriceDisplay } from "@/components/ui/PriceDisplay";
 import { MagneticButton } from "@/components/ui/MagneticButton";
+import { WhatsAppIcon } from "@/components/ui/WhatsAppIcon";
 import { itineraryPrimaryCta, itinerarySecondaryCta } from "@/data/site";
 import { buildPlanMyJourneyHref } from "@/lib/plan-my-journey";
 
 gsap.registerPlugin(ScrollTrigger);
+
+const heroOutlineButtonClass =
+  "inline-flex items-center gap-2 !border-white/30 !bg-white/10 !text-white backdrop-blur-sm hover:!border-gold/45 hover:!bg-white/15";
 
 type ItineraryHeroProps = {
   itinerary: Itinerary;
@@ -129,16 +133,16 @@ export function ItineraryHero({
                   as="a"
                   href={whatsappHref}
                   variant="secondary"
-                  className="inline-flex items-center gap-2 !border-white/30 !bg-white/10 !text-white backdrop-blur-sm hover:!border-gold/45 hover:!bg-white/15"
+                  className={heroOutlineButtonClass}
                 >
-                  <MessageCircle size={18} />
+                  <WhatsAppIcon size={18} />
                   WhatsApp
                 </MagneticButton>
                 <MagneticButton
                   as="a"
                   href={itinerarySecondaryCta.href}
-                  variant="ghost"
-                  className="!text-xs !text-white/80 hover:!text-white"
+                  variant="secondary"
+                  className={heroOutlineButtonClass}
                 >
                   {itinerarySecondaryCta.label}
                 </MagneticButton>

@@ -5,7 +5,7 @@ export type DestinationCategoryRef = {
   title: string;
 };
 
-export type IndiaRegion = "north" | "east" | "south" | "west";
+export type IndiaRegion = "north" | "central" | "east" | "south" | "west";
 
 export type DestinationListing = {
   id: string;
@@ -37,10 +37,17 @@ export type DestinationItineraryPreview = {
   duration: string;
 };
 
+/** Individual package card on the destinations listing (multi-journey destinations). */
+export type DestinationPackagePreview = DestinationItineraryPreview & {
+  slug: string;
+  title: string;
+};
+
 export const INDIA_REGION_FILTERS = [
   { id: "all", label: "All areas" },
   { id: "north", label: "North" },
-  { id: "east", label: "East" },
-  { id: "south", label: "South" },
+  { id: "central", label: "Central" },
   { id: "west", label: "West" },
+  { id: "south", label: "South" },
+  { id: "east", label: "East" },
 ] as const;

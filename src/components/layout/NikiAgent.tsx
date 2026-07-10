@@ -3,7 +3,8 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import Link from "next/link";
-import { MessageCircle, Send, X } from "lucide-react";
+import { Send, X } from "lucide-react";
+import { WhatsAppIcon } from "@/components/ui/WhatsAppIcon";
 import { SafeImage } from "@/components/ui/SafeImage";
 import { contactInfo } from "@/data/contact";
 import { nikiAgent, getNikiQuickReplies, nikiWelcomeMessages, type NikiQuickReply } from "@/data/nikiAgent";
@@ -189,7 +190,7 @@ export function NikiAgent() {
               rel="noopener noreferrer"
               className="mt-3 inline-flex w-full items-center justify-center gap-2 rounded-full bg-gold px-6 py-2.5 text-[11px] font-bold tracking-wide text-on-gold uppercase transition-colors hover:bg-gold-light"
             >
-              <MessageCircle size={16} />
+              <WhatsAppIcon size={16} />
               Chat on WhatsApp
             </a>
           </div>

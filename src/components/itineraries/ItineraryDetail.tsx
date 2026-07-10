@@ -2,7 +2,8 @@
 
 import { useEffect, useMemo } from "react";
 import Link from "next/link";
-import { ArrowLeft, Check, MessageCircle, X } from "lucide-react";
+import { ArrowLeft, Check, X } from "lucide-react";
+import { WhatsAppIcon } from "@/components/ui/WhatsAppIcon";
 import type { Itinerary } from "@/types/itinerary";
 import { DestinationHotelsSlider } from "@/components/hotels/DestinationHotelsSlider";
 import { ItineraryGalleryMosaic } from "@/components/itineraries/ItineraryGalleryMosaic";
@@ -120,7 +121,7 @@ export function ItineraryDetail({
                 {itinerary.highlights.map((highlight, index) => (
                   <li key={highlight} className="itinerary-highlight-card flex gap-4 p-5 sm:p-6">
                     <span
-                      className="shrink-0 font-display text-2xl leading-none text-gold/30"
+                      className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-gold/25 bg-surface font-display text-base font-bold leading-none text-foreground shadow-sm"
                       aria-hidden
                     >
                       {String(index + 1).padStart(2, "0")}
@@ -197,7 +198,7 @@ export function ItineraryDetail({
                   aria-hidden
                 />
                 <div className="relative mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-gold/10">
-                  <MessageCircle size={28} className="text-gold" />
+                  <WhatsAppIcon size={28} className="text-[#25D366]" />
                 </div>
                 <h3 className="relative mt-5 font-display text-2xl text-foreground">
                   WhatsApp Travel Expert
@@ -211,7 +212,7 @@ export function ItineraryDetail({
                   variant="primary"
                   className="relative mt-7 inline-flex w-full items-center justify-center gap-2"
                 >
-                  <MessageCircle size={18} />
+                  <WhatsAppIcon size={18} />
                   Chat on WhatsApp
                 </MagneticButton>
                 <MagneticButton

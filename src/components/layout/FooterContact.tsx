@@ -1,7 +1,7 @@
 "use client";
 
-import { MessageCircle, Mail, Phone, MapPin, Clock } from "lucide-react";
-import { usePathname } from "next/navigation";
+import { Mail, Phone, MapPin, Clock } from "lucide-react";
+import { WhatsAppIcon } from "@/components/ui/WhatsAppIcon";
 import { contactInfo } from "@/data/contact";
 
 export function FooterSocialLinks() {
@@ -14,7 +14,7 @@ export function FooterSocialLinks() {
         className="flex h-10 w-10 items-center justify-center rounded-full glass transition-colors hover:border-gold/40 hover:text-gold"
         aria-label="WhatsApp"
       >
-        <MessageCircle size={16} />
+        <WhatsAppIcon size={16} />
       </a>
       <a
         href={contactInfo.emailHref}
@@ -51,22 +51,6 @@ export function FooterSocialLinks() {
 }
 
 function FooterAddress() {
-  const pathname = usePathname();
-  const isAboutPage = pathname === "/about";
-
-  if (isAboutPage) {
-    return (
-      <span>
-        {contactInfo.aboutRegisteredAddressLines.map((line, index) => (
-          <span key={line}>
-            {index > 0 ? <br /> : null}
-            {line}
-          </span>
-        ))}
-      </span>
-    );
-  }
-
   return <span>{contactInfo.address}</span>;
 }
 
@@ -84,7 +68,7 @@ export function FooterContactList() {
         </a>
       </li>
       <li className="flex items-center gap-3 text-sm text-muted">
-        <MessageCircle size={16} className="shrink-0 text-gold" />
+        <WhatsAppIcon size={16} className="shrink-0 text-gold" />
         <a
           href={contactInfo.whatsappHref}
           target="_blank"

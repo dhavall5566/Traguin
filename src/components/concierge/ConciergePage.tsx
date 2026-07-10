@@ -1,7 +1,8 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
-import { Clock, Crown, Headphones, MessageCircle, Phone } from "lucide-react";
+import { Clock, Crown, Headphones, Phone } from "lucide-react";
+import { WhatsAppIcon } from "@/components/ui/WhatsAppIcon";
 import { SafeImage } from "@/components/ui/SafeImage";
 import { MagneticButton } from "@/components/ui/MagneticButton";
 import { FormField, fieldInputClass, fieldSelectClass } from "@/components/ui/FormField";
@@ -151,7 +152,7 @@ function TravelExpertDeskCard({ desk }: { desk: TravelExpertDeskSettings }) {
           rel="noopener noreferrer"
           className="travel-expert-desk-btn travel-expert-desk-btn--whatsapp"
         >
-          <MessageCircle size={16} aria-hidden />
+          <WhatsAppIcon size={16} aria-hidden />
           WhatsApp
         </a>
         <a href={contactInfo.phoneHref} className="travel-expert-desk-btn travel-expert-desk-btn--call">
