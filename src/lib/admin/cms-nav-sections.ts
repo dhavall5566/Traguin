@@ -14,8 +14,8 @@ export const CMS_NAV_SECTIONS: AdminEntityGroup[] = [
   { id: "legal", label: "Legal" },
 ];
 
-/** First CMS screen after login — matches the primary homepage content workflow. */
-export const CMS_DEFAULT_LANDING_PATH = "/admin/cms/homepage-hero-slider";
+/** First CMS screen after login — central catalog workflow. */
+export const CMS_DEFAULT_LANDING_PATH = "/admin/cms/packages";
 
 const ENTITY_NAV_SECTION: Record<string, string> = {
   // Home

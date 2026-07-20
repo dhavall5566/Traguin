@@ -278,6 +278,20 @@ export function getListColumns(entity: AdminEntityDef) {
   return entity.fields.filter((f) => f.showInList);
 }
 
+/** Complex entities open a full-page create form instead of a cramped modal. */
+export function entityPrefersFullPageCreate(entity: AdminEntityDef): boolean {
+  if (entity.isSingleton || entity.hideCreate) return false;
+  if (entity.fields.some((field) => field.type === "nested-list" || field.type === "legal-sections" || field.type === "stat-list")) {
+    return true;
+  }
+  const formFieldCount = entity.fields.filter((field) => !field.hideFromForm && !field.listHomepageVisibility).length;
+  return formFieldCount > 12;
+}
+
+export function entitySupportsListRowClick(entity: AdminEntityDef): boolean {
+  return entity.listRowClickEdit !== false;
+}
+
 export function buildInlineEditPatch(
   entity: AdminEntityDef,
   field: AdminFieldDef,

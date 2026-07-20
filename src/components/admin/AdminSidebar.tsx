@@ -3,12 +3,11 @@
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useMemo, useState, useEffect } from "react";
+import { useMemo, useState, useEffect, useRef } from "react";
 import {
   BookOpen,
   Briefcase,
   Building2,
-  ChevronRight,
   FileText,
   Folder,
   Globe,
@@ -110,6 +109,26 @@ function groupContainsPath(pathname: string, sectionId: string, keys: string[]) 
   });
 }
 
+const NAV_RECENT_STORAGE_KEY = "traguin-cms-nav-recent";
+
+function readRecentNavKeys(): string[] {
+  if (typeof window === "undefined") return [];
+  try {
+    const raw = window.localStorage.getItem(NAV_RECENT_STORAGE_KEY);
+    if (!raw) return [];
+    const parsed = JSON.parse(raw) as string[];
+    return Array.isArray(parsed) ? parsed : [];
+  } catch {
+    return [];
+  }
+}
+
+function writeRecentNavKey(key: string) {
+  if (typeof window === "undefined") return;
+  const next = [key, ...readRecentNavKeys().filter((item) => item !== key)].slice(0, 5);
+  window.localStorage.setItem(NAV_RECENT_STORAGE_KEY, JSON.stringify(next));
+}
+
 function isNavActive(pathname: string, href: string) {
   return pathname === href || pathname.startsWith(`${href}/`);
 }
@@ -138,6 +157,7 @@ function NavLinkItem({
       onFocus={() => {
         if (item.endpoint) prefetchAdminList(item.endpoint);
       }}
+      onClick={() => writeRecentNavKey(item.key)}
     >
       <span className={cn("admin-nav-link__icon-wrap", active && "admin-nav-link__icon-wrap--active")}>
         <Icon className="admin-nav-link__icon" aria-hidden />
@@ -153,11 +173,17 @@ function NavLinkItem({
 
 export function AdminSidebar() {
   const pathname = usePathname();
+  const searchInputRef = useRef<HTMLInputElement>(null);
   const entities = getEnabledEntities().filter(
     (entity) =>
       !entity.hideFromNav && (isLuxuryStaysVisible() || entity.key !== "hotels"),
   );
   const [search, setSearch] = useState("");
+  const [recentNavKeys, setRecentNavKeys] = useState<string[]>([]);
+
+  useEffect(() => {
+    setRecentNavKeys(readRecentNavKeys());
+  }, [pathname]);
 
   const navCatalog = useMemo(() => {
     const items: NavItem[] = [];
@@ -210,17 +236,25 @@ export function AdminSidebar() {
     return CMS_NAV_SECTIONS[0]?.id ?? null;
   }, [navCatalog, pathname]);
 
-  const [openGroupId, setOpenGroupId] = useState<string | null>(() => activeGroupId);
+  const recentNavItems = useMemo(
+    () =>
+      recentNavKeys
+        .map((key) => navCatalog.find((item) => item.key === key))
+        .filter((item): item is NavItem => item !== undefined),
+    [navCatalog, recentNavKeys],
+  );
 
   useEffect(() => {
-    if (activeGroupId) setOpenGroupId(activeGroupId);
-  }, [activeGroupId]);
-
-  const isGroupOpen = (groupId: string) => openGroupId === groupId;
-
-  const toggleGroup = (groupId: string) => {
-    setOpenGroupId((prev) => (prev === groupId ? null : groupId));
-  };
+    const onKeyDown = (event: KeyboardEvent) => {
+      if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === "k") {
+        event.preventDefault();
+        searchInputRef.current?.focus();
+        searchInputRef.current?.select();
+      }
+    };
+    document.addEventListener("keydown", onKeyDown);
+    return () => document.removeEventListener("keydown", onKeyDown);
+  }, []);
 
   const searchQuery = search.trim().toLowerCase();
   const isSearching = searchQuery.length > 0;
@@ -272,9 +306,10 @@ export function AdminSidebar() {
         <label className="admin-sidebar-search">
           <Search aria-hidden className="admin-sidebar-search__icon" />
           <input
+            ref={searchInputRef}
             type="search"
             className="admin-sidebar-search__input"
-            placeholder="Search navigation…"
+            placeholder="Search navigation… (⌘K)"
             value={search}
             onChange={(event) => setSearch(event.target.value)}
             aria-label="Search CMS navigation"
@@ -315,48 +350,43 @@ export function AdminSidebar() {
             </section>
           )}
 
+          {!isSearching && recentNavItems.length > 0 && (
+            <section className="admin-nav-group admin-nav-group--flat admin-nav-group--recent">
+              <div className="admin-nav-group__header">
+                <span className="admin-nav-group__title">Recent</span>
+                <span className="admin-nav-group__count">{recentNavItems.length}</span>
+              </div>
+              <div className="admin-nav-group-items">
+                {recentNavItems.map((item) => (
+                  <NavLinkItem key={`recent-${item.key}`} item={item} pathname={pathname} compact />
+                ))}
+              </div>
+            </section>
+          )}
+
           {!isSearching &&
             visibleSections.map(({ section }) => {
               const sectionItems = sectionItemsFor(section.id);
               if (sectionItems.length === 0) return null;
 
-              const isOpen = isGroupOpen(section.id);
               const groupActive = section.id === activeGroupId;
 
               return (
                 <section
                   key={section.id}
                   className={cn(
-                    "admin-nav-group",
-                    isOpen && "admin-nav-group--open",
+                    "admin-nav-group admin-nav-group--flat admin-nav-group--always-open",
                     groupActive && "admin-nav-group--active",
                   )}
                 >
-                  <button
-                    type="button"
-                    className="admin-nav-section-toggle"
-                    aria-expanded={isOpen}
-                    onClick={() => toggleGroup(section.id)}
-                  >
-                    <span className="admin-nav-section-toggle__label">
-                      <span className="admin-nav-section-toggle__text">{section.label}</span>
-                      <span className="admin-nav-group__count">{sectionItems.length}</span>
-                    </span>
-                    <ChevronRight
-                      className={cn(
-                        "admin-nav-section-chevron",
-                        isOpen && "admin-nav-section-chevron--open",
-                      )}
-                      aria-hidden
-                    />
-                  </button>
-
-                  <div className="admin-nav-group-panel" hidden={!isOpen}>
-                    <div className="admin-nav-group-items">
-                      {sectionItems.map((item) => (
-                        <NavLinkItem key={item.key} item={item} pathname={pathname} />
-                      ))}
-                    </div>
+                  <div className="admin-nav-group__header">
+                    <span className="admin-nav-group__title">{section.label}</span>
+                    <span className="admin-nav-group__count">{sectionItems.length}</span>
+                  </div>
+                  <div className="admin-nav-group-items">
+                    {sectionItems.map((item) => (
+                      <NavLinkItem key={item.key} item={item} pathname={pathname} />
+                    ))}
                   </div>
                 </section>
               );

@@ -128,7 +128,17 @@ export const ALL_ADMIN_ENTITIES: Record<string, AdminEntityDef> = {
       { name: "featured_sort_order", label: "Featured sort order", type: "number" },
       { name: "seo_title", label: "SEO title", type: "text" },
       { name: "seo_description", label: "SEO description", type: "textarea" },
-      { name: "is_published", label: "Published", type: "boolean" },
+      {
+        name: "is_published",
+        label: "Published",
+        type: "boolean",
+        showInList: true,
+        listLabel: "Visible",
+        listToggle: true,
+        listToggleOnLabel: "Visible",
+        listToggleOffLabel: "Hidden",
+        helpText: "When enabled, this itinerary is live on the public site.",
+      },
     ],
   },
   hotels: {
@@ -593,7 +603,7 @@ export const ALL_ADMIN_ENTITIES: Record<string, AdminEntityDef> = {
   },
   "form-submissions": {
     key: "form-submissions", label: "Form Submission", pluralLabel: "Form Submissions", group: "submissions", endpoint: "/form-submissions", nameField: "form_type", hideFromNav: true,
-    hideCreate: true, hideDelete: true, writableFields: ["status"],
+    hideCreate: true, hideDelete: true, listRowClickEdit: false, writableFields: ["status"],
     fields: [
       { name: "form_type", label: "Form type", type: "text", readOnly: true, showInList: true },
       { name: "status", label: "Status", type: "select", required: true, showInList: true, options: [

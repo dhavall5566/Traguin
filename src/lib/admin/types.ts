@@ -92,6 +92,8 @@ export type AdminEntityDef = {
   formFields?: string[];
   /** Toolbar filters shown beside search on list pages. Omit to auto-derive from fields. */
   listFilters?: AdminListFilterDef[];
+  /** Clicking a list row opens the edit page (toggle/action cells still isolated). */
+  listRowClickEdit?: boolean;
   fields: AdminFieldDef[];
 };
 

@@ -1,9 +1,16 @@
-import { notFound, redirect } from "next/navigation";
+import { EntityFormView } from "@/components/admin/EntityFormView";
+import { notFound } from "next/navigation";
 import { getEntityDef, isEnabledEntityKey } from "@/lib/admin/entities";
 
 type PageProps = {
   params: Promise<{ entity: string }>;
 };
+
+export async function generateMetadata({ params }: PageProps) {
+  const { entity: entityKey } = await params;
+  const entity = getEntityDef(entityKey);
+  return { title: entity ? `New ${entity.label}` : "CMS" };
+}
 
 export default async function EntityNewPage({ params }: PageProps) {
   const { entity: entityKey } = await params;
@@ -13,5 +20,5 @@ export default async function EntityNewPage({ params }: PageProps) {
   const entity = getEntityDef(entityKey);
   if (!entity || entity.isSingleton || entity.hideCreate) notFound();
 
-  redirect(`/admin/cms/${entityKey}?create=1`);
+  return <EntityFormView entityKey={entityKey} />;
 }

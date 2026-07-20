@@ -18,9 +18,6 @@ import {
 import {
   clampHeroSliderMaxItems,
   HERO_SLIDER_DEFAULT_MAX_ITEMS,
-  HERO_SLIDER_MAX_ITEMS,
-  HERO_SLIDER_MIN_ITEMS,
-  type AdminHomepageHeroSliderSettings,
 } from "@/lib/api/homepage-hero-settings";
 import { cn } from "@/lib/utils";
 
@@ -125,14 +122,12 @@ function mergeFeaturedPackages(
 export function HomeHeroSliderManager() {
   const { showUpdatedToast, showDeletedToast, showErrorToast } = useAdminToast();
   const [packages, setPackages] = useState<PackageRow[]>([]);
-  const [maxItems, setMaxItems] = useState(HERO_SLIDER_DEFAULT_MAX_ITEMS);
-  const [savedMaxItems, setSavedMaxItems] = useState(HERO_SLIDER_DEFAULT_MAX_ITEMS);
+  const [maxVisibleItems, setMaxVisibleItems] = useState(HERO_SLIDER_DEFAULT_MAX_ITEMS);
   const [visiblePackageIds, setVisiblePackageIds] = useState<string[]>([]);
   const [search, setSearch] = useState("");
   const [filterValues, setFilterValues] = useState<Record<string, string>>({});
   const [sortBy, setSortBy] = useState("order");
   const [initialLoading, setInitialLoading] = useState(true);
-  const [savingSettings, setSavingSettings] = useState(false);
   const [savingOrder, setSavingOrder] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const orderGeneration = useRef(0);
@@ -146,8 +141,7 @@ export function HomeHeroSliderManager() {
       ]);
 
       setPackages(allPackages);
-      setMaxItems(settings.hero_slider_max_items);
-      setSavedMaxItems(settings.hero_slider_max_items);
+      setMaxVisibleItems(clampHeroSliderMaxItems(settings.hero_slider_max_items));
       setVisiblePackageIds(settings.visible_package_ids);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to load homepage hero slider settings.");
@@ -203,55 +197,14 @@ export function HomeHeroSliderManager() {
   }, [featuredPackages, filterValues, search, visibleIdSet]);
 
   const filtersActive = hasActiveFilters(search, filterValues);
-  const clampedMaxItems = clampHeroSliderMaxItems(maxItems);
-  const maxItemsDirty = clampedMaxItems !== savedMaxItems;
-
-  const handleSaveSettings = async () => {
-    if (!maxItemsDirty) return;
-
-    setSavingSettings(true);
-    setError(null);
-
-    const previousVisible = visiblePackageIds;
-
-    try {
-      const clampedMax = clampHeroSliderMaxItems(maxItems);
-      const trimmedVisible = visiblePackageIds.slice(0, clampedMax);
-      setMaxItems(clampedMax);
-      setSavedMaxItems(clampedMax);
-      setVisiblePackageIds(trimmedVisible);
-
-      const saved = await saveHomepageHeroSliderSettings({
-        hero_slider_max_items: clampedMax,
-        visible_package_ids: trimmedVisible,
-      });
-
-      setMaxItems(saved.hero_slider_max_items);
-      setSavedMaxItems(saved.hero_slider_max_items);
-      setVisiblePackageIds(saved.visible_package_ids);
-
-      if (trimmedVisible.length !== previousVisible.length) {
-        showUpdatedToast(
-          `Slider settings saved. ${previousVisible.length - trimmedVisible.length} package(s) were hidden because they exceeded the new maximum.`,
-        );
-      } else {
-        showUpdatedToast("Slider settings saved.");
-      }
-    } catch (err) {
-      setVisiblePackageIds(previousVisible);
-      setError(err instanceof Error ? err.message : "Failed to save slider settings.");
-    } finally {
-      setSavingSettings(false);
-    }
-  };
 
   const handleToggleVisibility = (packageId: string, makeVisible: boolean) => {
     setError(null);
 
     if (makeVisible) {
-      if (visibleCount >= savedMaxItems) {
+      if (visibleCount >= maxVisibleItems) {
         setError(
-          `You can only show up to ${savedMaxItems} packages on the homepage. Hide another package first.`,
+          `You can only show up to ${maxVisibleItems} packages on the homepage. Hide another package first.`,
         );
         return;
       }
@@ -289,8 +242,7 @@ export function HomeHeroSliderManager() {
     })
       .then((saved) => {
         setVisiblePackageIds(saved.visible_package_ids);
-        setSavedMaxItems(saved.hero_slider_max_items);
-        setMaxItems(saved.hero_slider_max_items);
+        setMaxVisibleItems(clampHeroSliderMaxItems(saved.hero_slider_max_items));
         showUpdatedToast("Homepage visibility updated.");
       })
       .catch((err) => {
@@ -368,7 +320,6 @@ export function HomeHeroSliderManager() {
       if (removeError) throw new Error(removeError.message);
 
       await saveHomepageHeroSliderSettings({
-        hero_slider_max_items: savedMaxItems,
         visible_package_ids: nextVisible,
       });
       showDeletedToast("Package removed from homepage hero slider.");
@@ -400,10 +351,6 @@ export function HomeHeroSliderManager() {
                 <span className="admin-stat-chip__value">{featuredPackages.length}</span>
                 <span className="admin-stat-chip__label">in slider</span>
               </span>
-              <span className="admin-stat-chip">
-                <span className="admin-stat-chip__value">{savedMaxItems}</span>
-                <span className="admin-stat-chip__label">max visible</span>
-              </span>
             </div>
           </div>
 
@@ -412,44 +359,6 @@ export function HomeHeroSliderManager() {
               {error && <div className="admin-alert admin-alert--error">{error}</div>}
             </div>
           )}
-
-          <div className="admin-settings-panel__body">
-            <h2 className="admin-settings-panel__section-title">Slider settings</h2>
-            <p className="admin-page-muted">
-              Set how many packages can be visible at once. Use the toggles below to choose which
-              featured packages appear on the homepage. To add packages, enable{" "}
-              <strong>Homepage hero slider</strong> on a package under{" "}
-              <Link href="/admin/cms/packages" className="admin-inline-link">
-                Packages
-              </Link>
-              .
-            </p>
-            <div className="admin-hero-slider-settings">
-              <div className="admin-form-field">
-                <label htmlFor="hero-slider-max-items" className="admin-field-label">
-                  Maximum visible packages
-                </label>
-                <input
-                  id="hero-slider-max-items"
-                  className="admin-input admin-hero-slider-settings__input"
-                  type="number"
-                  min={HERO_SLIDER_MIN_ITEMS}
-                  max={HERO_SLIDER_MAX_ITEMS}
-                  value={maxItems}
-                  disabled={initialLoading || savingSettings}
-                  onChange={(event) => setMaxItems(Number(event.target.value))}
-                />
-              </div>
-              <button
-                type="button"
-                className="admin-btn admin-btn--primary admin-btn--page"
-                disabled={initialLoading || savingSettings || !maxItemsDirty}
-                onClick={() => void handleSaveSettings()}
-              >
-                Save max items
-              </button>
-            </div>
-          </div>
         </div>
 
         <div className="admin-list-panel">
@@ -457,7 +366,12 @@ export function HomeHeroSliderManager() {
             <div className="admin-list-panel__intro">
               <h2 className="admin-list-panel__title admin-list-panel__title--sm">Slider packages</h2>
               <p className="admin-list-panel__subtitle">
-                Reorder packages and toggle which ones appear on the homepage hero.
+                Reorder packages and toggle which ones appear on the homepage hero. To add packages,
+                enable <strong>Homepage hero slider</strong> on a package under{" "}
+                <Link href="/admin/cms/packages" className="admin-inline-link">
+                  Packages
+                </Link>
+                .
               </p>
             </div>
           </header>

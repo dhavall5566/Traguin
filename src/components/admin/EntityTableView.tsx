@@ -28,6 +28,8 @@ import {
   getListFilters,
   getNavSectionLabel,
   buildInlineEditPatch,
+  entityPrefersFullPageCreate,
+  entitySupportsListRowClick,
   type AdminFieldDef,
 } from "@/lib/admin/entities";
 import { hasActiveFilters, rowMatchesFilter, buildServerListQuery, usesServerListFilters } from "@/lib/admin/list-filters";
@@ -41,7 +43,7 @@ import { EntityFormView } from "@/components/admin/EntityFormView";
 import { GalleryFolderUploadButton, type FolderUploadStatus } from "@/components/admin/GalleryFolderUploadButton";
 import { GalleryFolderUploadBanner } from "@/components/admin/GalleryFolderUploadBanner";
 
-const PAGE_SIZE = 20;
+const PAGE_SIZE = 50;
 
 const LIST_PAGE_SUBTITLES: Record<string, string> = {
   packages:
@@ -171,9 +173,13 @@ export function EntityTableView({ entityKey }: EntityTableViewProps) {
 
   useEffect(() => {
     if (searchParams.get("create") !== "1") return;
+    if (entity && entityPrefersFullPageCreate(entity)) {
+      router.replace(`/admin/cms/${entityKey}/new`, { scroll: false });
+      return;
+    }
     setCreateOpen(true);
     router.replace(`/admin/cms/${entityKey}`, { scroll: false });
-  }, [entityKey, router, searchParams]);
+  }, [entity, entityKey, router, searchParams]);
 
   useEffect(() => {
     if (!hasHomepageVisibilityColumn) return;
@@ -482,7 +488,11 @@ export function EntityTableView({ entityKey }: EntityTableViewProps) {
           ? nextValue
             ? "Package published."
             : "Package moved to draft."
-        : field.name === "is_published" && field.listToggleOnLabel
+        : field.name === "is_published" && entity.key === "itineraries"
+          ? nextValue
+            ? "Itinerary is now visible on the site."
+            : "Itinerary is now hidden from the site."
+        : field.name === "is_published" && entity.key === "destinations"
           ? nextValue
             ? "Now visible on the destinations page."
             : "Now hidden from the destinations page."
@@ -624,6 +634,16 @@ export function EntityTableView({ entityKey }: EntityTableViewProps) {
   ];
 
   const sectionLabel = getNavSectionLabel(getEntityNavSectionId(entity.key));
+  const useFullPageCreate = entityPrefersFullPageCreate(entity);
+  const rowClickOpensEdit = entitySupportsListRowClick(entity);
+
+  const openCreate = () => {
+    if (useFullPageCreate) {
+      router.push(`/admin/cms/${entity.key}/new`);
+      return;
+    }
+    setCreateOpen(true);
+  };
 
   return (
     <div className="admin-page admin-list-page">
@@ -666,10 +686,18 @@ export function EntityTableView({ entityKey }: EntityTableViewProps) {
                     }
                   />
                 )}
+                {entityKey === "packages" && (
+                  <Link
+                    href="/admin/cms/homepage-hero-slider"
+                    className="admin-btn admin-btn--secondary admin-btn--add"
+                  >
+                    Hero slider
+                  </Link>
+                )}
                 <button
                   type="button"
                   className="admin-btn admin-btn--primary admin-btn--add"
-                  onClick={() => setCreateOpen(true)}
+                  onClick={openCreate}
                 >
                   <Plus aria-hidden className="admin-btn__icon" />
                   New {entity.label}
@@ -787,20 +815,43 @@ export function EntityTableView({ entityKey }: EntityTableViewProps) {
                       return (
                         <tr
                           key={recordId}
-                          className="admin-table__row"
-                          onClick={() => router.push(editHref)}
+                          className={cn(
+                            "admin-table__row",
+                            rowClickOpensEdit && "admin-table__row--clickable",
+                          )}
+                          onClick={
+                            rowClickOpensEdit ? () => router.push(editHref) : undefined
+                          }
                         >
-                          <td onClick={titleColumn?.listInlineEdit ? (event) => event.stopPropagation() : undefined}>
+                          <td
+                            onClick={
+                              titleColumn?.listInlineEdit
+                                ? (event) => event.stopPropagation()
+                                : undefined
+                            }
+                          >
                             {titleColumn?.listInlineEdit ? (
                               <AdminInlineTextCell
                                 value={String(row[titleColumn.name] ?? "")}
                                 placeholder="Untitled"
                                 onSave={(next) => handleInlineTextUpdate(row, titleColumn, next)}
                               />
+                            ) : rowClickOpensEdit ? (
+                              <>
+                                <div className="admin-table__primary">{title}</div>
+                                {secondaryLine && (
+                                  <div className="admin-table__secondary">{secondaryLine}</div>
+                                )}
+                              </>
                             ) : (
-                              <div className="admin-table__primary">{title}</div>
+                              <Link href={editHref} className="admin-table__title-link">
+                                <div className="admin-table__primary">{title}</div>
+                                {secondaryLine && (
+                                  <div className="admin-table__secondary">{secondaryLine}</div>
+                                )}
+                              </Link>
                             )}
-                            {secondaryLine && (
+                            {titleColumn?.listInlineEdit && secondaryLine && (
                               <div className="admin-table__secondary">{secondaryLine}</div>
                             )}
                           </td>
@@ -946,7 +997,7 @@ export function EntityTableView({ entityKey }: EntityTableViewProps) {
         onConfirm={() => void handleDelete()}
       />
 
-      {showCreate && createOpen ? (
+      {showCreate && createOpen && !useFullPageCreate ? (
         <EntityFormView
           entityKey={entityKey}
           variant="modal"

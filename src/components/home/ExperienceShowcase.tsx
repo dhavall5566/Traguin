@@ -30,25 +30,28 @@ function ExperienceCard({
         className
       )}
     >
-      <div className="relative h-[200px] w-full overflow-hidden sm:h-[240px] lg:h-[255px]">
+      <div className="relative aspect-[9/4] w-full overflow-hidden bg-[#f3efe8]">
         <SafeImage
           src={item.image}
           alt=""
-          className="h-full w-full object-cover object-center"
+          className={cn(
+            "h-full w-full object-cover",
+            item.id === "group-tours" ? "object-[50%_24%]" : "object-center",
+          )}
         />
         <span className="experience-showcase-card__index absolute top-3 left-3 sm:top-4 sm:left-4">
           {item.number}
         </span>
       </div>
 
-      <div className="flex min-h-[148px] flex-1 flex-col p-4 sm:min-h-[160px] sm:p-5">
+      <div className="flex flex-col p-4 sm:p-5">
         <h3 className="font-display text-lg leading-snug tracking-tight text-foreground text-balance sm:text-2xl">
           {item.title}
         </h3>
         <p className="mt-2 line-clamp-3 text-sm leading-relaxed text-muted sm:line-clamp-2">
           {item.description}
         </p>
-        <span className="experience-showcase-card__cta mt-auto inline-flex items-center gap-2 pt-4 text-[10px] font-bold tracking-[0.18em] text-gold uppercase sm:text-[11px]">
+        <span className="experience-showcase-card__cta mt-3 inline-flex items-center gap-2 text-[10px] font-bold tracking-[0.18em] text-gold uppercase sm:mt-4 sm:text-[11px]">
           Explore experience
           <ArrowUpRight size={14} aria-hidden />
         </span>

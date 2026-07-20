@@ -417,6 +417,18 @@ export function EntityFormView({
   }, [isModal, onClose, open, saving]);
 
   useEffect(() => {
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (!(event.metaKey || event.ctrlKey) || event.key.toLowerCase() !== "s") return;
+      if (!entity || saving) return;
+      event.preventDefault();
+      const form = document.getElementById(formId) as HTMLFormElement | null;
+      form?.requestSubmit();
+    };
+    document.addEventListener("keydown", onKeyDown);
+    return () => document.removeEventListener("keydown", onKeyDown);
+  }, [entity, formId, saving]);
+
+  useEffect(() => {
     if (!entity || mode !== "edit" || !recordCacheKey) return;
 
     const cached = peekCachedAdminRecord(recordCacheKey);
@@ -501,6 +513,10 @@ export function EntityFormView({
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!entity || !isDirty) return;
+
+    const submitter = (e.nativeEvent as SubmitEvent).submitter as HTMLButtonElement | null;
+    const closeAfterSave = submitter?.value === "save-close";
+
     setSaving(true);
     setFormError(null);
     setFieldErrors({});
@@ -538,7 +554,12 @@ export function EntityFormView({
         return;
       }
       showCreatedToast(createdMessage);
-      router.push(`/admin/cms/${entity.key}`);
+      const createdId = result.data[entity.idField ?? "id"];
+      if (createdId != null && createdId !== "") {
+        router.push(`/admin/cms/${entity.key}/${createdId}`);
+      } else {
+        router.push(`/admin/cms/${entity.key}`);
+      }
       return;
     }
 
@@ -569,7 +590,7 @@ export function EntityFormView({
       mode === "create" ? `${entity.label} created successfully.` : "Changes saved successfully.",
     );
 
-    if (!isSingleton && !isModal) {
+    if (!isSingleton && !isModal && closeAfterSave) {
       router.push(`/admin/cms/${entity.key}`);
     }
   };
@@ -596,6 +617,7 @@ export function EntityFormView({
   const submitLabel =
     saving ? "Saving…" : isSingleton || mode === "edit" ? "Save changes" : "Create";
   const saveDisabled = saving || !isDirty;
+  const saveHint = "⌘S";
   const sectionLabel = getNavSectionLabel(getEntityNavSectionId(entity.key));
 
   const renderFormField = (field: AdminFieldDef) => (
@@ -765,17 +787,31 @@ export function EntityFormView({
                   href={`/admin/cms/${entity.key}`}
                   className="admin-btn admin-btn--ghost admin-btn--toolbar"
                 >
-                  Cancel
+                  {mode === "create" ? "Cancel" : "Back to list"}
                 </Link>
               )}
               <button
                 type="submit"
                 form={formId}
+                name="action"
+                value="save"
                 className="admin-btn admin-btn--primary admin-btn--toolbar"
                 disabled={saveDisabled}
               >
                 {submitLabel}
               </button>
+              {!isSingleton && mode === "edit" && (
+                <button
+                  type="submit"
+                  form={formId}
+                  name="action"
+                  value="save-close"
+                  className="admin-btn admin-btn--secondary admin-btn--toolbar"
+                  disabled={saveDisabled}
+                >
+                  {saving ? "Saving…" : "Save & close"}
+                </button>
+              )}
             </div>
           </header>
 
@@ -810,22 +846,36 @@ export function EntityFormView({
                 isDirty && "admin-form-shell__status--dirty",
               )}
             >
-              {isDirty ? "Unsaved changes" : "All changes saved"}
+              {isDirty ? "Unsaved changes" : `All changes saved · ${saveHint} to save`}
             </span>
             <div className="admin-form-shell__footer-actions">
               {!isSingleton && (
                 <Link href={`/admin/cms/${entity.key}`} className="admin-btn admin-btn--ghost admin-btn--toolbar">
-                  Cancel
+                  {mode === "create" ? "Cancel" : "Back to list"}
                 </Link>
               )}
               <button
                 type="submit"
                 form={formId}
+                name="action"
+                value="save"
                 className="admin-btn admin-btn--primary admin-btn--toolbar"
                 disabled={saveDisabled}
               >
                 {submitLabel}
               </button>
+              {!isSingleton && mode === "edit" && (
+                <button
+                  type="submit"
+                  form={formId}
+                  name="action"
+                  value="save-close"
+                  className="admin-btn admin-btn--secondary admin-btn--toolbar"
+                  disabled={saveDisabled}
+                >
+                  {saving ? "Saving…" : "Save & close"}
+                </button>
+              )}
             </div>
           </footer>
         </div>

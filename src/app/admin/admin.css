@@ -435,7 +435,7 @@
 .admin-sidebar-nav {
   display: flex;
   flex-direction: column;
-  gap: 0.45rem;
+  gap: 0.35rem;
 }
 
 .admin-nav-group {
@@ -466,6 +466,21 @@
     0 2px 4px color-mix(in srgb, var(--gold) 16%, transparent),
     0 10px 24px color-mix(in srgb, var(--gold) 12%, transparent),
     0 20px 44px color-mix(in srgb, var(--foreground) 8%, transparent);
+}
+
+.admin-nav-group--always-open {
+  border-color: color-mix(in srgb, var(--foreground) 8%, transparent);
+  background: color-mix(in srgb, var(--surface) 92%, var(--background));
+  box-shadow: none;
+}
+
+.admin-nav-group--always-open.admin-nav-group--active {
+  border-color: color-mix(in srgb, var(--gold) 24%, transparent);
+  background: color-mix(in srgb, var(--gold) 5%, var(--surface));
+}
+
+.admin-nav-group--recent {
+  border-color: color-mix(in srgb, var(--gold) 18%, transparent);
 }
 
 .admin-nav-group--flat {
@@ -1585,19 +1600,38 @@
 
 .admin-table__row {
   border-bottom: 1px solid color-mix(in srgb, var(--foreground) 5%, transparent);
-  cursor: pointer;
   transition:
     background-color 0.12s ease,
     box-shadow 0.12s ease;
 }
 
-.admin-table__row:last-child {
-  border-bottom: none;
+.admin-table__row--clickable {
+  cursor: pointer;
 }
 
-.admin-table__row:hover {
+.admin-table__row--clickable:hover {
   background: color-mix(in srgb, var(--gold) 6%, var(--surface));
   box-shadow: inset 3px 0 0 color-mix(in srgb, var(--gold) 55%, transparent);
+}
+
+.admin-table__title-link {
+  display: block;
+  color: inherit;
+  text-decoration: none;
+  border-radius: 0.35rem;
+}
+
+.admin-table__title-link:hover .admin-table__primary {
+  color: color-mix(in srgb, var(--gold) 70%, var(--foreground));
+}
+
+.admin-table__title-link:focus-visible {
+  outline: 2px solid color-mix(in srgb, var(--gold) 45%, transparent);
+  outline-offset: 2px;
+}
+
+.admin-table__row:last-child {
+  border-bottom: none;
 }
 
 .admin-table td {
