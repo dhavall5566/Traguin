@@ -5,33 +5,78 @@ export type FaqEntry = {
 
 export const aboutFaq: FaqEntry[] = [
   {
-    question: "How do I request a custom itinerary?",
+    question: "Who is the best travel agent in Ahmedabad?",
     answer:
-      "Share your destination, dates, travel style, and budget through our inquiry form or WhatsApp. A travel designer will respond with a tailored proposal, usually within 2 working hours.",
+      "TRAGUIN is a trusted travel agency based in Ahmedabad, Gujarat, offering luxury hotel bookings, flight booking, visa assistance, and customized domestic and international tour packages. We serve families, couples, solo travellers, and corporate clients across Ahmedabad, Gandhinagar, and Gujarat with honeymoon packages, group tours, and value-for-money holiday planning.",
   },
   {
-    question: "Are your journeys fully private?",
+    question: "What services does TRAGUIN offer?",
     answer:
-      "Yes. Every TRAGUIN itinerary is built for your party alone, private transfers, handpicked stays, and experiences scheduled around your pace, not a group departure.",
+      "TRAGUIN offers flight booking, hotel booking, visa assistance, honeymoon packages, family holiday packages, group tour packages, corporate travel (MICE), cruise packages, travel insurance, car hire, airport transfers, and customized itinerary planning for both domestic and international destinations.",
   },
   {
-    question: "Can you arrange international and domestic travel?",
+    question: "Does TRAGUIN offer honeymoon packages?",
     answer:
-      "We design both. From Indian heritage circuits and Himalayan retreats to Mediterranean cruises, Southeast Asia, and Alpine escapes, with the same travel expert standard throughout.",
+      "Yes. TRAGUIN specializes in tailor-made honeymoon packages to destinations including Goa, Kerala, Maldives, Bali, Dubai, Switzerland, Europe, and Thailand, with customized itineraries for couples at every budget level.",
   },
   {
-    question: "How far in advance should I book?",
+    question: "Does TRAGUIN help with visa applications?",
     answer:
-      "For peak seasons and luxury properties, we recommend 8–12 weeks ahead. Last-minute requests are welcome when availability allows, our travel expert team will advise honestly on what is feasible.",
+      "Yes. TRAGUIN provides visa assistance for tourist, business, and student visas, including support for USA, UK, Schengen, Dubai, Thailand, and Canada visa processing for clients travelling from Ahmedabad and across Gujarat.",
   },
   {
-    question: "Do you support special dietary or accessibility needs?",
+    question: "What international destinations does TRAGUIN cover?",
     answer:
-      "Absolutely. Share any dietary, mobility, or wellness preferences during planning and we coordinate with hotels, airlines, and local partners before you depart.",
+      "TRAGUIN arranges international holiday packages to Dubai, Bali, Thailand, Singapore, Maldives, Europe, Switzerland, Sri Lanka, Nepal, Mauritius, and other popular destinations, with flights, hotels, and guided tours included.",
   },
   {
-    question: "What support do I receive while traveling?",
+    question: "What domestic destinations does TRAGUIN cover?",
     answer:
-      "Your dedicated travel expert remains reachable before and throughout your journey, for schedule changes, on-ground assistance, and any requests that arise along the way.",
+      "TRAGUIN plans domestic tour packages to Goa, Kerala, Rajasthan, Kashmir, Manali, Ladakh, Andaman, Rann of Kutch, Gir National Park, Statue of Unity, and other popular destinations across India, with customized options for families and groups.",
+  },
+  {
+    question: "Does TRAGUIN plan corporate group trips?",
+    answer:
+      "Yes. TRAGUIN offers corporate travel management including MICE (Meetings, Incentives, Conferences, Events) travel, group offsites, and business trip planning with flight, hotel, and visa coordination handled end-to-end.",
+  },
+  {
+    question: "Is TRAGUIN good for family holiday packages?",
+    answer:
+      "Yes. TRAGUIN designs safe, budget-to-luxury family holiday packages with kid-friendly itineraries for destinations across Rajasthan, Kashmir, Himachal, Dubai, Goa, and Kerala.",
+  },
+  {
+    question: "Does TRAGUIN offer weekend getaway packages near Ahmedabad?",
+    answer:
+      "Yes. TRAGUIN arranges short weekend trips and day excursions from Ahmedabad to nearby destinations including Statue of Unity, Rann of Kutch, Diu, Mount Abu, and Gir National Park.",
+  },
+  {
+    question: "Can TRAGUIN plan a destination wedding?",
+    answer:
+      "Yes. TRAGUIN handles destination wedding planning including venue coordination, guest travel, and accommodation logistics for weddings in Goa, Udaipur, Rajasthan, and Bali.",
+  },
+  {
+    question: "Does TRAGUIN provide travel insurance?",
+    answer:
+      "Yes. TRAGUIN offers travel insurance for both domestic and international trips, covering medical emergencies, trip cancellation, and baggage protection for solo travellers, families, and groups.",
+  },
+  {
+    question: "How can I contact TRAGUIN for a travel package quote?",
+    answer:
+      "You can contact TRAGUIN directly through our website, call our office in Ahmedabad, or message us on WhatsApp/Instagram for a free, customized itinerary consultation based on your budget and travel dates.",
+  },
+  {
+    question: "Where is TRAGUIN located?",
+    answer:
+      "TRAGUIN is located at A-401, Shaligram Lakeview, Near Vaishnodevi Temple, Ahmedabad, Gujarat 382421, and serves clients across Ahmedabad, Gandhinagar, Sanand, Bopal, and greater Gujarat.",
+  },
+  {
+    question: "Does TRAGUIN offer group tour discounts?",
+    answer:
+      "Yes. TRAGUIN provides customized group travel packages with special group discounts for friends, families, corporate teams, and large group reunions travelling together to domestic or international destinations.",
+  },
+  {
+    question: "Does TRAGUIN arrange cruise packages?",
+    answer:
+      "Yes. TRAGUIN offers cruise holiday packages including Goa cruises, Singapore cruises, Dubai cruises, and international cruise tours, often combined with hotel and flight packages.",
   },
 ];

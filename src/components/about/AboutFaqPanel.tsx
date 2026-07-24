@@ -12,14 +12,10 @@ export function AboutFaqPanel({ items }: AboutFaqPanelProps) {
     <section className="about-enterprise__section about-faq" aria-labelledby="about-faq-heading">
       <div className="about-faq__layout">
         <header className="about-enterprise__section-header about-faq__header">
-          <p className="about-enterprise__eyebrow">Support</p>
+          <p className="about-enterprise__eyebrow">FAQ</p>
           <h2 id="about-faq-heading" className="about-enterprise__section-title">
-            Frequently asked questions
+            TRAGUIN — Frequently Asked Questions
           </h2>
-          <p className="about-enterprise__section-description">
-            Practical answers for travelers and corporate teams evaluating TRAGUIN as a planning
-            partner.
-          </p>
           <p className="about-faq__meta">
             {items.length} {items.length === 1 ? "topic" : "topics"}
           </p>
