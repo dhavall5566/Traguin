@@ -1,6 +1,5 @@
 import { Suspense } from "react";
 import { DevChunkRecovery } from "@/components/providers/DevChunkRecovery";
-import { GoogleAnalyticsLoader } from "@/components/analytics/GoogleAnalyticsLoader";
 import { GoogleAnalyticsRouteTracker } from "@/components/analytics/GoogleAnalytics";
 import { LenisProvider } from "@/components/providers/LenisProvider";
 import { PlannerScrollHandler } from "@/components/providers/PlannerScrollHandler";
@@ -12,7 +11,6 @@ import { NikiAgent } from "@/components/layout/NikiAgent";
 export default function SiteLayout({ children }: { children: React.ReactNode }) {
   return (
     <>
-      <GoogleAnalyticsLoader />
       <Suspense fallback={null}>
         <GoogleAnalyticsRouteTracker />
       </Suspense>

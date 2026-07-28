@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { cookies } from "next/headers";
 import { isTheme, THEME_COOKIE_NAME, DEFAULT_THEME, type Theme } from "@/lib/theme";
+import { GoogleAnalyticsScripts } from "@/components/analytics/GoogleAnalyticsScripts";
 import "./globals.css";
 import { ThemeProvider } from "@/components/providers/ThemeProvider";
 import { MotionLiteProvider } from "@/components/providers/MotionLiteProvider";
@@ -61,6 +62,7 @@ export default async function RootLayout({
         suppressHydrationWarning
         className="min-h-full flex flex-col bg-background font-body text-foreground antialiased"
       >
+        <GoogleAnalyticsScripts />
         <ThemeProvider initialTheme={serverTheme}>
           <MotionLiteProvider>{children}</MotionLiteProvider>
         </ThemeProvider>
