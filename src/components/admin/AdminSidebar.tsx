@@ -109,26 +109,6 @@ function groupContainsPath(pathname: string, sectionId: string, keys: string[]) 
   });
 }
 
-const NAV_RECENT_STORAGE_KEY = "traguin-cms-nav-recent";
-
-function readRecentNavKeys(): string[] {
-  if (typeof window === "undefined") return [];
-  try {
-    const raw = window.localStorage.getItem(NAV_RECENT_STORAGE_KEY);
-    if (!raw) return [];
-    const parsed = JSON.parse(raw) as string[];
-    return Array.isArray(parsed) ? parsed : [];
-  } catch {
-    return [];
-  }
-}
-
-function writeRecentNavKey(key: string) {
-  if (typeof window === "undefined") return;
-  const next = [key, ...readRecentNavKeys().filter((item) => item !== key)].slice(0, 5);
-  window.localStorage.setItem(NAV_RECENT_STORAGE_KEY, JSON.stringify(next));
-}
-
 function isNavActive(pathname: string, href: string) {
   return pathname === href || pathname.startsWith(`${href}/`);
 }
@@ -157,7 +137,6 @@ function NavLinkItem({
       onFocus={() => {
         if (item.endpoint) prefetchAdminList(item.endpoint);
       }}
-      onClick={() => writeRecentNavKey(item.key)}
     >
       <span className={cn("admin-nav-link__icon-wrap", active && "admin-nav-link__icon-wrap--active")}>
         <Icon className="admin-nav-link__icon" aria-hidden />
@@ -179,11 +158,6 @@ export function AdminSidebar() {
       !entity.hideFromNav && (isLuxuryStaysVisible() || entity.key !== "hotels"),
   );
   const [search, setSearch] = useState("");
-  const [recentNavKeys, setRecentNavKeys] = useState<string[]>([]);
-
-  useEffect(() => {
-    setRecentNavKeys(readRecentNavKeys());
-  }, [pathname]);
 
   const navCatalog = useMemo(() => {
     const items: NavItem[] = [];
@@ -235,14 +209,6 @@ export function AdminSidebar() {
 
     return CMS_NAV_SECTIONS[0]?.id ?? null;
   }, [navCatalog, pathname]);
-
-  const recentNavItems = useMemo(
-    () =>
-      recentNavKeys
-        .map((key) => navCatalog.find((item) => item.key === key))
-        .filter((item): item is NavItem => item !== undefined),
-    [navCatalog, recentNavKeys],
-  );
 
   useEffect(() => {
     const onKeyDown = (event: KeyboardEvent) => {
@@ -345,20 +311,6 @@ export function AdminSidebar() {
               <div className="admin-nav-group-items">
                 {searchResults.map((item) => (
                   <NavLinkItem key={item.key} item={item} pathname={pathname} compact />
-                ))}
-              </div>
-            </section>
-          )}
-
-          {!isSearching && recentNavItems.length > 0 && (
-            <section className="admin-nav-group admin-nav-group--flat admin-nav-group--recent">
-              <div className="admin-nav-group__header">
-                <span className="admin-nav-group__title">Recent</span>
-                <span className="admin-nav-group__count">{recentNavItems.length}</span>
-              </div>
-              <div className="admin-nav-group-items">
-                {recentNavItems.map((item) => (
-                  <NavLinkItem key={`recent-${item.key}`} item={item} pathname={pathname} compact />
                 ))}
               </div>
             </section>
