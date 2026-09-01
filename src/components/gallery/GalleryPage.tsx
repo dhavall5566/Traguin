@@ -4,7 +4,6 @@ import { PageShell } from "@/components/layout/PageShell";
 import { TrustBar } from "@/components/layout/TrustBar";
 import { PageCTA } from "@/components/layout/PageCTA";
 import { GalleryGrid } from "@/components/gallery/GalleryGrid";
-import { ClientPortraitWall, ClientPortraitWallHeader } from "@/components/gallery/ClientPortraitWall";
 import { pageHeroes } from "@/data/pageContent";
 import type { GalleryPageData } from "@/lib/api/gallery";
 
@@ -15,7 +14,6 @@ const galleryStats = [
 ] as const;
 
 export function GalleryPage({
-  clientWall,
   galleryItems,
   galleryCategories,
 }: GalleryPageData) {
@@ -34,8 +32,8 @@ export function GalleryPage({
               Moments from journeys designed with care.
             </h2>
             <p className="mt-4 max-w-2xl text-sm leading-relaxed text-muted sm:text-base">
-              Client portraits and destination photography from our studio — a living record of
-              places, people, and the details that shape every itinerary.
+              Destination photography from our studio — a living record of places, routes, and the
+              details that shape every itinerary.
             </p>
           </div>
 
@@ -47,16 +45,6 @@ export function GalleryPage({
               </div>
             ))}
           </dl>
-        </section>
-
-        <section className="gallery-page-section" aria-labelledby="gallery-client-wall-heading">
-          <ClientPortraitWallHeader />
-          <h2 id="gallery-client-wall-heading" className="sr-only">
-            Client portraits
-          </h2>
-          <div className="mt-6">
-            <ClientPortraitWall clients={clientWall} />
-          </div>
         </section>
 
         <section className="gallery-page-section gallery-page-section--archive" aria-labelledby="gallery-archive-heading">

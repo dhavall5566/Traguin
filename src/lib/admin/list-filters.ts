@@ -65,7 +65,7 @@ export function buildDefaultListFilters(entity: AdminEntityDef): AdminListFilter
     });
   }
 
-  if (names.has("is_featured") && entity.key === "packages") {
+  if (names.has("is_featured") && (entity.key === "packages" || entity.key === "itineraries")) {
     filters.push({
       type: "select",
       field: "is_featured",

@@ -17,18 +17,38 @@ export const images = {
 
   /** Home region split cards — vivid editorial backgrounds */
   homeRegionDomestic: pexels(1271619),
-  homeRegionInternational: pexels(2581922),
+  homeRegionInternational: unsplash("1552465011-b4e21bf6e79a", 1600),
 
   // Domestic, distinct verified photos
-  kashmir: pexels(6738359),
-  kerala: unsplash("1717069541470-9b1a2b085e1f"),
+  kashmir: unsplash("1506466010722-395aa2bef877"),
+  kerala: unsplash("1593693401060-9fc28cf9e368"),
   goa: pexels(248797),
-  ladakh: pexels(2387873),
-  rajasthan: pexels(1271619),
-  himachal: pexels(3574440),
-  punjab: pexels(25264894),
-  delhi: pexels(1070535),
-  "uttar-pradesh": pexels(316458),
+  ladakh: unsplash("1605649487212-47bdab064df7"),
+  rajasthan: unsplash("1545126178-862cdb469409"),
+  maharashtra: unsplash("1570168007204-dfb528c6958f"),
+  "dadra-and-nagar-haveli": unsplash("1441974231531-c6227db76b6e"),
+  "daman-and-diu": unsplash("1694931537785-ca96d985b52c"),
+  "andaman-and-nicobar": unsplash("1545762374-d18079617da8"),
+  lakshadweep: unsplash("1572025310208-2fd6b91764c1"),
+  "tamil-nadu": unsplash("1572146462570-2129a547e6dd"),
+  "andhra-pradesh": unsplash("1609854534028-b512f5246abc"),
+  karnataka: unsplash("1580294647332-8a399cd9ed45"),
+  puducherry: unsplash("1569157087866-f4a8e9250605"),
+  himachal: unsplash("1722915767859-08a59870d70b"),
+  haryana: unsplash("1500382017468-9049fed747ef"),
+  punjab: unsplash("1623059508779-2542c6e83753"),
+  delhi: unsplash("1587474260584-136574528ed5"),
+  "uttar-pradesh": unsplash("1564507592333-c60657eea523"),
+  uttarakhand: unsplash("1582510003544-4d00b7f74220"),
+  chhattisgarh: unsplash("1673462107499-97848ff888b9"),
+  jharkhand: unsplash("1621578847110-61f6cf5a3d9e"),
+  "madhya-pradesh": unsplash("1672215051880-7594629a2ffb"),
+  "west-bengal": unsplash("1561289023-56c2e530bc8a"),
+  odisha: unsplash("1601815264039-67c8ba1a7f98"),
+  assam: unsplash("1637391783805-f1393be00fcf"),
+  sikkim: unsplash("1585914285309-4b1fe30b53ed"),
+  bihar: unsplash("1663026334663-5026b4f43ac6"),
+  "arunachal-pradesh": unsplash("1626761627604-f27d98885f4b"),
 
   // International, distinct verified photos
   bali: pexels(4244164),
@@ -38,7 +58,7 @@ export const images = {
   vietnam: pexels(3787839),
   singapore: pexels(259447),
 
-  australia: unsplash("1523483405985-81fa17fd9aae", 1400),
+  australia: unsplash("1506973035872-a4ec16b8e8d9", 1400),
   canada: unsplash("1519832979-8f9939d45f06", 1400),
 
   beach: pexels(1450360),
@@ -48,19 +68,19 @@ export const images = {
   // Experience showcase cards (local, real TRAGUIN photos)
   experienceGroupTours: "/experiences/group-tours.png",
   experiencePrivateLuxe: "/experiences/private-luxe.png",
-  /** Travel Expert page hero — concierge planning, warm editorial */
-  travelExpertHero: unsplash("1520251406685-9d47b813f37d", 1920),
+  /** Travel Expert page hero — luxury resort, warm editorial */
+  travelExpertHero: unsplash("1520250497591-112f2f40a3f4", 1920),
   /** Travel Expert service photography */
-  serviceBespoke: "/experiences/private-luxe.png",
-  serviceSkyCharter: pexels(46148, 1400),
-  serviceYacht: pexels(3601430, 1400),
-  serviceChauffeur: unsplash("1503376780353-7e6692767b70", 1400),
-  servicePrivateAccess: pexels(6266317, 1400),
+  serviceBespoke: unsplash("1582719508461-905c673771fd", 1400),
+  serviceSkyCharter: unsplash("1436491865332-7a61a109cc05", 1400),
+  serviceYacht: unsplash("1605281317010-fe5ffe798166", 1400),
+  serviceChauffeur: unsplash("1449965408869-eaa3f722e40d", 1400),
+  servicePrivateAccess: unsplash("1414235077428-338989a2e8c0", 1400),
   /** Travel Expert — visa & paperwork */
-  serviceVisa: pexels(4606725, 1400),
+  serviceVisa: unsplash("1450101499163-c8848c66ca85", 1400),
   /** Travel Expert + corporate/MICE programs */
-  serviceCorporateEvent: pexels(2774552, 1400),
-  experienceCorporate: pexels(2774552, 1400),
+  serviceCorporateEvent: unsplash("1511578314322-379afb476865", 1400),
+  experienceCorporate: unsplash("1511578314322-379afb476865", 1400),
   experienceSchool: pexels(8199572, 1400),
 
   couple1: unsplash("1524504388940-b1c1722653e1", 400),

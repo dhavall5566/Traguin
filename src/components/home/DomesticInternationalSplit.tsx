@@ -32,6 +32,12 @@ const INTERNATIONAL_GALLERY = [
 ];
 
 function regionGallery(panel: HomeRegionPanel): string[] {
+  const cmsGallery = (panel.galleryImages ?? []).filter(Boolean);
+  if (cmsGallery.length > 0) {
+    return Array.from(new Set(cmsGallery)).slice(0, 8);
+  }
+
+  // Fallback only when CMS has no gallery uploads yet.
   const isInternational =
     panel.label.toLowerCase().includes("international") ||
     panel.href.toLowerCase().includes("region=international") ||

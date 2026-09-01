@@ -2,20 +2,18 @@
 
 import Link from "next/link";
 import { Clock, Star } from "lucide-react";
-import { HotelImageSlider } from "@/components/hotels/HotelImageSlider";
 import { PriceDisplay } from "@/components/ui/PriceDisplay";
-import { getDestinationGalleryImages } from "@/lib/destination-images";
+import { SafeImage } from "@/components/ui/SafeImage";
+import { resolveDestinationHeroImage } from "@/lib/destination-images";
 import { getDestinationRating, getDestinationReviewCount } from "@/lib/destinations";
 import { useTilt3D } from "@/hooks/useTilt3D";
 import { cn } from "@/lib/utils";
-
-const DESTINATION_SLIDE_INTERVAL_MS = 4000;
 
 type DestinationCardProps = {
   name: string;
   description: string;
   image: string;
-  /** Resolves five destination photos for the card slider */
+  /** Destination slug used for curated single hero resolution */
   destinationId: string;
   galleryImages?: string[];
   startingPrice?: number;
@@ -40,7 +38,6 @@ export function DestinationCard({
   description,
   image,
   destinationId,
-  galleryImages,
   startingPrice,
   href,
   cta = "View Journey",
@@ -57,7 +54,7 @@ export function DestinationCard({
   const displayReviewCount =
     reviewCount ?? getDestinationReviewCount(destinationId, displayRating);
   const stars = Math.min(5, Math.max(0, Math.round(displayRating)));
-  const galleryImagesResolved = getDestinationGalleryImages(destinationId, image, galleryImages);
+  const heroImage = resolveDestinationHeroImage(destinationId, { cmsImage: image });
 
   return (
     <Link
@@ -73,13 +70,10 @@ export function DestinationCard({
       )}
     >
       <div className="destination-card__media">
-        <HotelImageSlider
-          images={galleryImagesResolved}
+        <SafeImage
+          src={heroImage}
           alt={name}
-          className="h-full w-full"
-          intervalMs={DESTINATION_SLIDE_INTERVAL_MS}
-          showIndicators={false}
-          pauseOnHover
+          className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-[1.03]"
         />
         {duration && (
           <span className="absolute top-2 left-2 z-20 inline-flex items-center gap-1 rounded-full border border-glass-border bg-surface/95 px-2 py-0.5 text-[9px] font-bold tracking-[0.14em] text-foreground uppercase shadow-sm backdrop-blur-sm">

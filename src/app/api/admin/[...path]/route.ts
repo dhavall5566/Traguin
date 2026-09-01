@@ -1,8 +1,20 @@
 import { NextRequest, NextResponse } from "next/server";
+import { revalidatePath } from "next/cache";
 import { getCmsBaseUrl } from "@/lib/api/client";
 import { ADMIN_SESSION_COOKIE } from "@/lib/admin/auth";
 
 type RouteContext = { params: Promise<{ path: string[] }> };
+
+const MUTATING = new Set(["POST", "PATCH", "PUT", "DELETE"]);
+
+function revalidatePublicSite(method: string, subPath: string, ok: boolean) {
+  if (!ok || !MUTATING.has(method) || subPath.startsWith("auth/")) return;
+  revalidatePath("/", "layout");
+  revalidatePath("/");
+  revalidatePath("/destinations");
+  revalidatePath("/gallery");
+  revalidatePath("/client-stories");
+}
 
 async function proxy(request: NextRequest, context: RouteContext) {
   const { path } = await context.params;
@@ -37,6 +49,7 @@ async function proxy(request: NextRequest, context: RouteContext) {
   }
 
   const response = await fetch(url.toString(), init);
+  revalidatePublicSite(request.method, subPath, response.ok);
 
   if (response.status === 204 || response.status === 205) {
     return new NextResponse(null, { status: response.status });

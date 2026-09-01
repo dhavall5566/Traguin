@@ -11,6 +11,7 @@ import type { CmsDestination, CmsFaq, CmsItinerary, CmsPackage, CmsRedirect } fr
 import type { Hotel } from "@/types";
 import { cleanPackageTitle } from "@/lib/package-title";
 import { loadCmsDetailContext } from "./detail-context";
+import { resolveCuratedItineraryHero } from "@/data/itinerary-heroes";
 
 function uniqueGalleryUrls(urls: string[]): string[] {
   const seen = new Set<string>();
@@ -43,11 +44,10 @@ function resolveItineraryHeroImage(
   itinerary: CmsItinerary,
   destination: CmsDestination,
   mediaMap: Map<string, string>,
-  linkedPackage?: { hero_media_id: string | null } | null,
+  linkedPackage?: { hero_media_id: string | null; slug?: string | null } | null,
 ): string {
-  if (itinerary.slug === "gj-005-divine-statue-of-unity-itinerary") {
-    return images.statueOfUnityCircuit;
-  }
+  const curated = resolveCuratedItineraryHero(itinerary.slug, linkedPackage?.slug);
+  if (curated) return curated;
 
   const packageHeroMediaId =
     itinerary.package_hero_media_id ?? linkedPackage?.hero_media_id ?? null;
@@ -57,7 +57,7 @@ function resolveItineraryHeroImage(
     resolveMediaUrl(mediaMap, packageHeroMediaId, "") ||
     resolveMediaUrl(mediaMap, destination.hero_media_id, "") ||
     destination.gallery_media[0]?.url ||
-    images.bali
+    images.australia
   );
 }
 
@@ -67,7 +67,7 @@ export function mapCmsItineraryToItinerary(
   mediaMap: Map<string, string>,
   faqs: CmsFaq[] = [],
   hotelsByUuid?: Map<string, Hotel>,
-  linkedPackage?: { hero_media_id: string | null } | null,
+  linkedPackage?: { hero_media_id: string | null; slug?: string | null } | null,
 ): Itinerary {
   const heroImage = resolveItineraryHeroImage(
     itinerary,

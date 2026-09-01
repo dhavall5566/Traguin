@@ -73,6 +73,44 @@ export function groupEntityFormSections(
     return sections.filter((section) => section.fields.length > 0);
   }
 
+  if (entityKey === "homepage-region-panels") {
+    const pick = (names: string[]) =>
+      fields.filter((field) => names.includes(field.name));
+
+    const sections: FormSectionDef[] = [
+      {
+        id: "panel-copy",
+        title: "Homepage card copy",
+        description:
+          "Matches the homepage “Pick A Point On The Map” card: badge → headline → description → chips → Explore button.",
+        fields: pick(["label", "stat_text", "title", "description", "highlights"]),
+      },
+      {
+        id: "panel-image",
+        title: "Gallery images",
+        description:
+          "Homepage card is an image carousel. Upload multiple photos — the first is the lead slide shown on load.",
+        fields: pick(["gallery_media_ids"]),
+      },
+      {
+        id: "panel-link",
+        title: "Link & region",
+        description:
+          "Region key and mood decide India vs International routing. CTA text is always “Explore {tab label}”.",
+        fields: pick(["key", "mood", "href"]),
+      },
+      {
+        id: "settings",
+        title: "Publishing",
+        description: "Visibility and tab order on the homepage.",
+        variant: "sidebar",
+        fields: pick(["sort_order", "is_active"]),
+      },
+    ];
+
+    return sections.filter((section) => section.fields.length > 0);
+  }
+
   const assigned = new Set<string>();
   const sections: FormSectionDef[] = [];
 

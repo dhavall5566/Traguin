@@ -25,6 +25,7 @@ function GalleryArchiveCard({ item, priority }: { item: GalleryItem; priority: b
           className="transition-transform duration-700 ease-out group-hover:scale-[1.04]"
           aspectRatio="4 / 5"
           priority={priority}
+          sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
         />
         <div className="gallery-archive-card__scrim" aria-hidden />
         <figcaption className="gallery-archive-card__caption">
@@ -94,7 +95,7 @@ export function GalleryGrid({ className, itemLimit, items, categories }: Gallery
         <>
           <div className="gallery-archive-grid mt-6 sm:mt-8">
             {visibleItems.map((item, index) => (
-              <GalleryArchiveCard key={item.id} item={item} priority={index < 8} />
+              <GalleryArchiveCard key={item.id} item={item} priority={index < 2} />
             ))}
           </div>
 

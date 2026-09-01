@@ -7,6 +7,7 @@ import { ThemeProvider } from "@/components/providers/ThemeProvider";
 import { MotionLiteProvider } from "@/components/providers/MotionLiteProvider";
 
 export const metadata: Metadata = {
+  metadataBase: new URL("https://traguin.in"),
   title: {
     default: "TRAGUIN | Luxury Travel Platform",
     template: "%s | TRAGUIN Luxury Travel",
@@ -25,15 +26,32 @@ export const metadata: Metadata = {
     title: "TRAGUIN | Luxury Travel Platform",
     description: "Travel beyond destinations with curated luxury journeys.",
     type: "website",
+    url: "https://traguin.in",
+    siteName: "TRAGUIN",
+    images: [
+      {
+        url: "/og-share.png?v=20260901",
+        width: 1200,
+        height: 630,
+        alt: "TRAGUIN luxury travel",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "TRAGUIN | Luxury Travel Platform",
+    description: "Travel beyond destinations with curated luxury journeys.",
+    images: ["/og-share.png"],
   },
   icons: {
     icon: [
+      { url: "/favicon.ico", sizes: "any" },
       { url: "/favicon-32.png", sizes: "32x32", type: "image/png" },
       { url: "/favicon.png", sizes: "64x64", type: "image/png" },
       { url: "/icon-192.png", sizes: "192x192", type: "image/png" },
       { url: "/icon.png", sizes: "512x512", type: "image/png" },
     ],
-    shortcut: "/favicon.png",
+    shortcut: "/favicon.ico",
     apple: [{ url: "/apple-icon.png", sizes: "180x180", type: "image/png" }],
   },
 };

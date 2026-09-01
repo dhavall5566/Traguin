@@ -17,7 +17,6 @@ import { toPublicMediaUrl } from "./media-url";
 import type { CmsClientStory, CmsGalleryItem, CmsMediaAsset } from "./types";
 
 export type GalleryPageData = {
-  clientWall: GalleryClientWallItem[];
   galleryItems: GalleryItem[];
   galleryCategories: GalleryCategory[];
 };
@@ -176,14 +175,6 @@ export async function getGalleryPageData(): Promise<GalleryPageData> {
     galleryStories.map((story) => normalizeGalleryLabel(story.client_name)).filter(Boolean)
   );
 
-  const clientWall = dedupeClientWallItems(
-    uniqueById(
-      galleryStories
-        .map((story, index) => mapCmsClientStoryToWallItem(story, mediaMap, index))
-        .filter((item): item is GalleryClientWallItem => item != null),
-    ),
-  ).slice(0, 8);
-
   const galleryItems = dedupeGalleryItems(
     uniqueById(
       cmsItems
@@ -205,7 +196,6 @@ export async function getGalleryPageData(): Promise<GalleryPageData> {
   ];
 
   return {
-    clientWall,
     galleryItems,
     galleryCategories,
   };

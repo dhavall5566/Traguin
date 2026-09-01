@@ -3,6 +3,11 @@
 import { useState, useEffect, ImgHTMLAttributes } from "react";
 import { cn } from "@/lib/utils";
 import { FALLBACK_IMAGE } from "@/lib/images";
+import {
+  CMS_IMAGE_RELOAD_KEY,
+  hardRefreshPage,
+  isLocalCmsImageUrl,
+} from "@/lib/cms-live-reload";
 
 interface SafeImageProps extends ImgHTMLAttributes<HTMLImageElement> {
   src: string;
@@ -37,6 +42,16 @@ export function SafeImage({
       decoding={decoding}
       className={cn("block max-w-full", className)}
       onError={(e) => {
+        if (
+          typeof window !== "undefined" &&
+          isLocalCmsImageUrl(src) &&
+          !sessionStorage.getItem(CMS_IMAGE_RELOAD_KEY)
+        ) {
+          sessionStorage.setItem(CMS_IMAGE_RELOAD_KEY, "1");
+          hardRefreshPage();
+          onError?.(e);
+          return;
+        }
         if (!hasError) {
           setHasError(true);
           setCurrentSrc(fallbackSrc);

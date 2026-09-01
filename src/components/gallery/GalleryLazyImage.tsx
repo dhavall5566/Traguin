@@ -1,6 +1,7 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
+import Image from "next/image";
 import { cn } from "@/lib/utils";
 import { FALLBACK_IMAGE } from "@/lib/images";
 
@@ -13,54 +14,39 @@ type GalleryLazyImageProps = {
   sizes?: string;
 };
 
+const DEFAULT_SIZES =
+  "(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw";
+
 export function GalleryLazyImage({
   src,
   alt,
   className,
   aspectRatio = "4 / 5",
   priority = false,
-  sizes,
+  sizes = DEFAULT_SIZES,
 }: GalleryLazyImageProps) {
-  const [loaded, setLoaded] = useState(false);
-  const [currentSrc, setCurrentSrc] = useState(src);
   const [failed, setFailed] = useState(false);
-
-  useEffect(() => {
-    setCurrentSrc(src);
-    setLoaded(false);
-    setFailed(false);
-  }, [src]);
+  const imageSrc = failed || !src ? FALLBACK_IMAGE : src;
 
   return (
     <div
       className="gallery-lazy-image relative overflow-hidden bg-[color-mix(in_srgb,var(--foreground)_6%,var(--surface))]"
       style={{ aspectRatio }}
     >
-      {!loaded ? (
-        <div className="gallery-lazy-image__skeleton absolute inset-0" aria-hidden>
-          <span className="gallery-lazy-image__spinner" />
-        </div>
-      ) : null}
-      <img
-        src={failed ? FALLBACK_IMAGE : currentSrc}
+      <Image
+        key={imageSrc}
+        src={imageSrc}
         alt={alt}
-        loading={priority ? "eager" : "lazy"}
-        decoding="async"
-        fetchPriority={priority ? "high" : "auto"}
+        fill
         sizes={sizes}
-        onLoad={() => setLoaded(true)}
+        quality={75}
+        priority={priority}
+        loading={priority ? undefined : "lazy"}
+        decoding="async"
         onError={() => {
-          if (!failed) {
-            setFailed(true);
-            setCurrentSrc(FALLBACK_IMAGE);
-          }
-          setLoaded(true);
+          if (!failed) setFailed(true);
         }}
-        className={cn(
-          "block h-full w-full object-cover transition-opacity duration-500 ease-out",
-          loaded ? "opacity-100" : "opacity-0",
-          className
-        )}
+        className={cn("object-cover", className)}
       />
     </div>
   );

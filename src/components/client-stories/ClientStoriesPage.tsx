@@ -6,7 +6,7 @@ import { PageShell } from "@/components/layout/PageShell";
 import { PageHero } from "@/components/layout/PageHero";
 import { TrustBar } from "@/components/layout/TrustBar";
 import { PageCTA } from "@/components/layout/PageCTA";
-import { SafeImage } from "@/components/ui/SafeImage";
+import Image from "next/image";
 import { pageHeroes } from "@/data/pageContent";
 
 type ClientStoriesPageProps = ClientStoriesPageData;
@@ -35,11 +35,15 @@ export function ClientStoriesPage({ photos, reviews }: ClientStoriesPageProps) {
                     key={`${photo.id}-${index}`}
                     className="relative aspect-square overflow-hidden rounded-xl bg-black/5"
                   >
-                    <SafeImage
+                    <Image
                       src={photo.image}
                       alt={photo.name}
-                      className="absolute inset-0 h-full w-full object-cover"
-                      loading="lazy"
+                      fill
+                      sizes="(max-width: 768px) 50vw, (max-width: 1024px) 33vw, 25vw"
+                      quality={72}
+                      priority={index < 2}
+                      loading={index < 2 ? undefined : "lazy"}
+                      className="object-cover"
                     />
                     <div className="pointer-events-none absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-black/75 via-black/25 to-transparent" />
                     <div className="absolute inset-x-0 bottom-0 z-[1] flex flex-col justify-end p-3">
@@ -77,10 +81,13 @@ function ReviewCard({ story }: { story: ClientStoryReview }) {
       <footer className="mt-6 flex items-center gap-4 border-t border-glass-border pt-6">
         {story.image ? (
           <div className="relative h-12 w-12 overflow-hidden rounded-full">
-            <SafeImage
+            <Image
               src={story.image}
               alt={story.name}
-              className="h-full w-full object-cover"
+              fill
+              sizes="48px"
+              quality={70}
+              className="object-cover"
             />
           </div>
         ) : (

@@ -7,6 +7,7 @@ import { PageTransition } from "@/components/providers/PageTransitionProvider";
 import { Navigation } from "@/components/layout/Navigation";
 import { Footer } from "@/components/layout/Footer";
 import { NikiAgent } from "@/components/layout/NikiAgent";
+import { CmsLiveReload } from "@/components/providers/CmsLiveReload";
 
 export default function SiteLayout({ children }: { children: React.ReactNode }) {
   return (
@@ -15,6 +16,7 @@ export default function SiteLayout({ children }: { children: React.ReactNode }) 
         <GoogleAnalyticsRouteTracker />
       </Suspense>
       <DevChunkRecovery />
+      <CmsLiveReload />
       <LenisProvider>
         <PlannerScrollHandler />
         <Navigation />

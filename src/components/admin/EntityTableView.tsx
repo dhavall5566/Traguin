@@ -8,6 +8,7 @@ import { cn, dedupeRowsByField } from "@/lib/utils";
 import { adminDelete, adminRelationOptions, adminUpdate } from "@/lib/admin/api-client";
 import {
   fetchHomepageHeroSliderSettings,
+  setItineraryHomepageVisibility,
   setPackageHomepageVisibility,
 } from "@/lib/admin/homepage-hero-admin";
 import {
@@ -49,7 +50,9 @@ const LIST_PAGE_SUBTITLES: Record<string, string> = {
   packages:
     "Manage packages from the table: use Published and Hero slider toggles. Destination pages list linked Itineraries.",
   itineraries:
-    "Full journey pages shown on destination hubs (e.g. Uttarakhand’s 10 itineraries). Each itinerary should link to a Package.",
+    "Manage itineraries from the table: use Published and Hero slider toggles. Full journey pages appear on destination hubs and can feature on the homepage hero. Publishing a linked itinerary also publishes its package.",
+  "homepage-region-panels":
+    "Edit the India / International cards on the homepage (“Pick A Point On The Map”). Tab label, headline, badge stat, chips, and panel image map 1:1 to the public card.",
 };
 
 type EntityTableViewProps = {
@@ -114,12 +117,17 @@ export function EntityTableView({ entityKey }: EntityTableViewProps) {
   const [relationOptions, setRelationOptions] = useState<
     Record<string, { value: string; label: string }[]>
   >({});
-  const [homepageVisibleIds, setHomepageVisibleIds] = useState<string[]>([]);
+  const [homepageVisiblePackageIds, setHomepageVisiblePackageIds] = useState<string[]>([]);
+  const [homepageVisibleItineraryIds, setHomepageVisibleItineraryIds] = useState<string[]>([]);
   const [homepageMaxItems, setHomepageMaxItems] = useState(8);
   const { showUpdatedToast, showDeletedToast, showErrorToast } = useAdminToast();
 
   const columns = useMemo(() => (entity ? getListColumns(entity) : []), [entity]);
+  const homepageVisibleIds =
+    entityKey === "itineraries" ? homepageVisibleItineraryIds : homepageVisiblePackageIds;
   const homepageVisibleSet = useMemo(() => new Set(homepageVisibleIds), [homepageVisibleIds]);
+  const homepageTotalVisible =
+    homepageVisiblePackageIds.length + homepageVisibleItineraryIds.length;
   const hasHomepageVisibilityColumn = useMemo(
     () => columns.some((col) => col.listHomepageVisibility),
     [columns],
@@ -188,7 +196,8 @@ export function EntityTableView({ entityKey }: EntityTableViewProps) {
     void fetchHomepageHeroSliderSettings()
       .then((settings) => {
         if (cancelled) return;
-        setHomepageVisibleIds(settings.visible_package_ids);
+        setHomepageVisiblePackageIds(settings.visible_package_ids);
+        setHomepageVisibleItineraryIds(settings.visible_itinerary_ids);
         setHomepageMaxItems(settings.hero_slider_max_items);
       })
       .catch((err) => {
@@ -505,22 +514,46 @@ export function EntityTableView({ entityKey }: EntityTableViewProps) {
           : `${toggleLabel} disabled.`,
     );
 
-    void adminUpdate(entity.endpoint, recordId, patch).then((result) => {
-      if (!result.error) {
-        revalidateAdminListInBackground(entity.endpoint, PAGE_SIZE, offset, serverQuery);
+    void adminUpdate<Record<string, unknown>>(entity.endpoint, recordId, patch).then((result) => {
+      if (result.error) {
+        setItems((current) =>
+          current.map((item) =>
+            String(item[idField]) === recordId ? { ...item, [field.name]: previousValue } : item,
+          ),
+        );
+        patchCachedAdminListItem(entity.endpoint, idField, recordId, {
+          [field.name]: previousValue,
+        });
+        setError(result.error.message);
+        showErrorToast(result.error.message);
         return;
       }
 
-      setItems((current) =>
-        current.map((item) =>
-          String(item[idField]) === recordId ? { ...item, [field.name]: previousValue } : item,
-        ),
-      );
-      patchCachedAdminListItem(entity.endpoint, idField, recordId, {
-        [field.name]: previousValue,
-      });
-      setError(result.error.message);
-      showErrorToast(result.error.message);
+      // Guard against silent server-side overrides (e.g. package↔itinerary publish sync).
+      if (
+        field.name === "is_published" &&
+        result.data &&
+        Boolean(result.data.is_published) !== nextValue
+      ) {
+        setItems((current) =>
+          current.map((item) =>
+            String(item[idField]) === recordId
+              ? { ...item, is_published: Boolean(result.data?.is_published) }
+              : item,
+          ),
+        );
+        patchCachedAdminListItem(entity.endpoint, idField, recordId, {
+          is_published: Boolean(result.data.is_published),
+        });
+        const message = nextValue
+          ? "Could not publish this itinerary. Publish its linked package first, or unlink the package."
+          : "Could not unpublish this itinerary while its linked package is still published.";
+        setError(message);
+        showErrorToast(message);
+        return;
+      }
+
+      revalidateAdminListInBackground(entity.endpoint, PAGE_SIZE, offset, serverQuery);
     });
   };
 
@@ -531,36 +564,80 @@ export function EntityTableView({ entityKey }: EntityTableViewProps) {
     if (!entity) return;
 
     const recordId = String(row[idField]);
-    const title = String(row[entity.nameField ?? "title"] ?? "Package");
-    const previousVisibleIds = homepageVisibleIds;
+    const title = String(row[entity.nameField ?? "title"] ?? "Item");
+    const isItinerary = entity.key === "itineraries";
+    const previousPackageIds = homepageVisiblePackageIds;
+    const previousItineraryIds = homepageVisibleItineraryIds;
+    const currentVisibleIds = isItinerary
+      ? homepageVisibleItineraryIds
+      : homepageVisiblePackageIds;
     const isVisible = homepageVisibleSet.has(recordId);
+    const setCurrentVisibleIds = isItinerary
+      ? setHomepageVisibleItineraryIds
+      : setHomepageVisiblePackageIds;
 
-    if (makeVisible) {
-      if (isVisible) return;
-      if (homepageVisibleIds.length >= homepageMaxItems) {
-        showErrorToast(
-          `You can only show up to ${homepageMaxItems} packages on the homepage. Hide another package first.`,
-        );
-        return;
-      }
+    void (async () => {
+      if (makeVisible) {
+        if (isVisible) return;
+        if (homepageTotalVisible >= homepageMaxItems) {
+          showErrorToast(
+            `Homepage hero is full (${homepageMaxItems} max). Remove one from Homepage Hero Slider first.`,
+          );
+          return;
+        }
 
-      const featuredCount = items.filter((item) => Boolean(item.is_featured)).length;
-      setHomepageVisibleIds([...homepageVisibleIds, recordId]);
+        // Hero slider requires a published record so it can appear on the public site.
+        if (!Boolean(row.is_published)) {
+          const publishPatch = { is_published: true };
+          setItems((current) =>
+            current.map((item) =>
+              String(item[idField]) === recordId ? { ...item, ...publishPatch } : item,
+            ),
+          );
+          patchCachedAdminListItem(entity.endpoint, idField, recordId, publishPatch);
+          const publishResult = await adminUpdate(entity.endpoint, recordId, publishPatch);
+          if (publishResult.error) {
+            setItems((current) =>
+              current.map((item) =>
+                String(item[idField]) === recordId ? { ...item, is_published: false } : item,
+              ),
+            );
+            patchCachedAdminListItem(entity.endpoint, idField, recordId, {
+              is_published: false,
+            });
+            showErrorToast(
+              publishResult.error.message ||
+                "Publish this item before adding it to the hero slider.",
+            );
+            return;
+          }
+        }
 
-      void setPackageHomepageVisibility({
-        packageId: recordId,
-        makeVisible: true,
-        currentVisibleIds: homepageVisibleIds,
-        featuredCount,
-      })
-        .then((saved) => {
-          setHomepageVisibleIds(saved.visible_package_ids);
+        const featuredCount = items.filter((item) => Boolean(item.is_featured)).length;
+        setCurrentVisibleIds([...currentVisibleIds, recordId]);
+
+        try {
+          const saved = isItinerary
+            ? await setItineraryHomepageVisibility({
+                itineraryId: recordId,
+                makeVisible: true,
+                currentVisibleIds,
+              })
+            : await setPackageHomepageVisibility({
+                packageId: recordId,
+                makeVisible: true,
+                currentVisibleIds,
+                featuredCount,
+              });
+          setHomepageVisiblePackageIds(saved.visible_package_ids);
+          setHomepageVisibleItineraryIds(saved.visible_itinerary_ids);
           setHomepageMaxItems(saved.hero_slider_max_items);
           setItems((current) =>
             current.map((item) =>
               String(item[idField]) === recordId
                 ? {
                     ...item,
+                    is_published: true,
                     is_featured: true,
                     featured_sort_order: item.featured_sort_order ?? featuredCount + 1,
                   }
@@ -568,33 +645,41 @@ export function EntityTableView({ entityKey }: EntityTableViewProps) {
             ),
           );
           patchCachedAdminListItem(entity.endpoint, idField, recordId, {
+            is_published: true,
             is_featured: true,
             featured_sort_order: featuredCount + 1,
           });
-          showUpdatedToast(`${title} is now visible on the homepage.`);
-        })
-        .catch((err) => {
-          setHomepageVisibleIds(previousVisibleIds);
+          showUpdatedToast(`${title} is now on the homepage hero.`);
+        } catch (err) {
+          setHomepageVisiblePackageIds(previousPackageIds);
+          setHomepageVisibleItineraryIds(previousItineraryIds);
           const message =
             err instanceof Error ? err.message : "Failed to update homepage visibility.";
           setError(message);
           showErrorToast(message);
-        });
-      return;
-    }
+        }
+        return;
+      }
 
-    if (!isVisible) return;
+      if (!isVisible) return;
 
-    setHomepageVisibleIds(homepageVisibleIds.filter((id) => id !== recordId));
+      setCurrentVisibleIds(currentVisibleIds.filter((id) => id !== recordId));
 
-    void setPackageHomepageVisibility({
-      packageId: recordId,
-      makeVisible: false,
-      currentVisibleIds: homepageVisibleIds,
-      featuredCount: 0,
-    })
-      .then((saved) => {
-        setHomepageVisibleIds(saved.visible_package_ids);
+      try {
+        const saved = isItinerary
+          ? await setItineraryHomepageVisibility({
+              itineraryId: recordId,
+              makeVisible: false,
+              currentVisibleIds,
+            })
+          : await setPackageHomepageVisibility({
+              packageId: recordId,
+              makeVisible: false,
+              currentVisibleIds,
+              featuredCount: 0,
+            });
+        setHomepageVisiblePackageIds(saved.visible_package_ids);
+        setHomepageVisibleItineraryIds(saved.visible_itinerary_ids);
         setHomepageMaxItems(saved.hero_slider_max_items);
         setItems((current) =>
           current.map((item) =>
@@ -607,15 +692,16 @@ export function EntityTableView({ entityKey }: EntityTableViewProps) {
           is_featured: false,
           featured_sort_order: null,
         });
-        showUpdatedToast(`${title} is now hidden on the homepage.`);
-      })
-      .catch((err) => {
-        setHomepageVisibleIds(previousVisibleIds);
+        showUpdatedToast(`${title} removed from the homepage hero.`);
+      } catch (err) {
+        setHomepageVisiblePackageIds(previousPackageIds);
+        setHomepageVisibleItineraryIds(previousItineraryIds);
         const message =
           err instanceof Error ? err.message : "Failed to update homepage visibility.";
         setError(message);
         showErrorToast(message);
-      });
+      }
+    })();
   };
 
   if (!entity) {
@@ -686,7 +772,7 @@ export function EntityTableView({ entityKey }: EntityTableViewProps) {
                     }
                   />
                 )}
-                {entityKey === "packages" && (
+                {(entityKey === "packages" || entityKey === "itineraries") && (
                   <Link
                     href="/admin/cms/homepage-hero-slider"
                     className="admin-btn admin-btn--secondary admin-btn--add"
@@ -802,11 +888,14 @@ export function EntityTableView({ entityKey }: EntityTableViewProps) {
                         : String(row[nameField] ?? "Untitled");
                       const slug = row.slug ? String(row.slug) : null;
                       const serialCode = row.serial_code ? String(row.serial_code) : null;
+                      const regionKey = row.key ? String(row.key) : null;
                       const showSerialSecondary =
                         entity.key === "packages" || entity.key === "itineraries";
                       const secondaryLine = showSerialSecondary
                         ? serialCode
-                        : slug ?? recordId;
+                        : entity.key === "homepage-region-panels"
+                          ? regionKey
+                          : slug ?? recordId;
                       const dateValue = row.updated_at ?? row.created_at;
                       const formattedDate = dateValue
                         ? new Date(String(dateValue)).toLocaleDateString()

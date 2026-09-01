@@ -778,8 +778,15 @@ export function EntityFormView({
                   ? entity.label
                   : mode === "create"
                     ? `New ${entity.label}`
-                    : `Edit ${entity.label}`}
+                    : entity.key === "homepage-region-panels" && values.label
+                      ? String(values.label)
+                      : `Edit ${entity.label}`}
               </h1>
+              {entity.key === "homepage-region-panels" ? (
+                <p className="admin-form-toolbar__subtitle">
+                  Homepage region card — badge, headline, chips, and Explore CTA.
+                </p>
+              ) : null}
             </div>
             <div className="admin-form-toolbar__actions">
               {!isSingleton && (

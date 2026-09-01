@@ -388,8 +388,8 @@ export function formValuesToPayload(
       value = uniqueStringsPreservingOrder(
         (Array.isArray(value) ? value : []).map(String).filter(Boolean),
       );
-    } else if (field.type === "select" && field.name === "india_region") {
-      value = value === "" ? null : value;
+    } else if (field.type === "select") {
+      value = value === "" || value == null ? null : value;
     } else if (field.type === "boolean") {
       value = Boolean(value);
     } else if (field.type === "nested-list" && field.nestedList) {

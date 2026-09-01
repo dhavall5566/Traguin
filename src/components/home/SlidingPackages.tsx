@@ -649,10 +649,14 @@ function MobileCardStrip({
 }
 
 function CarouselControls({
+  current,
+  total,
   onPrev,
   onNext,
   onPauseChange,
 }: {
+  current: number;
+  total: number;
   onPrev: () => void;
   onNext: () => void;
   onPauseChange: (paused: boolean) => void;
@@ -671,6 +675,16 @@ function CarouselControls({
       >
         <ChevronLeft size={20} />
       </button>
+      {total > 0 ? (
+        <p
+          className="min-w-[3.25rem] text-center text-sm font-medium tracking-[0.14em] text-white/85 tabular-nums"
+          aria-live="polite"
+          aria-atomic="true"
+        >
+          <span className="text-white">{current}</span>
+          <span className="text-white/45">/{total}</span>
+        </p>
+      ) : null}
       <button
         type="button"
         onClick={onNext}
@@ -786,6 +800,8 @@ export function SlidingPackages({ packages }: { packages: HomeTravelPackage[] })
             />
             <div className="hidden w-full max-w-[940px] justify-center lg:flex">
               <CarouselControls
+                current={activeIndex + 1}
+                total={packageCount}
                 onPrev={prev}
                 onNext={next}
                 onPauseChange={setPausedWithInteraction}
@@ -801,6 +817,8 @@ export function SlidingPackages({ packages }: { packages: HomeTravelPackage[] })
             />
             <div className="flex w-full justify-center lg:hidden">
               <CarouselControls
+                current={activeIndex + 1}
+                total={packageCount}
                 onPrev={prev}
                 onNext={next}
                 onPauseChange={setPausedWithInteraction}

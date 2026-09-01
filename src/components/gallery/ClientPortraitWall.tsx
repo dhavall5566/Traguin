@@ -45,7 +45,8 @@ export function ClientPortraitWall({ clients }: ClientPortraitWallProps) {
                 : client.name
             }
             aspectRatio="3 / 4"
-            priority={index < 4}
+            priority={index < 2}
+            sizes="(max-width: 640px) 45vw, (max-width: 1024px) 22vw, 180px"
             className="transition-transform duration-700 ease-out group-hover:scale-[1.03]"
           />
           <div className="gallery-portrait-card__overlay" aria-hidden />

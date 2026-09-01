@@ -6,6 +6,7 @@ import {
   setCachedRelationOptions,
 } from "@/lib/admin/admin-data-cache";
 import { parseAdminPaginatedList } from "@/lib/admin/list-response";
+import { isMutatingAdminMethod, notifyPublicSiteChanged } from "@/lib/cms-live-reload";
 
 export type AdminApiError = {
   status: number;
@@ -67,6 +68,10 @@ export async function adminFetch<T>(
 
   if (!response.ok) {
     return { data: null, error: await parseError(response) };
+  }
+
+  if (isMutatingAdminMethod(init?.method) && !path.includes("/auth/")) {
+    notifyPublicSiteChanged();
   }
 
   if (response.status === 204) {

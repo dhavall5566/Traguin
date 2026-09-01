@@ -148,6 +148,7 @@ export type CmsStatJson = {
   decimals?: number;
   hero_slider_max_items?: number;
   visible_package_ids?: string[];
+  visible_itinerary_ids?: string[];
 };
 
 export interface CmsHomepageRegionPanel extends CmsTimestamped {
@@ -160,6 +161,7 @@ export interface CmsHomepageRegionPanel extends CmsTimestamped {
   href: string;
   mood: string | null;
   hero_media_id: string | null;
+  gallery_media_ids?: string[];
   sort_order: number;
   is_active: boolean;
 }

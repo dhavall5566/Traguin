@@ -5,15 +5,16 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { ArrowDown, ArrowUp, Trash2 } from "lucide-react";
 import { AdminListToolbar } from "@/components/admin/AdminListToolbar";
 import { useAdminToast } from "@/components/admin/AdminToast";
-import { adminList, adminUpdate } from "@/lib/admin/api-client";
+import { adminList } from "@/lib/admin/api-client";
 import { hasActiveFilters, rowMatchesFilter } from "@/lib/admin/list-filters";
 import { parseAdminPaginatedList } from "@/lib/admin/list-response";
 import type { AdminListFilterDef } from "@/lib/admin/types";
 import {
   fetchHomepageHeroSliderSettings,
   saveHomepageHeroSliderOrder,
-  saveHomepageHeroSliderSettings,
+  setItineraryHomepageVisibility,
   setPackageHomepageVisibility,
+  type HeroSliderOrderItem,
 } from "@/lib/admin/homepage-hero-admin";
 import {
   clampHeroSliderMaxItems,
@@ -21,7 +22,7 @@ import {
 } from "@/lib/api/homepage-hero-settings";
 import { cn } from "@/lib/utils";
 
-type PackageRow = {
+type CatalogRow = {
   id: string;
   title: string;
   slug: string;
@@ -31,40 +32,37 @@ type PackageRow = {
   is_published: boolean;
 };
 
+type SliderKind = "package" | "itinerary";
+
+type SliderRow = CatalogRow & {
+  kind: SliderKind;
+  key: string;
+};
+
 const PAGE_SIZE = 100;
 
 const SLIDER_FILTERS: AdminListFilterDef[] = [
+  {
+    type: "select",
+    field: "kind",
+    label: "Type",
+    options: [
+      { value: "", label: "All" },
+      { value: "package", label: "Package" },
+      { value: "itinerary", label: "Itinerary" },
+    ],
+  },
   { type: "dynamic", field: "destination_name", label: "Destination" },
-  {
-    type: "select",
-    field: "is_published",
-    label: "Published",
-    options: [
-      { value: "", label: "All" },
-      { value: "true", label: "Published" },
-      { value: "false", label: "Draft" },
-    ],
-  },
-  {
-    type: "select",
-    field: "homepage_visible",
-    label: "Homepage",
-    options: [
-      { value: "", label: "All" },
-      { value: "true", label: "Visible" },
-      { value: "false", label: "Hidden" },
-    ],
-  },
 ];
 
 const SLIDER_SORT_OPTIONS = [{ value: "order", label: "Slider order" }];
 
-async function fetchAllPackages(): Promise<PackageRow[]> {
-  const rows: PackageRow[] = [];
+async function fetchCatalog(endpoint: "/packages" | "/itineraries"): Promise<CatalogRow[]> {
+  const rows: CatalogRow[] = [];
   let offset = 0;
 
   while (true) {
-    const { data, error } = await adminList<Record<string, unknown>>("/packages", PAGE_SIZE, offset);
+    const { data, error } = await adminList<Record<string, unknown>>(endpoint, PAGE_SIZE, offset);
     if (error) throw new Error(error.message);
 
     const { items: pageItems, total } = parseAdminPaginatedList(data);
@@ -93,37 +91,47 @@ async function fetchAllPackages(): Promise<PackageRow[]> {
   return rows;
 }
 
-function sortFeaturedPackages(packages: PackageRow[]): PackageRow[] {
-  return packages
-    .filter((pkg) => pkg.is_featured)
-    .sort(
-      (a, b) =>
-        (a.featured_sort_order ?? 999) - (b.featured_sort_order ?? 999) ||
-        a.title.localeCompare(b.title),
-    );
-}
+function toSliderRows(
+  packages: CatalogRow[],
+  itineraries: CatalogRow[],
+  visiblePackageIds: string[],
+  visibleItineraryIds: string[],
+): SliderRow[] {
+  const packageById = new Map(packages.map((row) => [row.id, row]));
+  const itineraryById = new Map(itineraries.map((row) => [row.id, row]));
 
-function normalizeFeaturedOrder(packages: PackageRow[]): PackageRow[] {
-  return packages.map((pkg, index) => ({
-    ...pkg,
-    is_featured: true,
-    featured_sort_order: index + 1,
-  }));
-}
+  const packageRows: SliderRow[] = visiblePackageIds
+    .map((id) => packageById.get(id))
+    .filter((row): row is CatalogRow => Boolean(row?.is_published))
+    .map((row) => ({
+      ...row,
+      kind: "package" as const,
+      key: `package:${row.id}`,
+    }));
 
-function mergeFeaturedPackages(
-  packages: PackageRow[],
-  featuredOrdered: PackageRow[],
-): PackageRow[] {
-  const featuredById = new Map(featuredOrdered.map((pkg) => [pkg.id, pkg]));
-  return packages.map((pkg) => featuredById.get(pkg.id) ?? pkg);
+  const itineraryRows: SliderRow[] = visibleItineraryIds
+    .map((id) => itineraryById.get(id))
+    .filter((row): row is CatalogRow => Boolean(row?.is_published))
+    .map((row) => ({
+      ...row,
+      kind: "itinerary" as const,
+      key: `itinerary:${row.id}`,
+    }));
+
+  return [...packageRows, ...itineraryRows].sort(
+    (a, b) =>
+      (a.featured_sort_order ?? 999) - (b.featured_sort_order ?? 999) ||
+      a.title.localeCompare(b.title),
+  );
 }
 
 export function HomeHeroSliderManager() {
-  const { showUpdatedToast, showDeletedToast, showErrorToast } = useAdminToast();
-  const [packages, setPackages] = useState<PackageRow[]>([]);
+  const { showUpdatedToast, showDeletedToast } = useAdminToast();
+  const [packages, setPackages] = useState<CatalogRow[]>([]);
+  const [itineraries, setItineraries] = useState<CatalogRow[]>([]);
   const [maxVisibleItems, setMaxVisibleItems] = useState(HERO_SLIDER_DEFAULT_MAX_ITEMS);
   const [visiblePackageIds, setVisiblePackageIds] = useState<string[]>([]);
+  const [visibleItineraryIds, setVisibleItineraryIds] = useState<string[]>([]);
   const [search, setSearch] = useState("");
   const [filterValues, setFilterValues] = useState<Record<string, string>>({});
   const [sortBy, setSortBy] = useState("order");
@@ -135,14 +143,17 @@ export function HomeHeroSliderManager() {
   const load = useCallback(async () => {
     setError(null);
     try {
-      const [allPackages, settings] = await Promise.all([
-        fetchAllPackages(),
+      const [allPackages, allItineraries, settings] = await Promise.all([
+        fetchCatalog("/packages"),
+        fetchCatalog("/itineraries"),
         fetchHomepageHeroSliderSettings(),
       ]);
 
       setPackages(allPackages);
+      setItineraries(allItineraries);
       setMaxVisibleItems(clampHeroSliderMaxItems(settings.hero_slider_max_items));
       setVisiblePackageIds(settings.visible_package_ids);
+      setVisibleItineraryIds(settings.visible_itinerary_ids);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to load homepage hero slider settings.");
     } finally {
@@ -154,179 +165,146 @@ export function HomeHeroSliderManager() {
     void load();
   }, [load]);
 
-  const featuredPackages = useMemo(() => sortFeaturedPackages(packages), [packages]);
-  const visibleIdSet = useMemo(() => new Set(visiblePackageIds), [visiblePackageIds]);
-  const visibleCount = visiblePackageIds.length;
+  const slides = useMemo(
+    () => toSliderRows(packages, itineraries, visiblePackageIds, visibleItineraryIds),
+    [packages, itineraries, visiblePackageIds, visibleItineraryIds],
+  );
+
+  const visibleCount = slides.length;
 
   const toolbarItems = useMemo(
     () =>
-      featuredPackages.map((pkg) => ({
-        id: pkg.id,
-        title: pkg.title,
-        slug: pkg.slug,
-        destination_name: pkg.destination_name ?? "",
-        is_published: pkg.is_published ? "true" : "false",
-        homepage_visible: visibleIdSet.has(pkg.id) ? "true" : "false",
+      slides.map((row) => ({
+        id: row.key,
+        title: row.title,
+        slug: row.slug,
+        destination_name: row.destination_name ?? "",
+        kind: row.kind,
       })),
-    [featuredPackages, visibleIdSet],
+    [slides],
   );
 
-  const filteredFeaturedPackages = useMemo(() => {
-    const filtered = featuredPackages.filter((pkg) => {
-      const row = {
-        destination_name: pkg.destination_name ?? "",
-        is_published: pkg.is_published ? "true" : "false",
-        homepage_visible: visibleIdSet.has(pkg.id) ? "true" : "false",
+  const filteredSlides = useMemo(() => {
+    return slides.filter((row) => {
+      const filterRow = {
+        destination_name: row.destination_name ?? "",
+        kind: row.kind,
       };
 
       for (const filter of SLIDER_FILTERS) {
-        if (!rowMatchesFilter(row, filter, filterValues[filter.field] ?? "")) {
+        if (!rowMatchesFilter(filterRow, filter, filterValues[filter.field] ?? "")) {
           return false;
         }
       }
 
       if (!search.trim()) return true;
-
       const query = search.trim().toLowerCase();
-      return [pkg.title, pkg.slug, pkg.destination_name ?? ""].some((part) =>
+      return [row.title, row.slug, row.destination_name ?? "", row.kind].some((part) =>
         part.toLowerCase().includes(query),
       );
     });
-
-    return filtered;
-  }, [featuredPackages, filterValues, search, visibleIdSet]);
+  }, [slides, filterValues, search]);
 
   const filtersActive = hasActiveFilters(search, filterValues);
 
-  const handleToggleVisibility = (packageId: string, makeVisible: boolean) => {
-    setError(null);
+  const persistOrder = async (nextSlides: SliderRow[]) => {
+    const items: HeroSliderOrderItem[] = nextSlides.map((row) => ({
+      kind: row.kind,
+      id: row.id,
+    }));
+    const generation = ++orderGeneration.current;
+    setSavingOrder(true);
+    try {
+      const saved = await saveHomepageHeroSliderOrder({ items });
+      if (generation !== orderGeneration.current) return;
+      setVisiblePackageIds(saved.visible_package_ids);
+      setVisibleItineraryIds(saved.visible_itinerary_ids);
+      setMaxVisibleItems(clampHeroSliderMaxItems(saved.hero_slider_max_items));
 
-    if (makeVisible) {
-      if (visibleCount >= maxVisibleItems) {
-        setError(
-          `You can only show up to ${maxVisibleItems} packages on the homepage. Hide another package first.`,
-        );
-        return;
+      const orderByKey = new Map(
+        nextSlides.map((row, index) => [row.key, index + 1] as const),
+      );
+      setPackages((current) =>
+        current.map((row) => {
+          const order = orderByKey.get(`package:${row.id}`);
+          return order == null
+            ? row
+            : { ...row, is_featured: true, featured_sort_order: order };
+        }),
+      );
+      setItineraries((current) =>
+        current.map((row) => {
+          const order = orderByKey.get(`itinerary:${row.id}`);
+          return order == null
+            ? row
+            : { ...row, is_featured: true, featured_sort_order: order };
+        }),
+      );
+      showUpdatedToast("Slider order saved.");
+    } catch (err) {
+      if (generation !== orderGeneration.current) return;
+      setError(err instanceof Error ? err.message : "Failed to update slider order.");
+      await load();
+    } finally {
+      if (generation === orderGeneration.current) {
+        setSavingOrder(false);
       }
-      if (visibleIdSet.has(packageId)) return;
-    } else if (!visibleIdSet.has(packageId)) {
-      return;
     }
-
-    const previousVisible = visiblePackageIds;
-    const featuredCount = packages.filter((pkg) => pkg.is_featured).length;
-    const nextVisible = makeVisible
-      ? [...visiblePackageIds, packageId]
-      : visiblePackageIds.filter((id) => id !== packageId);
-
-    setVisiblePackageIds(nextVisible);
-    setPackages((current) =>
-      current.map((pkg) =>
-        pkg.id === packageId
-          ? {
-              ...pkg,
-              is_featured: makeVisible,
-              featured_sort_order: makeVisible
-                ? pkg.featured_sort_order ?? featuredCount + 1
-                : null,
-            }
-          : pkg,
-      ),
-    );
-
-    void setPackageHomepageVisibility({
-      packageId,
-      makeVisible,
-      currentVisibleIds: visiblePackageIds,
-      featuredCount,
-    })
-      .then((saved) => {
-        setVisiblePackageIds(saved.visible_package_ids);
-        setMaxVisibleItems(clampHeroSliderMaxItems(saved.hero_slider_max_items));
-        showUpdatedToast("Homepage visibility updated.");
-      })
-      .catch((err) => {
-        setVisiblePackageIds(previousVisible);
-        setPackages((current) =>
-          current.map((pkg) =>
-            pkg.id === packageId
-              ? {
-                  ...pkg,
-                  is_featured: !makeVisible,
-                  featured_sort_order: makeVisible ? null : pkg.featured_sort_order,
-                }
-              : pkg,
-          ),
-        );
-        setError(err instanceof Error ? err.message : "Failed to update package visibility.");
-      });
   };
 
-  const handleMove = (index: number, direction: -1 | 1) => {
-    const targetIndex = index + direction;
-    if (targetIndex < 0 || targetIndex >= featuredPackages.length) return;
-
+  const handleMove = (indexInFullList: number, direction: -1 | 1) => {
+    const targetIndex = indexInFullList + direction;
+    if (targetIndex < 0 || targetIndex >= slides.length) return;
     setError(null);
     setSortBy("order");
-
-    const nextFeatured = [...featuredPackages];
-    [nextFeatured[index], nextFeatured[targetIndex]] = [nextFeatured[targetIndex], nextFeatured[index]];
-    const normalized = normalizeFeaturedOrder(nextFeatured);
-    const previousPackages = packages;
-    const orderedIds = normalized.map((pkg) => pkg.id);
-    const generation = ++orderGeneration.current;
-
-    setPackages((current) => mergeFeaturedPackages(current, normalized));
-
-    void (async () => {
-      setSavingOrder(true);
-      try {
-        await saveHomepageHeroSliderOrder(orderedIds);
-        if (generation !== orderGeneration.current) return;
-        showUpdatedToast("Slider order saved.");
-      } catch (err) {
-        if (generation !== orderGeneration.current) return;
-        setPackages(previousPackages);
-        setError(err instanceof Error ? err.message : "Failed to update slider order.");
-      } finally {
-        if (generation === orderGeneration.current) {
-          setSavingOrder(false);
-        }
-      }
-    })();
+    const next = [...slides];
+    [next[indexInFullList], next[targetIndex]] = [next[targetIndex], next[indexInFullList]];
+    void persistOrder(next);
   };
 
-  const handleRemove = async (packageId: string) => {
+  const handleRemove = async (row: SliderRow) => {
     setError(null);
-
-    const previousPackages = packages;
-    const previousVisible = visiblePackageIds;
-    const nextVisible = visiblePackageIds.filter((id) => id !== packageId);
-
-    setPackages((current) =>
-      current.map((pkg) =>
-        pkg.id === packageId
-          ? { ...pkg, is_featured: false, featured_sort_order: null }
-          : pkg,
-      ),
-    );
-    setVisiblePackageIds(nextVisible);
+    const previousPackages = visiblePackageIds;
+    const previousItineraries = visibleItineraryIds;
 
     try {
-      const { error: removeError } = await adminUpdate("/packages", packageId, {
-        is_featured: false,
-        featured_sort_order: null,
-      });
-      if (removeError) throw new Error(removeError.message);
-
-      await saveHomepageHeroSliderSettings({
-        visible_package_ids: nextVisible,
-      });
-      showDeletedToast("Package removed from homepage hero slider.");
+      if (row.kind === "package") {
+        const saved = await setPackageHomepageVisibility({
+          packageId: row.id,
+          makeVisible: false,
+          currentVisibleIds: visiblePackageIds,
+          featuredCount: 0,
+        });
+        setVisiblePackageIds(saved.visible_package_ids);
+        setVisibleItineraryIds(saved.visible_itinerary_ids);
+        setPackages((current) =>
+          current.map((item) =>
+            item.id === row.id
+              ? { ...item, is_featured: false, featured_sort_order: null }
+              : item,
+          ),
+        );
+      } else {
+        const saved = await setItineraryHomepageVisibility({
+          itineraryId: row.id,
+          makeVisible: false,
+          currentVisibleIds: visibleItineraryIds,
+        });
+        setVisiblePackageIds(saved.visible_package_ids);
+        setVisibleItineraryIds(saved.visible_itinerary_ids);
+        setItineraries((current) =>
+          current.map((item) =>
+            item.id === row.id
+              ? { ...item, is_featured: false, featured_sort_order: null }
+              : item,
+          ),
+        );
+      }
+      showDeletedToast("Removed from homepage hero slider.");
     } catch (err) {
-      setPackages(previousPackages);
-      setVisiblePackageIds(previousVisible);
-      setError(err instanceof Error ? err.message : "Failed to remove package from slider.");
+      setVisiblePackageIds(previousPackages);
+      setVisibleItineraryIds(previousItineraries);
+      setError(err instanceof Error ? err.message : "Failed to remove item from slider.");
     }
   };
 
@@ -339,47 +317,50 @@ export function HomeHeroSliderManager() {
               <p className="admin-workspace-eyebrow">CMS · Home</p>
               <h1 className="admin-settings-panel__title">Homepage Hero Slider</h1>
               <p className="admin-settings-panel__subtitle">
-                Choose slider packages, set their order, and control homepage visibility.
+                One list for packages and itineraries — reorder the homepage hero here.
               </p>
             </div>
             <div className="admin-page-stats">
               <span className="admin-stat-chip admin-stat-chip--accent">
                 <span className="admin-stat-chip__value">{visibleCount}</span>
-                <span className="admin-stat-chip__label">visible</span>
+                <span className="admin-stat-chip__label">on homepage</span>
               </span>
               <span className="admin-stat-chip">
-                <span className="admin-stat-chip__value">{featuredPackages.length}</span>
-                <span className="admin-stat-chip__label">in slider</span>
+                <span className="admin-stat-chip__value">{maxVisibleItems}</span>
+                <span className="admin-stat-chip__label">max</span>
               </span>
             </div>
           </div>
 
-          {(error) && (
+          {error ? (
             <div className="admin-settings-panel__alerts">
-              {error && <div className="admin-alert admin-alert--error">{error}</div>}
+              <div className="admin-alert admin-alert--error">{error}</div>
             </div>
-          )}
+          ) : null}
         </div>
 
         <div className="admin-list-panel">
           <header className="admin-list-panel__head admin-list-panel__head--compact">
             <div className="admin-list-panel__intro">
-              <h2 className="admin-list-panel__title admin-list-panel__title--sm">Slider packages</h2>
+              <h2 className="admin-list-panel__title admin-list-panel__title--sm">Hero slides</h2>
               <p className="admin-list-panel__subtitle">
-                Reorder packages and toggle which ones appear on the homepage hero. To add packages,
-                enable <strong>Homepage hero slider</strong> on a package under{" "}
+                Showing published items currently visible on the homepage. Add more from{" "}
                 <Link href="/admin/cms/packages" className="admin-inline-link">
                   Packages
-                </Link>
-                .
+                </Link>{" "}
+                or{" "}
+                <Link href="/admin/cms/itineraries" className="admin-inline-link">
+                  Itineraries
+                </Link>{" "}
+                (Hero slider toggle).
               </p>
             </div>
           </header>
 
-          {!initialLoading && featuredPackages.length > 0 && (
+          {!initialLoading && slides.length > 0 ? (
             <div className="admin-list-panel__toolbar">
               <AdminListToolbar
-                entityLabel="Slider packages"
+                entityLabel="Hero slides"
                 search={search}
                 onSearchChange={setSearch}
                 filters={SLIDER_FILTERS}
@@ -399,129 +380,102 @@ export function HomeHeroSliderManager() {
                 sortOptions={SLIDER_SORT_OPTIONS}
               />
             </div>
-          )}
+          ) : null}
 
           <div className="admin-list-panel__body">
             {initialLoading ? (
-              <div className="admin-list-panel__state">Loading slider packages…</div>
-            ) : featuredPackages.length === 0 ? (
+              <div className="admin-list-panel__state">Loading hero slides…</div>
+            ) : slides.length === 0 ? (
               <div className="admin-list-panel__state admin-list-panel__state--empty">
-                <p className="admin-page-empty__title">No packages in the homepage hero slider yet</p>
+                <p className="admin-page-empty__title">Nothing on the homepage hero yet</p>
                 <p className="admin-page-empty__text">
-                  Open a package under{" "}
-                  <Link href="/admin/cms/packages" className="admin-inline-link">
-                    Packages
-                  </Link>{" "}
-                  and enable <strong>Homepage hero slider</strong> to include it here.
+                  Enable <strong>Hero slider</strong> on a published package or itinerary to add it
+                  here.
                 </p>
               </div>
-            ) : filteredFeaturedPackages.length === 0 ? (
+            ) : filteredSlides.length === 0 ? (
               <div className="admin-list-panel__state admin-list-panel__state--empty">
-                <p className="admin-page-empty__title">No slider packages match your filters</p>
-                <p className="admin-page-empty__text">Try adjusting search or filter options.</p>
+                <p className="admin-page-empty__title">No slides match your filters</p>
               </div>
             ) : (
               <div className="admin-table-scroll admin-list-panel__table">
-              <table className="admin-table">
-                <thead>
-                  <tr>
-                    <th>Order</th>
-                    <th>Package</th>
-                    <th>Destination</th>
-                    <th>Status</th>
-                    <th>On homepage</th>
-                    <th className="admin-table__col--actions">Actions</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {filteredFeaturedPackages.map((pkg) => {
-                    const index = featuredPackages.findIndex((item) => item.id === pkg.id);
-                    const isVisible = visibleIdSet.has(pkg.id);
+                <table className="admin-table">
+                  <thead>
+                    <tr>
+                      <th>Order</th>
+                      <th>Type</th>
+                      <th>Title</th>
+                      <th>Destination</th>
+                      <th>Status</th>
+                      <th className="admin-table__col--actions">Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {filteredSlides.map((row) => {
+                      const index = slides.findIndex((item) => item.key === row.key);
+                      const editHref =
+                        row.kind === "package"
+                          ? `/admin/cms/packages/${row.id}`
+                          : `/admin/cms/itineraries/${row.id}`;
 
-                    return (
-                      <tr key={pkg.id} className="admin-table__row">
-                        <td className="admin-table__muted">{index + 1}</td>
-                        <td>
-                          <div className="admin-table__primary">{pkg.title}</div>
-                          <div className="admin-table__secondary">{pkg.slug}</div>
-                        </td>
-                        <td>{pkg.destination_name ?? "—"}</td>
-                        <td>
-                          <span
-                            className={cn(
-                              "admin-status-pill",
-                              pkg.is_published
-                                ? "admin-status-pill--published"
-                                : "admin-status-pill--draft",
-                            )}
-                          >
-                            {pkg.is_published ? "Published" : "Draft"}
-                          </span>
-                        </td>
-                        <td>
-                          <label className="admin-visibility-toggle">
-                            <input
-                              type="checkbox"
-                              className="admin-visibility-toggle__input"
-                              checked={isVisible}
-                              aria-label={`${isVisible ? "Hide" : "Show"} ${pkg.title} on homepage`}
-                              onChange={(event) =>
-                                handleToggleVisibility(pkg.id, event.target.checked)
-                              }
-                            />
-                            <span
-                              className={cn(
-                                "admin-visibility-toggle__track",
-                                isVisible && "admin-visibility-toggle__track--on",
-                              )}
-                            >
-                              <span className="admin-visibility-toggle__thumb" />
+                      return (
+                        <tr key={row.key} className="admin-table__row">
+                          <td className="admin-table__muted">{index + 1}</td>
+                          <td>
+                            <span className="admin-status-pill">
+                              {row.kind === "package" ? "Package" : "Itinerary"}
                             </span>
-                            <span className="admin-visibility-toggle__label">
-                              {isVisible ? "Visible" : "Off slider"}
+                          </td>
+                          <td>
+                            <div className="admin-table__primary">{row.title}</div>
+                            <div className="admin-table__secondary">{row.slug}</div>
+                          </td>
+                          <td>{row.destination_name ?? "—"}</td>
+                          <td>
+                            <span className="admin-status-pill admin-status-pill--published">
+                              Published · Visible
                             </span>
-                          </label>
-                        </td>
-                        <td className="admin-table__col--actions">
-                          <div className="admin-table__actions">
-                            <button
-                              type="button"
-                              className="admin-table__action"
-                              aria-label={`Move ${pkg.title} up`}
-                              disabled={index === 0 || savingOrder}
-                              onClick={() => handleMove(index, -1)}
-                            >
-                              <ArrowUp aria-hidden className="admin-table__action-icon" />
-                            </button>
-                            <button
-                              type="button"
-                              className="admin-table__action"
-                              aria-label={`Move ${pkg.title} down`}
-                              disabled={index === featuredPackages.length - 1 || savingOrder}
-                              onClick={() => handleMove(index, 1)}
-                            >
-                              <ArrowDown aria-hidden className="admin-table__action-icon" />
-                            </button>
-                            <Link href={`/admin/cms/packages/${pkg.id}`} className="admin-table__action">
-                              Edit
-                            </Link>
-                            <button
-                              type="button"
-                              className="admin-table__action admin-table__action--danger"
-                              aria-label={`Remove ${pkg.title} from slider`}
-                              onClick={() => void handleRemove(pkg.id)}
-                            >
-                              <Trash2 aria-hidden className="admin-table__action-icon" />
-                            </button>
-                          </div>
-                        </td>
-                      </tr>
-                    );
-                  })}
-                </tbody>
-              </table>
-            </div>
-          )}
+                          </td>
+                          <td className="admin-table__col--actions">
+                            <div className="admin-table__actions">
+                              <button
+                                type="button"
+                                className="admin-table__action"
+                                aria-label={`Move ${row.title} up`}
+                                disabled={index === 0 || savingOrder}
+                                onClick={() => handleMove(index, -1)}
+                              >
+                                <ArrowUp aria-hidden className="admin-table__action-icon" />
+                              </button>
+                              <button
+                                type="button"
+                                className="admin-table__action"
+                                aria-label={`Move ${row.title} down`}
+                                disabled={index === slides.length - 1 || savingOrder}
+                                onClick={() => handleMove(index, 1)}
+                              >
+                                <ArrowDown aria-hidden className="admin-table__action-icon" />
+                              </button>
+                              <Link href={editHref} className="admin-table__action">
+                                Edit
+                              </Link>
+                              <button
+                                type="button"
+                                className="admin-table__action admin-table__action--danger"
+                                aria-label={`Remove ${row.title} from slider`}
+                                onClick={() => void handleRemove(row)}
+                              >
+                                <Trash2 aria-hidden className="admin-table__action-icon" />
+                              </button>
+                            </div>
+                          </td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+              </div>
+            )}
           </div>
         </div>
       </div>

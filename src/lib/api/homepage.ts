@@ -13,7 +13,8 @@ import {
 } from "./itineraries";
 import { resolveIndiaRegion } from "@/lib/india-region";
 import { resolveDestinationHeroImage } from "@/lib/destination-images";
-import { images } from "@/lib/images";
+import { resolveCuratedItineraryHero } from "@/data/itinerary-heroes";
+import { FALLBACK_IMAGE, images } from "@/lib/images";
 import { cleanPackageTitle } from "@/lib/package-title";
 import { defaultHomepagePromo, defaultRegionPanels, defaultSpecializations } from "@/data/pageContent";
 import { humanizeCopy, humanizeCopyList } from "@/lib/copy";
@@ -25,6 +26,7 @@ export { HERO_SLIDER_DEFAULT_MAX_ITEMS } from "@/lib/api/homepage-hero-settings"
 import {
   hasHomepageHeroVisibilityConfigured,
   readHomepageHeroSettings,
+  selectHomepageHeroItineraries,
   selectHomepageHeroPackages,
 } from "@/lib/api/homepage-hero-settings";
 import {
@@ -87,6 +89,7 @@ export type HomeRegionPanel = {
   title: string;
   description: string;
   image: string;
+  galleryImages: string[];
   imageClass: string;
   href: string;
   highlights: string[];
@@ -257,6 +260,8 @@ const REGION_PLACEHOLDER_PATTERNS = [
   /^placeholder$/i,
   /^lorem ipsum/i,
   /^test$/i,
+  /^nice$/i,
+  /^inida\b/i,
 ];
 
 function isRegionFieldPlaceholder(value: string): boolean {
@@ -265,16 +270,8 @@ function isRegionFieldPlaceholder(value: string): boolean {
   return REGION_PLACEHOLDER_PATTERNS.some((pattern) => pattern.test(trimmed));
 }
 
-function isRegionPanelPlaceholder(panel: HomeRegionPanel): boolean {
-  if (isRegionFieldPlaceholder(panel.title)) return true;
-  if (isRegionFieldPlaceholder(panel.description)) return true;
-  if (isRegionFieldPlaceholder(panel.stat)) return true;
-  if (panel.title.trim().toLowerCase() === panel.label.trim().toLowerCase()) return true;
-
-  const validHighlights = panel.highlights.filter(
-    (item) => item.trim() && !isRegionFieldPlaceholder(item) && item.trim().toLowerCase() !== panel.label.trim().toLowerCase()
-  );
-  return validHighlights.length < 2;
+function pickRegionField(value: string, fallback: string): string {
+  return isRegionFieldPlaceholder(value) ? fallback : value;
 }
 
 function inferRegionMoodFromCms(panel: import("./types").CmsHomepageRegionPanel): "warm" | "cool" {
@@ -328,55 +325,36 @@ function defaultRegionForPanel(panel: HomeRegionPanel): (typeof defaultRegionPan
 }
 
 function mergeRegionPanel(panel: HomeRegionPanel): HomeRegionPanel {
-  const kind = inferRegionKind(panel);
   const fallback = defaultRegionForPanel(panel);
   const highlights = panel.highlights.filter(
     (item) =>
       item.trim() &&
       !isRegionFieldPlaceholder(item) &&
-      item.trim().toLowerCase() !== panel.label.trim().toLowerCase()
+      item.trim().toLowerCase() !== panel.label.trim().toLowerCase(),
   );
 
-  const usesDomesticDefaults =
-    kind === "international" &&
-    (panel.title === defaultRegionPanels[0].title ||
-      panel.highlights.some((item) =>
-        defaultRegionPanels[0].highlights.some(
-          (domestic) => domestic.toLowerCase() === item.trim().toLowerCase()
-        )
-      ));
-
-  const shouldUseFallbackContent =
-    isRegionPanelPlaceholder(panel) || usesDomesticDefaults;
+  // CMS is source of truth. Only fill blank / obvious placeholder fields from defaults
+  // so the admin form and homepage stay aligned when editors save real copy.
+  const href =
+    panel.href.startsWith("/") && !isRegionFieldPlaceholder(panel.href)
+      ? panel.href
+      : fallback.href;
 
   const merged: HomeRegionPanel = {
     ...panel,
-    label: isRegionFieldPlaceholder(panel.label) ? fallback.label : panel.label,
-    title:
-      shouldUseFallbackContent ||
-      isRegionFieldPlaceholder(panel.title) ||
-      panel.title.trim().toLowerCase() === panel.label.trim().toLowerCase()
-        ? fallback.title
-        : panel.title,
-    description:
-      shouldUseFallbackContent ||
-      isRegionFieldPlaceholder(panel.description) ||
-      panel.description.trim().toLowerCase() === panel.label.trim().toLowerCase()
-        ? fallback.description
-        : panel.description,
-    stat:
-      shouldUseFallbackContent ||
-      isRegionFieldPlaceholder(panel.stat) ||
-      panel.stat.trim().toLowerCase() === panel.label.trim().toLowerCase() ||
-      (kind === "domestic" && /12\+?\s*states?/i.test(panel.stat))
-        ? fallback.stat
-        : panel.stat,
-    highlights:
-      shouldUseFallbackContent || highlights.length < 2 ? [...fallback.highlights] : highlights,
-    href: panel.href || fallback.href,
-    image: shouldUseFallbackContent || isRegionPanelPlaceholder(panel) ? fallback.image : panel.image,
+    label: pickRegionField(panel.label, fallback.label),
+    title: pickRegionField(panel.title, fallback.title),
+    description: pickRegionField(panel.description, fallback.description),
+    stat: pickRegionField(panel.stat, fallback.stat),
+    highlights: highlights.length >= 2 ? highlights : [...fallback.highlights],
+    href,
+    image: panel.image?.trim() ? panel.image : fallback.image,
+    galleryImages:
+      (panel.galleryImages ?? []).filter((src) => Boolean(src?.trim())).length > 0
+        ? (panel.galleryImages ?? []).filter((src) => Boolean(src?.trim()))
+        : [panel.image?.trim() || fallback.image].filter(Boolean),
     imageClass: panel.imageClass || fallback.imageClass,
-    mood: kind === "international" ? "cool" : "warm",
+    mood: inferRegionKind(panel) === "international" ? "cool" : "warm",
   };
 
   return {
@@ -407,6 +385,7 @@ function resolveRegionPanels(
     ...item,
     id: item.id,
     highlights: [...item.highlights],
+    galleryImages: [item.image],
   }));
 }
 
@@ -519,14 +498,30 @@ function mergeHomeStats(stats: HomeStat[]): HomeStat[] {
   return uniqueById([...founding, ...cleaned]).slice(0, 5);
 }
 
+function isLocalUploadUrl(url: string): boolean {
+  return /\/(?:cms-)?uploads\/media\//.test(url);
+}
+
 function firstGalleryUrl(
   items: { url: string; sort_order: number | null }[] | undefined
 ): string {
   if (!items?.length) return "";
-  return (
-    [...items]
-      .sort((a, b) => (a.sort_order ?? 999) - (b.sort_order ?? 999))[0]?.url ?? ""
-  );
+  for (const item of [...items].sort((a, b) => (a.sort_order ?? 999) - (b.sort_order ?? 999))) {
+    const url = (item.url ?? "").trim();
+    if (url && !isLocalUploadUrl(url)) return url;
+  }
+  return "";
+}
+
+function destinationHero(destination: CmsDestination | undefined): string {
+  if (!destination?.slug) return "";
+  return resolveDestinationHeroImage(destination.slug, {
+    region: destination.region === "domestic" ? "domestic" : "international",
+  });
+}
+
+function cmsHeroUrl(mediaMap: Map<string, string>, mediaId: string | null | undefined): string {
+  return resolveMediaUrl(mediaMap, mediaId, "").trim();
 }
 
 function resolvePackageHeroImage(
@@ -535,20 +530,17 @@ function resolvePackageHeroImage(
   itinerary: CmsItinerary | undefined,
   mediaMap: Map<string, string>
 ): string {
-  if (
-    pkg.slug === "gj-005-divine-statue-of-unity-circuit" ||
-    itinerary?.slug === "gj-005-divine-statue-of-unity-itinerary"
-  ) {
-    return images.statueOfUnityCircuit;
-  }
+  const curated = resolveCuratedItineraryHero(itinerary?.slug, pkg.slug);
+  if (curated) return curated;
 
   return (
-    resolveMediaUrl(mediaMap, pkg.hero_media_id, "") ||
-    resolveMediaUrl(mediaMap, itinerary?.hero_media_id, "") ||
-    resolveMediaUrl(mediaMap, destination?.hero_media_id, "") ||
+    cmsHeroUrl(mediaMap, pkg.hero_media_id) ||
+    cmsHeroUrl(mediaMap, itinerary?.hero_media_id) ||
+    cmsHeroUrl(mediaMap, destination?.hero_media_id) ||
     firstGalleryUrl(itinerary?.gallery_media) ||
     firstGalleryUrl(destination?.gallery_media) ||
-    images.bali
+    destinationHero(destination) ||
+    FALLBACK_IMAGE
   );
 }
 
@@ -557,6 +549,49 @@ function soldLastMonthForPackage(pkg: CmsPackage): number {
     return pkg.sold_last_month;
   }
   return 0;
+}
+
+function mapItineraryToHomePackage(
+  itinerary: CmsItinerary,
+  destinationById: Map<string, CmsDestination>,
+  mediaMap: Map<string, string>,
+): HomeTravelPackage {
+  const destination = destinationById.get(itinerary.destination_id);
+  const rating = itinerary.rating != null ? Number(itinerary.rating) : 4.8;
+  const reviewCount =
+    itinerary.review_count ??
+    48 + (itinerary.id.charCodeAt(0) % 130) + Math.round(rating * 10);
+
+  const journeyHref = destination
+    ? `/destinations/${destination.slug}?journey=${encodeURIComponent(itinerary.slug)}`
+    : `/itineraries/${itinerary.slug}`;
+
+  return {
+    id: `itinerary:${itinerary.id}`,
+    title: cleanPackageTitle(itinerary.title),
+    destination: destination?.name ?? "Destination",
+    region: destination?.region ?? "international",
+    duration: itinerary.duration_label,
+    price: itinerary.starting_price,
+    image:
+      resolveCuratedItineraryHero(itinerary.slug, null) ||
+      cmsHeroUrl(mediaMap, itinerary.hero_media_id) ||
+      cmsHeroUrl(mediaMap, itinerary.package_hero_media_id) ||
+      cmsHeroUrl(mediaMap, destination?.hero_media_id) ||
+      firstGalleryUrl(itinerary.gallery_media) ||
+      firstGalleryUrl(destination?.gallery_media) ||
+      destinationHero(destination) ||
+      FALLBACK_IMAGE,
+    highlights: (itinerary.highlights ?? [])
+      .sort((a, b) => a.sort_order - b.sort_order)
+      .map((h) => h.text),
+    mood: ["luxury"],
+    rating,
+    featured: itinerary.is_featured,
+    journeyHref,
+    reviewCount,
+    soldLastMonth: 0,
+  };
 }
 
 function mapPackage(
@@ -607,10 +642,11 @@ function mapFeaturedDestination(
   minItineraryPrice?: number
 ): HomeFeaturedDestination {
   const isHub = journeyCount > 1;
+  const galleryUrl = (dest.gallery_media[0]?.url ?? "").trim();
   const cmsImage =
-    resolveMediaUrl(mediaMap, isHub ? dest.hero_media_id : itinerary?.hero_media_id, "") ||
-    resolveMediaUrl(mediaMap, dest.hero_media_id, "") ||
-    dest.gallery_media[0]?.url ||
+    cmsHeroUrl(mediaMap, isHub ? dest.hero_media_id : itinerary?.hero_media_id) ||
+    cmsHeroUrl(mediaMap, dest.hero_media_id) ||
+    (galleryUrl && !isLocalUploadUrl(galleryUrl) ? galleryUrl : "") ||
     "";
 
   const image = resolveDestinationHeroImage(dest.slug, {
@@ -668,16 +704,29 @@ function mapRegionPanel(
   mediaMap: Map<string, string>
 ): HomeRegionPanel {
   const mood = inferRegionMoodFromCms(panel);
+  const fallbackImage =
+    mood === "warm" ? images.homeRegionDomestic : images.homeRegionInternational;
+  const galleryIds = Array.isArray(panel.gallery_media_ids)
+    ? panel.gallery_media_ids.map(String).filter(Boolean)
+    : [];
+  const galleryFromCms = galleryIds
+    .map((id) => resolveMediaUrl(mediaMap, id, ""))
+    .filter(Boolean);
+  const heroImage = resolveMediaUrl(mediaMap, panel.hero_media_id, "");
+  const galleryImages =
+    galleryFromCms.length > 0
+      ? galleryFromCms
+      : heroImage
+        ? [heroImage]
+        : [fallbackImage];
+
   return {
     id: panel.id,
     label: panel.label,
     title: panel.title,
     description: panel.description,
-    image: resolveMediaUrl(
-      mediaMap,
-      panel.hero_media_id,
-      mood === "warm" ? images.homeRegionDomestic : images.homeRegionInternational
-    ),
+    image: galleryImages[0] || fallbackImage,
+    galleryImages,
     imageClass:
       mood === "warm"
         ? "object-cover object-[center_40%] saturate-[1.08] group-hover:saturate-[1.18]"
@@ -731,7 +780,9 @@ export const getHomepageData = cache(async function getHomepageData(): Promise<H
     getPackages(),
     getDestinations(),
     getItineraries(),
-    getMediaAssets(),
+    getMediaAssets().then((assets) =>
+      assets.filter((asset) => !isLocalUploadUrl(asset.url ?? "")),
+    ),
     getCompanyStats(),
     getHomepageRegionPanels(),
     getHomepagePromo(),
@@ -838,12 +889,24 @@ function mapHomepageSources({
 
   const heroSettings = readHomepageHeroSettings(companyStats);
   const heroSliderMaxItems = heroSettings.hero_slider_max_items;
-  const cmsFeatured = selectHomepageHeroPackages(packages, companyStats);
+  const cmsFeaturedPackages = selectHomepageHeroPackages(packages, companyStats);
+  const cmsFeaturedItineraries = selectHomepageHeroItineraries(itineraries, companyStats);
+
+  const packageSlides = cmsFeaturedPackages.map((pkg) => ({
+    sort: pkg.featured_sort_order ?? 999,
+    title: pkg.title,
+    slide: mapPackage(pkg, destinationById, itineraryByPackageId, mediaMap),
+  }));
+  const itinerarySlides = cmsFeaturedItineraries.map((item) => ({
+    sort: item.featured_sort_order ?? 999,
+    title: item.title,
+    slide: mapItineraryToHomePackage(item, destinationById, mediaMap),
+  }));
 
   let featuredPackages = uniqueById(
-    cmsFeatured.map((pkg) =>
-      mapPackage(pkg, destinationById, itineraryByPackageId, mediaMap),
-    )
+    [...packageSlides, ...itinerarySlides]
+      .sort((a, b) => a.sort - b.sort || a.title.localeCompare(b.title))
+      .map((entry) => entry.slide),
   );
 
   if (featuredPackages.length === 0 && !hasHomepageHeroVisibilityConfigured(companyStats)) {
@@ -853,6 +916,8 @@ function mapHomepageSources({
         .slice(0, heroSliderMaxItems)
         .map((pkg) => mapPackage(pkg, destinationById, itineraryByPackageId, mediaMap))
     );
+  } else if (featuredPackages.length > heroSliderMaxItems) {
+    featuredPackages = featuredPackages.slice(0, heroSliderMaxItems);
   }
 
   const statsSource =
