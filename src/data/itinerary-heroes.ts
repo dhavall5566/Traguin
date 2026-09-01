@@ -100,7 +100,7 @@ export const ITINERARY_HERO_BY_SLUG: Record<string, string> = {
   "ch-003-luxury-switzerland-itinerary": u("1684871640048-f298aaa8b03c"), // Lakeside city & Alps aerial
   "ch-004-jungfrau-explorer-family-tour-itinerary": u("1593186344142-ef775a6e596f"), // Jungfrau region train in snow
   "ch-005-grand-switzerland-tour-itinerary": u("1607585011081-241d2bacb7de"), // Alpine village & peaks
-  // Thailand — unique heroes per package (Girls Trip Thailand left on CMS)
+  // Thailand — unique heroes per package
   "th-001-bangkok-pattaya-itinerary": u("1692640480932-7d33837179de"),
   "th-002-bangkok-pattaya-itinerary": u("1642391326189-46e163cad59f"),
   "th-003-bangkok-phuket-itinerary": u("1706117040529-69ee35ad9aa3"),
@@ -109,6 +109,7 @@ export const ITINERARY_HERO_BY_SLUG: Record<string, string> = {
   "th-006-phuket-honeymoon-itinerary": u("1628221556371-ef4c328d9019"),
   "th-007-phuket-krabi-honeymoon-itinerary": u("1664799420158-8f7b79ee3e6f"),
   "th-008-thailand-romance-itinerary": u("1628358142396-1c2b8a20bc6d"),
+  "th-009-girls-trip-thailand-itinerary": "/packages/th-009-girls-trip-thailand.jpg",
   "th-010-phuket-ladies-escape-phuket-patong-phi-phi-islands-james-bond-island-itinerary": u("1563315001-ab59cc08977f"),
   "th-011-relax-thailand-itinerary": u("1626815233554-fbe3fdb5b15c"),
   "th-012-luxury-phuket-retreat-itinerary": u("1743178207913-9afc6b15f3d0"),
@@ -152,7 +153,7 @@ export const ITINERARY_HERO_BY_SLUG: Record<string, string> = {
   "uae-001-dubai-essentials-itinerary": u("1512453979798-5ea266f8880c"), // Burj Khalifa skyline
   "uae-002-dubai-abu-dhabi-itinerary": u("1590075865003-e48277faa558"), // Sheikh Zayed Grand Mosque
   "uae-003-romantic-dubai-honeymoon-itinerary": u("1518684079-3c830dcef090"), // Burj Al Arab
-  "uae-004-luxury-dubai-itinerary": u("1546412414-e1885259563a"), // Burj Al Arab daytime luxury
+  "uae-004-luxury-dubai-itinerary": "/packages/uae-004-luxury-dubai-tour.jpg",
   "uae-005-dubai-shopping-festival-itinerary": u("1718564257683-1e4caf9b049a"), // Dubai fountain / mall plaza
   "uae-006-dubai-family-itinerary": u("1628859017536-c2f1d69f3c84"), // Dubai Frame
   "uae-007-leisure-dubai-senior-itinerary": u("1667587139742-e671d6cd2039"), // Beachfront skyline
@@ -165,10 +166,19 @@ export const ITINERARY_HERO_BY_SLUG: Record<string, string> = {
   "us-002-west-coast-usa-itinerary": u("1521747116042-5a810fda9664"), // Golden Gate Bridge, San Francisco
   "us-004-luxury-usa-itinerary": u("1581351721010-8cf859cb14a4"), // Las Vegas Strip at night
 
+  // Kashmir — domestic packages
+  "jk-003-srinagar-pahalgam-gulmarg-dal-lake-itinerary": "/packages/jk-003-srinagar-pahalgam-gulmarg-dal-lake.jpg",
+
+  // Goa — domestic packages
+  "ga-004-luxury-south-goa-private-sanctuary-itinerary": "/packages/ga-004-luxury-south-goa-private-sanctuary.jpg",
+
+  // Kerala — domestic packages
+  "kl-001-munnar-thekkady-alleppey-family-itinerary": "/packages/kl-001-munnar-thekkady-alleppey-family.webp",
+
   // Vietnam — distinct landmark per package
   "vn-001-vietnam-explorer-itinerary": u("1643029891412-92f9a81a8c16"), // Ha Long Bay junks & karsts
   "vn-002-vietnam-highlights-itinerary": u("1531737212413-667205e1cda7"), // Hang Mua stairs, Ninh Binh
-  "vn-003-romantic-vietnam-itinerary": u("1526139334526-f591a54b477c"), // Hoi An lantern street at night
+  "vn-003-romantic-vietnam-itinerary": "/packages/vn-003-romantic-vietnam-couple-tour.jpg",
   "vn-004-luxury-vietnam-itinerary": u("1559592413-7cec4d0cae2b"), // Golden Bridge, Ba Na Hills
   "vn-005-vietnam-ladies-escape-itinerary": u("1618165220283-e85246c4171c"), // Multi-tier pagoda with lanterns
   "vn-006-vietnam-family-highlights-itinerary": u("1557750255-c76072a7aad1"), // Ninh Binh water pavilion
@@ -177,6 +187,38 @@ export const ITINERARY_HERO_BY_SLUG: Record<string, string> = {
   "vn-009-vietnam-senior-leisure-itinerary": u("1616486410185-81af2d32a2af"), // Turtle Tower, Hoan Kiem Lake
   "vn-010-grand-vietnam-itinerary": u("1675111066042-9baa4c343157"), // Ha Long Bay panoramic islands
 };
+
+/** Homepage hero slider only — does not affect package/itinerary detail pages */
+export const HOMEPAGE_PACKAGE_HERO_BY_SLUG: Record<string, string> = {
+  "uae-004-luxury-dubai-tour": "/packages/uae-004-luxury-dubai-tour-homepage.jpg",
+  "uae-004-luxury-dubai-itinerary": "/packages/uae-004-luxury-dubai-tour-homepage.jpg",
+  "ga-004-luxury-south-goa-private-sanctuary": "/packages/ga-004-luxury-south-goa-private-sanctuary-homepage.webp",
+  "ga-004-luxury-south-goa-private-sanctuary-itinerary":
+    "/packages/ga-004-luxury-south-goa-private-sanctuary-homepage.webp",
+  "jk-003-srinagar-pahalgam-gulmarg-dal-lake": "/packages/jk-003-srinagar-pahalgam-gulmarg-dal-lake-homepage.webp",
+  "jk-003-srinagar-pahalgam-gulmarg-dal-lake-itinerary":
+    "/packages/jk-003-srinagar-pahalgam-gulmarg-dal-lake-homepage.webp",
+  "kl-001-munnar-thekkady-alleppey-family": "/packages/kl-001-munnar-thekkady-alleppey-family-homepage.webp",
+  "kl-001-munnar-thekkady-alleppey-family-itinerary":
+    "/packages/kl-001-munnar-thekkady-alleppey-family-homepage.webp",
+  "th-009-girls-trip-thailand": "/packages/th-009-girls-trip-thailand-homepage.webp",
+  "th-009-girls-trip-thailand-itinerary": "/packages/th-009-girls-trip-thailand-homepage.webp",
+  "vn-003-romantic-vietnam-couple-tour": "/packages/vn-003-romantic-vietnam-couple-tour-homepage.webp",
+  "vn-003-romantic-vietnam-itinerary": "/packages/vn-003-romantic-vietnam-couple-tour-homepage.webp",
+};
+
+export function resolveHomepagePackageHero(
+  itinerarySlug?: string | null,
+  packageSlug?: string | null,
+): string | undefined {
+  if (packageSlug && HOMEPAGE_PACKAGE_HERO_BY_SLUG[packageSlug]) {
+    return HOMEPAGE_PACKAGE_HERO_BY_SLUG[packageSlug];
+  }
+  if (itinerarySlug && HOMEPAGE_PACKAGE_HERO_BY_SLUG[itinerarySlug]) {
+    return HOMEPAGE_PACKAGE_HERO_BY_SLUG[itinerarySlug];
+  }
+  return undefined;
+}
 
 /** Package slug → hero URL (homepage / package cards) */
 export const PACKAGE_HERO_BY_SLUG: Record<string, string> = {
@@ -300,6 +342,7 @@ export const PACKAGE_HERO_BY_SLUG: Record<string, string> = {
   "th-006-phuket-honeymoon-package": ITINERARY_HERO_BY_SLUG["th-006-phuket-honeymoon-itinerary"],
   "th-007-phuket-krabi-honeymoon": ITINERARY_HERO_BY_SLUG["th-007-phuket-krabi-honeymoon-itinerary"],
   "th-008-thailand-romance-package": ITINERARY_HERO_BY_SLUG["th-008-thailand-romance-itinerary"],
+  "th-009-girls-trip-thailand": ITINERARY_HERO_BY_SLUG["th-009-girls-trip-thailand-itinerary"],
   "th-010-phuket-ladies-escape-phuket-patong-phi-phi-islands-james-bond-island": ITINERARY_HERO_BY_SLUG["th-010-phuket-ladies-escape-phuket-patong-phi-phi-islands-james-bond-island-itinerary"],
   "th-011-relax-thailand-senior-tour": ITINERARY_HERO_BY_SLUG["th-011-relax-thailand-itinerary"],
   "th-012-luxury-phuket-retreat": ITINERARY_HERO_BY_SLUG["th-012-luxury-phuket-retreat-itinerary"],
@@ -361,6 +404,12 @@ export const PACKAGE_HERO_BY_SLUG: Record<string, string> = {
   "us-002-west-coast-usa-family-tour":
     ITINERARY_HERO_BY_SLUG["us-002-west-coast-usa-itinerary"],
   "us-004-luxury-usa-experience": ITINERARY_HERO_BY_SLUG["us-004-luxury-usa-itinerary"],
+  "jk-003-srinagar-pahalgam-gulmarg-dal-lake":
+    ITINERARY_HERO_BY_SLUG["jk-003-srinagar-pahalgam-gulmarg-dal-lake-itinerary"],
+  "ga-004-luxury-south-goa-private-sanctuary":
+    ITINERARY_HERO_BY_SLUG["ga-004-luxury-south-goa-private-sanctuary-itinerary"],
+  "kl-001-munnar-thekkady-alleppey-family":
+    ITINERARY_HERO_BY_SLUG["kl-001-munnar-thekkady-alleppey-family-itinerary"],
   "vn-001-vietnam-explorer-family-tour":
     ITINERARY_HERO_BY_SLUG["vn-001-vietnam-explorer-itinerary"],
   "vn-002-vietnam-highlights-family-tour":

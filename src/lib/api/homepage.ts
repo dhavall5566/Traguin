@@ -13,7 +13,7 @@ import {
 } from "./itineraries";
 import { resolveIndiaRegion } from "@/lib/india-region";
 import { resolveDestinationHeroImage } from "@/lib/destination-images";
-import { resolveCuratedItineraryHero } from "@/data/itinerary-heroes";
+import { resolveCuratedItineraryHero, resolveHomepagePackageHero } from "@/data/itinerary-heroes";
 import { FALLBACK_IMAGE, images } from "@/lib/images";
 import { cleanPackageTitle } from "@/lib/package-title";
 import { defaultHomepagePromo, defaultRegionPanels, defaultSpecializations } from "@/data/pageContent";
@@ -530,6 +530,9 @@ function resolvePackageHeroImage(
   itinerary: CmsItinerary | undefined,
   mediaMap: Map<string, string>
 ): string {
+  const homepageHero = resolveHomepagePackageHero(itinerary?.slug, pkg.slug);
+  if (homepageHero) return homepageHero;
+
   const curated = resolveCuratedItineraryHero(itinerary?.slug, pkg.slug);
   if (curated) return curated;
 
@@ -574,6 +577,7 @@ function mapItineraryToHomePackage(
     duration: itinerary.duration_label,
     price: itinerary.starting_price,
     image:
+      resolveHomepagePackageHero(itinerary.slug, null) ||
       resolveCuratedItineraryHero(itinerary.slug, null) ||
       cmsHeroUrl(mediaMap, itinerary.hero_media_id) ||
       cmsHeroUrl(mediaMap, itinerary.package_hero_media_id) ||

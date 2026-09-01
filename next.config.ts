@@ -35,7 +35,9 @@ const nextConfig: NextConfig = {
       { protocol: "https", hostname: "videos.pexels.com" },
       { protocol: "https", hostname: "api.traguin.in" },
       { protocol: "http", hostname: "127.0.0.1", port: "8001" },
+      { protocol: "http", hostname: "127.0.0.1", port: "8002" },
       { protocol: "http", hostname: "localhost", port: "8001" },
+      { protocol: "http", hostname: "localhost", port: "8002" },
     ],
   },
   async headers() {
