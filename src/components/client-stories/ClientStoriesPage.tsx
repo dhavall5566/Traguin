@@ -40,7 +40,7 @@ export function ClientStoriesPage({ photos, reviews }: ClientStoriesPageProps) {
                       alt={photo.name}
                       fill
                       sizes="(max-width: 768px) 50vw, (max-width: 1024px) 33vw, 25vw"
-                      quality={72}
+                      quality={75}
                       priority={index < 2}
                       loading={index < 2 ? undefined : "lazy"}
                       className="object-cover"
@@ -86,7 +86,7 @@ function ReviewCard({ story }: { story: ClientStoryReview }) {
               alt={story.name}
               fill
               sizes="48px"
-              quality={70}
+              quality={75}
               className="object-cover"
             />
           </div>

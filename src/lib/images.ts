@@ -68,8 +68,16 @@ export const images = {
   // Experience showcase cards (local, real TRAGUIN photos)
   experienceGroupTours: "/experiences/group-tours.png",
   experiencePrivateLuxe: "/experiences/private-luxe.png",
-  /** Travel Expert page hero — luxury resort, warm editorial */
-  travelExpertHero: unsplash("1520250497591-112f2f40a3f4", 1920),
+  /** Destinations listing hero — Santorini caldera, worldwide collection */
+  destinationsHero: "/images/destinations-hero.jpg",
+  /** Travel Expert page hero — above the clouds */
+  travelExpertHero: "/images/travel-expert-hero.jpg",
+  /** Client Stories page hero — Venice, real journeys */
+  clientStoriesHero: "/images/client-stories-hero.jpg",
+  /** Gallery page hero — desert highway, visual archive */
+  galleryHero: "/images/gallery-hero.jpg",
+  /** Contact page hero — evening villa, get in touch */
+  contactHero: "/images/contact-hero.jpg",
   /** Travel Expert service photography */
   serviceBespoke: unsplash("1582719508461-905c673771fd", 1400),
   serviceSkyCharter: unsplash("1436491865332-7a61a109cc05", 1400),

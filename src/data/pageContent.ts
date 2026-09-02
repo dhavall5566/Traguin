@@ -37,8 +37,8 @@ export const pageHeroes = {
     title: "Destinations",
     description:
       "Discover handpicked destinations with immersive itineraries crafted for every journey.",
-    image: images.switzerland,
-    imageAlt: "Alpine peaks above a turquoise lake",
+    image: images.destinationsHero,
+    imageAlt: "Whitewashed cliffside village above a deep-blue sea",
     primaryAction: primaryCta,
     secondaryAction: secondaryCta,
   },
@@ -60,7 +60,7 @@ export const pageHeroes = {
     description:
       "Bespoke itineraries, visa support, private aviation, and on-ground coordination from one dedicated team, from first conversation to homecoming.",
     image: images.travelExpertHero,
-    imageAlt: "Travel expert planning a bespoke luxury journey",
+    imageAlt: "Airplane wing above clouds at sunrise",
     primaryAction: { label: "Request Consultation", href: "/travel-expert#consultation" },
     secondaryAction: secondaryCta,
   },
@@ -70,8 +70,8 @@ export const pageHeroes = {
     title: "Client Stories",
     description:
       "Families, couples, and executives who trusted TRAGUIN with their most meaningful journeys, in their own words.",
-    image: images.kerala,
-    imageAlt: "Scenic Kerala backwaters",
+    image: images.clientStoriesHero,
+    imageAlt: "Travelers crossing the Rialto Bridge in Venice",
     primaryAction: primaryCta,
     secondaryAction: { label: "View Destinations", href: "/destinations" },
   },
@@ -81,8 +81,8 @@ export const pageHeroes = {
     title: "Gallery",
     description:
       "A visual wall of client moments, destination photography, and short films from journeys designed by TRAGUIN.",
-    image: images.experiencePrivateLuxe,
-    imageAlt: "Luxury travel moment captured on a curated journey",
+    image: images.galleryHero,
+    imageAlt: "Desert highway winding through red rock country",
     primaryAction: primaryCta,
     secondaryAction: { label: "View Stories", href: "/client-stories" },
   },
@@ -103,8 +103,8 @@ export const pageHeroes = {
     title: "Contact Us",
     description:
       "Share your vision with a senior travel designer. We respond within two working hours with thoughtful next steps, never a generic quote.",
-    image: images.plannerCta,
-    imageAlt: "Mountain lake at sunrise",
+    image: images.contactHero,
+    imageAlt: "Lit villa and pool at dusk",
     primaryAction: { label: "WhatsApp Expert", href: contactInfo.whatsappHref },
     secondaryAction: primaryCta,
   },

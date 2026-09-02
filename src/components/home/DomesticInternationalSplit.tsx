@@ -8,42 +8,40 @@ import { SafeImage } from "@/components/ui/SafeImage";
 import { Reveal3D } from "@/components/ui/Reveal3D";
 import { HomeSection } from "@/components/home/HomeSection";
 import { SectionHeader } from "@/components/ui/SectionHeader";
-import { images } from "@/lib/images";
 import type { HomeRegionPanel } from "@/lib/api/homepage";
 import { cn, uniqueById } from "@/lib/utils";
 import { useMotionLite } from "@/hooks/useMotionLite";
 
-const DOMESTIC_GALLERY = [
-  images.kashmir,
-  images.kerala,
-  images.goa,
-  images.rajasthan,
-  images.himachal,
-  images.ladakh,
-];
+/** Named place photos for region chips. */
+const NAMED_PLACE_IMAGES: Record<string, string> = {
+  rajasthan: "/images/regions/rajasthan.jpg",
+  kerala: "/images/regions/kerala.jpg",
+  himalayas: "/images/regions/himalayas.jpg",
+  himalaya: "/images/regions/himalayas.jpg",
+  goa: "/images/regions/goa.jpg",
+  thailand: "/images/regions/thailand.jpg",
+  bali: "/images/regions/bali.jpg?v=2",
+  singapore: "/images/regions/singapore.jpg?v=2",
+  australia: "/images/regions/australia.jpg?v=2",
+  canada: "/images/regions/canada.jpg?v=2",
+};
 
-const INTERNATIONAL_GALLERY = [
-  images.thailand,
-  images.bali,
-  images.singapore,
-  images.australia,
-  images.canada,
-  images.dubai,
-];
+type PlaceSlide = { name: string; image: string };
 
-function regionGallery(panel: HomeRegionPanel): string[] {
-  const cmsGallery = (panel.galleryImages ?? []).filter(Boolean);
-  if (cmsGallery.length > 0) {
-    return Array.from(new Set(cmsGallery)).slice(0, 8);
+function placeKey(name: string): string {
+  return name.trim().toLowerCase().replace(/^(the)\s+/, "");
+}
+
+function regionPlaceSlides(panel: HomeRegionPanel): PlaceSlide[] {
+  const names = panel.highlights.map((name) => name.trim()).filter(Boolean);
+  if (names.length === 0) {
+    return [{ name: panel.label, image: panel.image }];
   }
 
-  // Fallback only when CMS has no gallery uploads yet.
-  const isInternational =
-    panel.label.toLowerCase().includes("international") ||
-    panel.href.toLowerCase().includes("region=international") ||
-    panel.mood === "cool";
-  const set = isInternational ? INTERNATIONAL_GALLERY : DOMESTIC_GALLERY;
-  return Array.from(new Set([panel.image, ...set].filter(Boolean))).slice(0, 6);
+  return names.map((name) => {
+    const mapped = NAMED_PLACE_IMAGES[placeKey(name)];
+    return { name, image: mapped || panel.image };
+  });
 }
 
 function RegionImageGallery({
@@ -53,7 +51,7 @@ function RegionImageGallery({
   index,
   onIndexChange,
 }: {
-  slides: string[];
+  slides: PlaceSlide[];
   imageClass?: string;
   alt: string;
   index: number;
@@ -81,7 +79,7 @@ function RegionImageGallery({
       onIndexChange((indexRef.current + 1) % slides.length);
     }, 4500);
     return () => window.clearInterval(timer);
-  }, [motionLite, slides.length, paused, slides.join("|"), onIndexChange]);
+  }, [motionLite, slides.length, paused, onIndexChange]);
 
   if (slides.length === 0) return null;
 
@@ -97,9 +95,9 @@ function RegionImageGallery({
       aria-roledescription="carousel"
       aria-label={`${alt} photo gallery`}
     >
-      {visibleSlides.map((src, i) => (
+      {visibleSlides.map((slide, i) => (
         <div
-          key={`${src}-${i}`}
+          key={`${slide.name}-${slide.image}-${i}`}
           className={cn(
             "absolute inset-0 transition-opacity duration-700 ease-in-out",
             i === activeIndex ? "opacity-100" : "opacity-0"
@@ -107,8 +105,8 @@ function RegionImageGallery({
           aria-hidden={i !== activeIndex}
         >
           <SafeImage
-            src={src}
-            alt={`${alt}, photo ${i + 1} of ${slides.length}`}
+            src={slide.image}
+            alt={`${slide.name}, ${alt}`}
             className={cn("h-full w-full object-cover", imageClass)}
           />
         </div>
@@ -145,12 +143,13 @@ export function DomesticInternationalSplit({ panels }: { panels: HomeRegionPanel
   const [galleryIndex, setGalleryIndex] = useState(0);
 
   const activePanel = regionPanels[Math.min(active, Math.max(regionPanels.length - 1, 0))];
-  const gallery = activePanel ? regionGallery(activePanel) : [];
+  const gallery = activePanel ? regionPlaceSlides(activePanel) : [];
   const hasGallerySlides = gallery.length > 1 && !motionLite;
+  const galleryKey = gallery.map((slide) => `${slide.name}:${slide.image}`).join("|");
 
   useEffect(() => {
     setGalleryIndex(0);
-  }, [activePanel?.id, gallery.join("|")]);
+  }, [activePanel?.id, galleryKey]);
 
   const goToSlide = useCallback(
     (next: number) => {
@@ -244,14 +243,14 @@ export function DomesticInternationalSplit({ panels }: { panels: HomeRegionPanel
                   role="tablist"
                   aria-label="Gallery slides"
                 >
-                  {gallery.map((_, i) => (
+                  {gallery.map((slide, i) => (
                     <button
-                      key={i}
+                      key={`${slide.name}-${i}`}
                       type="button"
                       onClick={() => goToSlide(i)}
                       role="tab"
                       aria-selected={i === galleryIndex}
-                      aria-label={`Go to slide ${i + 1}`}
+                      aria-label={`Show ${slide.name}`}
                       className={cn(
                         "h-1.5 rounded-full transition-all duration-300",
                         i === galleryIndex ? "w-6 bg-gold" : "w-1.5 bg-white/50 hover:bg-white/70"
@@ -270,14 +269,26 @@ export function DomesticInternationalSplit({ panels }: { panels: HomeRegionPanel
                 className="mt-5 flex flex-wrap gap-2"
                 aria-label={`Featured ${activePanel.label.toLowerCase()} destinations`}
               >
-                {activePanel.highlights.map((place) => (
-                  <li
-                    key={place}
-                    className="home-region-panel__chip rounded-full border border-white/25 bg-white/10 px-3 py-1 text-white/90 backdrop-blur-sm"
-                  >
-                    {place}
-                  </li>
-                ))}
+                {gallery.map((place, i) => {
+                  const isActivePlace = i === galleryIndex;
+                  return (
+                    <li key={`${place.name}-${i}`}>
+                      <button
+                        type="button"
+                        onClick={() => goToSlide(i)}
+                        aria-pressed={isActivePlace}
+                        className={cn(
+                          "home-region-panel__chip pointer-events-auto rounded-full border px-3 py-1 backdrop-blur-sm transition-colors",
+                          isActivePlace
+                            ? "border-gold/80 bg-gold/25 text-white"
+                            : "border-white/25 bg-white/10 text-white/90 hover:border-white/50 hover:bg-white/15"
+                        )}
+                      >
+                        {place.name}
+                      </button>
+                    </li>
+                  );
+                })}
               </ul>
               <Link
                 href={activePanel.href}
