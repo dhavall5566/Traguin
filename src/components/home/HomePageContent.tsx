@@ -48,9 +48,7 @@ export function HomePageContent({ data }: { data: HomepageData }) {
       <LazyHomeSection rootMargin="160px 0px">
         <DestinationMarquee names={data.marqueeNames} />
       </LazyHomeSection>
-      <LazyHomeSection rootMargin="200px 0px">
-        <DomesticInternationalSplit panels={data.regionPanels} />
-      </LazyHomeSection>
+      <DomesticInternationalSplit panels={data.regionPanels} />
       <LazyHomeSection rootMargin="200px 0px">
         <FeaturedDestinations destinations={data.featuredDestinations} />
       </LazyHomeSection>
