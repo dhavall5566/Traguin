@@ -67,7 +67,7 @@ export const images = {
 
   // Experience showcase cards (local, real TRAGUIN photos)
   experienceGroupTours: "/experiences/group-tours.png",
-  experiencePrivateLuxe: "/experiences/private-luxe.png",
+  experiencePrivateLuxe: "/experiences/private-luxe-v2.jpg",
   /** Destinations listing hero — Santorini caldera, worldwide collection */
   destinationsHero: "/images/destinations-hero.jpg",
   /** Travel Expert page hero — above the clouds */
